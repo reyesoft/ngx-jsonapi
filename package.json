@@ -1,0 +1,21 @@
+{
+  "name": "ngx-jsonapi",
+  "version": "0.0.1",
+  "description": "Angular JSONAPI library",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/reyesoft/ngx-jsonapi"
+  },
+  "bugs": {
+    "url": "https://github.com/reyesoft/ngx-jsonapi/issues"
+  },
+  "dependencies": {
+  },
+  "peerDependencies": {
+  },
+  "devDependencies": {
+  },
+  "license": "ISC",
+  "main": "/dist/ngx-jsonapi.js",
+  "typings": "./dist/index.d.ts"
+}
