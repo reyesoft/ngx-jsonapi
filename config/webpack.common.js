@@ -4,100 +4,100 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const { ENV, IS_PRODUCTION, IS_DEV, APP_VERSION, TRAVIS, dir } = require('./helpers');
 
 module.exports = function(options = {}) {
-  return {
-    context: dir(),
-    resolve: {
-      extensions: ['.ts', '.js', '.json', '.css', '.scss', '.html'],
-      modules: [
-        'node_modules',
-        dir('src'),
-        dir('demo')
-      ]
-    },
-    output: {
-      path: dir('dist'),
-      filename: '[name].js',
-      sourceMapFilename: '[name].map',
-      chunkFilename: '[id].chunk.js',
-      devtoolModuleFilenameTemplate: 'webpack:///[absolute-resource-path]'
-    },
-    performance: {
-      hints: false
-    },
-    module: {
-      exprContextCritical: false,
-      rules: [
-        {
-          test: /\.(png|woff|woff2|eot|ttf|svg|jpeg|jpg|gif)$/,
-          loader: 'url-loader',
-          query: {
-            limit: '100000'
-          }
+    return {
+        context: dir(),
+        resolve: {
+            extensions: ['.ts', '.js', '.json', '.css', '.scss', '.html'],
+            modules: [
+                'node_modules',
+                dir('src'),
+                dir('demo')
+            ]
         },
-        {
-          test: /\.html$/,
-          loader: 'raw-loader'
+        output: {
+            path: dir('dist'),
+            filename: '[name].js',
+            sourceMapFilename: '[name].map',
+            chunkFilename: '[id].chunk.js',
+            devtoolModuleFilenameTemplate: 'webpack:///[absolute-resource-path]'
         },
-        {
-          test: /\.css/,
-          use: [
-            ExtractTextPlugin.extract({
-              fallbackLoader: 'style-loader',
-              loader: 'css-loader'
+        performance: {
+            hints: false
+        },
+        module: {
+            exprContextCritical: false,
+            rules: [
+                {
+                    test: /\.(png|woff|woff2|eot|ttf|svg|jpeg|jpg|gif)$/,
+                    loader: 'url-loader',
+                    query: {
+                        limit: '100000'
+                    }
+                },
+                {
+                    test: /\.html$/,
+                    loader: 'raw-loader'
+                },
+                {
+                    test: /\.css/,
+                    use: [
+                        ExtractTextPlugin.extract({
+                            fallbackLoader: 'style-loader',
+                            loader: 'css-loader'
+                        }),
+                        { loader: 'to-string-loader' },
+                        { loader: 'css-loader' },
+                        { loader: 'postcss-loader' }
+                    ]
+                },
+                {
+                    test: /\.scss$/,
+                    use: [
+                        ExtractTextPlugin.extract({
+                            fallbackLoader: 'style-loader',
+                            loader: 'css-loader'
+                        }),
+                        { loader: 'to-string-loader' },
+                        { loader: 'css-loader' },
+                        { loader: 'postcss-loader' },
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                sourceMap: true
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        plugins: [
+            new webpack.NamedModulesPlugin(),
+            new webpack.DefinePlugin({
+                ENV,
+                IS_PRODUCTION,
+                APP_VERSION,
+                IS_DEV,
+                HMR: options.HMR,
+                TRAVIS
             }),
-            { loader: 'to-string-loader' }, 
-            { loader: 'css-loader' },
-            { loader: 'postcss-loader' }
-          ]
-        },
-        {
-          test: /\.scss$/,
-          use: [
-            ExtractTextPlugin.extract({
-              fallbackLoader: 'style-loader',
-              loader: 'css-loader'
+            new webpack.LoaderOptionsPlugin({
+                options: {
+                    context: dir(),
+                    tslint: {
+                        emitErrors: false,
+                        failOnHint: false,
+                        resourcePath: 'src'
+                    },
+                    postcss: function() {
+                        return [autoprefixer];
+                    }
+                }
             }),
-            { loader: 'to-string-loader' }, 
-            { loader: 'css-loader' },
-            { loader: 'postcss-loader' },
-            { 
-              loader: 'sass-loader',
-              options: {
-                sourceMap: true
-              }
-            }
-          ]
-        }
-      ]
-    },
-    plugins: [
-      new webpack.NamedModulesPlugin(),
-      new webpack.DefinePlugin({
-        ENV,
-        IS_PRODUCTION,
-        APP_VERSION,
-        IS_DEV,
-        HMR: options.HMR,
-        TRAVIS
-      }),
-      new webpack.LoaderOptionsPlugin({
-        options: {
-          context: dir(),
-          tslint: {
-            emitErrors: false,
-            failOnHint: false,
-            resourcePath: 'src'
-          },
-          postcss: function() {
-            return [ autoprefixer ];
-          }
-        }
-      }),
-      new ExtractTextPlugin({
-        filename: '[name].css',
-        allChunks: true
-      })
-    ]
-  };
+            new ExtractTextPlugin({
+                filename: '[name].css',
+                allChunks: true
+            })
+        ]
+    };
 
 };

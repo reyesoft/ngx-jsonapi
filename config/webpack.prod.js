@@ -7,53 +7,53 @@ const { ENV, dir } = require('./helpers');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 
 module.exports = function(env) {
-  return webpackMerge(commonConfig({ env: ENV }), {
-    devtool: 'source-map',
-    entry: {
-      'app': './demo/bootstrap.ts',
-      'libs': './demo/libs.ts'
-    },
-    module: {
-      exprContextCritical: false,
-      rules: [
-        {
-          enforce: 'pre',
-          test: /\.js$/,
-          loader: 'source-map-loader',
-          exclude: /(node_modules)/
+    return webpackMerge(commonConfig({ env: ENV }), {
+        devtool: 'source-map',
+        entry: {
+            'app': './demo/bootstrap.ts',
+            'libs': './demo/libs.ts'
         },
-        {
-          test: /\.ts$/,
-          loaders: [
-            'awesome-typescript-loader',
-            'angular2-template-loader'
-          ],
-          exclude: [/\.(spec|e2e|d)\.ts$/]
-        }
-      ]
-    },
-    plugins: [
-      new CheckerPlugin(),
-      new webpack.optimize.CommonsChunkPlugin({
-        name: ['libs'],
-        minChunks: Infinity
-      }),
-      new HtmlWebpackPlugin({
-        template: 'demo/index.ejs',
-        chunksSortMode: 'dependency',
-        title: 'ngx-jsonapi',
-        googleAnalytics: {
-          trackingId: 'UA-107702445-1',
-          pageViewOnLoad: true
-        }
-      }),
-      new CleanWebpackPlugin(['dist'], {
-        root: dir(),
-        verbose: false,
-        dry: false
-      }),
-      new webpack.optimize.UglifyJsPlugin()
-    ]
-  });
+        module: {
+            exprContextCritical: false,
+            rules: [
+                {
+                    enforce: 'pre',
+                    test: /\.js$/,
+                    loader: 'source-map-loader',
+                    exclude: /(node_modules)/
+                },
+                {
+                    test: /\.ts$/,
+                    loaders: [
+                        'awesome-typescript-loader',
+                        'angular2-template-loader'
+                    ],
+                    exclude: [/\.(spec|e2e|d)\.ts$/]
+                }
+            ]
+        },
+        plugins: [
+            new CheckerPlugin(),
+            new webpack.optimize.CommonsChunkPlugin({
+                name: ['libs'],
+                minChunks: Infinity
+            }),
+            new HtmlWebpackPlugin({
+                template: 'demo/index.ejs',
+                chunksSortMode: 'dependency',
+                title: 'ngx-jsonapi',
+                googleAnalytics: {
+                    trackingId: 'UA-107702445-1',
+                    pageViewOnLoad: true
+                }
+            }),
+            new CleanWebpackPlugin(['dist'], {
+                root: dir(),
+                verbose: false,
+                dry: false
+            }),
+            new webpack.optimize.UglifyJsPlugin()
+        ]
+    });
 
 };
