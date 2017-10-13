@@ -1,0 +1,24 @@
+<h3>Book</h3>
+<h3>Book #{{ book.id }}</h3>
+<ul>
+    <li>Title: <strong>{{ book.attributes.title }}</strong></li>
+    <li>Date Published: <strong>{{ book.attributes.date_published | date }}</strong></li>
+</ul>
+
+<h4>Author (one)</h4>
+<p><small>This a relationship with <i>hasMany:false</i></small></p>
+<ul>
+    <li>Name: <strong>{{ book.relationships.author.data.attributes ? book.relationships.author.data.attributes.name : '' }}</strong></li>
+</ul>
+
+<h4>Photos (many)</h4>
+<p><small>This a relationship with <i>hasMany:true</i></small></p>
+<ul>
+    <li *ngFor="let photo of book.relationships.photos.data.$toArray">
+        URI: <a href="{{ photo.attributes.uri }}">{{ photo.attributes.uri }}</a>
+    </li>
+</ul>
+
+<p>
+    <a ui-sref="books">Volver</a>
+</p>

@@ -1,0 +1,17 @@
+<div>
+    <h3>photos</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>URI</th>
+            </tr>
+        </thead>
+        <tr ng-repeat="photo in $ctrl.photos">
+            <td>{{ photo.id }}</td>
+            <td>{{ photo.attributes.title  }}</td>
+            <td>{{ photo.attributes.uri }}</td>
+        </tr>
+    </table>
+</div>
