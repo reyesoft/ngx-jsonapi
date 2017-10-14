@@ -14,7 +14,7 @@
     "no-multi-spaces": 1,
     "no-multi-str": 1,
     "no-undef": 0,
-    "indent": ["error", 4],
+    "indent": ["error", 4, { "SwitchCase": 1 }],
     "no-unused-vars": 1,
     "quotes": [2, "single"],
 

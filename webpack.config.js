@@ -12,7 +12,7 @@ switch (process.env.NODE_ENV)
         module.exports = require('./config/webpack.package')({env: 'package'});
         break;
     case 'dev':
-        case 'development':
+    case 'development':
     default:
         module.exports = require('./config/webpack.dev')({env: 'development'});
 }
