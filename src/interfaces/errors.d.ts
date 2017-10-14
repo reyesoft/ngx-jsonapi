@@ -3,13 +3,13 @@ import { IDocument } from './document';
 interface IErrors extends IDocument {
     errors: [
         {
-            code?: string,
+            code?: string;
             source?: {
-                attributes?: string,
-                pointer: string
-            },
-            title?: string,
-            detail?: string
+                attributes?: string;
+                pointer: string;
+            };
+            title?: string;
+            detail?: string;
         }
     ];
 }

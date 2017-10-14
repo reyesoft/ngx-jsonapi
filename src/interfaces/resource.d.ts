@@ -12,13 +12,12 @@ export interface IResource {
     is_saving: boolean;
     lastupdate?: number;
 
-
-    reset? (): void;
-    addRelationship? (resource: IResource, type_alias?: string): void;
-    addRelationships? (resources: ICollection, type_alias: string): void;
-    removeRelationship? (type_alias: string, id: string): boolean;
+    reset?(): void;
+    addRelationship?(resource: IResource, type_alias?: string): void;
+    addRelationships?(resources: ICollection, type_alias: string): void;
+    removeRelationship?(type_alias: string, id: string): boolean;
     addRelationshipsArray <T extends IResource>(resources: Array<T>, type_alias?: string): void;
     save<T extends IResource>(params?: IParamsResource, fc_success?: Function, fc_error?: Function): Promise<object>;
-    toObject? (params?: IParamsResource): IDataObject;
+    toObject?(params?: IParamsResource): IDataObject;
     getService(): IService;
 }
