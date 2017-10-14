@@ -10,7 +10,6 @@
     "no-eq-null": 2,
     "no-case-declarations": 2,
     "no-alert": 1,
-    "no-console": 1,
     "no-multi-spaces": 1,
     "no-multi-str": 1,
     "no-undef": 0,
