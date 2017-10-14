@@ -2,18 +2,18 @@ import { ISchema, ICollection, IParamsCollection, IParamsResource } from '../int
 import { Page } from './page';
 
 export class Base {
-    static Params: IParamsCollection | IParamsResource = {
+    public static Params: IParamsCollection | IParamsResource = {
         id: '',
         include: []
     };
 
-    static Schema: ISchema = {
+    public static Schema: ISchema = {
         attributes: {},
         relationships: {},
         ttl: 0
     };
 
-    static newCollection(): ICollection {
+    public static newCollection(): ICollection {
         return Object.defineProperties({}, {
             $length: {
                 get: function() {
@@ -36,11 +36,11 @@ export class Base {
         });
     }
 
-    static isObjectLive(ttl: number, last_update: number) {
+    public static isObjectLive(ttl: number, last_update: number) {
         return (ttl >= 0 && Date.now() <= (last_update + ttl * 1000));
     }
 
-    static forEach<T extends object>(collection: T, fc: (object: any, key?: string|number) => void): void {
+    public static forEach<T extends object>(collection: T, fc: (object: any, key?: string|number) => void): void {
         Object.keys(collection).forEach((key) => {
             fc(collection[key], key);
         });

@@ -8,10 +8,6 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./app.component.scss'],
     templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit {
-    constructor() {
-    }
+export class AppComponent /* implements OnInit */ {
 
-    ngOnInit() {
-    }
 }

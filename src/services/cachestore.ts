@@ -1,14 +1,13 @@
-import { ICollection, IResource } from '../interfaces';
+import { ICollection, IResource, ICacheStore } from '../interfaces';
 import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
-import { ICacheStore } from '../interfaces';
 import { Core } from '../core';
 import { Base } from './base';
 import { Converter } from './converter';
 
 export class CacheStore implements ICacheStore {
     public getResource(resource: IResource/* | IDataResource*/, include: Array<string> = []): Promise<object> {
-        let mypromise = new Promise((resolve, reject) => {
+        let mypromise = new Promise((resolve, reject): void => {
 
             Core.injectedServices.JsonapiStoreService.getObjet(resource.type + '.' + resource.id)
             .then(success => {
@@ -79,14 +78,17 @@ export class CacheStore implements ICacheStore {
     }
 
     public getCollectionFromStorePromise(url: string, include: Array<string>, collection: ICollection): Promise<ICollection> {
-        let promise = new Promise((resolve: (value: ICollection) => void, reject: () => void) => {
+        let promise = new Promise((resolve: (value: ICollection) => void, reject: () => void): void => {
             this.getCollectionFromStore(url, include, collection, resolve, reject);
         });
 
         return promise;
     }
 
-    private getCollectionFromStore(url: string, include: Array<string>, collection: ICollection, resolve: (value: ICollection) => void, reject: () => void) {
+    private getCollectionFromStore(
+        url: string, include: Array<string>, collection: ICollection,
+        resolve: (value: ICollection) => void, reject: () => void
+    ) {
         let promise = Core.injectedServices.JsonapiStoreService.getObjet('collection.' + url);
         promise.then((success: IDataCollection) => {
             // build collection from store and resources from memory
@@ -146,7 +148,7 @@ export class CacheStore implements ICacheStore {
     private fillCollectionWithArrrayAndResourcesOnStore(
         datacollection: IDataCollection, include: Array<string>, collection: ICollection
     ): Promise<object> {
-        let promise = new Promise((resolve: (value: object) => void, reject: (value: any) => void) => {
+        let promise = new Promise((resolve: (value: object) => void, reject: (value: any) => void): void => {
 
             // request resources from store
             let temporalcollection = {};

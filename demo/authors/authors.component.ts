@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthorsService } from './authors.service';
 import { forEach } from '../foreach';
-import * as Jsonapi from '../../src';
-import { JsonapiCore } from '../../src';
+import * as Jsonapi from '@ngx-jsonapi';
 
 @Component({
     selector: 'authors',
@@ -15,10 +14,10 @@ export class AuthorsComponent {
     public authors: Jsonapi.ICollection;
 
     public constructor(
-        AuthorsService: AuthorsService
+        private authorsService: AuthorsService
     ) {
         // bootstrap all services
-        AuthorsService.register();
+        authorsService.register();
         // BooksService.register();
         // PhotosService.register();
 
@@ -35,8 +34,7 @@ export class AuthorsComponent {
         //     this.$scope.loading = 'No connection 2!!!';
         // };
 
-
-        this.authors = AuthorsService.all(
+        this.authors = authorsService.all(
             // { include: ['books', 'photos'] },
             success => {
                 console.log('success authors controll', this.authors);

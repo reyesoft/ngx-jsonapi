@@ -9,8 +9,7 @@ import { IDataObject } from './interfaces/data-object';
 import { isFunction } from 'rxjs/util/isFunction';
 import { isArray } from 'rxjs/util/isArray';
 
-import { IService, IAttributes, IResource, ICollection, IExecParams, IParamsResource } from './interfaces';
-import { IRelationships, IRelationship } from './interfaces';
+import { IService, IAttributes, IResource, ICollection, IExecParams, IParamsResource, IRelationships, IRelationship } from './interfaces';
 
 export class Resource extends ParentResourceService implements IResource {
     public is_new = true;
@@ -39,7 +38,7 @@ export class Resource extends ParentResourceService implements IResource {
     }
 
     public toObject(params?: IParamsResource): IDataObject {
-        params = Object.assign({}, Base.Params, params);
+        params = {...{}, ...Base.Params, ...params};
 
         let relationships = {};
         let included = [];
@@ -89,7 +88,7 @@ export class Resource extends ParentResourceService implements IResource {
         // just for performance dont copy if not necessary
         let attributes;
         if (this.getService().parseToServer) {
-            attributes = Object.assign({}, this.attributes);
+            attributes = {...{}, ...this.attributes};
             this.getService().parseToServer(attributes);
         } else {
             attributes = this.attributes;
@@ -125,7 +124,7 @@ export class Resource extends ParentResourceService implements IResource {
     }
 
     private _save<T extends IResource>(params: IParamsResource, fc_success: Function, fc_error: Function): Promise<object> {
-        let promisesave = new Promise((resolve, reject) => {
+        let promisesave = new Promise((resolve, reject): void => {
 
             if (this.is_saving || this.is_loading) {
                 return ;
@@ -179,7 +178,7 @@ export class Resource extends ParentResourceService implements IResource {
                             let res = Converter.getService(resource_value.type).cachememory.resources[resource_value.id];
                             Converter.getService(resource_value.type).cachememory.setResource(resource_value);
                             // migrationProblem
-                            //Converter.getService(resource_value.type).cachestore.setResource(resource_value);
+                            // Converter.getService(resource_value.type).cachestore.setResource(resource_value);
                             res.id = res.id + 'x';
                         });
 
@@ -198,8 +197,6 @@ export class Resource extends ParentResourceService implements IResource {
             );
 
         });
-
-
 
         return promisesave;
     }

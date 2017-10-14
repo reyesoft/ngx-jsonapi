@@ -1,4 +1,3 @@
-// import * as angular from 'angular';
 import { Core } from './core';
 import { Base } from './services/base';
 import { Resource } from './resource';
@@ -9,6 +8,7 @@ import { Converter } from './services/converter';
 import { LocalFilter } from './services/localfilter';
 import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
+import { noop } from 'rxjs/util/noop';
 
 import {
     IService, ISchema, IResource, ICollection, IExecParams, ICacheStore, ICacheMemory,
@@ -36,7 +36,7 @@ export class Service extends ParentResourceService implements IService {
         // only when service is registered, not cloned object
         this.cachememory = new CacheMemory();
         this.cachestore = new CacheStore();
-        this.schema = Object.assign({}, Base.Schema, this.schema);
+        this.schema = {...{}, ...Base.Schema, ...this.schema};
 
         return Core.me._register(this);
     }
@@ -101,12 +101,12 @@ export class Service extends ParentResourceService implements IService {
         if (this.getService().cachememory.isResourceLive(id, temporal_ttl)) {
             // we create a promise because we need return collection before
             // run success client function
-            let promise = new Promise((resolve, reject) => {
+            let promise = new Promise((resolve, reject): void => {
                 resolve(fc_success);
                 promise.then(fc_success2 => {
                     this.runFc(fc_success2, 'cachememory');
                 })
-                .catch(() => {})
+                .catch(noop)
                 ;
                 resource.is_loading = false;
             });
@@ -166,7 +166,7 @@ export class Service extends ParentResourceService implements IService {
             if (this.getService().parseToServer) {
                 this.getService().parseToServer(params.remotefilter);
             }
-            path.addParam(paramsurl.toparams( { filter: params.remotefilter } ));
+            path.addParam(paramsurl.toparams({ filter: params.remotefilter }));
         }
         if (params.page) {
             if (params.page.number > 1) {
@@ -208,12 +208,12 @@ export class Service extends ParentResourceService implements IService {
             if (this.getService().cachememory.isCollectionLive(path.getForCache(), temporal_ttl)) {
                 // we create a promise because we need return collection before
                 // run success client function
-                let promise = new Promise((resolve, reject) => {
+                let promise = new Promise((resolve, reject): void => {
                     resolve(fc_success);
                     promise.then(fc_success2 => {
                         this.runFc(fc_success2, 'cachememory');
                     })
-                    .catch(() => {})
+                    .catch(noop)
                     ;
                 });
             } else {
@@ -338,6 +338,6 @@ export class Service extends ParentResourceService implements IService {
     }
 
     public parseFromServer(attributes: IAttributes): void {
-
+        /* */
     }
 }

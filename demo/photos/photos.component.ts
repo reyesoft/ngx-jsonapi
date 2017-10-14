@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { PhotosService } from './photos.service';
 import { forEach } from '../foreach';
-import * as Jsonapi from '../../src';
-import { JsonapiCore } from '../../src';
+import * as Jsonapi from '@ngx-jsonapi';
 
 @Component({
     selector: 'photos',
@@ -12,8 +11,8 @@ export class PhotosComponent {
     public photos: Jsonapi.ICollection;
 
     /** @ngInject */
-    constructor(
-        protected PhotosService: Jsonapi.IService
+    public constructor(
+        protected photosService: Jsonapi.IService
     ) {
         // if you check your console, library make only one request
         this.makeRequest(1);
@@ -23,12 +22,8 @@ export class PhotosComponent {
         this.makeRequest(5);
     }
 
-    public $onInit() {
-
-    }
-
     public makeRequest(id) {
-        this.photos = this.PhotosService.all(
+        this.photos = this.photosService.all(
             succes => {
                 console.log('photos success', id, this.photos);
             }

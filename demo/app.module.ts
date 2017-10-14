@@ -8,8 +8,7 @@ import { AuthorComponent } from './authors/author.component';
 import { BooksComponent } from './books/books.component';
 import { BookComponent } from './books/book.component';
 
-import { NgxJsonapiModule } from '../src';
-import { JsonapiCore } from '../src';
+import { NgxJsonapiModule } from '@ngx-jsonapi';
 import { AuthorsService } from './authors/authors.service';
 import { BooksService } from './books/books.service';
 import { PhotosService } from './photos/photos.service';
@@ -23,7 +22,7 @@ const appRoutes: Routes = [
     { path: 'authors', component: AuthorsComponent },
     { path: 'authors/:id', component: AuthorComponent },
     { path: 'books', component: BooksComponent },
-    { path: 'books/:id', component: BookComponent },
+    { path: 'books/:id', component: BookComponent }
     // { path: '**', redirectTo: '/authors', pathMatch: 'full' }
 ];
 
@@ -31,7 +30,7 @@ const appRoutes: Routes = [
     providers: [
         AuthorsService,
         BooksService,
-        PhotosService,
+        PhotosService
     ],
     imports: [
         BrowserModule,
@@ -41,14 +40,14 @@ const appRoutes: Routes = [
         ),
         NgxJsonapiModule.forRoot({
             url: 'http://jsonapiplayground.reyesoft.com/v2/'
-        }),
+        })
     ],
     declarations: [
         AppComponent,
         AuthorsComponent,
         AuthorComponent,
         BooksComponent,
-        BookComponent,
+        BookComponent
     ],
     bootstrap: [
         AppComponent

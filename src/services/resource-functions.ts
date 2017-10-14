@@ -1,7 +1,7 @@
 import { IResource, ICollection } from '../interfaces';
 
 export class ResourceFunctions {
-    static resourceToResource(source: IResource, destination: IResource): void {
+    public static resourceToResource(source: IResource, destination: IResource): void {
         destination.attributes = source.attributes;
 
         // remove relationships on destination resource

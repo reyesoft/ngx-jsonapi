@@ -4,7 +4,6 @@ import { BooksService } from './books.service';
 import { PhotosService } from '@demo/photos/photos.service';
 import { forEach } from '@demo/foreach';
 import * as Jsonapi from '@ngx-jsonapi';
-import { JsonapiCore } from '@ngx-jsonapi';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -18,17 +17,17 @@ export class BookComponent {
     public book: Jsonapi.IResource;
 
     /** @ngInject */
-    constructor(
-        protected AuthorsService: AuthorsService,
-        protected BooksService: BooksService,
-        protected PhotosService: PhotosService,
+    public constructor(
+        protected authorsService: AuthorsService,
+        protected booksService: BooksService,
+        protected photosService: PhotosService,
         private route: ActivatedRoute
     ) {
-        AuthorsService.register();
-        BooksService.register();
-        PhotosService.register();
+        authorsService.register();
+        booksService.register();
+        photosService.register();
 
-        this.book = BooksService.get(
+        this.book = booksService.get(
             this.route.snapshot.paramMap.get('id'),
             { include: ['author', 'photos'] },
             success => {
@@ -41,9 +40,5 @@ export class BookComponent {
                 console.log('error books controll', error);
             }
         );
-    }
-
-    public $onInit() {
-
     }
 }

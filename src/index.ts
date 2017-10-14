@@ -4,4 +4,4 @@ export * from './interfaces';
 // import { IService } from './interfaces';
 // export { IResource };
 // export { IService };
-export { Core as JsonapiCore } from './core'
+export { Core as JsonapiCore } from './core';

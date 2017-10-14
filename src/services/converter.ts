@@ -6,7 +6,7 @@ import { ResourceRelationshipsConverter } from './resource-relationships-convert
 import { IDataObject } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataResource } from '../interfaces/data-resource';
-import {Base} from '../services/base';
+import { Base } from '../services/base';
 
 export class Converter {
 
@@ -26,7 +26,7 @@ export class Converter {
     /*
     Convert json arrays (like included) to an indexed Resources array by [type][id]
     */
-    static json_array2resources_array_by_type(
+    public static json_array2resources_array_by_type(
         json_array: Array<IDataResource>
     ): IResourcesByType {
         let all_resources: IResourcesById = {};
@@ -43,7 +43,7 @@ export class Converter {
         return resources_by_type;
     }
 
-    static json2resource(json_resource: IDataResource, instance_relationships): IResource {
+    public static json2resource(json_resource: IDataResource, instance_relationships): IResource {
         let resource_service = Converter.getService(json_resource.type);
         if (resource_service) {
             return Converter.procreate(json_resource);
@@ -58,7 +58,7 @@ export class Converter {
         }
     }
 
-    static getService(type: string): IService {
+    public static getService(type: string): IService {
         let resource_service = Core.me.getResourceService(type);
         if (typeof resource_service === 'undefined') {
             // console.warn('`' + type + '`', 'service not found on getService()');

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Service } from '../../src/service';
-import * as Jsonapi from '../../src';
+import { Service } from '@ngx-jsonapi/service';
+import * as Jsonapi from '@ngx-jsonapi';
 
 @Injectable()
 export class PhotosService extends Service {
-    type = 'photos';
+    public type = 'photos';
     public schema: Jsonapi.ISchema = {
         attributes: {
             title: {},

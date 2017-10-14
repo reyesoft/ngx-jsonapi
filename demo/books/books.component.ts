@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { BooksService } from './books.service';
 import { forEach } from '../foreach';
-import * as Jsonapi from '../../src';
-import { JsonapiCore } from '../../src';
+import * as Jsonapi from '@ngx-jsonapi';
 
 @Component({
     selector: 'books',
@@ -12,24 +11,19 @@ export class BooksComponent {
     public books: Jsonapi.ICollection;
 
     /** @ngInject */
-    constructor(
-        protected BooksService: BooksService,
-        // protected $stateParams
+    public constructor(
+        protected booksService: BooksService
     ) {
-        BooksService.register();
-        this.books = BooksService.all(
+        booksService.register();
+        this.books = booksService.all(
             // { include: ['books', 'photos'] },
             success => {
-                console.log('success books controll', this.books);
+                console.info('success books controll', this.books);
             },
             error => {
-                console.log('error books controll', error);
+                console.info('error books controll', error);
             }
         );
-    }
-
-    public $onInit() {
-
     }
 
     public getAll(remotefilter) {
@@ -40,7 +34,7 @@ export class BooksComponent {
             until: '2010-01-01'
         };
 
-        this.books = this.BooksService.all(
+        this.books = this.booksService.all(
             {
                 localfilter: {
                     // name: 'Some name'
@@ -61,7 +55,7 @@ export class BooksComponent {
                 );
 
                 console.log('BooksRequest#2 requested');
-                let books2 = this.BooksService.all(
+                let books2 = this.booksService.all(
                     success2 => {
                         console.log('BooksRequest#2 received (author data from cache)',
                             (<Jsonapi.IResource>books2[Object.keys(this.books)[1]].relationships.author.data)
@@ -71,7 +65,7 @@ export class BooksComponent {
 
                 // TEST 2
                 console.log('BookRequest#3 requested');
-                let book1 = this.BooksService.get(1,
+                let book1 = this.booksService.get(1,
                     success1 => {
                         console.log('BookRequest#3 received (author data from cache)',
                             (<Jsonapi.IResource>book1.relationships.author.data).attributes
@@ -85,6 +79,6 @@ export class BooksComponent {
     }
 
     public delete(book: Jsonapi.IResource) {
-        this.BooksService.delete(book.id);
+        this.booksService.delete(book.id);
     }
 }

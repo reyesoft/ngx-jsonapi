@@ -2,8 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthorsService } from './authors.service';
 import { PhotosService } from '../photos/photos.service';
 import { forEach } from '../foreach';
-import * as Jsonapi from '../../src';
-import { JsonapiCore } from '../../src';
+import * as Jsonapi from '@ngx-jsonapi';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -18,17 +17,15 @@ export class AuthorComponent {
     public relatedbooks: Array<Jsonapi.IResource>;
 
     /** @ngInject */
-    constructor(
-        protected AuthorsService: AuthorsService,
-        protected PhotosService: PhotosService,
-        // protected BooksService: Jsonapi.IService,
-        // protected $stateParams
+    public constructor(
+        protected authorsService: AuthorsService,
+        protected photosService: PhotosService,
         private route: ActivatedRoute
     ) {
-        AuthorsService.register();
-        PhotosService.register();
+        authorsService.register();
+        photosService.register();
 
-        this.author = AuthorsService.get(
+        this.author = authorsService.get(
             this.route.snapshot.paramMap.get('id'),
             { include: ['books', 'photos'] },
             success => {
@@ -37,7 +34,7 @@ export class AuthorComponent {
                 console.info('success authors controller', success);
             },
             error => {
-                console.error('error authors controller', error);
+                console.info('error authors controller', error);
             }
         );
         //
@@ -49,15 +46,11 @@ export class AuthorComponent {
         // );
     }
 
-    public $onInit() {
-
-    }
-
     /*
     Add a new author
     */
     public new() {
-        let author = this.AuthorsService.new();
+        let author = this.authorsService.new();
         author.attributes.name = 'Pablo Reyes';
         author.attributes.date_of_birth = '2030-12-10';
         // angular.forEach(this.relatedbooks, (book: Jsonapi.IResource) => {

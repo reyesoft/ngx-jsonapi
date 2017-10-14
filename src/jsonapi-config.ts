@@ -1,10 +1,10 @@
 export class JsonapiConfig {
     public url: string = 'http://yourdomain/api/v1/';
-    params_separator?= '?';
-    delay? = 0;
-    unify_concurrency?= true;
-    cache_prerequests?= true;
-    parameters? = {
+    public params_separator?= '?';
+    public delay? = 0;
+    public unify_concurrency?= true;
+    public cache_prerequests?= true;
+    public parameters? = {
         page: {
             number: 'page[number]',
             limit: 'page[limit]'

@@ -7,11 +7,3 @@ declare var HMR: boolean;
 declare var IS_DEV: boolean;
 declare var TRAVIS: boolean;
 declare var require: NodeRequire;
-
-interface ErrorStackTraceLimit {
-  stackTraceLimit: number;
-}
-
-interface ErrorConstructor {
-  stackTraceLimit: number;
-}

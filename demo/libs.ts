@@ -8,17 +8,18 @@ import '@angular/platform-browser-dynamic';
 import '@angular/common';
 import 'web-animations-js';
 
-let _decorateModuleRef = function identity<T>(value: T): T { return value; };
+let A_decorateModuleRef = <T>(value: T): T => { return value; };
 
-if(IS_PRODUCTION) {
+if (IS_PRODUCTION) {
     enableProdMode();
-    _decorateModuleRef = (modRef: any) => {
+    A_decorateModuleRef = (modRef: any): any => {
         disableDebugTools();
+
         return modRef;
     };
 }
 
-if(IS_DEV) {
+if (IS_DEV) {
     Error.stackTraceLimit = Infinity;
     require('zone.js/dist/long-stack-trace-zone');
 }

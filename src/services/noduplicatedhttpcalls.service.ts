@@ -23,8 +23,8 @@ export class NoDuplicatedHttpCallsService {
         promise.then(
             success => {
                 if (path in this.calls) {
-                    for (let promise of this.calls[path]) {
-                        promise.resolve(success);
+                    for (let promise2 of this.calls[path]) {
+                        promise2.resolve(success);
                     }
                     delete this.calls[path];
                 }
@@ -32,8 +32,8 @@ export class NoDuplicatedHttpCallsService {
         ).catch(
             error => {
                 if (path in this.calls) {
-                    for (let promise of this.calls[path]) {
-                        promise.reject(error);
+                    for (let promise2 of this.calls[path]) {
+                        promise2.reject(error);
                     }
                     delete this.calls[path];
                 }

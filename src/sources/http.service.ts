@@ -1,15 +1,12 @@
 import { Deferred } from '../shared/deferred';
 import { Injectable } from '@angular/core';
 import { IDataObject } from '../interfaces/data-object';
-import '../services/noduplicatedhttpcalls.service';
+import { NoDuplicatedHttpCallsService } from '../services/noduplicatedhttpcalls.service';
 import { Core } from '../core';
 import { Base } from '../services/base';
-import { HttpClient } from '@angular/common/http';
-import { HttpRequest } from '@angular/common/http';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { JsonapiConfig } from '../jsonapi-config';
-import { NoDuplicatedHttpCallsService } from '../services/noduplicatedhttpcalls.service';
 
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
@@ -23,7 +20,7 @@ export class Http {
         private rsJsonapiConfig: JsonapiConfig,
         // private $timeout,
         // private rsJsonapiConfig,
-        private noDuplicatedHttpCallsService: NoDuplicatedHttpCallsService,
+        private noDuplicatedHttpCallsService: NoDuplicatedHttpCallsService
         // private $q
     ) {
 
@@ -43,7 +40,7 @@ export class Http {
         // http request (if we don't have any GET request yet)
         if (method !== 'get' || !this.noDuplicatedHttpCallsService.hasPromises(path)) {
 
-            let headers =new HttpHeaders({'Content-Type': 'application/vnd.api+json'});
+            let headers = new HttpHeaders({'Content-Type': 'application/vnd.api+json'});
             const req = new HttpRequest(
                 method,
                 this.rsJsonapiConfig.url + path,

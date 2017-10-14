@@ -38,11 +38,12 @@ export class PathBuilder {
     public get(): string {
         let params = [];
         // angular.copy(this.get_params, params);
-        this.get_params =JSON.parse(JSON.stringify(params));
+        this.get_params = JSON.parse(JSON.stringify(params));
 
         if (this.includes.length > 0) {
             params.push('include=' + this.includes.join(','));
         }
+
         return this.paths.join('/') +
             (params.length > 0 ? Core.injectedServices.rsJsonapiConfig.params_separator + params.join('&') : '');
     }

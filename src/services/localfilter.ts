@@ -1,5 +1,5 @@
 import * as Jsonapi from '../interfaces';
-import {Base} from '../services/base';
+import { Base } from '../services/base';
 
 export class LocalFilter {
     private localfilterparams;

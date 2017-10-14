@@ -1,10 +1,10 @@
-import { Injectable, Optional } from '@angular/core';
+import { Injectable, Optional, Inject } from '@angular/core';
 import './services/core-services.service';
 import { ICore, IResource, ICollection, IService } from './interfaces';
 import { Base } from './services/base';
-import { Inject } from '@angular/core';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttp } from './sources/http.service';
+import { noop } from 'rxjs/util/noop';
 
 @Injectable()
 export class Core implements ICore {
@@ -17,26 +17,26 @@ export class Core implements ICore {
 
     private resourceServices: Object = {};
     public loadingsCounter: number = 0;
-    public loadingsStart: Function = (): void => {};
-    public loadingsDone: Function = (): void => {};
-    public loadingsError: Function = (): void => {};
-    public loadingsOffline = (): void => {};
+    public loadingsStart: Function = noop;
+    public loadingsDone: Function = noop;
+    public loadingsError: Function = noop;
+    public loadingsOffline = noop;
 
     public config: JsonapiConfig;
 
     /** @ngInject */
     public constructor(
         @Optional() user_config: JsonapiConfig,
-        JsonapiHttp: JsonapiHttp
+        jsonapiHttp: JsonapiHttp
     ) {
         this.config = new JsonapiConfig();
-        for(var k in this.config) this.config[k] = user_config[k] || this.config[k];
+        for (let k in this.config) this.config[k] = user_config[k] || this.config[k];
 
         Core.me = this;
         Core.injectedServices = {
             // migrationProblem
             JsonapiStoreService: 'xxxxxxxxxxxxxxxx',
-            JsonapiHttp: JsonapiHttp,
+            JsonapiHttp: jsonapiHttp,
             rsJsonapiConfig: this.config
         };
     }

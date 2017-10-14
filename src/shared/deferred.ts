@@ -12,14 +12,14 @@
 // }
 
 export class Deferred<T> {
-  promise: Promise<T>;
-  resolve: (value?: T | PromiseLike<T>) => void;
-  reject:  (reason?: any) => void;
+    public promise: Promise<T>;
+    public resolve: (value?: T | PromiseLike<T>) => void;
+    public reject: (reason?: any) => void;
 
-  constructor() {
-    this.promise = new Promise<T>((resolve, reject) => {
-      this.resolve = resolve;
-      this.reject  = reject;
-    });
-  }
+    public constructor() {
+        this.promise = new Promise<T>((resolve, reject): void => {
+            this.resolve = resolve;
+            this.reject  = reject;
+        });
+    }
 }
