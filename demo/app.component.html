@@ -1,0 +1,21 @@
+<main [class]="theme">
+    <h1>
+        ngx-jsonapi example
+        <!-- <small class="bg-primary" ng-if="loading">{{ $ctrl.loading }} <img src="http://s.ytimg.com/yt/img/loader-vflff1Mjj.gif" /></small> -->
+    </h1>
+
+    <nav>
+        <ul class="nav nav-pills pull-xs-right">
+            <li class="nav-item">
+                <a class="nav-link" routerLink="/authors">Authors</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" routerLink="/books">Books</a>
+            </li>
+        </ul>
+    </nav>
+
+    <content>
+        <router-outlet></router-outlet>
+    </content>
+</main>
