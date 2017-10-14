@@ -89,11 +89,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 var appRoutes = [
-    // {
-    //     path: '',
-    //     redirectTo: '/authors',
-    //     pathMatch: 'full'
-    // },
+    {
+        path: '',
+        redirectTo: '/authors',
+        pathMatch: 'full'
+    },
     { path: 'authors', component: __WEBPACK_IMPORTED_MODULE_4__authors_authors_component__["a" /* AuthorsComponent */] },
     { path: 'authors/:id', component: __WEBPACK_IMPORTED_MODULE_5__authors_author_component__["a" /* AuthorComponent */] },
     { path: 'books', component: __WEBPACK_IMPORTED_MODULE_6__books_books_component__["a" /* BooksComponent */] },
@@ -112,7 +112,7 @@ var AppModule = /** @class */ (function () {
             ],
             imports: [
                 __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser__["a" /* BrowserModule */],
-                __WEBPACK_IMPORTED_MODULE_3__angular_router__["b" /* RouterModule */].forRoot(appRoutes),
+                __WEBPACK_IMPORTED_MODULE_3__angular_router__["b" /* RouterModule */].forRoot(appRoutes, { useHash: true }),
                 __WEBPACK_IMPORTED_MODULE_8__ngx_jsonapi__["a" /* NgxJsonapiModule */].forRoot({
                     url: 'http://jsonapiplayground.reyesoft.com/v2/'
                 })
