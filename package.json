@@ -10,7 +10,6 @@
     "test:watch": "npm run test -- --auto-watch --no-single-run",
     "watch:test": "npm run test -- --auto-watch --no-single-run",
     "lint": "tslint \"./src/{,**/}*.ts\" \"./demo/{,**/}*.ts\"",
-    "version": "npm run release",
     "preversion": "npm test",
     "postversion": "git push && git push --tags",
     "clean": "npm-run-all -p clean:*",
