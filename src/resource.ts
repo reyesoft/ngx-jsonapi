@@ -152,8 +152,7 @@ export class Resource extends ParentResourceService implements IResource {
                     // foce reload cache (for example, we add a new element)
                     if (!this.id) {
                         this.getService().cachememory.deprecateCollections(path.get());
-                        // migrationProblem
-                        // this.getService().cachestore.deprecateCollections(path.get());
+                        this.getService().cachestore.deprecateCollections(path.get());
                     }
 
                     // is a resource?
@@ -177,8 +176,7 @@ export class Resource extends ParentResourceService implements IResource {
                         Base.forEach(tempororay_collection, (resource_value: IResource, key: string) => {
                             let res = Converter.getService(resource_value.type).cachememory.resources[resource_value.id];
                             Converter.getService(resource_value.type).cachememory.setResource(resource_value);
-                            // migrationProblem
-                            // Converter.getService(resource_value.type).cachestore.setResource(resource_value);
+                            Converter.getService(resource_value.type).cachestore.setResource(resource_value);
                             res.id = res.id + 'x';
                         });
 

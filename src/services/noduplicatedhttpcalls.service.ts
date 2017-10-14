@@ -41,5 +41,3 @@ export class NoDuplicatedHttpCallsService {
         );
     }
 }
-// migrationProblem
-// angular.module('Jsonapi.services').service('noDuplicatedHttpCallsService', NoDuplicatedHttpCallsService);

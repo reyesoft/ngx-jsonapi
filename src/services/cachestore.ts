@@ -70,11 +70,10 @@ export class CacheStore implements ICacheStore {
     }
 
     public setResource(resource: IResource) {
-        // migrationProblem
-        // Core.injectedServices.JsonapiStoreService.saveObject(
-        //     resource.type + '.' + resource.id,
-        //     resource.toObject().data
-        // );
+        Core.injectedServices.JsonapiStoreService.saveObject(
+            resource.type + '.' + resource.id,
+            resource.toObject().data
+        );
     }
 
     public getCollectionFromStorePromise(url: string, include: Array<string>, collection: ICollection): Promise<ICollection> {

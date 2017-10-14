@@ -272,8 +272,7 @@ export class Service extends ParentResourceService implements IService {
                 Converter.build(success /*.data*/, tempororay_collection);
 
                 this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
-                // migrationProblem
-                // this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
+                this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
 
                 // localfilter getted data
                 let localfilter = new LocalFilter(params.localfilter);

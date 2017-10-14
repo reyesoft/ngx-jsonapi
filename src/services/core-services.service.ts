@@ -12,5 +12,3 @@ export class CoreServices {
 
     }
 }
-// migrationProblem
-// angular.module('Jsonapi.services').service('JsonapiCoreServices', CoreServices);

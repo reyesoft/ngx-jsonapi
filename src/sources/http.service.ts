@@ -96,6 +96,3 @@ export class Http {
         return deferred.promise;
     }
 }
-
-// migrationProblem
-// angular.module('Jsonapi.services').service('JsonapiHttp', Http);

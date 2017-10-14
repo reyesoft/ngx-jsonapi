@@ -4,6 +4,7 @@ import { ICore, IResource, ICollection, IService } from './interfaces';
 import { Base } from './services/base';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttp } from './sources/http.service';
+import { StoreService as JsonapiStore } from './sources/store.service';
 import { noop } from 'rxjs/util/noop';
 
 @Injectable()
@@ -27,6 +28,7 @@ export class Core implements ICore {
     /** @ngInject */
     public constructor(
         @Optional() user_config: JsonapiConfig,
+        jsonapiStoreService: JsonapiStore,
         jsonapiHttp: JsonapiHttp
     ) {
         this.config = new JsonapiConfig();
@@ -34,8 +36,7 @@ export class Core implements ICore {
 
         Core.me = this;
         Core.injectedServices = {
-            // migrationProblem
-            JsonapiStoreService: 'xxxxxxxxxxxxxxxx',
+            JsonapiStoreService: jsonapiStoreService,
             JsonapiHttp: jsonapiHttp,
             rsJsonapiConfig: this.config
         };
@@ -97,6 +98,3 @@ export class Core implements ICore {
         return newresource;
     }
 }
-
-// migrationProblem
-// angular.module('Jsonapi.services').service('JsonapiCore', Core);
