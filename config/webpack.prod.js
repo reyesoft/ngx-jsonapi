@@ -6,7 +6,7 @@ const commonConfig = require('./webpack.common');
 const { ENV, dir } = require('./helpers');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 
-module.exports = function(env) {
+module.exports = function(/* env */) {
     return webpackMerge(commonConfig({ env: ENV }), {
         devtool: 'source-map',
         entry: {

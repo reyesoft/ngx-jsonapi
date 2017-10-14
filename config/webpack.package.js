@@ -1,7 +1,5 @@
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const commonConfig = require('./webpack.common');
 const { ENV, dir, APP_VERSION } = require('./helpers');
 // const ngtools = require('@ngtools/webpack');
@@ -14,7 +12,7 @@ const banner =
     * Licensed under MIT
     */`;
 
-module.exports = function(env) {
+module.exports = function(/* env */) {
     return webpackMerge(commonConfig({ env: ENV }), {
         devtool: 'source-map',
         module: {

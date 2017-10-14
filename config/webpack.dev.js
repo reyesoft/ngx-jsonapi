@@ -2,10 +2,10 @@ const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const WebpackNotifierPlugin = require('webpack-notifier');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CheckerPlugin, ForkCheckerPlugin } = require('awesome-typescript-loader');
+const { CheckerPlugin /* , ForkCheckerPlugin */ } = require('awesome-typescript-loader');
 
 const commonConfig = require('./webpack.common');
-const { ENV, dir } = require('./helpers');
+const { ENV } = require('./helpers');
 
 module.exports = function(options) {
     return webpackMerge(commonConfig({ env: ENV }), {

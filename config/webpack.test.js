@@ -1,12 +1,10 @@
-const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
-const chalk = require('chalk');
 const commonConfig = require('./webpack.common');
 const { ENV, dir } = require('./helpers');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const combineLoaders = require('webpack-combine-loaders');
 
-module.exports = function(env) {
+module.exports = function(/* env */) {
     return webpackMerge(commonConfig({ env: ENV }), {
         devtool: 'inline-source-map',
         plugins: [
