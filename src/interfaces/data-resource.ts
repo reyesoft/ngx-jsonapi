@@ -1,7 +1,7 @@
 import { IAttributes } from '../interfaces';
-import { ILinks } from '../interfaces/links.d';
+import { ILinks } from '../interfaces/links';
 
-interface IDataResource {
+export interface IDataResource {
     type: string;
     id: string;
     attributes?: IAttributes;

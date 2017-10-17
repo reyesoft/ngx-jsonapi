@@ -1,6 +1,6 @@
 import { IDocument } from './document';
 
-interface IErrors extends IDocument {
+export interface IErrors extends IDocument {
     errors: [
         {
             code?: string;

@@ -1,6 +1,6 @@
 {
   "name": "ngx-jsonapi",
-  "version": "0.0.2",
+  "version": "0.0.3-rc.1",
   "description": "JSON API library for Angular",
   "main": "release/index.js",
   "typings": "release/index.d.ts",
@@ -62,7 +62,6 @@
   "peerDependencies": {
     "@angular/common": "^4.2.x",
     "@angular/core": "^4.2.x",
-    "localforage": "^1.5.2",
     "rxjs": "^5.0.x"
   },
   "devDependencies": {
