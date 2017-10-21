@@ -4,7 +4,6 @@ import { Base } from '../services/base';
 export class LocalFilter {
     private localfilterparams;
 
-    /** @ngInject */
     public constructor(
         localfilter: object
     ) {

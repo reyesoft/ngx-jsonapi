@@ -12,7 +12,6 @@ export class ResourceRelationshipsConverter {
     private included_resources: IResourcesByType;
     private schema: ISchema;
 
-    /** @ngInject */
     public constructor(
         getService: Function,
         relationships_from: object,

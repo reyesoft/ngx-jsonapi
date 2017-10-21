@@ -3,7 +3,6 @@ import '../sources/store.service';
 
 export class CoreServices {
 
-    /** @ngInject */
     public constructor(
         protected JsonapiHttp,
         protected rsJsonapiConfig,
