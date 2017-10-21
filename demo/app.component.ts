@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    selector: 'app',
+    selector: 'demo-app',
     providers: [
         // Location, {provide: LocationStrategy, useClass: HashLocationStrategy}
     ],

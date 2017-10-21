@@ -1,6 +1,6 @@
 {
   "name": "ngx-jsonapi",
-  "version": "0.0.2",
+  "version": "0.0.3-rc.1",
   "description": "JSON API library for Angular",
   "main": "release/index.js",
   "typings": "release/index.d.ts",
@@ -30,7 +30,7 @@
     "start:host": "webpack-dev-server --host 0.0.0.0",
     "start:hmr": "webpack-dev-server --env.HMR",
     "release": "npm-run-all build:release",
-    "package": "npm-run-all -s clean copy:build build:sass package:replace-scss package:aot build:package package:minify copy:styles clean:build",
+    "package": "npm-run-all -s clean copy:build package:replace-scss package:aot build:package package:minify copy:styles clean:build",
     "package:ts": "tsc --outDir release",
     "package:aot": "ngc -p tsconfig-aot.json",
     "package:replace-scss": "node ./config/replace-scss.js",
@@ -62,7 +62,6 @@
   "peerDependencies": {
     "@angular/common": "^4.2.x",
     "@angular/core": "^4.2.x",
-    "localforage": "^1.5.2",
     "rxjs": "^5.0.x"
   },
   "devDependencies": {
@@ -99,7 +98,7 @@
     "autoprefixer": "^7.1.4",
     "awesome-typescript-loader": "^3.2.3",
     "clean-webpack-plugin": "^0.1.15",
-    "codelyzer": "^3.0.0-beta.4",
+    "codelyzer": "^3.2.1",
     "copy-webpack-plugin": "^4.0.0",
     "core-js": "^2.5.1",
     "cpx": "^1.5.0",

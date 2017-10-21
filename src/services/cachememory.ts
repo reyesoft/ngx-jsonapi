@@ -1,5 +1,5 @@
 import { ICollection, IResource } from '../interfaces';
-import { ICacheMemory } from '../interfaces/cachememory.d';
+import { ICacheMemory } from '../interfaces/cachememory';
 import { Base } from './base';
 import { Converter } from './converter';
 import { ResourceFunctions } from './resource-functions';

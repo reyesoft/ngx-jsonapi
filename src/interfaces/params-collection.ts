@@ -1,7 +1,7 @@
-import { IParams } from './params.d';
-import { IPage } from './page.d';
+import { IParams } from './params';
+import { IPage } from './page';
 
-interface IParamsCollection extends IParams {
+export interface IParamsCollection extends IParams {
     localfilter?: object;
     remotefilter?: object;
     smartfilter?: object;

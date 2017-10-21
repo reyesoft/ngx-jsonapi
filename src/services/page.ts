@@ -1,4 +1,4 @@
-import { IPage } from '../interfaces/page.d';
+import { IPage } from '../interfaces/page';
 
 export class Page implements IPage {
     public number = 0;
