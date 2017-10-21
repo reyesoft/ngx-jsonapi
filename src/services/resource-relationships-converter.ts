@@ -1,5 +1,4 @@
-import { IResource, ISchema, IResourcesByType } from '../interfaces';
-import { IRelationships } from '../interfaces/relationships';
+import { IResource, IRelationships, ISchema, IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataResource } from '../interfaces/data-resource';
