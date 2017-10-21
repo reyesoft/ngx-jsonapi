@@ -1,7 +1,7 @@
 // import * as angular from 'angular';
 import { Core } from '../core';
-import { Resource } from '../resource';
-import { ICollection, IResource, IService, IResourcesById, IResourcesByType } from '../interfaces';
+import { Service, Resource } from '../';
+import { ICollection, IResourcesById, IResourcesByType } from '../interfaces';
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
@@ -33,7 +33,7 @@ export class Converter {
         let resources_by_type: IResourcesByType = {};
 
         Converter.json_array2resources_array(json_array, all_resources);
-        Base.forEach(all_resources, (resource: IResource) => {
+        Base.forEach(all_resources, (resource: Resource) => {
             if (!(resource.type in resources_by_type)) {
                 resources_by_type[resource.type] = {};
             }
@@ -43,7 +43,7 @@ export class Converter {
         return resources_by_type;
     }
 
-    public static json2resource(json_resource: IDataResource, instance_relationships): IResource {
+    public static json2resource(json_resource: IDataResource, instance_relationships): Resource {
         let resource_service = Converter.getService(json_resource.type);
         if (resource_service) {
             return Converter.procreate(json_resource);
@@ -58,7 +58,7 @@ export class Converter {
         }
     }
 
-    public static getService(type: string): IService {
+    public static getService(type: string): Service {
         let resource_service = Core.me.getResourceService(type);
         if (typeof resource_service === 'undefined') {
             // console.warn('`' + type + '`', 'service not found on getService()');
@@ -68,12 +68,12 @@ export class Converter {
     }
 
     /* return a resource type(resoruce_service) with data(data) */
-    private static procreate(data: IDataResource): IResource {
+    private static procreate(data: IDataResource): Resource {
         if (!('type' in data && 'id' in data)) {
             console.error('Jsonapi Resource is not correct', data);
         }
 
-        let resource: IResource;
+        let resource: Resource;
         if (data.id in Converter.getService(data.type).cachememory.resources) {
             resource = Converter.getService(data.type).cachememory.resources[data.id];
         } else {
@@ -88,7 +88,7 @@ export class Converter {
 
     public static build(
         document_from: IDataCollection & IDataObject,
-        resource_dest: IResource | ICollection
+        resource_dest: Resource | ICollection
     ) {
         // instancio los include y los guardo en included arrary
         let included_resources: IResourcesByType = {};
@@ -99,7 +99,7 @@ export class Converter {
         if (Array.isArray(document_from.data)) {
             Converter._buildCollection(document_from, <ICollection>resource_dest, included_resources);
         } else {
-            Converter._buildResource(document_from.data, <IResource>resource_dest, included_resources);
+            Converter._buildResource(document_from.data, <Resource>resource_dest, included_resources);
         }
     }
 
@@ -136,7 +136,7 @@ export class Converter {
 
     private static _buildResource(
         resource_data_from: IDataResource,
-        resource_dest: IResource,
+        resource_dest: Resource,
         included_resources: IResourcesByType
     ) {
         resource_dest.attributes = resource_data_from.attributes;

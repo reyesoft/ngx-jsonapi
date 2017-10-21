@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IResource } from 'ngx-jsonapi';
+import { Resource } from 'ngx-jsonapi';
 
 import { forEach } from '@demo/foreach';
 import { AuthorsService } from '@demo/authors/authors.service';
@@ -12,7 +12,7 @@ import { PhotosService } from '@demo/photos/photos.service';
     templateUrl: './book.component.html'
 })
 export class BookComponent {
-    public book: IResource;
+    public book: Resource;
 
     public constructor(
         protected authorsService: AuthorsService,
@@ -20,10 +20,6 @@ export class BookComponent {
         protected photosService: PhotosService,
         private route: ActivatedRoute
     ) {
-        authorsService.register();
-        booksService.register();
-        photosService.register();
-
         this.book = booksService.get(
             this.route.snapshot.paramMap.get('id'),
             { include: ['author', 'photos'] },

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { IService, ICollection, IResource } from 'ngx-jsonapi';
+import { Service, ICollection, Resource } from 'ngx-jsonapi';
 
 import { forEach } from '@demo/foreach';
 import { BooksService } from './books.service';
@@ -14,7 +14,6 @@ export class BooksComponent {
     public constructor(
         protected booksService: BooksService
     ) {
-        booksService.register();
         this.books = booksService.all(
             // { include: ['books', 'photos'] },
             success => {
@@ -51,14 +50,14 @@ export class BooksComponent {
                 // TEST 1
                 // this test merge data with cache (this not include author or photos)
                 console.log('BooksRequest#1 received (author data from server)',
-                    (<IResource>this.books[Object.keys(this.books)[2]].relationships.author.data).attributes
+                    (<Resource>this.books[Object.keys(this.books)[2]].relationships.author.data).attributes
                 );
 
                 console.log('BooksRequest#2 requested');
                 let books2 = this.booksService.all(
                     success2 => {
                         console.log('BooksRequest#2 received (author data from cache)',
-                            (<IResource>books2[Object.keys(this.books)[1]].relationships.author.data)
+                            (<Resource>books2[Object.keys(this.books)[1]].relationships.author.data)
                         );
                     }
                 );
@@ -68,7 +67,7 @@ export class BooksComponent {
                 let book1 = this.booksService.get(1,
                     success1 => {
                         console.log('BookRequest#3 received (author data from cache)',
-                            (<IResource>book1.relationships.author.data).attributes
+                            (<Resource>book1.relationships.author.data).attributes
                         );
                     });
             },
@@ -78,7 +77,7 @@ export class BooksComponent {
         );
     }
 
-    public delete(book: IResource) {
+    public delete(book: Resource) {
         this.booksService.delete(book.id);
     }
 }

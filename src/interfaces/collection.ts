@@ -1,10 +1,10 @@
-import { IResource } from './resource';
+import { Resource } from '../';
 import { IPage } from './page';
 import { IDataResource } from './data-resource';
 
-export interface ICollection extends Array<IResource> {
+export interface ICollection extends Array<Resource> {
     $length: number;
-    $toArray: Array<IResource>;
+    $toArray: Array<Resource>;
     $is_loading: boolean;
     $source: 'new' | 'memory' | 'store' | 'server';
     $cache_last_update: number;

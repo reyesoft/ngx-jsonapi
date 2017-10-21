@@ -1,12 +1,13 @@
-import { IService, IParamsCollection, IParamsResource } from '../interfaces';
+import { IParamsCollection, IParamsResource } from '../interfaces';
 import { Core } from '../core';
+import { Service } from '../';
 
 export class PathBuilder {
     public paths: Array<string> = [];
     public includes: Array<string> = [];
     private get_params: Array<string> = [];
 
-    public applyParams(service: IService, params: IParamsResource | IParamsCollection = {}) {
+    public applyParams(service: Service, params: IParamsResource | IParamsCollection = {}) {
         this.appendPath(service.getPrePath());
         if (params.beforepath) {
             this.appendPath(params.beforepath);

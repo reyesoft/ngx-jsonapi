@@ -1,5 +1,6 @@
-import * as Jsonapi from '../interfaces';
 import { Base } from '../services/base';
+import { Resource } from '../';
+import { ICollection } from '../interfaces/';
 
 export class LocalFilter {
     private localfilterparams;
@@ -10,7 +11,7 @@ export class LocalFilter {
         this.localfilterparams = localfilter || {};
     }
 
-    private passFilter(resource: Jsonapi.IResource, localfilter): boolean {
+    private passFilter(resource: Resource, localfilter): boolean {
         for (let attribute in localfilter) {
             if (typeof resource !== 'object' || !('attributes' in resource)) {
                 // is not a resource. Is an internal property, for example $source
@@ -27,7 +28,7 @@ export class LocalFilter {
         return false;
     }
 
-    public filterCollection(source_collection: Jsonapi.ICollection, dest_collection: Jsonapi.ICollection) {
+    public filterCollection(source_collection: ICollection, dest_collection: ICollection) {
         if (Object.keys(this.localfilterparams).length) {
             Base.forEach(source_collection, (resource, key) => {
                 if (this.passFilter(resource, this.localfilterparams)) {

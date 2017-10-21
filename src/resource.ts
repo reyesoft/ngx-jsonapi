@@ -1,4 +1,5 @@
 import { Core } from './core';
+import { Service } from './';
 import { Base } from './services/base';
 import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
@@ -9,9 +10,9 @@ import { IDataObject } from './interfaces/data-object';
 import { isFunction } from 'rxjs/util/isFunction';
 import { isArray } from 'rxjs/util/isArray';
 
-import { IService, IAttributes, IResource, ICollection, IExecParams, IParamsResource, IRelationships, IRelationship } from './interfaces';
+import { IAttributes, ICollection, IExecParams, IParamsResource, IRelationships, IRelationship } from './interfaces';
 
-export class Resource extends ParentResourceService implements IResource {
+export class Resource extends ParentResourceService {
     public is_new = true;
     public is_loading = false;
     public is_saving = false;
@@ -19,6 +20,7 @@ export class Resource extends ParentResourceService implements IResource {
     public type: string = '';
     public attributes: IAttributes = {};
     public relationships: IRelationships = {};
+    public lastupdate: number;
 
     public reset(): void {
         this.id = '';
@@ -51,7 +53,7 @@ export class Resource extends ParentResourceService implements IResource {
                 // has many (hasMany:true)
                 relationships[relation_alias] = { data: [] };
 
-                Base.forEach(relationship.data, (resource: IResource) => {
+                Base.forEach(relationship.data, (resource: Resource) => {
                     let reational_object = { id: resource.id, type: resource.type };
                     relationships[relation_alias].data.push(reational_object);
 
@@ -65,7 +67,7 @@ export class Resource extends ParentResourceService implements IResource {
             } else {
                 // has one (hasMany:false)
 
-                let relationship_data = (<IResource>relationship.data);
+                let relationship_data = (<Resource>relationship.data);
                 if (!('id' in relationship.data) && Object.keys(relationship.data).length > 0) {
                     console.warn(relation_alias + ' defined with hasMany:false, but I have a collection');
                 }
@@ -110,11 +112,11 @@ export class Resource extends ParentResourceService implements IResource {
         return ret;
     }
 
-    public save<T extends IResource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Promise<object> {
+    public save<T extends Resource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Promise<object> {
         return this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'save' });
     }
 
-    protected __exec<T extends IResource>(exec_params: IExecParams): Promise<object> {
+    protected __exec<T extends Resource>(exec_params: IExecParams): Promise<object> {
         let exec_pp = super.proccess_exec_params(exec_params);
 
         switch (exec_params.exec_type) {
@@ -123,7 +125,7 @@ export class Resource extends ParentResourceService implements IResource {
         }
     }
 
-    private _save<T extends IResource>(params: IParamsResource, fc_success: Function, fc_error: Function): Promise<object> {
+    private _save<T extends Resource>(params: IParamsResource, fc_success: Function, fc_error: Function): Promise<object> {
         let promisesave = new Promise((resolve, reject): void => {
 
             if (this.is_saving || this.is_loading) {
@@ -173,7 +175,7 @@ export class Resource extends ParentResourceService implements IResource {
                         */
                         let tempororay_collection = this.getService().cachememory.getOrCreateCollection('justAnUpdate');
                         Converter.build(success.data, tempororay_collection);
-                        Base.forEach(tempororay_collection, (resource_value: IResource, key: string) => {
+                        Base.forEach(tempororay_collection, (resource_value: Resource, key: string) => {
                             let res = Converter.getService(resource_value.type).cachememory.resources[resource_value.id];
                             Converter.getService(resource_value.type).cachememory.setResource(resource_value);
                             Converter.getService(resource_value.type).cachestore.setResource(resource_value);
@@ -199,7 +201,7 @@ export class Resource extends ParentResourceService implements IResource {
         return promisesave;
     }
 
-    public addRelationship<T extends IResource>(resource: T, type_alias?: string) {
+    public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
         let object_key = resource.id;
         if (!object_key) {
             object_key = 'new_' + (Math.floor(Math.random() * 100000));
@@ -234,8 +236,8 @@ export class Resource extends ParentResourceService implements IResource {
         });
     }
 
-    public addRelationshipsArray<T extends IResource>(resources: Array<T>, type_alias?: string): void {
-        resources.forEach((item: IResource) => {
+    public addRelationshipsArray<T extends Resource>(resources: Array<T>, type_alias?: string): void {
+        resources.forEach((item: Resource) => {
             this.addRelationship(item, type_alias || item.type);
         });
     }
@@ -263,7 +265,7 @@ export class Resource extends ParentResourceService implements IResource {
     /*
     @return This resource like a service
     */
-    public getService(): IService {
+    public getService(): Service {
         return Converter.getService(this.type);
     }
 }

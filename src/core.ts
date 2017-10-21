@@ -1,15 +1,16 @@
 import { Injectable, Optional, Inject } from '@angular/core';
-import './services/core-services.service';
-import { ICore, IResource, ICollection, IService } from './interfaces';
+import { noop } from 'rxjs/util/noop';
+
+import { ICollection } from './interfaces';
+import { Service, Resource } from './';
 import { Base } from './services/base';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttp } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
-import { noop } from 'rxjs/util/noop';
 
 @Injectable()
-export class Core implements ICore {
-    public static me: ICore;
+export class Core {
+    public static me: Core;
     public static injectedServices: {
         JsonapiStoreService: any;
         JsonapiHttp: any;
@@ -21,7 +22,7 @@ export class Core implements ICore {
     public loadingsStart: Function = noop;
     public loadingsDone: Function = noop;
     public loadingsError: Function = noop;
-    public loadingsOffline = noop;
+    public loadingsOffline: Function = noop;
 
     public config: JsonapiConfig;
 
@@ -41,16 +42,16 @@ export class Core implements ICore {
         };
     }
 
-    public _register(clase: IService): boolean {
+    public registerService(clase: Service): Service | false {
         if (clase.type in this.resourceServices) {
             return false;
         }
         this.resourceServices[clase.type] = clase;
 
-        return true;
+        return clase;
     }
 
-    public getResourceService(type: string): IService {
+    public getResourceService(type: string): Service {
         return this.resourceServices[type];
     }
 
@@ -70,7 +71,7 @@ export class Core implements ICore {
     }
 
     // just an helper
-    public duplicateResource(resource: IResource, ...relations_alias_to_duplicate_too: Array<string>): IResource {
+    public duplicateResource(resource: Resource, ...relations_alias_to_duplicate_too: Array<string>): Resource {
         let newresource = this.getResourceService(resource.type).new();
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };
         newresource.attributes.name = newresource.attributes.name + ' xXx';
@@ -78,9 +79,9 @@ export class Core implements ICore {
             if ('id' in relationship.data) {
                 // relation hasOne
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
-                    newresource.addRelationship(this.duplicateResource(<IResource>relationship.data), alias);
+                    newresource.addRelationship(this.duplicateResource(<Resource>relationship.data), alias);
                 } else {
-                    newresource.addRelationship(<IResource>relationship.data, alias);
+                    newresource.addRelationship(<Resource>relationship.data, alias);
                 }
             } else {
                 // relation hasMany
