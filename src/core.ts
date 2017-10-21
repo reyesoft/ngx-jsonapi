@@ -1,6 +1,7 @@
 import { Injectable, Optional, Inject } from '@angular/core';
 import './services/core-services.service';
-import { ICore, IResource, ICollection, IService } from './interfaces';
+import { ICore, IResource, ICollection } from './interfaces';
+import { Service } from './';
 import { Base } from './services/base';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttp } from './sources/http.service';
@@ -8,8 +9,8 @@ import { StoreService as JsonapiStore } from './sources/store.service';
 import { noop } from 'rxjs/util/noop';
 
 @Injectable()
-export class Core implements ICore {
-    public static me: ICore;
+export class Core {
+    public static me: Core;
     public static injectedServices: {
         JsonapiStoreService: any;
         JsonapiHttp: any;
@@ -21,7 +22,7 @@ export class Core implements ICore {
     public loadingsStart: Function = noop;
     public loadingsDone: Function = noop;
     public loadingsError: Function = noop;
-    public loadingsOffline = noop;
+    public loadingsOffline: Function = noop;
 
     public config: JsonapiConfig;
 
@@ -41,16 +42,16 @@ export class Core implements ICore {
         };
     }
 
-    public _register(clase: IService): boolean {
+    public registerService(clase: Service): Service | false {
         if (clase.type in this.resourceServices) {
             return false;
         }
         this.resourceServices[clase.type] = clase;
 
-        return true;
+        return clase;
     }
 
-    public getResourceService(type: string): IService {
+    public getResourceService(type: string): Service {
         return this.resourceServices[type];
     }
 

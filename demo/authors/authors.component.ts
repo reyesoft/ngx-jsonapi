@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { IService, ICollection } from 'ngx-jsonapi';
+import { Service, ICollection } from 'ngx-jsonapi';
 
 import { forEach } from '@demo/foreach';
 import { AuthorsService } from './authors.service';
@@ -14,11 +14,6 @@ export class AuthorsComponent {
     public constructor(
         private authorsService: AuthorsService
     ) {
-        // bootstrap all services
-        authorsService.register();
-        // BooksService.register();
-        // PhotosService.register();
-
         // JsonapiCore.loadingsStart = (): void => {
         //     this.loading = 'LOADING...';
         // };

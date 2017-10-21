@@ -2,7 +2,6 @@ export * from './attributes';
 export * from './core';
 export * from './collection';
 export * from './schema';
-export * from './service';
 export * from './resource';
 export * from './relationship';
 export * from './relationships';

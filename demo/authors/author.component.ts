@@ -19,9 +19,6 @@ export class AuthorComponent {
         protected photosService: PhotosService,
         private route: ActivatedRoute
     ) {
-        authorsService.register();
-        photosService.register();
-
         this.author = authorsService.get(
             this.route.snapshot.paramMap.get('id'),
             { include: ['books', 'photos'] },

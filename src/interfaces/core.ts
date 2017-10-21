@@ -1,8 +1,7 @@
-import { IService, IResource } from './index';
+import { IResource } from './index';
+import { Service } from '../';
 
 export interface ICore {
-    // jsonapiServices: Object;
-
     // defined on core code too
     injectedServices?: {
         // $q: ng.IQService,
@@ -11,7 +10,7 @@ export interface ICore {
         rsJsonapiConfig: any;
     };
     // static
-    me?: IService;
+    me?: Service;
 
     loadingsCounter: number;
     loadingsStart: Function;
@@ -19,8 +18,8 @@ export interface ICore {
     loadingsError: Function;
     loadingsOffline: Function;
 
-    _register(clase: IService): boolean;
-    getResourceService(type: string): IService;
+    _register(clase: Service): boolean;
+    getResourceService(type: string): Service;
     refreshLoadings(factor: number): void;
     clearCache(): void;
     duplicateResource(resource: IResource, ...relations_types: Array<string>): IResource;

@@ -1,4 +1,5 @@
 import { Core } from './core';
+import { Service } from './';
 import { Base } from './services/base';
 import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
@@ -9,7 +10,7 @@ import { IDataObject } from './interfaces/data-object';
 import { isFunction } from 'rxjs/util/isFunction';
 import { isArray } from 'rxjs/util/isArray';
 
-import { IService, IAttributes, IResource, ICollection, IExecParams, IParamsResource, IRelationships, IRelationship } from './interfaces';
+import { IAttributes, IResource, ICollection, IExecParams, IParamsResource, IRelationships, IRelationship } from './interfaces';
 
 export class Resource extends ParentResourceService implements IResource {
     public is_new = true;
@@ -263,7 +264,7 @@ export class Resource extends ParentResourceService implements IResource {
     /*
     @return This resource like a service
     */
-    public getService(): IService {
+    public getService(): Service {
         return Converter.getService(this.type);
     }
 }

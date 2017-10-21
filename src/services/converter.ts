@@ -1,7 +1,8 @@
 // import * as angular from 'angular';
 import { Core } from '../core';
+import { Service } from '../service';
 import { Resource } from '../resource';
-import { ICollection, IResource, IService, IResourcesById, IResourcesByType } from '../interfaces';
+import { ICollection, IResource, IResourcesById, IResourcesByType } from '../interfaces';
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
@@ -58,7 +59,7 @@ export class Converter {
         }
     }
 
-    public static getService(type: string): IService {
+    public static getService(type: string): Service {
         let resource_service = Core.me.getResourceService(type);
         if (typeof resource_service === 'undefined') {
             // console.warn('`' + type + '`', 'service not found on getService()');

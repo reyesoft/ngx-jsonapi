@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { IService, ICollection, IResource } from 'ngx-jsonapi';
+import { Service, ICollection, IResource } from 'ngx-jsonapi';
 
 import { forEach } from '@demo/foreach';
 import { BooksService } from './books.service';
@@ -14,7 +14,6 @@ export class BooksComponent {
     public constructor(
         protected booksService: BooksService
     ) {
-        booksService.register();
         this.books = booksService.all(
             // { include: ['books', 'photos'] },
             success => {

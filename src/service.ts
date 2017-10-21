@@ -11,12 +11,11 @@ import { CacheStore } from './services/cachestore';
 import { noop } from 'rxjs/util/noop';
 
 import {
-    IService, ISchema, IResource, ICollection, IExecParams, ICacheStore, ICacheMemory,
+    ISchema, IResource, ICollection, IExecParams, ICacheStore, ICacheMemory,
     IParamsCollection, IParamsResource, IAttributes
 } from './interfaces';
 
-// export class Service extends ParentResourceService implements IService {
-export class Service extends ParentResourceService implements IService {
+export class Service extends ParentResourceService {
     public schema: ISchema;
     public cachememory: ICacheMemory;
     public cachestore: ICacheStore;
@@ -29,7 +28,7 @@ export class Service extends ParentResourceService implements IService {
     Register schema on Core
     @return true if the resource don't exist and registered ok
     */
-    public register(): boolean {
+    public register(): Service | false {
         if (Core.me === null) {
             throw new Error('Error: you are trying register `' + this.type + '` before inject JsonapiCore somewhere, almost one time.');
         }
@@ -38,7 +37,7 @@ export class Service extends ParentResourceService implements IService {
         this.cachestore = new CacheStore();
         this.schema = {...{}, ...Base.Schema, ...this.schema};
 
-        return Core.me._register(this);
+        return Core.me.registerService(this);
     }
 
     public newResource(): IResource {
@@ -324,8 +323,14 @@ export class Service extends ParentResourceService implements IService {
     /*
     @return This resource like a service
     */
-    public getService<T extends IService>(): T {
-        return <T>Converter.getService(this.type);
+    public getService<T extends Service>(): T {
+        return <T>(Converter.getService(this.type) || this.register());
+        // let serv = Converter.getService(this.type);
+        // if (serv) {
+        //     return serv;
+        // } else {
+        //     return this.register();
+        // }
     }
 
     public clearCacheMemory(): boolean {
@@ -334,6 +339,10 @@ export class Service extends ParentResourceService implements IService {
 
         return this.getService().cachememory.deprecateCollections(path.getForCache()) &&
             this.getService().cachestore.deprecateCollections(path.getForCache());
+    }
+
+    public parseToServer(attributes: IAttributes): void {
+        /* */
     }
 
     public parseFromServer(attributes: IAttributes): void {

@@ -1,4 +1,5 @@
-import { IRelationships, ICollection, IAttributes, IParamsResource, IService } from './index';
+import { IRelationships, ICollection, IAttributes, IParamsResource } from './index';
+import { Service } from '../';
 import { IDataObject } from './data-object';
 
 export interface IResource {
@@ -19,5 +20,5 @@ export interface IResource {
     addRelationshipsArray <T extends IResource>(resources: Array<T>, type_alias?: string): void;
     save<T extends IResource>(params?: IParamsResource, fc_success?: Function, fc_error?: Function): Promise<object>;
     toObject?(params?: IParamsResource): IDataObject;
-    getService(): IService;
+    getService(): Service;
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { IService, ICollection } from 'ngx-jsonapi';
+import { Service, ICollection } from 'ngx-jsonapi';
 
 import { forEach } from '@demo/foreach';
 import { PhotosService } from './photos.service';
@@ -12,7 +12,7 @@ export class PhotosComponent {
     public photos: ICollection;
 
     public constructor(
-        protected photosService: IService
+        protected photosService: Service
     ) {
         // if you check your console, library make only one request
         this.makeRequest(1);
