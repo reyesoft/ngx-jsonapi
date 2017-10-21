@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { BooksService } from './books.service';
-import { forEach } from '../foreach';
 import { IService, ICollection, IResource } from 'ngx-jsonapi';
+
+import { forEach } from '@demo/foreach';
+import { BooksService } from './books.service';
 
 @Component({
     selector: 'demo-books',
@@ -10,7 +11,6 @@ import { IService, ICollection, IResource } from 'ngx-jsonapi';
 export class BooksComponent {
     public books: ICollection;
 
-    /** @ngInject */
     public constructor(
         protected booksService: BooksService
     ) {

@@ -1,16 +1,15 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { AppComponent } from './app.component';
 import { RouterModule, Routes } from '@angular/router';
+import { NgxJsonapiModule } from 'ngx-jsonapi';
 
+import { AppComponent } from './app.component';
+import { AuthorsService } from './authors/authors.service';
 import { AuthorsComponent } from './authors/authors.component';
 import { AuthorComponent } from './authors/author.component';
+import { BooksService } from './books/books.service';
 import { BooksComponent } from './books/books.component';
 import { BookComponent } from './books/book.component';
-
-import { NgxJsonapiModule } from 'ngx-jsonapi';
-import { AuthorsService } from './authors/authors.service';
-import { BooksService } from './books/books.service';
 import { PhotosService } from './photos/photos.service';
 
 const appRoutes: Routes = [

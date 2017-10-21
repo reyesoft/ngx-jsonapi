@@ -1,22 +1,19 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { AuthorsService } from '@demo/authors/authors.service';
-import { BooksService } from './books.service';
-import { PhotosService } from '@demo/photos/photos.service';
-import { forEach } from '@demo/foreach';
 import { ActivatedRoute } from '@angular/router';
 import { IResource } from 'ngx-jsonapi';
 
+import { forEach } from '@demo/foreach';
+import { AuthorsService } from '@demo/authors/authors.service';
+import { BooksService } from './books.service';
+import { PhotosService } from '@demo/photos/photos.service';
+
 @Component({
     selector: 'demo-book',
-    // providers: [Location, {provide: LocationStrategy, useClass: HashLocationStrategy}],
-    // encapsulation: ViewEncapsulation.None,
-    // styleUrls: ['./app.component.scss'],
     templateUrl: './book.component.html'
 })
 export class BookComponent {
     public book: IResource;
 
-    /** @ngInject */
     public constructor(
         protected authorsService: AuthorsService,
         protected booksService: BooksService,

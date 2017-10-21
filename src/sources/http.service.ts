@@ -14,7 +14,6 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class Http {
 
-    /** @ngInject */
     public constructor(
         private http: HttpClient,
         private rsJsonapiConfig: JsonapiConfig,

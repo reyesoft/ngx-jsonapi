@@ -25,7 +25,6 @@ export class Core implements ICore {
 
     public config: JsonapiConfig;
 
-    /** @ngInject */
     public constructor(
         @Optional() user_config: JsonapiConfig,
         jsonapiStoreService: JsonapiStore,

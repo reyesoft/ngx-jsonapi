@@ -1,13 +1,11 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { AuthorsService } from './authors.service';
-import { forEach } from '../foreach';
 import { IService, ICollection } from 'ngx-jsonapi';
+
+import { forEach } from '@demo/foreach';
+import { AuthorsService } from './authors.service';
 
 @Component({
     selector: 'demo-authors',
-    // providers: [Location, {provide: LocationStrategy, useClass: HashLocationStrategy}],
-    // encapsulation: ViewEncapsulation.None,
-    // styleUrls: ['./app.component.scss'],
     templateUrl: './authors.component.html'
 })
 export class AuthorsComponent {

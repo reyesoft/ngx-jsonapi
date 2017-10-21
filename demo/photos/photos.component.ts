@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { PhotosService } from './photos.service';
-import { forEach } from '../foreach';
 import { IService, ICollection } from 'ngx-jsonapi';
+
+import { forEach } from '@demo/foreach';
+import { PhotosService } from './photos.service';
 
 @Component({
     selector: 'demo-photos',
@@ -10,7 +11,6 @@ import { IService, ICollection } from 'ngx-jsonapi';
 export class PhotosComponent {
     public photos: ICollection;
 
-    /** @ngInject */
     public constructor(
         protected photosService: IService
     ) {

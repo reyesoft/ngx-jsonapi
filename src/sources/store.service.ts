@@ -4,19 +4,6 @@ import { IStoreObject } from '../interfaces';
 import { noop } from 'rxjs/util/noop';
 import { Deferred } from '../shared/deferred';
 
-/*
-let store = localForage.createInstance({
-name: 'nameHere'
-});
-store.setItem('keyx', 'value').then(() => {
-return store.getItem('key');
-}).then((value) => {
-console.log(value);
-}).catch((err) => {
-console.info('error localforage!', err);
-});
-*/
-
 interface IStoreElement {
     time: number;
 }
@@ -29,7 +16,6 @@ export class StoreService {
     private globalstore: LocalForage;
     private allstore: LocalForage;
 
-    /** @ngInject */
     public constructor(
     ) {
         this.globalstore = localForage.createInstance({ name: 'jsonapiglobal' });
