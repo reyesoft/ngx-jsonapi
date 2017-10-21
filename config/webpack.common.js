@@ -11,7 +11,7 @@ module.exports = function(options = {}) {
             extensions: ['.ts', '.js', '.json', '.css', '.scss', '.html'],
             alias: {
                 '@demo': path.resolve(__dirname, '../demo/'),
-                '@ngx-jsonapi': path.resolve(__dirname, '../src/')
+                'ngx-jsonapi': path.resolve(__dirname, '../src/')
             },
             modules: [
                 'node_modules',

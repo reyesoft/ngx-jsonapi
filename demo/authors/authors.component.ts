@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthorsService } from './authors.service';
 import { forEach } from '../foreach';
-import * as Jsonapi from '@ngx-jsonapi';
+import { IService, ICollection } from 'ngx-jsonapi';
 
 @Component({
     selector: 'demo-authors',
@@ -11,7 +11,7 @@ import * as Jsonapi from '@ngx-jsonapi';
     templateUrl: './authors.component.html'
 })
 export class AuthorsComponent {
-    public authors: Jsonapi.ICollection;
+    public authors: ICollection;
 
     public constructor(
         private authorsService: AuthorsService

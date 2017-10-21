@@ -2,8 +2,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthorsService } from './authors.service';
 import { PhotosService } from '../photos/photos.service';
 import { forEach } from '../foreach';
-import * as Jsonapi from '@ngx-jsonapi';
 import { ActivatedRoute } from '@angular/router';
+import { IResource } from 'ngx-jsonapi';
 
 @Component({
     selector: 'demo-author',
@@ -13,8 +13,8 @@ import { ActivatedRoute } from '@angular/router';
     templateUrl: './author.component.html'
 })
 export class AuthorComponent {
-    public author: Jsonapi.IResource;
-    public relatedbooks: Array<Jsonapi.IResource>;
+    public author: IResource;
+    public relatedbooks: Array<IResource>;
 
     /** @ngInject */
     public constructor(

@@ -27,8 +27,7 @@
         "baseUrl": ".",
         "paths": {
             "@demo/*": ["demo/*"],
-            "@ngx-jsonapi": ["src/index"],
-            "@ngx-jsonapi/*": ["src/*"]
+            "ngx-jsonapi": ["src/index"]
         }
     },
     "include": ["src/**/*", "demo/**/*"],

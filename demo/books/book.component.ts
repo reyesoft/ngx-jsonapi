@@ -3,8 +3,8 @@ import { AuthorsService } from '@demo/authors/authors.service';
 import { BooksService } from './books.service';
 import { PhotosService } from '@demo/photos/photos.service';
 import { forEach } from '@demo/foreach';
-import * as Jsonapi from '@ngx-jsonapi';
 import { ActivatedRoute } from '@angular/router';
+import { IResource } from 'ngx-jsonapi';
 
 @Component({
     selector: 'demo-book',
@@ -14,7 +14,7 @@ import { ActivatedRoute } from '@angular/router';
     templateUrl: './book.component.html'
 })
 export class BookComponent {
-    public book: Jsonapi.IResource;
+    public book: IResource;
 
     /** @ngInject */
     public constructor(
