@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IResource } from 'ngx-jsonapi';
+import { Resource } from 'ngx-jsonapi';
 
 import { forEach } from '@demo/foreach';
 import { PhotosService } from '@demo/photos/photos.service';
@@ -11,8 +11,8 @@ import { AuthorsService } from './authors.service';
     templateUrl: './author.component.html'
 })
 export class AuthorComponent {
-    public author: IResource;
-    public relatedbooks: Array<IResource>;
+    public author: Resource;
+    public relatedbooks: Array<Resource>;
 
     public constructor(
         protected authorsService: AuthorsService,

@@ -1,5 +1,5 @@
-import { IResource } from './resource';
+import { Resource } from '../resource';
 
 export interface IResourcesById {
-    [resource_id: string]: IResource;
+    [resource_id: string]: Resource;
 }

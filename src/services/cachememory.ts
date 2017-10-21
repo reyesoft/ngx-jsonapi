@@ -1,13 +1,14 @@
-import { ICollection, IResource } from '../interfaces';
+import { ICollection } from '../interfaces';
 import { ICacheMemory } from '../interfaces/cachememory';
 import { Base } from './base';
+import { Resource } from '../';
 import { Converter } from './converter';
 import { ResourceFunctions } from './resource-functions';
 
 export class CacheMemory implements ICacheMemory {
     private collections: { [url: string]: ICollection } = {};
     private collections_lastupdate: { [url: string]: number } = {};
-    public resources: { [id: string]: IResource } = {};
+    public resources: { [id: string]: Resource } = {};
 
     public isCollectionExist(url: string): boolean {
         return (url in this.collections && this.collections[url].$source !== 'new' ? true : false);
@@ -34,7 +35,7 @@ export class CacheMemory implements ICacheMemory {
         // clone collection, because after maybe delete items for localfilter o pagination
         this.collections[url] = Base.newCollection();
         Object.keys(collection).forEach((resource_id) => {
-            let resource: IResource = collection[resource_id];
+            let resource: Resource = collection[resource_id];
             this.collections[url][resource_id] = resource;
             this.setResource(resource);
         });
@@ -42,7 +43,7 @@ export class CacheMemory implements ICacheMemory {
         this.collections_lastupdate[url] = Date.now();
     }
 
-    public getOrCreateResource(type: string, id: string): IResource {
+    public getOrCreateResource(type: string, id: string): Resource {
         if (Converter.getService(type).cachememory && id in Converter.getService(type).cachememory.resources) {
             return Converter.getService(type).cachememory.resources[id];
         } else {
@@ -55,7 +56,7 @@ export class CacheMemory implements ICacheMemory {
         }
     }
 
-    public setResource(resource: IResource, update_lastupdate = false): void  {
+    public setResource(resource: Resource, update_lastupdate = false): void  {
         // we cannot redefine object, because view don't update.
         if (resource.id in this.resources) {
             ResourceFunctions.resourceToResource(resource, this.resources[resource.id]);

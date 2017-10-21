@@ -1,12 +1,13 @@
-import { ICollection, IResource, ICacheStore } from '../interfaces';
+import { ICollection, ICacheStore } from '../interfaces';
 import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
 import { Core } from '../core';
 import { Base } from './base';
+import { Resource } from '../';
 import { Converter } from './converter';
 
 export class CacheStore implements ICacheStore {
-    public getResource(resource: IResource/* | IDataResource*/, include: Array<string> = []): Promise<object> {
+    public getResource(resource: Resource/* | IDataResource*/, include: Array<string> = []): Promise<object> {
         let mypromise = new Promise((resolve, reject): void => {
 
             Core.injectedServices.JsonapiStoreService.getObjet(resource.type + '.' + resource.id)
@@ -69,7 +70,7 @@ export class CacheStore implements ICacheStore {
         return mypromise;
     }
 
-    public setResource(resource: IResource) {
+    public setResource(resource: Resource) {
         Core.injectedServices.JsonapiStoreService.saveObject(
             resource.type + '.' + resource.id,
             resource.toObject().data
@@ -137,7 +138,7 @@ export class CacheStore implements ICacheStore {
         return all_ok;
     }
 
-    private getResourceFromMemory(dataresource: IDataResource): IResource {
+    private getResourceFromMemory(dataresource: IDataResource): Resource {
         let cachememory = Converter.getService(dataresource.type).cachememory;
         let resource = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
 
@@ -168,7 +169,7 @@ export class CacheStore implements ICacheStore {
                     collection.page = datacollection.page;
                 }
                 for (let key in temporalcollection) {
-                    let resource: IResource = temporalcollection[key];
+                    let resource: Resource = temporalcollection[key];
                     collection[resource.id] = resource;  // collection from storeservice, resources from memory
                 }
                 resolve(collection);
@@ -183,20 +184,20 @@ export class CacheStore implements ICacheStore {
 
     public setCollection(url: string, collection: ICollection, include: Array<string>) {
         let tmp = { data: {}, page: {} };
-        let resources_for_save: { [uniqkey: string]: IResource } = { };
-        Base.forEach(collection, (resource: IResource) => {
+        let resources_for_save: { [uniqkey: string]: Resource } = { };
+        Base.forEach(collection, (resource: Resource) => {
             this.setResource(resource);
             tmp.data[resource.id] = { id: resource.id, type: resource.type };
 
             Base.forEach(include, resource_type_alias => {
                 if ('id' in resource.relationships[resource_type_alias].data) {
                     // hasOne
-                    let ress = <IResource>resource.relationships[resource_type_alias].data;
+                    let ress = <Resource>resource.relationships[resource_type_alias].data;
                     resources_for_save[resource_type_alias + ress.id] = ress;
                 } else {
                     // hasMany
                     let collection2 = <ICollection>resource.relationships[resource_type_alias].data;
-                    Base.forEach(collection2, (inc_resource: IResource) => {
+                    Base.forEach(collection2, (inc_resource: Resource) => {
                         resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
                     });
                 }
@@ -212,7 +213,7 @@ export class CacheStore implements ICacheStore {
             if ('is_new' in resource_for_save) {
                 this.setResource(resource_for_save);
             } else {
-                console.warn('No se pudo guardar en la cache el', resource_for_save.type, 'por no se ser IResource.', resource_for_save);
+                console.warn('No se pudo guardar en la cache el', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
             }
         });
     }

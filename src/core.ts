@@ -1,12 +1,12 @@
 import { Injectable, Optional, Inject } from '@angular/core';
-import './services/core-services.service';
-import { ICore, IResource, ICollection } from './interfaces';
-import { Service } from './';
+import { noop } from 'rxjs/util/noop';
+
+import { ICollection } from './interfaces';
+import { Service, Resource } from './';
 import { Base } from './services/base';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttp } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
-import { noop } from 'rxjs/util/noop';
 
 @Injectable()
 export class Core {
@@ -71,7 +71,7 @@ export class Core {
     }
 
     // just an helper
-    public duplicateResource(resource: IResource, ...relations_alias_to_duplicate_too: Array<string>): IResource {
+    public duplicateResource(resource: Resource, ...relations_alias_to_duplicate_too: Array<string>): Resource {
         let newresource = this.getResourceService(resource.type).new();
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };
         newresource.attributes.name = newresource.attributes.name + ' xXx';
@@ -79,9 +79,9 @@ export class Core {
             if ('id' in relationship.data) {
                 // relation hasOne
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
-                    newresource.addRelationship(this.duplicateResource(<IResource>relationship.data), alias);
+                    newresource.addRelationship(this.duplicateResource(<Resource>relationship.data), alias);
                 } else {
-                    newresource.addRelationship(<IResource>relationship.data, alias);
+                    newresource.addRelationship(<Resource>relationship.data, alias);
                 }
             } else {
                 // relation hasMany

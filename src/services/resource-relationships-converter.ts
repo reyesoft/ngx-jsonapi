@@ -1,9 +1,11 @@
-import { IResource, IRelationships, ISchema, IResourcesByType } from '../interfaces';
+import { noop } from 'rxjs/util/noop';
+
+import { IRelationships, ISchema, IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataResource } from '../interfaces/data-resource';
 import { Base } from '../services/base';
-import { noop } from 'rxjs/util/noop';
+import { Resource } from '../';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;
@@ -113,7 +115,7 @@ export class ResourceRelationshipsConverter {
 
         if (
             this.relationships_dest[relation_data_key].data == null ||
-            relation_data_from.data.id !== (<IResource>this.relationships_dest[relation_data_key].data).id
+            relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_data_key].data).id
         ) {
             this.relationships_dest[relation_data_key].data = {};
         }
@@ -121,22 +123,22 @@ export class ResourceRelationshipsConverter {
         // trae datos o cambió resource? actualizamos!
         if (
             // 'attributes' in relation_data_from.data ||  // ???
-            !(<IResource>this.relationships_dest[relation_data_key].data).attributes ||     // we have only a  dataresource
-            (<IResource>this.relationships_dest[relation_data_key].data).id !== relation_data_from.data.id
+            !(<Resource>this.relationships_dest[relation_data_key].data).attributes ||     // we have only a  dataresource
+            (<Resource>this.relationships_dest[relation_data_key].data).id !== relation_data_from.data.id
         ) {
             let resource_data = this.__buildRelationship(relation_data_from.data, this.included_resources);
             this.relationships_dest[relation_data_key].data = resource_data;
         }
     }
 
-    private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): IResource | IDataResource {
+    private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): Resource | IDataResource {
         if (resource_data_from.type in included_array &&
             resource_data_from.id in included_array[resource_data_from.type]
         ) {
             // it's in included
             return included_array[resource_data_from.type][resource_data_from.id];
         } else {
-            // OPTIONAL: return cached IResource
+            // OPTIONAL: return cached Resource
             let service = this.getService(resource_data_from.type);
             if (service && resource_data_from.id in service.cachememory.resources) {
                 return service.cachememory.resources[resource_data_from.id];
