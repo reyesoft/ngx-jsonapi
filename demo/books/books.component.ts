@@ -4,7 +4,7 @@ import { forEach } from '../foreach';
 import * as Jsonapi from '@ngx-jsonapi';
 
 @Component({
-    selector: 'books',
+    selector: 'demo-books',
     templateUrl: './books.component.html'
 })
 export class BooksComponent {

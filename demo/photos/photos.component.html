@@ -8,7 +8,7 @@
                 <th>URI</th>
             </tr>
         </thead>
-        <tr ng-repeat="photo in $ctrl.photos">
+        <tr *ngFor="let photo in $ctrl.photos">
             <td>{{ photo.id }}</td>
             <td>{{ photo.attributes.title  }}</td>
             <td>{{ photo.attributes.uri }}</td>

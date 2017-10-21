@@ -4,7 +4,7 @@ import { forEach } from '../foreach';
 import * as Jsonapi from '@ngx-jsonapi';
 
 @Component({
-    selector: 'authors',
+    selector: 'demo-authors',
     // providers: [Location, {provide: LocationStrategy, useClass: HashLocationStrategy}],
     // encapsulation: ViewEncapsulation.None,
     // styleUrls: ['./app.component.scss'],

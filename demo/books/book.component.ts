@@ -7,7 +7,7 @@ import * as Jsonapi from '@ngx-jsonapi';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-    selector: 'book',
+    selector: 'demo-book',
     // providers: [Location, {provide: LocationStrategy, useClass: HashLocationStrategy}],
     // encapsulation: ViewEncapsulation.None,
     // styleUrls: ['./app.component.scss'],
