@@ -8,7 +8,7 @@ import { AuthorComponent } from './authors/author.component';
 import { BooksComponent } from './books/books.component';
 import { BookComponent } from './books/book.component';
 
-import { NgxJsonapiModule } from '@ngx-jsonapi';
+import { NgxJsonapiModule } from 'ngx-jsonapi';
 import { AuthorsService } from './authors/authors.service';
 import { BooksService } from './books/books.service';
 import { PhotosService } from './photos/photos.service';

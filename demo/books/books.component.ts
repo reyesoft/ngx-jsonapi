@@ -1,14 +1,14 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { BooksService } from './books.service';
 import { forEach } from '../foreach';
-import * as Jsonapi from '@ngx-jsonapi';
+import { IService, ICollection, IResource } from 'ngx-jsonapi';
 
 @Component({
     selector: 'demo-books',
     templateUrl: './books.component.html'
 })
 export class BooksComponent {
-    public books: Jsonapi.ICollection;
+    public books: ICollection;
 
     /** @ngInject */
     public constructor(
@@ -51,14 +51,14 @@ export class BooksComponent {
                 // TEST 1
                 // this test merge data with cache (this not include author or photos)
                 console.log('BooksRequest#1 received (author data from server)',
-                    (<Jsonapi.IResource>this.books[Object.keys(this.books)[2]].relationships.author.data).attributes
+                    (<IResource>this.books[Object.keys(this.books)[2]].relationships.author.data).attributes
                 );
 
                 console.log('BooksRequest#2 requested');
                 let books2 = this.booksService.all(
                     success2 => {
                         console.log('BooksRequest#2 received (author data from cache)',
-                            (<Jsonapi.IResource>books2[Object.keys(this.books)[1]].relationships.author.data)
+                            (<IResource>books2[Object.keys(this.books)[1]].relationships.author.data)
                         );
                     }
                 );
@@ -68,7 +68,7 @@ export class BooksComponent {
                 let book1 = this.booksService.get(1,
                     success1 => {
                         console.log('BookRequest#3 received (author data from cache)',
-                            (<Jsonapi.IResource>book1.relationships.author.data).attributes
+                            (<IResource>book1.relationships.author.data).attributes
                         );
                     });
             },
@@ -78,7 +78,7 @@ export class BooksComponent {
         );
     }
 
-    public delete(book: Jsonapi.IResource) {
+    public delete(book: IResource) {
         this.booksService.delete(book.id);
     }
 }
