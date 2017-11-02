@@ -1,6 +1,8 @@
+import { noop } from 'rxjs/util/noop';
+
 import { Core } from './core';
 import { Base } from './services/base';
-import { Resource } from './resource';
+import { Resource } from './';
 import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
 import { UrlParamsBuilder } from './services/url-params-builder';
@@ -8,10 +10,8 @@ import { Converter } from './services/converter';
 import { LocalFilter } from './services/localfilter';
 import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
-import { noop } from 'rxjs/util/noop';
-
 import {
-    ISchema, IResource, ICollection, IExecParams, ICacheStore, ICacheMemory,
+    ISchema, ICollection, IExecParams, ICacheStore, ICacheMemory,
     IParamsCollection, IParamsResource, IAttributes
 } from './interfaces';
 
@@ -40,13 +40,13 @@ export class Service extends ParentResourceService {
         return Core.me.registerService(this);
     }
 
-    public newResource(): IResource {
-        let resource: IResource = new Resource();
+    public newResource(): Resource {
+        let resource: Resource = new Resource();
 
         return resource;
     }
 
-    public new<T extends IResource>(): T {
+    public new<T extends Resource>(): T {
         let resource = this.newResource();
         resource.type = this.type;
         resource.reset();
@@ -61,7 +61,7 @@ export class Service extends ParentResourceService {
         return this.path ? this.path : this.type;
     }
 
-    public get<T extends IResource>(id, params?: IParamsResource | Function, fc_success?: Function, fc_error?: Function): T {
+    public get<T extends Resource>(id, params?: IParamsResource | Function, fc_success?: Function, fc_error?: Function): T {
         return <T>this.__exec({ id: id, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'get' });
     }
 
@@ -73,7 +73,7 @@ export class Service extends ParentResourceService {
         return <ICollection>this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'all' });
     }
 
-    protected __exec(exec_params: IExecParams): IResource | ICollection | void {
+    protected __exec(exec_params: IExecParams): Resource | ICollection | void {
         let exec_pp = super.proccess_exec_params(exec_params);
 
         switch (exec_pp.exec_type) {
@@ -86,7 +86,7 @@ export class Service extends ParentResourceService {
         }
     }
 
-    public _get(id: string, params: IParamsResource, fc_success, fc_error): IResource {
+    public _get(id: string, params: IParamsResource, fc_success, fc_error): Resource {
         // http request
         let path = new PathBuilder();
         path.applyParams(this, params);
@@ -129,7 +129,7 @@ export class Service extends ParentResourceService {
         return resource;
     }
 
-    private getGetFromServer(path, fc_success, fc_error, resource: IResource) {
+    private getGetFromServer(path, fc_success, fc_error, resource: Resource) {
         Core.injectedServices.JsonapiHttp
         .get(path.get())
         .then(
