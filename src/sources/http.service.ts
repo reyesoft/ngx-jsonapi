@@ -58,7 +58,7 @@ export class Http {
             if (method === 'get') {
                 this.noDuplicatedHttpCallsService.setPromiseRequest(path, http_observable.toPromise());
             } else {
-                fakeHttpPromise = http_observable;
+                fakeHttpPromise = http_observable.toPromise();
             }
         }
         if (method === 'get') {
