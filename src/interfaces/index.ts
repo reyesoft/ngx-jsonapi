@@ -1,6 +1,7 @@
 export * from './attributes';
 export * from './collection';
 export * from './schema';
+export * from './resource';
 export * from './relationship';
 export * from './relationships';
 export * from './cachestore';

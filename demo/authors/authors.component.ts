@@ -14,19 +14,6 @@ export class AuthorsComponent {
     public constructor(
         private authorsService: AuthorsService
     ) {
-        // JsonapiCore.loadingsStart = (): void => {
-        //     this.loading = 'LOADING...';
-        // };
-        // JsonapiCore.loadingsDone = (): void => {
-        //     this.$scope.loading = '';
-        // };
-        // JsonapiCore.loadingsOffline = (error): void => {
-        //     this.$scope.loading = 'No connection!!!';
-        // };
-        // JsonapiCore.loadingsError = (error): void => {
-        //     this.$scope.loading = 'No connection 2!!!';
-        // };
-
         this.authors = authorsService.all(
             // { include: ['books', 'photos'] },
             success => {
