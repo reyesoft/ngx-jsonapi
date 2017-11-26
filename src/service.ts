@@ -11,14 +11,14 @@ import { LocalFilter } from './services/localfilter';
 import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
 import {
-    ISchema, ICollection, IExecParams, ICacheStore, ICacheMemory,
+    ISchema, ICollection, IExecParams, ICacheMemory,
     IParamsCollection, IParamsResource, IAttributes
 } from './interfaces';
 
 export class Service extends ParentResourceService {
     public schema: ISchema;
     public cachememory: ICacheMemory;
-    public cachestore: ICacheStore;
+    public cachestore: CacheStore;
     public type: string;
 
     private path: string;   // without slashes
@@ -111,7 +111,7 @@ export class Service extends ParentResourceService {
             });
 
             return resource;
-        } else {
+        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
             this.getService().cachestore.getResource(resource)
             .then(success => {
@@ -124,6 +124,8 @@ export class Service extends ParentResourceService {
             .catch(error => {
                 this.getGetFromServer(path, fc_success, fc_error, resource);
             });
+        } else {
+            this.getGetFromServer(path, fc_success, fc_error, resource);
         }
 
         return resource;
@@ -137,7 +139,9 @@ export class Service extends ParentResourceService {
                 Converter.build(success/*.data*/, resource);
                 resource.is_loading = false;
                 this.getService().cachememory.setResource(resource);
-                this.getService().cachestore.setResource(resource);
+                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+                    this.getService().cachestore.setResource(resource);
+                }
                 this.runFc(fc_success, success);
             }
         )
@@ -218,7 +222,7 @@ export class Service extends ParentResourceService {
             } else {
                 this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
             }
-        } else {
+        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // STORE
             tempororay_collection.$is_loading = true;
 
@@ -245,6 +249,10 @@ export class Service extends ParentResourceService {
                     this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
                 }
             );
+        } else {
+            // STORE
+            tempororay_collection.$is_loading = true;
+            this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection);
         }
 
         return cached_collection;
@@ -271,7 +279,9 @@ export class Service extends ParentResourceService {
                 Converter.build(success /*.data*/, tempororay_collection);
 
                 this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
-                this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
+                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+                    this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
+                }
 
                 // localfilter getted data
                 let localfilter = new LocalFilter(params.localfilter);

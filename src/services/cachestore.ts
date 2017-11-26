@@ -1,4 +1,4 @@
-import { ICollection, ICacheStore } from '../interfaces';
+import { ICollection, ICache } from '../interfaces';
 import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
 import { Core } from '../core';
@@ -6,7 +6,7 @@ import { Base } from './base';
 import { Resource } from '../';
 import { Converter } from './converter';
 
-export class CacheStore implements ICacheStore {
+export class CacheStore implements ICache {
     public getResource(resource: Resource/* | IDataResource*/, include: Array<string> = []): Promise<object> {
         let mypromise = new Promise((resolve, reject): void => {
 
