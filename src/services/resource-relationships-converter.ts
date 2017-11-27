@@ -34,7 +34,7 @@ export class ResourceRelationshipsConverter {
 
             // relation is in schema? have data or just links?
             if (!(relation_key in this.relationships_dest) && ('data' in relation_from_value)) {
-                this.relationships_dest[relation_key] = { data: Base.newCollection() };
+                this.relationships_dest[relation_key] = { data: Base.newCollection(), content: 'collection' };
             }
 
             // sometime data=null or simple { }
@@ -46,7 +46,7 @@ export class ResourceRelationshipsConverter {
                 // hasMany
                 if (relation_from_value.data.length === 0) {
                     // from data is an empty array, remove all data on relationship
-                    this.relationships_dest[relation_key] = { data: Base.newCollection() };
+                    this.relationships_dest[relation_key] = { data: Base.newCollection(), content: 'collection' };
 
                     return ;
                 }
@@ -71,6 +71,7 @@ export class ResourceRelationshipsConverter {
         let resource_service = this.getService(relation_from_value.data[0].type);
         if (resource_service) {
             let tmp_relationship_data = Base.newCollection();
+            this.relationships_dest[relation_key].content = 'collection';
             Base.forEach(relation_from_value.data, (relation_value: IDataResource) => {
                 let tmp = this.__buildRelationship(relation_value, this.included_resources);
 
@@ -82,6 +83,11 @@ export class ResourceRelationshipsConverter {
                     tmp_relationship_data[tmp.id] = this.relationships_dest[relation_key].data[tmp.id];
                 } else {
                     tmp_relationship_data[tmp.id] = tmp;
+                }
+
+                // some resources are not a Resource object
+                if (!('attributes' in tmp)) {
+                    this.relationships_dest[relation_key].content = 'ids';
                 }
             });
 
