@@ -30,10 +30,12 @@ export class Resource extends ParentResourceService {
         });
         this.relationships = {};
         Base.forEach(this.getService().schema.relationships, (value, key) => {
-            let relation: IRelationship = { data: {} };
-            this.relationships[key] = relation;
             if (this.getService().schema.relationships[key].hasMany) {
-                this.relationships[key].data = Base.newCollection();
+                let relation: IRelationship = { data: Base.newCollection(), content: 'collection' };
+                this.relationships[key] = relation;
+            } else {
+                let relation: IRelationship = { data: {}, content: 'none' };
+                this.relationships[key] = relation;
             }
         });
         this.is_new = true;
@@ -209,7 +211,7 @@ export class Resource extends ParentResourceService {
 
         type_alias = (type_alias ? type_alias : resource.type);
         if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = { data: { } };
+            this.relationships[type_alias] = { data: { }, content: 'none' };
         }
 
         if (type_alias in this.getService().schema.relationships && this.getService().schema.relationships[type_alias].hasMany) {
@@ -221,7 +223,7 @@ export class Resource extends ParentResourceService {
 
     public addRelationships(resources: ICollection, type_alias: string) {
         if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = { data: { } };
+            this.relationships[type_alias] = { data: { }, content: 'none' };
         } else {
             // we receive a new collection of this relationship. We need remove old (if don't exist on new collection)
             Base.forEach(this.relationships[type_alias].data, (resource) => {

@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/reyesoft/ngx-jsonapi.svg?branch=master)](https://travis-ci.org/reyesoft/ngx-jsonapi) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b097196f7f544412a79a99080a41bbc1)](https://www.codacy.com/app/Swimlane/ngx-charts?utm_source=github.com&utm_medium=referral&utm_content=swimlane/ngx-charts&utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/%40reyesoft%2Fngx-jsonapi.svg)](https://badge.fury.io/js/ngx-jsonapi)
 
-This is a JSON API library for Angular 4\. Please use [ts-angular-jsonapi](https://github.com/reyesoft/ts-angular-jsonapi) for AngularJS.
+This is a JSON API library for Angular 4+. Please use [ts-angular-jsonapi](https://github.com/reyesoft/ts-angular-jsonapi) for AngularJS.
 
 ## Online demo
 
@@ -21,7 +21,7 @@ Data is obtained from [Json Api Playground](http://jsonapiplayground.reyesoft.co
 - Two+ equal resource request, only one HTTP call.
 - Equal requests, return a same ResourceObject on memory
 - Default values for a new resource (hydrator).
-- [Properties on collections](https://github.com/reyesoft/ts-angular-jsonapi/blob/master/src/library/interfaces/collection.d.ts) like `$length`, `$is_loading` or `$source` (_`empty`_ |`cache`|`server`)
+- [Properties on collections](https://github.com/reyesoft/ngx-jsonapi/blob/master/src/interfaces/collection.ts) like `$length`, `$is_loading` or `$source` (_`empty`_ |`cache`|`server`)
 
 ## Usage
 
@@ -42,48 +42,50 @@ npm install ngx-jsonapi --save
 3. Inject JsonapiCore somewhere before you extend any class from `Jsonapi.Resource`.
 
 ```javascript
-import 'ts-angular-jsonapi';
+import { NgModule } from '@angular/core';
+import { NgxJsonapiModule } from 'ngx-jsonapi';
 
-var app = angular.module('yourAppName', ['rsJsonapi']);
-
-app.config(['rsJsonapiConfig', (rsJsonapiConfig) => {
-  angular.extend(rsJsonapiConfig, {
-    url: '//jsonapiplayground.reyesoft.com/v2/'
-  });
-}]);
-
-var MyController = function(JsonapiCore) {
-  // ...
-}
-MyController.$inject = ['JsonapiCore'];
+@NgModule({
+  imports: [
+    NgxJsonapiModule.forRoot({
+      url: '//jsonapiplayground.reyesoft.com/v2/'
+    })
+  ]
+})
+export class AppModule { }
 ```
 
 ## Examples
 
-Like you know, the better way is with examples. Based on [endpoints example library](https://github.com/endpoints/endpoints-example/).
+Like you know, the better way is with examples. Lets go! 🚀
 
 ### Defining a resource
 
 `authors.service.ts`
 
 ```typescript
-class AuthorsService extends Jsonapi.Resource {
-  type = 'authors';
-  public schema: Jsonapi.ISchema = {
+import { Injectable } from '@angular/core';
+import { Service, ISchema } from 'ngx-jsonapi';
+
+@Injectable()
+export class AuthorsService extends Service {
+  public type = 'authors';
+  public schema: ISchema = {
     attributes: {
-      name: { presence: true, length: { maximum: 96 } },
-      date_of_birth: {},
-      date_of_death: {},
-      created_at: {},
-      updated_at: {}
+      name: { },
+      date_of_birth: { default: '1993-12-10'},
+      date_of_death: {}
     },
     relationships: {
-      books: {},
-      photos: {}
+      books: {
+        hasMany: true
+      },
+      photos: {
+        hasMany: true
+      }
     }
   };
 }
-angular.module('demoApp').service('AuthorsService', AuthorsService);
 ```
 
 ### Get a collection of resources
@@ -91,12 +93,29 @@ angular.module('demoApp').service('AuthorsService', AuthorsService);
 #### Controller
 
 ```javascript
-class AuthorsController {
-  public authors: any = null;
+import { Component } from '@angular/core';
+import { ICollection } from 'ngx-jsonapi';
+import { AuthorsService } from './authors.service';
 
-  /** @ngInject */
-  constructor(AuthorsService) {
-    this.authors = AuthorsService.all();
+@Component({
+  selector: 'demo-authors',
+  templateUrl: './authors.component.html'
+})
+export class AuthorsComponent {
+  public authors: ICollection;
+
+  public constructor(
+    private authorsService: AuthorsService
+  ) {
+    this.authors = authorsService.all(
+      // { include: ['books', 'photos'] },
+      success => {
+        console.log('success authors', this.authors);
+      },
+      error => {
+        console.log('error authors', error);
+      }
+    );
   }
 }
 ```
@@ -104,7 +123,7 @@ class AuthorsController {
 #### View for this controller
 
 ```html
-<p ng-repeat="author in vm.authors">
+<p *ngFor="let author of authors.$toArray">
   id: {{ author.id }} <br />
   name: {{ author.attributes.name }} <br />
   birth date: {{ author.attributes.date_of_birth | date }}
@@ -116,10 +135,10 @@ class AuthorsController {
 Filter resources with `attribute: value` values. Filters are used as 'exact match' (only resources with attribute value same as value are returned). `value` can also be an array, then only objects with same `attribute` value as one of `values` array elements are returned.
 
 ```javascript
-let authors = AuthorsService.all(
+let authors = authorsService.all(
   {
-    localfilter: { name: 'xx' },            // request all data and next filter locally
-    remotefilter: { country: 'Argentina' }  // request data with filter url parameter
+  localfilter: { name: 'xx' },      // request all data and next filter locally
+  remotefilter: { country: 'Argentina' }  // request data with filter url parameter
   }
 );
 ```
@@ -129,13 +148,13 @@ let authors = AuthorsService.all(
 From this point, you only see important code for this library. For a full example, clone and see demo directory.
 
 ```javascript
-let author = AuthorsService.get('some_author_id');
+let author = authorsService.get('some_author_id');
 ```
 
 #### More options? Include resources when you fetch data (or save!)
 
 ```javascript
-let author = AuthorsService.get(
+let author = authorsService.get(
   'some_author_id',
   { include: ['books', 'photos'] },
   success => {
@@ -152,7 +171,7 @@ TIP: these parameters work with `all()` and `save()` methods too.
 ### Add a new resource
 
 ```javascript
-let author = this.AuthorsService.new();
+let author = this.authorsService.new();
 author.attributes.name = 'Pablo Reyes';
 author.attributes.date_of_birth = '2030-12-10';
 author.save();
@@ -161,16 +180,16 @@ author.save();
 #### Need you more control and options?
 
 ```javascript
-let author = this.AuthorsService.new();
+let author = this.authorsService.new();
 author.attributes.name = 'Pablo Reyes';
 author.attributes.date_of_birth = '2030-12-10';
 
 // some_book is an another resource like author
-let some_book = this.BooksService.get(1);
+let some_book = booksService.get(1);
 author.addRelationship(some_book);
 
 // some_publisher is a polymorphic resource named company on this case
-let some_publisher = this.PublishersService.get(1);
+let some_publisher = publishersService.get(1);
 author.addRelationship(some_publisher, 'company');
 
 // wow, now we need detach a relationship
@@ -180,10 +199,10 @@ author.removeRelationship('books', 'book_id');
 author.save( { include: ['book'] });
 
 // mmmm, if I need get related resources? For example, books related with author 1
-let relatedbooks = BooksService.all( { beforepath: 'authors/1' } );
+let relatedbooks = booksService.all( { beforepath: 'authors/1' } );
 
 // you need get a cached object? you can force ttl on get
-let author = AuthorsService.get(
+let author = authorsService.get(
   'some_author_id',
   { ttl: 60 } // ttl on seconds (default: 0)
 );
@@ -192,7 +211,7 @@ let author = AuthorsService.get(
 ### Update a resource
 
 ```javascript
-let author = AuthorsService.get('some_author_id');
+let author = authorsService.get('some_author_id');
 this.author.attributes.name += 'New Name';
 this.author.save(success => {
   console.log('author saved!');
@@ -202,10 +221,10 @@ this.author.save(success => {
 ### Pagination
 
 ```javascript
-let authors = AuthorsService.all(
+let authors = authorsService.all(
   {
-    // get page 2 of authors collection, with a limit per page of 50
-    page: { number: 2 ;  limit: 50 }   
+  // get page 2 of authors collection, with a limit per page of 50
+  page: { number: 2 ;  limit: 50 }   
   }
 );
 ```
@@ -218,24 +237,17 @@ let authors = AuthorsService.all(
 
 ## Local Demo App
 
-You can run [JsonApi Demo App](http://reyesoft.github.io/ts-angular-jsonapi/) locally following the next steps:
+You can run [JsonApi Demo App](http://ngx-jsonapi.reyesoft.com/) locally following the next steps:
 
 ```bash
-git clone git@github.com:reyesoft/ts-angular-jsonapi.git
-cd ts-angular-jsonapi
-npm install -g gulp   # if you are on linux, you need do this with sudo
+git clone git@github.com:reyesoft/ngx-jsonapi.git
+cd ngx-jsonapi
 npm install
-gulp serve
+npm start
 ```
 
 We use as backend [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
 
 ## Colaborate
 
-First you need run the demo. Next, when you made new features on your fork, please run
-
-```bash
-gulp dist
-```
-
-And commit! Don't forget your pull request :)
+Just commit! And don't forget your pull request 😉

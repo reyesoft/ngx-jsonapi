@@ -14,7 +14,7 @@ export class Core {
     public static injectedServices: {
         JsonapiStoreService: any;
         JsonapiHttp: any;
-        rsJsonapiConfig: any;
+        rsJsonapiConfig: JsonapiConfig;
     };
 
     private resourceServices: Object = {};
@@ -32,7 +32,7 @@ export class Core {
         jsonapiHttp: JsonapiHttp
     ) {
         this.config = new JsonapiConfig();
-        for (let k in this.config) this.config[k] = user_config[k] || this.config[k];
+        for (let k in this.config) this.config[k] = (user_config[k] !== undefined ? user_config[k] : this.config[k]);
 
         Core.me = this;
         Core.injectedServices = {

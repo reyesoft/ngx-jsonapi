@@ -18,7 +18,7 @@
     />
 
 <h4>Books</h4>
-<table class="table table-striped">
+<table class="table table-striped" *ngIf="author.relationships.books.content == 'collection'">
     <thead>
         <tr>
             <th>ID</th>
