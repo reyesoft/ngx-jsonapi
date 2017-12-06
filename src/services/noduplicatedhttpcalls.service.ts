@@ -7,19 +7,19 @@ export class NoDuplicatedHttpCallsService {
         return (path in this.calls);
     }
 
-    public getAPromise(path: string): Promise<any> {
+    public async getAPromise(path: string): Promise<any> {
         if (!(path in this.calls)) {
             this.calls[path] = [];
         }
 
-        let deferred = new Deferred();
+        let deferred: Deferred<any> = new Deferred();
         // let deferred = this.$q.defer();
         this.calls[path].push(deferred);
 
         return deferred.promise;
     }
 
-    public setPromiseRequest(path, promise: Promise<any>) {
+    public async setPromiseRequest(path, promise: Promise<any>) {
         promise.then(
             success => {
                 if (path in this.calls) {

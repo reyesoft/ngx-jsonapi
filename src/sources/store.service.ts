@@ -54,8 +54,8 @@ export class StoreService {
         .catch(noop);
     }
 
-    public getObjet(key: string): Promise<object> {
-        let deferred = new Deferred();
+    public async getObjet(key: string): Promise<object> {
+        let deferred: Deferred<object> = new Deferred();
 
         this.allstore.getItem('jsonapi.' + key)
         .then (success => {
@@ -68,7 +68,7 @@ export class StoreService {
         return deferred.promise;
     }
 
-    public getObjets(keys: Array<string>): Promise<object> {
+    public async getObjets(keys: Array<string>): Promise<object> {
         return this.allstore.getItem('jsonapi.' + keys[0]);
     }
 

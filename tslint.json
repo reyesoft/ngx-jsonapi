@@ -41,6 +41,9 @@
             "check-space"
         ],
         "curly": [true, "ignore-same-line"],
+        "deprecation": {
+            "severity": "warn"
+        },
         "indent": [
             true,
             "spaces"
@@ -129,6 +132,7 @@
 
         "directive-selector": [true, "attribute", ["dir-prefix1", "dir-prefix2"], "camelCase"],
         "component-selector": [true, "element", ["demo"], "kebab-case"],
+        "no-output-on-prefix": true,
 
         "use-input-property-decorator": true,
         "use-output-property-decorator": true,
@@ -144,6 +148,10 @@
         "directive-class-suffix": [true, "Directive"],
         "templates-use-public": true,
         "no-access-missing-member": true,
-        "invoke-injectable": true
+        "invoke-injectable": true,
+
+        "no-implicit-dependencies": false,
+        "no-unnecessary-class": false,
+        "no-void-expression": false
     }
 }
