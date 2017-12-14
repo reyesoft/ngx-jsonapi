@@ -114,11 +114,11 @@ export class Resource extends ParentResourceService {
         return ret;
     }
 
-    public save<T extends Resource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Promise<object> {
+    public async save<T extends Resource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Promise<object> {
         return this.__exec({ id: null, params: params, fc_success: fc_success, fc_error: fc_error, exec_type: 'save' });
     }
 
-    protected __exec<T extends Resource>(exec_params: IExecParams): Promise<object> {
+    protected async __exec<T extends Resource>(exec_params: IExecParams): Promise<object> {
         let exec_pp = super.proccess_exec_params(exec_params);
 
         switch (exec_params.exec_type) {
@@ -127,8 +127,8 @@ export class Resource extends ParentResourceService {
         }
     }
 
-    private _save<T extends Resource>(params: IParamsResource, fc_success: Function, fc_error: Function): Promise<object> {
-        let promisesave = new Promise((resolve, reject): void => {
+    private async _save<T extends Resource>(params: IParamsResource, fc_success: Function, fc_error: Function): Promise<object> {
+        let promisesave: Promise<object> = new Promise((resolve, reject): void => {
 
             if (this.is_saving || this.is_loading) {
                 return ;

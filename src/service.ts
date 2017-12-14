@@ -78,11 +78,11 @@ export class Service extends ParentResourceService {
 
         switch (exec_pp.exec_type) {
             case 'get':
-            return this._get(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
+                return this._get(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
             case 'delete':
-            return this._delete(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
+                return this._delete(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
             case 'all':
-            return this._all(exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
+                return this._all(exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
         }
     }
 
@@ -100,7 +100,7 @@ export class Service extends ParentResourceService {
         if (this.getService().cachememory.isResourceLive(id, temporal_ttl)) {
             // we create a promise because we need return collection before
             // run success client function
-            let promise = new Promise((resolve, reject): void => {
+            let promise: Promise<void> = new Promise((resolve, reject): void => {
                 resolve(fc_success);
                 promise.then(fc_success2 => {
                     this.runFc(fc_success2, 'cachememory');
@@ -211,7 +211,7 @@ export class Service extends ParentResourceService {
             if (this.getService().cachememory.isCollectionLive(path.getForCache(), temporal_ttl)) {
                 // we create a promise because we need return collection before
                 // run success client function
-                let promise = new Promise((resolve, reject): void => {
+                let promise: Promise<void> = new Promise((resolve, reject): void => {
                     resolve(fc_success);
                     promise.then(fc_success2 => {
                         this.runFc(fc_success2, 'cachememory');

@@ -3,12 +3,13 @@ import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
 import { Core } from '../core';
 import { Base } from './base';
+import { IObject } from '../interfaces/object';
 import { Resource } from '../';
 import { Converter } from './converter';
 
 export class CacheStore implements ICache {
-    public getResource(resource: Resource/* | IDataResource*/, include: Array<string> = []): Promise<object> {
-        let mypromise = new Promise((resolve, reject): void => {
+    public async getResource(resource: Resource/* | IDataResource*/, include: Array<string> = []): Promise<object> {
+        let mypromise: Promise<object> = new Promise((resolve, reject): void => {
 
             Core.injectedServices.JsonapiStoreService.getObjet(resource.type + '.' + resource.id)
             .then(success => {
@@ -77,7 +78,7 @@ export class CacheStore implements ICache {
         );
     }
 
-    public getCollectionFromStorePromise(url: string, include: Array<string>, collection: ICollection): Promise<ICollection> {
+    public async getCollectionFromStorePromise(url: string, include: Array<string>, collection: ICollection): Promise<ICollection> {
         let promise = new Promise((resolve: (value: ICollection) => void, reject: () => void): void => {
             this.getCollectionFromStore(url, include, collection, resolve, reject);
         });
@@ -92,6 +93,7 @@ export class CacheStore implements ICache {
         let promise = Core.injectedServices.JsonapiStoreService.getObjet('collection.' + url);
         promise.then((success: IDataCollection) => {
             // build collection from store and resources from memory
+            // @todo success.data is a collection, not an array
             if (
                 this.fillCollectionWithArrrayAndResourcesOnMemory(success.data, collection)
             ) {
@@ -124,6 +126,7 @@ export class CacheStore implements ICache {
 
     private fillCollectionWithArrrayAndResourcesOnMemory(dataresources: Array<IDataResource>, collection: ICollection): boolean {
         let all_ok = true;
+        console.log('---------------------------------------1-------->>>>>', dataresources);
         for (let key in dataresources) {
             let dataresource = dataresources[key];
 
@@ -145,7 +148,7 @@ export class CacheStore implements ICache {
         return resource;
     }
 
-    private fillCollectionWithArrrayAndResourcesOnStore(
+    private async fillCollectionWithArrrayAndResourcesOnStore(
         datacollection: IDataCollection, include: Array<string>, collection: ICollection
     ): Promise<object> {
         let promise = new Promise((resolve: (value: object) => void, reject: (value: any) => void): void => {
@@ -153,6 +156,7 @@ export class CacheStore implements ICache {
             // request resources from store
             let temporalcollection = {};
             let promises = [];
+            console.log('---------------------------------------2-------->>>>>', datacollection.data);
             for (let key in datacollection.data) {
                 let dataresource: IDataResource = datacollection.data[key];
                 let cachememory = Converter.getService(dataresource.type).cachememory;

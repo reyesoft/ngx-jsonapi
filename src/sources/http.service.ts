@@ -25,15 +25,15 @@ export class Http {
 
     }
 
-    public delete(path: string): Promise<IDataObject> {
+    public async delete(path: string): Promise<IDataObject> {
         return this.exec(path, 'DELETE');
     }
 
-    public get(path: string): Promise<IDataObject> {
+    public async get(path: string): Promise<IDataObject> {
         return this.exec(path, 'get');
     }
 
-    protected exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true): Promise<IDataObject> {
+    protected async exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true): Promise<IDataObject> {
         let fakeHttpPromise = null;
 
         // http request (if we don't have any GET request yet)
