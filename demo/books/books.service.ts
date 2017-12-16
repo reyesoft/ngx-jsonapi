@@ -6,20 +6,20 @@ export class BooksService extends Service {
     public type = 'books';
     public schema: ISchema = {
         attributes: {
-            date_published: { },
+            date_published: {},
             title: { presence: true, length: { maximum: 96 } },
-            created_at: { },
-            updated_at: { }
+            created_at: {},
+            updated_at: {},
         },
         relationships: {
             author: {
-                hasMany: false
+                hasMany: false,
             },
             photos: {
-                hasMany: true
-            }
+                hasMany: true,
+            },
         },
-        ttl: 10
+        ttl: 10,
     };
 
     // executed before get data from server

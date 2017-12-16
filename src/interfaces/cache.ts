@@ -1,4 +1,4 @@
-import { Resource } from '../';
+import { Resource } from '../resource';
 
 export interface ICache {
     setResource(resource: Resource): void;

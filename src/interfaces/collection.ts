@@ -1,4 +1,4 @@
-import { Resource } from '../';
+import { Resource } from '../resource';
 import { IPage } from './page';
 import { IDataResource } from './data-resource';
 

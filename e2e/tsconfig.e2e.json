@@ -1,29 +1,19 @@
 {
   "compilerOptions": {
     "sourceMap": true,
-    "pretty": true,
     "declaration": false,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
-      "es2016",
-      "dom"
+      "es2016"
     ],
-    "outDir": "dist/spec",
+    "outDir": "../dist/out-tsc-e2e",
     "module": "commonjs",
-    "target": "es5",
-    "baseUrl": "",
+    "target": "es6",
     "types": [
       "jasmine",
-      "node",
-      "d3-transition"
+      "node"
     ]
-  },
-  "files": [
-    "src/declarations.d.ts"
-  ],
-  "include": [
-    "src/**/*.spec.ts"
-  ]
+  }
 }

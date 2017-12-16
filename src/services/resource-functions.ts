@@ -1,8 +1,11 @@
 import { ICollection } from '../interfaces';
-import { Resource } from '../';
+import { Resource } from '../resource';
 
 export class ResourceFunctions {
-    public static resourceToResource(source: Resource, destination: Resource): void {
+    public static resourceToResource(
+        source: Resource,
+        destination: Resource
+    ): void {
         destination.attributes = source.attributes;
 
         // remove relationships on destination resource
@@ -25,11 +28,14 @@ export class ResourceFunctions {
         for (let type_alias in source.relationships) {
             if ('id' in source.relationships[type_alias].data) {
                 destination.addRelationship(
-                        (<Resource>source.relationships[type_alias].data),
-                        type_alias
-                    );
+                    <Resource>source.relationships[type_alias].data,
+                    type_alias
+                );
             } else {
-                destination.addRelationships(<ICollection>source.relationships[type_alias].data, type_alias);
+                destination.addRelationships(
+                    <ICollection>source.relationships[type_alias].data,
+                    type_alias
+                );
             }
         }
     }

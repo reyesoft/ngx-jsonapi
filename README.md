@@ -224,7 +224,7 @@ this.author.save(success => {
 let authors = authorsService.all(
   {
   // get page 2 of authors collection, with a limit per page of 50
-  page: { number: 2 ;  limit: 50 }   
+  page: { number: 2 ;  limit: 50 }
   }
 );
 ```

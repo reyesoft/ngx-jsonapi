@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 import { NgxJsonapiModule } from 'ngx-jsonapi';
 
 import { AppComponent } from './app.component';
@@ -16,40 +17,32 @@ const appRoutes: Routes = [
     {
         path: '',
         redirectTo: '/authors',
-        pathMatch: 'full'
+        pathMatch: 'full',
     },
     { path: 'authors', component: AuthorsComponent },
     { path: 'authors/:id', component: AuthorComponent },
     { path: 'books', component: BooksComponent },
-    { path: 'books/:id', component: BookComponent }
+    { path: 'books/:id', component: BookComponent },
     // { path: '**', redirectTo: '/authors', pathMatch: 'full' }
 ];
 
 @NgModule({
-    providers: [
-        AuthorsService,
-        BooksService,
-        PhotosService
-    ],
+    providers: [AuthorsService, BooksService, PhotosService],
     imports: [
         BrowserModule,
-        RouterModule.forRoot(
-            appRoutes,
-            { useHash: true }
-        ),
+        HttpClientModule,
+        RouterModule.forRoot(appRoutes, { useHash: true }),
         NgxJsonapiModule.forRoot({
-            url: 'http://jsonapiplayground.reyesoft.com/v2/'
-        })
+            url: 'http://jsonapiplayground.reyesoft.com/v2/',
+        }),
     ],
     declarations: [
         AppComponent,
         AuthorsComponent,
         AuthorComponent,
         BooksComponent,
-        BookComponent
+        BookComponent,
     ],
-    bootstrap: [
-        AppComponent
-    ]
+    bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

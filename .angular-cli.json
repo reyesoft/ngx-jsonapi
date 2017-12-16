@@ -1,12 +1,12 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "project": {
-    "name": "ngx-jsonapi"
+    "name": "demo"
   },
   "apps": [
     {
-      "root": "src",
-      "outDir": "dist",
+      "root": "demo",
+      "outDir": "example-dist",
       "assets": [
         "assets",
         "favicon.ico"
@@ -17,7 +17,7 @@
       "test": "test.ts",
       "tsconfig": "tsconfig.app.json",
       "testTsconfig": "tsconfig.spec.json",
-      "prefix": "",
+      "prefix": "bc",
       "styles": [],
       "scripts": [],
       "environmentSource": "environments/environment.ts",
@@ -34,8 +34,13 @@
   },
   "lint": [
     {
-      "project": "tsconfig.json",
-      "exclude": "**/node_modules/**"
+      "project": "demo/tsconfig.app.json"
+    },
+    {
+      "project": "demo/tsconfig.spec.json"
+    },
+    {
+      "project": "e2e/tsconfig.e2e.json"
     }
   ],
   "test": {
@@ -45,6 +50,11 @@
   },
   "defaults": {
     "styleExt": "css",
-    "component": {}
+    "component": {
+      "inlineStyle": true,
+      "inlineTemplate": true,
+      "flat": true,
+      "spec": false
+    }
   }
 }

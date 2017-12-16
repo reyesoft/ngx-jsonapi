@@ -1,6 +1,7 @@
 // import * as angular from 'angular';
 import { Core } from '../core';
-import { Service, Resource } from '../';
+import { Resource } from '../resource';
+import { Service } from '../service';
 import { ICollection, IResourcesById, IResourcesByType } from '../interfaces';
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
 import { IDataObject } from '../interfaces/data-object';
@@ -9,7 +10,6 @@ import { IDataResource } from '../interfaces/data-resource';
 import { Base } from '../services/base';
 
 export class Converter {
-
     /*
     Convert json arrays (like included) to an Resources arrays without [keys]
     */
@@ -43,13 +43,19 @@ export class Converter {
         return resources_by_type;
     }
 
-    public static json2resource(json_resource: IDataResource, instance_relationships): Resource {
+    public static json2resource(
+        json_resource: IDataResource,
+        instance_relationships
+    ): Resource {
         let resource_service = Converter.getService(json_resource.type);
         if (resource_service) {
             return Converter.procreate(json_resource);
         } else {
             // service not registered
-            console.warn('`' + json_resource.type + '`', 'service not found on json2resource()');
+            console.warn(
+                '`' + json_resource.type + '`',
+                'service not found on json2resource()'
+            );
             let temp = new Resource();
             temp.id = json_resource.id;
             temp.type = json_resource.type;
@@ -75,9 +81,13 @@ export class Converter {
 
         let resource: Resource;
         if (data.id in Converter.getService(data.type).cachememory.resources) {
-            resource = Converter.getService(data.type).cachememory.resources[data.id];
+            resource = Converter.getService(data.type).cachememory.resources[
+                data.id
+            ];
         } else {
-            resource = Converter.getService(data.type).cachememory.getOrCreateResource(data.type, data.id);
+            resource = Converter.getService(
+                data.type
+            ).cachememory.getOrCreateResource(data.type, data.id);
         }
 
         resource.attributes = data.attributes || {};
@@ -93,13 +103,23 @@ export class Converter {
         // instancio los include y los guardo en included arrary
         let included_resources: IResourcesByType = {};
         if ('included' in document_from) {
-            included_resources = Converter.json_array2resources_array_by_type(document_from.included);
+            included_resources = Converter.json_array2resources_array_by_type(
+                document_from.included
+            );
         }
 
         if (Array.isArray(document_from.data)) {
-            Converter._buildCollection(document_from, <ICollection>resource_dest, included_resources);
+            Converter._buildCollection(
+                document_from,
+                <ICollection>resource_dest,
+                included_resources
+            );
         } else {
-            Converter._buildResource(document_from.data, <Resource>resource_dest, included_resources);
+            Converter._buildResource(
+                document_from.data,
+                <Resource>resource_dest,
+                included_resources
+            );
         }
     }
 
@@ -111,18 +131,28 @@ export class Converter {
         // sometime get Cannot set property 'number' of undefined (page)
         if (collection_dest.page && collection_data_from.meta) {
             collection_dest.page.number = collection_data_from.meta.page || 1;
-            collection_dest.page.resources_per_page = collection_data_from.meta.resources_per_page || null;
-            collection_dest.page.total_resources = collection_data_from.meta.total_resources || null;
+            collection_dest.page.resources_per_page =
+                collection_data_from.meta.resources_per_page || null;
+            collection_dest.page.total_resources =
+                collection_data_from.meta.total_resources || null;
         }
 
         // convert and add new dataresoures to final collection
         let new_ids = {};
         for (let dataresource of collection_data_from.data) {
             if (!(dataresource.id in collection_dest)) {
-                collection_dest[dataresource.id] =
-                    Converter.getService(dataresource.type).cachememory.getOrCreateResource(dataresource.type, dataresource.id);
+                collection_dest[dataresource.id] = Converter.getService(
+                    dataresource.type
+                ).cachememory.getOrCreateResource(
+                    dataresource.type,
+                    dataresource.id
+                );
             }
-            Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources);
+            Converter._buildResource(
+                dataresource,
+                collection_dest[dataresource.id],
+                included_resources
+            );
             new_ids[dataresource.id] = dataresource.id;
         }
 
@@ -151,7 +181,9 @@ export class Converter {
             return;
         }
 
-        Converter.getService(resource_data_from.type).parseFromServer(resource_dest.attributes);
+        Converter.getService(resource_data_from.type).parseFromServer(
+            resource_dest.attributes
+        );
 
         let relationships_converter = new ResourceRelationshipsConverter(
             Converter.getService,

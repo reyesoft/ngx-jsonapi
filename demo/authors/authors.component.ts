@@ -1,19 +1,17 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Service, ICollection } from 'ngx-jsonapi';
 
-import { forEach } from '@demo/foreach';
+import { forEach } from '../foreach';
 import { AuthorsService } from './authors.service';
 
 @Component({
     selector: 'demo-authors',
-    templateUrl: './authors.component.html'
+    templateUrl: './authors.component.html',
 })
 export class AuthorsComponent {
     public authors: ICollection;
 
-    public constructor(
-        private authorsService: AuthorsService
-    ) {
+    public constructor(private authorsService: AuthorsService) {
         this.authors = authorsService.all(
             // { include: ['books', 'photos'] },
             success => {

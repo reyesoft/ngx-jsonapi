@@ -2,7 +2,8 @@ import { Injectable, Optional, Inject } from '@angular/core';
 import { noop } from 'rxjs/util/noop';
 
 import { ICollection } from './interfaces';
-import { Service, Resource } from './';
+import { Service } from './service';
+import { Resource } from './resource';
 import { Base } from './services/base';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttp } from './sources/http.service';
@@ -32,13 +33,15 @@ export class Core {
         jsonapiHttp: JsonapiHttp
     ) {
         this.config = new JsonapiConfig();
-        for (let k in this.config) this.config[k] = (user_config[k] !== undefined ? user_config[k] : this.config[k]);
+        for (let k in this.config)
+            this.config[k] =
+                user_config[k] !== undefined ? user_config[k] : this.config[k];
 
         Core.me = this;
         Core.injectedServices = {
             JsonapiStoreService: jsonapiStoreService,
             JsonapiHttp: jsonapiHttp,
-            rsJsonapiConfig: this.config
+            rsJsonapiConfig: this.config,
         };
     }
 
@@ -71,26 +74,46 @@ export class Core {
     }
 
     // just an helper
-    public duplicateResource(resource: Resource, ...relations_alias_to_duplicate_too: Array<string>): Resource {
-        let newresource = this.getResourceService(resource.type).new();
-        newresource.attributes = { ...newresource.attributes, ...resource.attributes };
+    public duplicateResource(
+        resource: Resource,
+        ...relations_alias_to_duplicate_too: Array<string>
+    ): Resource {
+        let newresource = <Resource>this.getResourceService(
+            resource.type
+        ).new();
+        newresource.attributes = {
+            ...newresource.attributes,
+            ...resource.attributes,
+        };
         newresource.attributes.name = newresource.attributes.name + ' xXx';
         Base.forEach(resource.relationships, (relationship, alias: string) => {
             if ('id' in relationship.data) {
                 // relation hasOne
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
-                    newresource.addRelationship(this.duplicateResource(<Resource>relationship.data), alias);
+                    newresource.addRelationship(
+                        this.duplicateResource(<Resource>relationship.data),
+                        alias
+                    );
                 } else {
-                    newresource.addRelationship(<Resource>relationship.data, alias);
+                    newresource.addRelationship(
+                        <Resource>relationship.data,
+                        alias
+                    );
                 }
             } else {
                 // relation hasMany
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
                     Base.forEach(relationship.data, relationresource => {
-                        newresource.addRelationship(this.duplicateResource(relationresource), alias);
+                        newresource.addRelationship(
+                            this.duplicateResource(relationresource),
+                            alias
+                        );
                     });
                 } else {
-                    newresource.addRelationships(<ICollection>relationship.data, alias);
+                    newresource.addRelationships(
+                        <ICollection>relationship.data,
+                        alias
+                    );
                 }
             }
         });

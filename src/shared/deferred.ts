@@ -19,7 +19,7 @@ export class Deferred<T> {
     public constructor() {
         this.promise = new Promise<T>((resolve, reject): void => {
             this.resolve = resolve;
-            this.reject  = reject;
+            this.reject = reject;
         });
     }
 }

@@ -1,50 +1,30 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "module": "es2015",
+        "sourceMap": true,
+        "declaration": false,
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "noStrictGenericChecks": true,
         "lib": [
             "es2016",
             "dom"
         ],
-        "moduleResolution": "node",
-        "declaration": true,
-        "noEmitHelpers": false,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "sourceMap": true,
-        "pretty": true,
-        "allowUnreachableCode": true,
-        "allowUnusedLabels": true,
-        "noImplicitAny": false,
-        "noImplicitReturns": false,
-        "noImplicitUseStrict": false,
-        "noFallthroughCasesInSwitch": false,
-        "allowSyntheticDefaultImports": true,
-        "suppressExcessPropertyErrors": true,
-        "suppressImplicitAnyIndexErrors": true,
-        "outDir": "dist",
-        "declarationDir": "release",
-        "baseUrl": ".",
-        "paths": {
-            "@demo/*": ["demo/*"],
-            "ngx-jsonapi": ["src/index"]
-        }
+        "outDir": "../out-tsc/app",
+        "target": "es5",
+        "module": "commonjs",
+        "baseUrl": "",
+        "rootDir": "./",
+        "strict": true
     },
-    "include": ["src/**/*", "demo/**/*"],
-    "files": [
-        "src/declarations.d.ts",
-        "src/index.ts"
-    ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "**/*/node_modules",
+        "src/schematics/src/*/files/**/*"
     ],
     "compileOnSave": false,
     "buildOnSave": false,
-    "awesomeTypescriptLoaderOptions": {
-        "forkChecker": false
-    },
-    "angularCompilerOptions": {
-        "genDir": "release/",
-        "skipTemplateCodegen": true
+    "atom": {
+        "rewriteTsconfig": false
     }
 }
