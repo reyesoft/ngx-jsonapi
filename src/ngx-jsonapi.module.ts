@@ -10,7 +10,9 @@ import { NoDuplicatedHttpCallsService } from './services/noduplicatedhttpcalls.s
 import { JsonapiConfig } from './jsonapi-config';
 
 @NgModule({
-    imports: [CommonModule],
+    imports: [
+        CommonModule
+    ],
     exports: [
         // BrowserModule,  // needed by HttpClientModule?
         HttpClientModule

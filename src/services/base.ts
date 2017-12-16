@@ -9,13 +9,13 @@ import { Page } from './page';
 export class Base {
     public static Params: /* IParamsCollection | */ IParamsResource = {
         id: '',
-        include: [],
+        include: []
     };
 
     public static Schema: ISchema = {
         attributes: {},
         relationships: {},
-        ttl: 0,
+        ttl: 0
     };
 
     public static newCollection(): ICollection {
@@ -45,15 +45,15 @@ export class Base {
                 $cache_last_update: {
                     value: 0,
                     enumerable: false,
-                    writable: true,
+                    writable: true
                 },
-                page: { value: new Page(), enumerable: false, writable: true },
+                page: { value: new Page(), enumerable: false, writable: true }
             }
         );
     }
 
     public static isObjectLive(ttl: number, last_update: number) {
-        return ttl >= 0 && Date.now() <= last_update + ttl * 1000;
+        return (ttl >= 0 && Date.now() <= (last_update + ttl * 1000));
     }
 
     public static forEach<T extends object>(
