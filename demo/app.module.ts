@@ -50,6 +50,8 @@ const appRoutes: Routes = [
         BooksComponent,
         BookComponent
     ],
-    bootstrap: [AppComponent],
+    bootstrap: [
+        AppComponent
+    ]
 })
 export class AppModule {}
