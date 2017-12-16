@@ -9,7 +9,7 @@ import { PhotosService } from '../photos/photos.service';
 
 @Component({
     selector: 'demo-book',
-    templateUrl: './book.component.html',
+    templateUrl: './book.component.html'
 })
 export class BookComponent {
     public book: Resource;

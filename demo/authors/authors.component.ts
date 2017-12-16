@@ -6,12 +6,14 @@ import { AuthorsService } from './authors.service';
 
 @Component({
     selector: 'demo-authors',
-    templateUrl: './authors.component.html',
+    templateUrl: './authors.component.html'
 })
 export class AuthorsComponent {
     public authors: ICollection;
 
-    public constructor(private authorsService: AuthorsService) {
+    public constructor(
+        private authorsService: AuthorsService
+    ) {
         this.authors = authorsService.all(
             // { include: ['books', 'photos'] },
             success => {

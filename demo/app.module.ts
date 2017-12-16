@@ -40,7 +40,7 @@ const appRoutes: Routes = [
             { useHash: true }
         ),
         NgxJsonapiModule.forRoot({
-            url: 'http://jsonapiplayground.reyesoft.com/v2/',
+            url: 'http://jsonapiplayground.reyesoft.com/v2/'
         })
     ],
     declarations: [
@@ -54,4 +54,4 @@ const appRoutes: Routes = [
         AppComponent
     ]
 })
-export class AppModule {}
+export class AppModule { }
