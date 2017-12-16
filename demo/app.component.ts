@@ -4,12 +4,14 @@ import { JsonapiCore } from 'ngx-jsonapi';
 @Component({
     selector: 'demo-app',
     styleUrls: ['./app.component.scss'],
-    templateUrl: './app.component.html',
+    templateUrl: './app.component.html'
 })
 export class AppComponent /* implements OnInit */ {
     public loading = '';
 
-    public constructor(private jsonapiCore: JsonapiCore) {
+    public constructor(
+        private jsonapiCore: JsonapiCore
+    ) {
         jsonapiCore.loadingsStart = (): void => {
             this.loading = 'LOADING...';
         };
