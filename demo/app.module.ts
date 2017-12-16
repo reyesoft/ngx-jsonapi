@@ -17,7 +17,7 @@ const appRoutes: Routes = [
     {
         path: '',
         redirectTo: '/authors',
-        pathMatch: 'full',
+        pathMatch: 'full'
     },
     { path: 'authors', component: AuthorsComponent },
     { path: 'authors/:id', component: AuthorComponent },
@@ -41,14 +41,14 @@ const appRoutes: Routes = [
         ),
         NgxJsonapiModule.forRoot({
             url: 'http://jsonapiplayground.reyesoft.com/v2/',
-        }),
+        })
     ],
     declarations: [
         AppComponent,
         AuthorsComponent,
         AuthorComponent,
         BooksComponent,
-        BookComponent,
+        BookComponent
     ],
     bootstrap: [AppComponent],
 })

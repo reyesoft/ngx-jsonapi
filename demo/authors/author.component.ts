@@ -8,7 +8,7 @@ import { AuthorsService } from './authors.service';
 
 @Component({
     selector: 'demo-author',
-    templateUrl: './author.component.html',
+    templateUrl: './author.component.html'
 })
 export class AuthorComponent {
     public author: Resource;
@@ -59,23 +59,16 @@ export class AuthorComponent {
     */
     public update() {
         this.author.attributes.name += 'o';
-        this.author
-            .save
+        this.author.save(
             // { include: ['books'] }
-            ();
-        console.log(
-            'update save with book include',
-            this.author.toObject({ include: ['books'] })
         );
+        console.log('update save with book include', this.author.toObject({ include: ['books'] }));
         console.log('update save without any include', this.author.toObject());
     }
 
     public removeRelationship() {
         this.author.removeRelationship('photos', '1');
         this.author.save();
-        console.log(
-            'removeRelationship save with photos include',
-            this.author.toObject()
-        );
+        console.log('removeRelationship save with photos include', this.author.toObject());
     }
 }
