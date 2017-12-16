@@ -54,19 +54,23 @@ export class BooksComponent {
                 );
 
                 console.log('BooksRequest#2 requested');
-                let books2 = this.booksService.all(success2 => {
-                    console.log('BooksRequest#2 received (author data from cache)',
-                        <Resource>books2[Object.keys(this.books)[1]].relationships.author.data
-                    );
-                });
+                let books2 = this.booksService.all(
+                    success2 => {
+                        console.log('BooksRequest#2 received (author data from cache)',
+                            <Resource>books2[Object.keys(this.books)[1]].relationships.author.data
+                        );
+                    }
+                );
 
                 // TEST 2
                 console.log('BookRequest#3 requested');
-                let book1 = this.booksService.get(1, success1 => {
-                    console.log('BookRequest#3 received (author data from cache)',
-                        (<Resource>book1.relationships.author.data).attributes
-                    );
-                });
+                let book1 = this.booksService.get(1,
+                    success1 => {
+                        console.log('BookRequest#3 received (author data from cache)',
+                            (<Resource>book1.relationships.author.data).attributes
+                        );
+                    }
+                );
             },
             error => {
                 console.log('error books controller', error);

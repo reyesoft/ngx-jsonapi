@@ -8,9 +8,9 @@ export class AuthorsService extends Service {
         attributes: {
             name: { },
             date_of_birth: { default: '1993-12-10' },
-            date_of_death: { },
-            created_at: { },
-            updated_at: { }
+            date_of_death: {},
+            created_at: {},
+            updated_at: {}
         },
         relationships: {
             books: {
@@ -18,7 +18,7 @@ export class AuthorsService extends Service {
             },
             photos: {
                 hasMany: true
-            },
+            }
         },
         ttl: 10
     };
