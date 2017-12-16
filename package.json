@@ -132,6 +132,7 @@
     "zone.js": "^0.8.12"
   },
   "dependencies": {
+    "gh-pages": "^1.1.0",
     "localforage": "^1.5.2"
   },
   "jest": {
