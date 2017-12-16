@@ -242,8 +242,8 @@ You can run [JsonApi Demo App](http://ngx-jsonapi.reyesoft.com/) locally followi
 ```bash
 git clone git@github.com:reyesoft/ngx-jsonapi.git
 cd ngx-jsonapi
-npm install
-npm start
+yarn
+yarn start
 ```
 
 We use as backend [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
