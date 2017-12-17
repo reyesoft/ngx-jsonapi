@@ -34,4 +34,9 @@ export class BookComponent {
             }
         );
     }
+
+    public getAuthorName(book: Resource): string {
+        let data = <Resource>book.relationships.author.data;
+        return data.attributes ? data.attributes.name : '';
+    }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Resource } from 'ngx-jsonapi';
+import { Resource, IRelationship, ICollection } from 'ngx-jsonapi';
 
 import { forEach } from '../foreach';
 import { PhotosService } from '../photos/photos.service';
@@ -52,6 +52,10 @@ export class AuthorComponent {
         // });
         console.log('new save', author.toObject());
         // author.save( /* { include: ['book'] } */ );
+    }
+
+    public getPhotos(author: Resource): Array<Resource> {
+        return (<ICollection>author.relationships.photos.data).$toArray;
     }
 
     /*

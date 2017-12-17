@@ -5,7 +5,7 @@
   "module": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.es5.js",
   "es2015": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.js",
   "main": "ngx-jsonapi/bundles/ngx-jsonapi.umd.js",
-  "typings": "ngx-jsonapi.d.ts",
+  "typings": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/reyesoft/ngx-jsonapi"

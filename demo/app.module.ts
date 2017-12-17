@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxJsonapiModule } from 'ngx-jsonapi';
@@ -12,6 +13,7 @@ import { BooksService } from './books/books.service';
 import { BooksComponent } from './books/books.component';
 import { BookComponent } from './books/book.component';
 import { PhotosService } from './photos/photos.service';
+import { PhotosComponent } from './photos/photos.component';
 
 const appRoutes: Routes = [
     {
@@ -34,6 +36,7 @@ const appRoutes: Routes = [
     ],
     imports: [
         BrowserModule,
+        CommonModule,
         HttpClientModule,
         RouterModule.forRoot(
             appRoutes,
@@ -48,7 +51,8 @@ const appRoutes: Routes = [
         AuthorsComponent,
         AuthorComponent,
         BooksComponent,
-        BookComponent
+        BookComponent,
+        PhotosComponent
     ],
     bootstrap: [
         AppComponent
