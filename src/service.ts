@@ -71,7 +71,7 @@ export class Service extends ParentResourceService {
     }
 
     public get<T extends Resource>(
-        id,
+        id: string,
         params?: IParamsResource | Function,
         fc_success?: Function,
         fc_error?: Function

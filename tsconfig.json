@@ -15,7 +15,7 @@
         "module": "commonjs",
         "baseUrl": "",
         "rootDir": "./",
-        "strict": true
+        "strict": false
     },
     "exclude": [
         "node_modules",

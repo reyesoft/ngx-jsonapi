@@ -19,7 +19,7 @@ export class NoDuplicatedHttpCallsService {
         return deferred.promise;
     }
 
-    public async setPromiseRequest(path, promise: Promise<any>) {
+    public async setPromiseRequest(path: string, promise: Promise<any>) {
         promise
             .then(success => {
                 if (path in this.calls) {

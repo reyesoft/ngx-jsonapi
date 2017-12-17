@@ -56,7 +56,7 @@ export class Base {
         return (ttl >= 0 && Date.now() <= (last_update + ttl * 1000));
     }
 
-    public static forEach<T extends object>(
+    public static forEach<T extends { [keyx: string ]: any } >(
         collection: T,
         fc: (object: any, key?: string | number) => void
     ): void {

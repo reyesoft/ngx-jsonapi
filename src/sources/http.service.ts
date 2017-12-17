@@ -69,7 +69,8 @@ export class Http {
                 fakeHttpPromise = http_observable.toPromise();
             }
         }
-        if (method === 'get') {
+        if (fakeHttpPromise === null) {
+            // method === 'get'
             fakeHttpPromise = this.noDuplicatedHttpCallsService.getAPromise(
                 path
             );
@@ -83,7 +84,7 @@ export class Http {
                 setTimeout(() => {
                     Core.me.refreshLoadings(-1);
                     deferred.resolve(success);
-                }, this.rsJsonapiConfig.delay);
+                }, 0);
             })
             .catch(error => {
                 Core.me.refreshLoadings(-1);
