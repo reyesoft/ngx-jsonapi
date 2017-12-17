@@ -1,6 +1,6 @@
 # tsconfig-build.json
 * strictMetadataEmit = true
-* strict = true
+* strict = true (en todos los tsconfig)
 # otros
 * limpiear dependecies packages.json
 * mover demo files to demo/app
