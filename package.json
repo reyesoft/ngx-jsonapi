@@ -2,7 +2,6 @@
   "name": "ngx-jsonapi",
   "description": "JSON API library for Angular",
   "scripts": {
-    "bootstrap": "lerna bootstrap",
     "build": "ts-node ./build/index.ts",
     "postbuild": "rimraf **/dist/**/*.ngsummary.json",
     "deploy:builds": "ts-node ./build/deploy-build.ts",
@@ -105,7 +104,6 @@
     "karma-coverage-istanbul-reporter": "^0.2.0",
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
-    "lerna": "^2.0.0",
     "module-alias": "^2.0.0",
     "ncp": "^2.0.0",
     "nyc": "^10.1.2",
