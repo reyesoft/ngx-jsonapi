@@ -16,7 +16,7 @@ export class BooksComponent {
     ) {
         this.books = booksService.all(
             {
-                page: { number: 3, limit: 10 },
+                page: { number: 2 },
                 include: ['books', 'photos']
             },
             success => {

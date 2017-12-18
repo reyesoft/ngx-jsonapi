@@ -40,9 +40,7 @@ export class PathBuilder {
     }
 
     public get(): string {
-        let params = [];
-        // angular.copy(this.get_params, params);
-        this.get_params = JSON.parse(JSON.stringify(params));
+        let params = [...this.get_params];
 
         if (this.includes.length > 0) {
             params.push('include=' + this.includes.join(','));
