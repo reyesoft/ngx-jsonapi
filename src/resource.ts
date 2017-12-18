@@ -226,18 +226,18 @@ export class Resource extends ParentResourceService {
                         }
 
                         // is a resource?
-                        if ('id' in success.data.data) {
-                            this.id = success.data.data.id;
+                        if ('id' in success.data) {
+                            this.id = success.data.id;
                             Converter.build(success.data, this);
                             /*
                         Si lo guardo en la caché, luego no queda bindeado con la vista
                         Usar {{ $ctrl.service.getCachedResources() | json }}, agregar uno nuevo, editar
                         */
                             // this.getService().cachememory.setResource(this);
-                        } else if (isArray(success.data.data)) {
+                        } else if (isArray(success.data)) {
                             console.warn(
                                 'Server return a collection when we save()',
-                                success.data.data
+                                success.data
                             );
 
                             /*
