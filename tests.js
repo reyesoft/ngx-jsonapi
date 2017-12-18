@@ -23,8 +23,8 @@ getTestBed().initTestEnvironment(ServerTestingModule, platformServerTesting());
 moduleAlias.addAlias('ngx-jsonapi', __dirname + '/src');
 
 runner.loadConfig({
-  spec_dir: 'src',
-  spec_files: [ '**/*.spec.ts' ]
+    spec_dir: 'src',
+    spec_files: [ '**/*.spec.ts' ]
 });
 
 runner.execute();
