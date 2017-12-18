@@ -8,8 +8,8 @@ import { Base } from './services/base';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttp } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
-import { IRelationship } from 'src';
-import { forEach } from '../demo/foreach';
+import { IRelationship } from './interfaces/';
+import { forEach } from './foreach';
 
 @Injectable()
 export class Core {

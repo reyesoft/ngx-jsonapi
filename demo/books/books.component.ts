@@ -64,7 +64,7 @@ export class BooksComponent {
 
                 // TEST 2
                 console.log('BookRequest#3 requested');
-                let book1 = this.booksService.get(1,
+                let book1 = this.booksService.get('1',
                     success1 => {
                         console.log('BookRequest#3 received (author data from cache)',
                             (<Resource>book1.relationships.author.data).attributes

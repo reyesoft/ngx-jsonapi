@@ -3,12 +3,12 @@
 ## Running tests
 
 ```bash
-npm test
+yarn test
 ```
 
 ## Publish
 
 ```bash
-npm run package
-npm publish
+yarn build
+yarn release
 ```

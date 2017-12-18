@@ -250,4 +250,4 @@ We use as backend [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
 
 ## Colaborate
 
-Just commit! And don't forget your pull request 😉
+Check [Environment development file](DEV_ENVIRONMENT.md) 😉.
