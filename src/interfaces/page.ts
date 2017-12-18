@@ -2,7 +2,7 @@ export interface IPage {
     number: number;
 
     // http://jsonapi.org/format/#fetching-pagination
-    limit?: number;
+    size?: number;
 
     // multinexo
     total_resources?: number;

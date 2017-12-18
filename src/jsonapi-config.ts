@@ -7,7 +7,7 @@ export class JsonapiConfig {
     public parameters? = {
         page: {
             number: 'page[number]',
-            limit: 'page[limit]'
+            size: 'page[size]'
         }
     };
 }

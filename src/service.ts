@@ -242,18 +242,14 @@ export class Service extends ParentResourceService {
         if (params.page) {
             if (params.page.number > 1) {
                 path.addParam(
-                    Core.injectedServices.rsJsonapiConfig.parameters.page
-                        .number +
-                        '=' +
-                        params.page.number
+                    Core.injectedServices.rsJsonapiConfig.parameters.page.number +
+                        '=' + params.page.number
                 );
             }
-            if (params.page.limit) {
+            if (params.page.size) {
                 path.addParam(
-                    Core.injectedServices.rsJsonapiConfig.parameters.page
-                        .limit +
-                        '=' +
-                        params.page.limit
+                    Core.injectedServices.rsJsonapiConfig.parameters.page.size +
+                        '=' + params.page.size
                 );
             }
         }

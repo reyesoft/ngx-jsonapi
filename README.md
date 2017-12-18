@@ -224,7 +224,7 @@ this.author.save(success => {
 let authors = authorsService.all(
   {
   // get page 2 of authors collection, with a limit per page of 50
-  page: { number: 2 ;  limit: 50 }
+  page: { number: 2 ;  size: 50 }
   }
 );
 ```
@@ -232,7 +232,7 @@ let authors = authorsService.all(
 #### Collection page
 
 - number: number of the current page
-- limit: limit of resources per page ([it's sended to server by url](http://jsonapi.org/format/#fetching-pagination))
+- size: size of resources per page ([it's sended to server by url](http://jsonapi.org/format/#fetching-pagination))
 - information returned from server (check if is avaible) **total_resources: total of avaible resources on server** resources_per_page: total of resources returned per page requested
 
 ## Local Demo App
