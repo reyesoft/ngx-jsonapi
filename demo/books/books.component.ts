@@ -15,7 +15,10 @@ export class BooksComponent {
         protected booksService: BooksService
     ) {
         this.books = booksService.all(
-            // { include: ['books', 'photos'] },
+            {
+                page: { number: 3, limit: 10 },
+                include: ['books', 'photos']
+            },
             success => {
                 console.info('success books controll', this.books);
             },
@@ -64,7 +67,7 @@ export class BooksComponent {
 
                 // TEST 2
                 console.log('BookRequest#3 requested');
-                let book1 = this.booksService.get(1,
+                let book1 = this.booksService.get('1',
                     success1 => {
                         console.log('BookRequest#3 received (author data from cache)',
                             (<Resource>book1.relationships.author.data).attributes
