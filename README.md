@@ -2,7 +2,7 @@
 
 <center>
 
-[![angular jsonapi](https://user-images.githubusercontent.com/938894/34119450-fa59fec0-e400-11e7-92c1-dd2aff2ebc00.png)](http://angular-translate.github.io)
+[![angular jsonapi](https://user-images.githubusercontent.com/938894/34119450-fa59fec0-e400-11e7-92c1-dd2aff2ebc00.png)](https://github.com/reyesoft/ngx-jsonapi)
 
 [![Build Status](https://travis-ci.org/reyesoft/ngx-jsonapi.svg?branch=master)](https://travis-ci.org/reyesoft/ngx-jsonapi) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b097196f7f544412a79a99080a41bbc1)](https://www.codacy.com/app/Swimlane/ngx-charts?utm_source=github.com&utm_medium=referral&utm_content=swimlane/ngx-charts&utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/ngx-jsonapi.png)](https://badge.fury.io/js/ngx-jsonapi)
 </center>
