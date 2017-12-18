@@ -1,6 +1,6 @@
 {
   "name": "ngx-jsonapi",
-  "version": "0.0.3-rc.3",
+  "version": "0.1.0-rc.2",
   "description": "JSON API library for Angular",
   "module": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.es5.js",
   "es2015": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.js",
@@ -24,8 +24,10 @@
   ],
   "license": "MIT",
   "homepage": "https://github.com/reyesoft/ngx-jsonapi#readme",
-  "peerDependencies": {
-    "@angular/core": "^4.0.0 || ^5.0.0",
+  "dependencies": {
     "localforage": "^1.5.2"
+  },
+  "peerDependencies": {
+    "@angular/core": "^4.0.0 || ^5.0.0"
   }
 }
