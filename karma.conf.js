@@ -22,18 +22,16 @@ module.exports = function (config) {
             './demo/test.ts': ['@angular/cli']
         },
         mime: {
-            'text/x-typescript': ['ts','tsx']
+            'text/x-typescript': ['ts', 'tsx']
         },
         coverageIstanbulReporter: {
-            reports: [ 'html', 'lcovonly', 'text-summary' ],
+            reports: ['html', 'lcovonly', 'text-summary' ],
             fixWebpackSourcePaths: true
         },
         angularCli: {
             environment: 'dev'
         },
-        reporters: config.angularCli && config.angularCli.codeCoverage
-        ? ['progress', 'coverage-istanbul', 'kjhtml']
-        : ['progress', 'kjhtml'],
+        reporters: config.angularCli && config.angularCli.codeCoverage ? ['progress', 'coverage-istanbul', 'kjhtml'] : ['progress', 'kjhtml'],
         port: 9876,
         colors: true,
         logLevel: config.LOG_INFO,
