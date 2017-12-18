@@ -15,7 +15,10 @@ export class BooksComponent {
         protected booksService: BooksService
     ) {
         this.books = booksService.all(
-            // { include: ['books', 'photos'] },
+            {
+                page: { number: 3, limit: 10 },
+                include: ['books', 'photos']
+            },
             success => {
                 console.info('success books controll', this.books);
             },
