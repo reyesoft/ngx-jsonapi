@@ -1,5 +1,5 @@
 import { ICollection } from '../interfaces';
-import { Resource } from '../';
+import { Resource } from '../resource';
 import { IDataResource } from './data-resource';
 
 export interface IRelationship {

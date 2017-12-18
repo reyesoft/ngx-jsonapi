@@ -7,7 +7,7 @@ export class AuthorsService extends Service {
     public schema: ISchema = {
         attributes: {
             name: { },
-            date_of_birth: { default: '1993-12-10'},
+            date_of_birth: { default: '1993-12-10' },
             date_of_death: {},
             created_at: {},
             updated_at: {}

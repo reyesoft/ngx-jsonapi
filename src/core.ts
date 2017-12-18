@@ -2,11 +2,14 @@ import { Injectable, Optional, Inject } from '@angular/core';
 import { noop } from 'rxjs/util/noop';
 
 import { ICollection } from './interfaces';
-import { Service, Resource } from './';
+import { Service } from './service';
+import { Resource } from './resource';
 import { Base } from './services/base';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttp } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
+import { IRelationship } from 'src';
+import { forEach } from '../demo/foreach';
 
 @Injectable()
 export class Core {
@@ -17,7 +20,7 @@ export class Core {
         rsJsonapiConfig: JsonapiConfig;
     };
 
-    private resourceServices: Object = {};
+    private resourceServices: { [type:string]: Service } = {};
     public loadingsCounter: number = 0;
     public loadingsStart: Function = noop;
     public loadingsDone: Function = noop;
@@ -32,7 +35,8 @@ export class Core {
         jsonapiHttp: JsonapiHttp
     ) {
         this.config = new JsonapiConfig();
-        for (let k in this.config) this.config[k] = (user_config[k] !== undefined ? user_config[k] : this.config[k]);
+        for (let k in this.config)
+            (<any>this.config)[k] = ((<any>this.config)[k] !== undefined ? (<any>this.config)[k] : (<any>this.config)[k]);
 
         Core.me = this;
         Core.injectedServices = {
@@ -72,10 +76,11 @@ export class Core {
 
     // just an helper
     public duplicateResource(resource: Resource, ...relations_alias_to_duplicate_too: Array<string>): Resource {
-        let newresource = this.getResourceService(resource.type).new();
+        let newresource = <Resource>this.getResourceService(resource.type).new();
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };
         newresource.attributes.name = newresource.attributes.name + ' xXx';
-        Base.forEach(resource.relationships, (relationship, alias: string) => {
+
+        forEach(resource.relationships, (relationship: IRelationship, alias: string) => {
             if ('id' in relationship.data) {
                 // relation hasOne
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {

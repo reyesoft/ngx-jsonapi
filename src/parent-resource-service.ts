@@ -12,12 +12,12 @@ export class ParentResourceService {
         if (isFunction(exec_params.params)) {
             exec_params.fc_error = exec_params.fc_success;
             exec_params.fc_success = <Function>exec_params.params;
-            exec_params.params = {...{}, ...Base.Params};
+            exec_params.params = { ...{}, ...Base.Params };
         } else {
             if (typeof exec_params.params === 'undefined') {
-                exec_params.params = {...{}, ...Base.Params};
+                exec_params.params = { ...{}, ...Base.Params };
             } else {
-                exec_params.params = {...{}, ...Base.Params, ...exec_params.params};
+                exec_params.params = {...{}, ...Base.Params,...exec_params.params };
             }
         }
 
@@ -30,5 +30,4 @@ export class ParentResourceService {
     protected runFc(some_fc, param) {
         return isFunction(some_fc) ? some_fc(param) : noop();
     }
-
 }

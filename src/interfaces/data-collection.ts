@@ -5,5 +5,5 @@ import { IPage } from './page';
 export interface IDataCollection extends IDocument {
     data: Array<IDataResource>;
     page?: IPage;
-    _lastupdate_time?: number;   // used when come from Store
+    _lastupdate_time?: number; // used when come from Store
 }

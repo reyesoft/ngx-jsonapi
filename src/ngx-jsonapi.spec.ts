@@ -7,9 +7,7 @@ import { NgxJsonapiModule } from '.';
 */
 
 describe('ngx-jsonapi Module', () => {
-
-  it('should load', () => {
-    expect(NgxJsonapiModule).toBeDefined();
-  });
-
+    it('should load', () => {
+        expect(NgxJsonapiModule).toBeDefined();
+    });
 });

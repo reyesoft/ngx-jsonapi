@@ -8,12 +8,12 @@
 <h4>Author (one)</h4>
 <p><small>This a relationship with <i>hasMany:false</i></small></p>
 <ul>
-    <li>Name: <strong>{{ book.relationships.author.data.attributes ? book.relationships.author.data.attributes.name : '' }}</strong></li>
+    <li>Name: <strong>{{ getAuthorName(book) }}</strong></li>
 </ul>
 
 <h4>Photos (many)</h4>
 <p><small>This a relationship with <i>hasMany:true</i></small></p>
-<ul *ngIf="book.relationships.photos === 'collection'">
+<ul *ngIf="book.relationships.photos.content === 'collection'">
     <li *ngFor="let photo of book.relationships.photos.data.$toArray">
         URI: <a href="{{ photo.attributes.uri }}">{{ photo.attributes.uri }}</a>
     </li>

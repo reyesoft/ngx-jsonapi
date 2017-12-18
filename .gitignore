@@ -1,5 +1,6 @@
 /compiled
-/build
+/dist
+/demo-dist
 /release
 
 # See http://help.github.com/ignore-files/ for more about ignoring files.
@@ -34,6 +35,7 @@
 /coverage
 /libpeerconnection.log
 npm-debug.log
+yarn-error.log
 testem.log
 /typings
 

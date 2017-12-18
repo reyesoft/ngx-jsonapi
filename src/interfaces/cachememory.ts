@@ -1,5 +1,5 @@
 import { ICollection } from '../interfaces';
-import { Resource } from '../';
+import { Resource } from '../resource';
 import { ICache } from '../interfaces/cache';
 
 export interface ICacheMemory extends ICache {

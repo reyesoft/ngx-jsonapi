@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Service, ICollection, Resource } from 'ngx-jsonapi';
 
-import { forEach } from '@demo/foreach';
+import { forEach } from '../foreach';
 import { BooksService } from './books.service';
 
 @Component({
@@ -57,7 +57,7 @@ export class BooksComponent {
                 let books2 = this.booksService.all(
                     success2 => {
                         console.log('BooksRequest#2 received (author data from cache)',
-                            (<Resource>books2[Object.keys(this.books)[1]].relationships.author.data)
+                            <Resource>books2[Object.keys(this.books)[1]].relationships.author.data
                         );
                     }
                 );
@@ -69,7 +69,8 @@ export class BooksComponent {
                         console.log('BookRequest#3 received (author data from cache)',
                             (<Resource>book1.relationships.author.data).attributes
                         );
-                    });
+                    }
+                );
             },
             error => {
                 console.log('error books controller', error);

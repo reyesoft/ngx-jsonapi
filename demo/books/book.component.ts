@@ -2,10 +2,10 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Resource } from 'ngx-jsonapi';
 
-import { forEach } from '@demo/foreach';
-import { AuthorsService } from '@demo/authors/authors.service';
+import { forEach } from '../foreach';
+import { AuthorsService } from '../authors/authors.service';
 import { BooksService } from './books.service';
-import { PhotosService } from '@demo/photos/photos.service';
+import { PhotosService } from '../photos/photos.service';
 
 @Component({
     selector: 'demo-book',
@@ -33,5 +33,10 @@ export class BookComponent {
                 console.log('error books controll', error);
             }
         );
+    }
+
+    public getAuthorName(book: Resource): string {
+        let data = <Resource>book.relationships.author.data;
+        return data.attributes ? data.attributes.name : '';
     }
 }

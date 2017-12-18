@@ -1,8 +1,6 @@
-import './polyfills';
-
 import { NgModule, ModuleWithProviders, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BrowserModule } from '@angular/platform-browser';
+// import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
 import { Core as JsonapiCore } from './core';
@@ -16,7 +14,7 @@ import { JsonapiConfig } from './jsonapi-config';
         CommonModule
     ],
     exports: [
-        BrowserModule,  // needed by HttpClientModule?
+        // BrowserModule,  // needed by HttpClientModule?
         HttpClientModule
     ],
     providers: [
@@ -31,7 +29,7 @@ export class NgxJsonapiModule {
         return {
             ngModule: NgxJsonapiModule,
             providers: [
-                {provide: JsonapiConfig, useValue: config }
+                { provide: JsonapiConfig, useValue: config }
             ]
         };
     }
