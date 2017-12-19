@@ -43,31 +43,39 @@ export class AuthorComponent {
     /*
     Add a new author
     */
-    public new() {
+    public newAuthor() {
         let author = this.authorsService.new();
-        author.attributes.name = 'Pablo Reyes';
+        author.attributes.name = prompt('New author name:', 'John Doe');
+        if (!author.attributes.name) {
+            return ;
+        }
         author.attributes.date_of_birth = '2030-12-10';
-        // angular.forEach(this.relatedbooks, (book: Jsonapi.IResource) => {
-        //     author.addRelationship(book /* , 'handbook' */);
-        // });
-        console.log('new save', author.toObject());
-        // author.save( /* { include: ['book'] } */ );
-    }
-
-    public getPhotos(author: Resource): Array<Resource> {
-        return (<ICollection>author.relationships.photos.data).$toArray;
+        console.log('author data for save', author.toObject());
+        author.save(
+            /* { include: ['book'] } */
+            success => {
+                console.log('author saved', author.toObject());
+            }
+        );
     }
 
     /*
     Update name for actual author
     */
-    public update() {
-        this.author.attributes.name += 'o';
+    public updateAuthor() {
+        this.author.attributes.name = prompt('Author name:', this.author.attributes.name);
+        console.log('author data for save with book include', this.author.toObject({ include: ['books'] }));
+        console.log('author data for save without any include', this.author.toObject());
         this.author.save(
-            // { include: ['books'] }
+            /* { include: ['book'] } */
+            success => {
+                console.log('author saved', this.author.toObject());
+            }
         );
-        console.log('update save with book include', this.author.toObject({ include: ['books'] }));
-        console.log('update save without any include', this.author.toObject());
+    }
+
+    public getPhotos(author: Resource): Array<Resource> {
+        return (<ICollection>author.relationships.photos.data).$toArray;
     }
 
     public removeRelationship() {

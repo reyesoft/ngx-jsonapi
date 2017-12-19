@@ -171,7 +171,7 @@ export class Resource extends ParentResourceService {
     protected async __exec<T extends Resource>(
         exec_params: IExecParams
     ): Promise<object> {
-        let exec_pp = super.proccess_exec_params(exec_params);
+        let exec_pp = this.proccess_exec_params(exec_params);
 
         switch (exec_params.exec_type) {
             case 'save':
@@ -206,7 +206,7 @@ export class Resource extends ParentResourceService {
 
                 let promise = Core.injectedServices.JsonapiHttp.exec(
                     path.get(),
-                    this.id ? 'PUT' : 'POST',
+                    this.id ? 'PATCH' : 'POST',
                     object,
                     !isFunction(fc_error)
                 );

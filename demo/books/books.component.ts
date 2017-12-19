@@ -17,7 +17,7 @@ export class BooksComponent {
         this.books = booksService.all(
             {
                 page: { number: 2 },
-                include: ['books', 'photos']
+                include: ['author', 'photos']
             },
             success => {
                 console.info('success books controll', this.books);

@@ -48,10 +48,7 @@ export class Http {
             const req = new HttpRequest(
                 method,
                 this.rsJsonapiConfig.url + path,
-                {
-                    headers: headers,
-                    body: data || null,
-                }
+                data || null
             );
 
             let http_observable = this.http.request(
