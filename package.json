@@ -20,7 +20,7 @@
     "ci": "yarn run build && yarn run test && nyc report --reporter=text-lcov | coveralls",
     "watch:tests": "chokidar 'src/**/*.ts' --initial -c 'nyc --reporter=text --reporter=html yarn run test:unit'",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "release": "cd dist && yarn publish",
+    "release": "yarn run build && cd dist && yarn publish",
     "codegen": "ts-node src/codegen/src/index.ts"
   },
   "engines": {
