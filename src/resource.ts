@@ -131,7 +131,7 @@ export class Resource extends ParentResourceService {
 
         // just for performance dont copy if not necessary
         let attributes;
-        if (this.getService().parseToServer) {
+        if (this.getService() && this.getService().parseToServer) {
             attributes = { ...{}, ...this.attributes };
             this.getService().parseToServer(attributes);
         } else {
