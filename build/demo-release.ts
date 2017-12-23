@@ -1,7 +1,15 @@
 import * as path from 'path';
-var ghpages = require('gh-pages');
+import * as fs from 'fs';
 
+var ghpages = require('gh-pages');
 var dir = path.resolve(path.join(__dirname, '../', 'demo-dist'));
+
+fs.writeFile(dir + '/CNAME', "ngx-jsonapi.reyesoft.com", function(err) {
+    if(err) {
+        return console.log(err);
+    }
+});
+
 ghpages.publish(dir, {
     user: {
         name: 'Pablo Reyes',
