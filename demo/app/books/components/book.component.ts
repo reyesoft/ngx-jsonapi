@@ -2,7 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Resource } from 'ngx-jsonapi';
 
-import { forEach } from '../../foreach';
+import { forEach } from '../../../foreach';
 import { AuthorsService } from '../../authors/authors.service';
 import { BooksService } from './../books.service';
 import { PhotosService } from '../../photos/photos.service';

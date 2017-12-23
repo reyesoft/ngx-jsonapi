@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Service, ICollection, Resource } from 'ngx-jsonapi';
 
-import { forEach } from '../../foreach';
+import { forEach } from '../../../foreach';
 import { BooksService } from './../books.service';
 
 @Component({
