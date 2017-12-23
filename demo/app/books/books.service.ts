@@ -18,8 +18,7 @@ export class BooksService extends Service {
             photos: {
                 hasMany: true
             }
-        },
-        ttl: 10
+        }
     };
 
     // executed before get data from server

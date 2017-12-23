@@ -1,19 +1,14 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import { environment } from "../environments/environment";
 import { NgxJsonapiModule } from 'ngx-jsonapi';
 
 import { AppComponent } from './app.component';
 import { AuthorsService } from './authors/authors.service';
-import { AuthorsComponent } from './authors/authors.component';
-import { AuthorComponent } from './authors/author.component';
 import { BooksService } from './books/books.service';
-import { BooksComponent } from './books/books.component';
-import { BookComponent } from './books/book.component';
 import { PhotosService } from './photos/photos.service';
-import { PhotosComponent } from './photos/photos.component';
 
 const appRoutes: Routes = [
     {
@@ -21,11 +16,14 @@ const appRoutes: Routes = [
         redirectTo: '/authors',
         pathMatch: 'full'
     },
-    { path: 'authors', component: AuthorsComponent },
-    { path: 'authors/:id', component: AuthorComponent },
-    { path: 'books', component: BooksComponent },
-    { path: 'books/:id', component: BookComponent }
-    // { path: '**', redirectTo: '/authors', pathMatch: 'full' }
+    {
+        path: 'authors',
+        loadChildren: './authors/authors.module#AuthorsModule'
+    },
+    {
+        path: 'books',
+        loadChildren: './books/books.module#BooksModule'
+    }
 ];
 
 @NgModule({
@@ -36,23 +34,17 @@ const appRoutes: Routes = [
     ],
     imports: [
         BrowserModule,
-        CommonModule,
         HttpClientModule,
         RouterModule.forRoot(
             appRoutes,
             { useHash: true }
         ),
         NgxJsonapiModule.forRoot({
-            url: 'http://jsonapiplayground.reyesoft.com/v2/'
+            url: environment.jsonapi_url
         })
     ],
     declarations: [
-        AppComponent,
-        AuthorsComponent,
-        AuthorComponent,
-        BooksComponent,
-        BookComponent,
-        PhotosComponent
+        AppComponent
     ],
     bootstrap: [
         AppComponent

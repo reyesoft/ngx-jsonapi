@@ -6,7 +6,13 @@
 yarn test
 ```
 
-## Publish
+## Deploy page
+
+```bash
+yarn demo:build
+yarn demo:release
+```
+## Publish new version
 
 ```bash
 yarn build

@@ -19,7 +19,6 @@ export class AuthorsService extends Service {
             photos: {
                 hasMany: true
             }
-        },
-        ttl: 10
+        }
     };
 }
