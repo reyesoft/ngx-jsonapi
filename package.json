@@ -16,7 +16,7 @@
     "demo:start:aot": "yarn run build && yarn run copy:dist && yarn run cli serve --aot",
     "demo:test": "jest --watch",
     "demo:build": "yarn build && yarn run copy:dist && yarn cli build -prod --base-href \"/\" --output-path \"./demo-dist\"",
-    "demo:publish": "ts-node ./build/demo-publish.ts",
+    "demo:release": "ts-node ./build/demo-release.ts",
     "ci": "yarn run build && yarn run test && nyc report --reporter=text-lcov | coveralls",
     "watch:tests": "chokidar 'src/**/*.ts' --initial -c 'nyc --reporter=text --reporter=html yarn run test:unit'",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
