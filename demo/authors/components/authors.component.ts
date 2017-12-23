@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Service, ICollection } from 'ngx-jsonapi';
 
-import { forEach } from '../foreach';
-import { AuthorsService } from './authors.service';
+import { forEach } from '../../foreach';
+import { AuthorsService } from './../authors.service';
 
 @Component({
     selector: 'demo-authors',

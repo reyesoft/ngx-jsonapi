@@ -2,9 +2,9 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Resource, IRelationship, ICollection } from 'ngx-jsonapi';
 
-import { forEach } from '../foreach';
-import { PhotosService } from '../photos/photos.service';
-import { AuthorsService } from './authors.service';
+import { forEach } from '../../foreach';
+import { PhotosService } from '../../photos/photos.service';
+import { AuthorsService } from '../authors.service';
 
 @Component({
     selector: 'demo-author',
@@ -19,18 +19,20 @@ export class AuthorComponent {
         protected photosService: PhotosService,
         private route: ActivatedRoute
     ) {
-        this.author = authorsService.get(
-            this.route.snapshot.paramMap.get('id'),
-            { include: ['books', 'photos'] },
-            success => {
-                // this.author.attributes.name = this.author.attributes.name + 'x';
-                // this.author.save();
-                console.info('success authors controller', success);
-            },
-            error => {
-                console.info('error authors controller', error);
-            }
-        );
+        route.params.subscribe(({ id }) => {
+            this.author = authorsService.get(
+                id,
+                { include: ['books', 'photos'] },
+                success => {
+                    // this.author.attributes.name = this.author.attributes.name + 'x';
+                    // this.author.save();
+                    console.info('success authors controller', success);
+                },
+                error => {
+                    console.info('error authors controller', error);
+                }
+            );
+        });
         //
         // this.relatedbooks = BooksService.all(
         //     { beforepath: 'authors/' + $stateParams.authorId },
