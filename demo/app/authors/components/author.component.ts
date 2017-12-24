@@ -4,14 +4,14 @@ import { Resource, IRelationship, ICollection } from 'ngx-jsonapi';
 
 import { forEach } from '../../../foreach';
 import { PhotosService } from '../../photos/photos.service';
-import { AuthorsService } from '../authors.service';
+import { AuthorsService, Author } from '../authors.service';
 
 @Component({
     selector: 'demo-author',
     templateUrl: './author.component.html'
 })
 export class AuthorComponent {
-    public author: Resource;
+    public author: Author;
     public relatedbooks: Array<Resource>;
 
     public constructor(

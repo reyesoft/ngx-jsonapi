@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Service, ISchema } from 'ngx-jsonapi';
+import { Service, ISchema, Resource } from 'ngx-jsonapi';
 
 @Injectable()
-export class AuthorsService extends Service {
+export class AuthorsService extends Service<Author> {
+    public resource = Author;
     public type = 'authors';
     public schema: ISchema = {
         attributes: {
@@ -21,4 +22,18 @@ export class AuthorsService extends Service {
             }
         }
     };
+}
+
+export class Author extends Resource {
+    public attributes: {
+        name: string,
+        date_of_birth: string,
+        date_of_death: string,
+        created_at: string,
+        updated_at: string
+    };
+
+    public getName() {
+        return this.attributes.name;
+    }
 }

@@ -20,11 +20,12 @@ import {
     IAttributes,
 } from './interfaces';
 
-export class Service extends ParentResourceService {
+export class Service<R extends Resource = Resource> extends ParentResourceService {
     public schema: ISchema;
     public cachememory: ICacheMemory;
     public cachestore: CacheStore;
     public type: string;
+    public resource = Resource;
 
     private path: string; // without slashes
     private smartfiltertype = 'undefined';
@@ -33,7 +34,7 @@ export class Service extends ParentResourceService {
     Register schema on Core
     @return true if the resource don't exist and registered ok
     */
-    public register(): Service | false {
+    public register(): Service<R> | false {
         if (Core.me === null) {
             throw new Error(
                 'Error: you are trying register `' +
@@ -46,21 +47,21 @@ export class Service extends ParentResourceService {
         this.cachestore = new CacheStore();
         this.schema = { ...{}, ...Base.Schema, ...this.schema };
 
-        return Core.me.registerService(this);
+        return Core.me.registerService<R>(this);
     }
 
-    public newResource(): Resource {
-        let resource: Resource = new Resource();
+    public newResource(): R {
+        let resource = new this.resource();
 
-        return resource;
+        return <R>resource;
     }
 
-    public new<T extends Resource>(): T {
+    public new(): R {
         let resource = this.newResource();
         resource.type = this.type;
         resource.reset();
 
-        return <T>resource;
+        return resource;
     }
 
     public getPrePath(): string {
@@ -70,13 +71,13 @@ export class Service extends ParentResourceService {
         return this.path ? this.path : this.type;
     }
 
-    public get<T extends Resource>(
+    public get(
         id: string,
         params?: IParamsResource | Function,
         fc_success?: Function,
         fc_error?: Function
-    ): T {
-        return <T>this.__exec({
+    ): R {
+        return <R>this.__exec({
             id: id,
             params: params,
             fc_success: fc_success,
@@ -114,7 +115,7 @@ export class Service extends ParentResourceService {
         });
     }
 
-    protected __exec(exec_params: IExecParams): Resource | ICollection | void {
+    protected __exec(exec_params: IExecParams): R | ICollection | void {
         let exec_pp = super.proccess_exec_params(exec_params);
 
         switch (exec_pp.exec_type) {
@@ -146,7 +147,7 @@ export class Service extends ParentResourceService {
         params: IParamsResource,
         fc_success,
         fc_error
-    ): Resource {
+    ): R {
         // http request
         let path = new PathBuilder();
         path.applyParams(this, params);
@@ -175,7 +176,7 @@ export class Service extends ParentResourceService {
                 }
             );
 
-            return resource;
+            return <R>resource;
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
             this.getService()
@@ -199,7 +200,7 @@ export class Service extends ParentResourceService {
             this.getGetFromServer(path, fc_success, fc_error, resource);
         }
 
-        return resource;
+        return <R>resource;
     }
 
     private getGetFromServer(path, fc_success, fc_error, resource: Resource) {
@@ -477,7 +478,7 @@ export class Service extends ParentResourceService {
     /*
     @return This resource like a service
     */
-    public getService<T extends Service>(): T {
+    public getService<T extends Service<R>>(): T {
         return <T>(Converter.getService(this.type) || this.register());
         // let serv = Converter.getService(this.type);
         // if (serv) {
