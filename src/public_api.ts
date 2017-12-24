@@ -1,5 +1,6 @@
 export * from './ngx-jsonapi.module';
 export * from './interfaces';
-export { Service } from './service';
-export { Resource } from './resource';
+export { Autoregister } from './decorators/autoregister';
 export { Core as JsonapiCore } from './core';
+export { Resource } from './resource';
+export { Service } from './service';

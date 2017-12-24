@@ -13,7 +13,7 @@
 
 <h4>Photos</h4>
 <img *ngFor="let photo of getPhotos(author)"
-    [src]="photo.attributes.uri" height="150" style="padding-right: 1em"
+    [src]="photo.attributes?.uri" height="150" style="padding-right: 1em"
     title="Book id #{{ photo.id }}"
     />
 
