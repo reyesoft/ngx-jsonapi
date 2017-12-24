@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Service, ISchema, Resource } from 'ngx-jsonapi';
+import { Service, ISchema, Resource, ICollection } from 'ngx-jsonapi';
+import { Book } from '../books/books.service';
 
 @Injectable()
 export class AuthorsService extends Service<Author> {
@@ -35,5 +36,13 @@ export class Author extends Resource {
 
     public getName() {
         return this.attributes.name;
+    }
+
+    public books(): ICollection<Book> {
+        return <ICollection<Book>>this.relationships.books.data;
+    }
+
+    public photos()/*: ICollection<Photo>*/ {
+        return <ICollection>this.relationships.photos.data;
     }
 }
