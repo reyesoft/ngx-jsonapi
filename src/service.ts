@@ -1,4 +1,7 @@
 import { noop } from 'rxjs/util/noop';
+import { Observable } from "rxjs/Observable";
+import { Subject } from "rxjs/Subject";
+import { of } from 'rxjs/observable/of';
 
 import { Core } from './core';
 import { Base } from './services/base';
@@ -76,8 +79,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         params?: IParamsResource | Function,
         fc_success?: Function,
         fc_error?: Function
-    ): R {
-        return <R>this.__exec({
+    ): Observable<R> {
+        return <Observable<R>>this.__exec({
             id: id,
             params: params,
             fc_success: fc_success,
@@ -91,8 +94,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         params?: Object | Function,
         fc_success?: Function,
         fc_error?: Function
-    ): void {
-        return <void>this.__exec({
+    ): Observable<void> {
+        return <Observable<void>>this.__exec({
             id: id,
             params: params,
             fc_success: fc_success,
@@ -105,8 +108,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         params?: IParamsCollection | Function,
         fc_success?: Function,
         fc_error?: Function
-    ): ICollection {
-        return <ICollection>this.__exec({
+    ): Observable<ICollection<R>> {
+        return <Observable<ICollection<R>>>this.__exec({
             id: null,
             params: params,
             fc_success: fc_success,
@@ -115,7 +118,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         });
     }
 
-    protected __exec(exec_params: IExecParams): R | ICollection | void {
+    protected __exec(exec_params: IExecParams): Observable<R | ICollection<R> | void> {
         let exec_pp = super.proccess_exec_params(exec_params);
 
         switch (exec_pp.exec_type) {
@@ -147,14 +150,16 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         params: IParamsResource,
         fc_success,
         fc_error
-    ): R {
+    ): Observable<R> {
         // http request
         let path = new PathBuilder();
         path.applyParams(this, params);
         path.appendPath(id);
 
+        let subject = new Subject<R>();
+
         // CACHEMEMORY
-        let resource = this.getService().cachememory.getOrCreateResource(
+        let resource = <R>this.getService().cachememory.getOrCreateResource(
             this.type,
             id
         );
@@ -176,7 +181,9 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 }
             );
 
-            return <R>resource;
+            subject.next(resource);
+
+            return subject.asObservable();
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
             this.getService()
@@ -200,7 +207,9 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             this.getGetFromServer(path, fc_success, fc_error, resource);
         }
 
-        return <R>resource;
+        subject.next(resource);
+
+        return subject.asObservable();
     }
 
     private getGetFromServer(path, fc_success, fc_error, resource: Resource) {
@@ -219,7 +228,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             });
     }
 
-    private _all(params: IParamsCollection, fc_success, fc_error): ICollection {
+    private _all(params: IParamsCollection, fc_success, fc_error): Observable<ICollection<R>> {
         // check smartfiltertype, and set on remotefilter
         if (params.smartfilter && this.smartfiltertype !== 'localfilter') {
             Object.assign(params.remotefilter, params.smartfilter);
@@ -386,7 +395,11 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             );
         }
 
-        return cached_collection;
+        let subject = new Subject<ICollection<R>>();
+
+        subject.next(<ICollection<R>>cached_collection);
+
+        return subject.asObservable();
     }
 
     private getAllFromServer(
@@ -459,20 +472,27 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             });
     }
 
-    private _delete(id: string, params, fc_success, fc_error): void {
+    private _delete(id: string, params, fc_success, fc_error): Observable<void> {
         // http request
         let path = new PathBuilder();
         path.applyParams(this, params);
         path.appendPath(id);
 
+        let subject = new Subject<void>();
+
         Core.injectedServices.JsonapiHttp.delete(path.get())
             .then(success => {
                 this.getService().cachememory.removeResource(id);
+                subject.next();
                 this.runFc(fc_success, success);
             })
             .catch(error => {
+                subject.error(error);
                 this.runFc(fc_error, error);
             });
+
+
+        return subject.asObservable();
     }
 
     /*
