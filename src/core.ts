@@ -46,13 +46,13 @@ export class Core {
         };
     }
 
-    public registerService(clase: Service): Service | false {
+    public registerService<R extends Resource>(clase: Service): Service<R> | false {
         if (clase.type in this.resourceServices) {
             return false;
         }
         this.resourceServices[clase.type] = clase;
 
-        return clase;
+        return <Service<R>>clase;
     }
 
     public getResourceService(type: string): Service {

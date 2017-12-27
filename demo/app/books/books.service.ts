@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Service, ISchema } from 'ngx-jsonapi';
+import { Service, ISchema, Resource, ICollection } from 'ngx-jsonapi';
+import { Author } from '../authors/authors.service';
+import { Photo } from '../photos/photos.service';
 
 @Injectable()
 export class BooksService extends Service {
@@ -31,5 +33,22 @@ export class BooksService extends Service {
         if ('title' in attributes) {
             attributes.title = attributes.title.replace('📖 ', '');
         }
+    }
+}
+
+export class Book extends Resource {
+    public attributes: {
+        date_published: { },
+        title: { presence: true, length: { maximum: 96 } },
+        created_at: { },
+        updated_at: { }
+    };
+
+    public author(): Author {
+        return <Author>this.relationships.authors.data;
+    }
+
+    public photos(): ICollection<Photo> {
+        return <ICollection<Photo>>this.relationships.photos.data;
     }
 }
