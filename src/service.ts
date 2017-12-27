@@ -1,6 +1,7 @@
 import { noop } from 'rxjs/util/noop';
 import { Observable } from "rxjs/Observable";
 import { Subject } from "rxjs/Subject";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
 import { of } from 'rxjs/observable/of';
 
 import { Core } from './core';
@@ -25,7 +26,7 @@ import {
 
 export class Service<R extends Resource = Resource> extends ParentResourceService {
     public schema: ISchema;
-    public cachememory: ICacheMemory;
+    public cachememory: ICacheMemory<R>;
     public cachestore: CacheStore;
     public type: string;
     public resource = Resource;
@@ -156,14 +157,15 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         path.applyParams(this, params);
         path.appendPath(id);
 
-        let subject = new Subject<R>();
-
         // CACHEMEMORY
         let resource = <R>this.getService().cachememory.getOrCreateResource(
             this.type,
             id
         );
         resource.is_loading = true;
+
+        let subject = new BehaviorSubject<R>(resource);
+
         // exit if ttl is not expired
         let temporal_ttl = params.ttl || 0; // this.schema.ttl
         if (this.getService().cachememory.isResourceLive(id, temporal_ttl)) {
@@ -180,7 +182,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     resource.is_loading = false;
                 }
             );
-
             subject.next(resource);
 
             return subject.asObservable();
@@ -196,23 +197,23 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                             path,
                             fc_success,
                             fc_error,
-                            resource
+                            resource,
+                            subject
                         );
                     }
                 })
                 .catch(error => {
-                    this.getGetFromServer(path, fc_success, fc_error, resource);
+                    this.getGetFromServer(path, fc_success, fc_error, resource, subject);
                 });
         } else {
-            this.getGetFromServer(path, fc_success, fc_error, resource);
+            this.getGetFromServer(path, fc_success, fc_error, resource, subject);
         }
-
         subject.next(resource);
 
         return subject.asObservable();
     }
 
-    private getGetFromServer(path, fc_success, fc_error, resource: Resource) {
+    private getGetFromServer(path, fc_success, fc_error, resource: R, subject: Subject<R>) {
         Core.injectedServices.JsonapiHttp.get(path.get())
             .then(success => {
                 Converter.build(success /*.data*/, resource);
@@ -221,6 +222,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
                 }
+                subject.next(resource);
+
                 this.runFc(fc_success, success);
             })
             .catch(error => {
@@ -272,7 +275,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
         // creamos otra colleción si luego será filtrada
         let localfilter = new LocalFilter(params.localfilter);
-        let cached_collection: ICollection;
+        let cached_collection: ICollection<R>;
         if (params.localfilter && Object.keys(params.localfilter).length > 0) {
             cached_collection = Base.newCollection();
         } else {
@@ -395,7 +398,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             );
         }
 
-        let subject = new Subject<ICollection<R>>();
+        let subject = new BehaviorSubject<ICollection<R>>(cached_collection);
 
         subject.next(<ICollection<R>>cached_collection);
 
@@ -407,7 +410,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         params,
         fc_success,
         fc_error,
-        tempororay_collection: ICollection,
+        tempororay_collection: ICollection<R>,
         cached_collection: ICollection
     ) {
         // SERVER REQUEST
