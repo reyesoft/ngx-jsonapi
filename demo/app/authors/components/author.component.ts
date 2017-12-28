@@ -28,9 +28,9 @@ export class AuthorComponent {
             .subscribe(
                 author => {
                     this.author = author;
-                    console.info('success authors controller', author);
+                    console.info('success author controller', author);
                 },
-                error => console.error('Could not load todos.'
+                error => console.error('Could not load author.'
             )
         );
     });

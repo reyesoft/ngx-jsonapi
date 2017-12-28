@@ -32,10 +32,6 @@ export class Resource extends ParentResourceService {
     public reset(): void {
         this.id = '';
         this.attributes = {};
-        Base.forEach(this.getService().schema.attributes, (value, key) => {
-            this.attributes[key] =
-                'default' in value ? value.default : undefined;
-        });
         this.relationships = {};
         Base.forEach(this.getService().schema.relationships, (value, key) => {
             if (this.getService().schema.relationships[key].hasMany) {

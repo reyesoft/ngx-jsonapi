@@ -1,6 +1,5 @@
 export interface ISchema {
-    attributes?: object;
+    attributes?: object;    // @deprecated
     relationships?: object;
     ttl?: number;
-    path?: string;
 }

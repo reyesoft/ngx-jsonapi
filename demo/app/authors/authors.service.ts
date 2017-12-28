@@ -7,13 +7,6 @@ export class AuthorsService extends Service<Author> {
     public resource = Author;
     public type = 'authors';
     public schema: ISchema = {
-        attributes: {
-            name: { },
-            date_of_birth: { default: '1993-12-10' },
-            date_of_death: {},
-            created_at: {},
-            updated_at: {}
-        },
         relationships: {
             books: {
                 hasMany: true

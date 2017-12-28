@@ -22,7 +22,7 @@ export class AuthorsComponent {
                 this.authors = authors;
                 console.info('success authors controller', authors);
             },
-            error => console.error('Could not load todos.')
+            error => console.error('Could not load authors.')
         );
     }
 }

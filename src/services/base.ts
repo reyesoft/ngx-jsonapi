@@ -14,7 +14,6 @@ export class Base {
     };
 
     public static Schema: ISchema = {
-        attributes: {},
         relationships: {},
         ttl: 0
     };
