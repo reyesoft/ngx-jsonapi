@@ -1,4 +1,8 @@
 import { noop } from 'rxjs/util/noop';
+import { Observable } from "rxjs/Observable";
+import { Subject } from "rxjs/Subject";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { of } from 'rxjs/observable/of';
 
 import { Core } from './core';
 import { Base } from './services/base';
@@ -22,7 +26,7 @@ import {
 
 export class Service<R extends Resource = Resource> extends ParentResourceService {
     public schema: ISchema;
-    public cachememory: ICacheMemory;
+    public cachememory: ICacheMemory<R>;
     public cachestore: CacheStore;
     public type: string;
     public resource = Resource;
@@ -76,8 +80,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         params?: IParamsResource | Function,
         fc_success?: Function,
         fc_error?: Function
-    ): R {
-        return <R>this.__exec({
+    ): Observable<R> {
+        return <Observable<R>>this.__exec({
             id: id,
             params: params,
             fc_success: fc_success,
@@ -91,8 +95,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         params?: Object | Function,
         fc_success?: Function,
         fc_error?: Function
-    ): void {
-        return <void>this.__exec({
+    ): Observable<void> {
+        return <Observable<void>>this.__exec({
             id: id,
             params: params,
             fc_success: fc_success,
@@ -105,8 +109,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         params?: IParamsCollection | Function,
         fc_success?: Function,
         fc_error?: Function
-    ): ICollection {
-        return <ICollection>this.__exec({
+    ): Observable<ICollection<R>> {
+        return <Observable<ICollection<R>>>this.__exec({
             id: null,
             params: params,
             fc_success: fc_success,
@@ -115,7 +119,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         });
     }
 
-    protected __exec(exec_params: IExecParams): R | ICollection | void {
+    protected __exec(exec_params: IExecParams): Observable<R | ICollection<R> | void> {
         let exec_pp = super.proccess_exec_params(exec_params);
 
         switch (exec_pp.exec_type) {
@@ -147,18 +151,21 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         params: IParamsResource,
         fc_success,
         fc_error
-    ): R {
+    ): Observable<R> {
         // http request
         let path = new PathBuilder();
         path.applyParams(this, params);
         path.appendPath(id);
 
         // CACHEMEMORY
-        let resource = this.getService().cachememory.getOrCreateResource(
+        let resource = <R>this.getService().cachememory.getOrCreateResource(
             this.type,
             id
         );
         resource.is_loading = true;
+
+        let subject = new BehaviorSubject<R>(resource);
+
         // exit if ttl is not expired
         let temporal_ttl = params.ttl || 0; // this.schema.ttl
         if (this.getService().cachememory.isResourceLive(id, temporal_ttl)) {
@@ -169,41 +176,47 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     resolve(fc_success);
                     promise
                         .then(fc_success2 => {
+                            subject.next(resource);
                             this.runFc(fc_success2, 'cachememory');
                         })
                         .catch(noop);
                     resource.is_loading = false;
                 }
             );
+            subject.next(resource);
+            subject.complete();
 
-            return <R>resource;
+            return subject.asObservable();
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
             this.getService()
                 .cachestore.getResource(resource)
                 .then(success => {
                     if (Base.isObjectLive(temporal_ttl, resource.lastupdate)) {
+                        subject.next(resource);
                         this.runFc(fc_success, { data: success });
                     } else {
                         this.getGetFromServer(
                             path,
                             fc_success,
                             fc_error,
-                            resource
+                            resource,
+                            subject
                         );
                     }
                 })
                 .catch(error => {
-                    this.getGetFromServer(path, fc_success, fc_error, resource);
+                    this.getGetFromServer(path, fc_success, fc_error, resource, subject);
                 });
         } else {
-            this.getGetFromServer(path, fc_success, fc_error, resource);
+            this.getGetFromServer(path, fc_success, fc_error, resource, subject);
         }
+        subject.next(resource);
 
-        return <R>resource;
+        return subject.asObservable();
     }
 
-    private getGetFromServer(path, fc_success, fc_error, resource: Resource) {
+    private getGetFromServer(path, fc_success, fc_error, resource: R, subject: Subject<R>) {
         Core.injectedServices.JsonapiHttp.get(path.get())
             .then(success => {
                 Converter.build(success /*.data*/, resource);
@@ -212,14 +225,17 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
                 }
+                subject.next(resource);
+                subject.complete();
                 this.runFc(fc_success, success);
             })
             .catch(error => {
+                subject.error(error);
                 this.runFc(fc_error, error);
             });
     }
 
-    private _all(params: IParamsCollection, fc_success, fc_error): ICollection {
+    private _all(params: IParamsCollection, fc_success, fc_error): Observable<ICollection<R>> {
         // check smartfiltertype, and set on remotefilter
         if (params.smartfilter && this.smartfiltertype !== 'localfilter') {
             Object.assign(params.remotefilter, params.smartfilter);
@@ -263,12 +279,14 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
         // creamos otra colleción si luego será filtrada
         let localfilter = new LocalFilter(params.localfilter);
-        let cached_collection: ICollection;
+        let cached_collection: ICollection<R>;
         if (params.localfilter && Object.keys(params.localfilter).length > 0) {
             cached_collection = Base.newCollection();
         } else {
             cached_collection = tempororay_collection;
         }
+
+        let subject = new BehaviorSubject<ICollection<R>>(cached_collection);
 
         // MEMORY_CACHE
         let temporal_ttl = params.ttl || this.schema.ttl;
@@ -304,6 +322,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                         resolve(fc_success);
                         promise
                             .then(fc_success2 => {
+                                subject.next(tempororay_collection);
                                 this.runFc(fc_success2, 'cachememory');
                             })
                             .catch(noop);
@@ -316,7 +335,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     fc_success,
                     fc_error,
                     tempororay_collection,
-                    cached_collection
+                    cached_collection,
+                    subject
                 );
             }
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -351,6 +371,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                             tempororay_collection.$cache_last_update
                         )
                     ) {
+                        subject.next(tempororay_collection);
                         this.runFc(fc_success, { data: success });
                     } else {
                         this.getAllFromServer(
@@ -359,7 +380,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                             fc_success,
                             fc_error,
                             tempororay_collection,
-                            cached_collection
+                            cached_collection,
+                            subject
                         );
                     }
                 })
@@ -370,7 +392,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                         fc_success,
                         fc_error,
                         tempororay_collection,
-                        cached_collection
+                        cached_collection,
+                        subject
                     );
                 });
         } else {
@@ -382,11 +405,14 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 fc_success,
                 fc_error,
                 tempororay_collection,
-                cached_collection
+                cached_collection,
+                subject
             );
         }
 
-        return cached_collection;
+        subject.next(<ICollection<R>>cached_collection);
+
+        return subject.asObservable();
     }
 
     private getAllFromServer(
@@ -394,8 +420,9 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         params,
         fc_success,
         fc_error,
-        tempororay_collection: ICollection,
-        cached_collection: ICollection
+        tempororay_collection: ICollection<R>,
+        cached_collection: ICollection,
+        subject: BehaviorSubject<ICollection<R>>
     ) {
         // SERVER REQUEST
         tempororay_collection.$is_loading = true;
@@ -449,30 +476,39 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     }
                 }
 
+                subject.next(tempororay_collection);
                 this.runFc(fc_success, success);
             })
             .catch(error => {
                 // do not replace $source, because localstorage don't write if = server
                 // tempororay_collection.$source = 'server';
                 tempororay_collection.$is_loading = false;
+                subject.next(tempororay_collection);
                 this.runFc(fc_error, error);
             });
     }
 
-    private _delete(id: string, params, fc_success, fc_error): void {
+    private _delete(id: string, params, fc_success, fc_error): Observable<void> {
         // http request
         let path = new PathBuilder();
         path.applyParams(this, params);
         path.appendPath(id);
 
+        let subject = new Subject<void>();
+
         Core.injectedServices.JsonapiHttp.delete(path.get())
             .then(success => {
                 this.getService().cachememory.removeResource(id);
+                subject.next();
                 this.runFc(fc_success, success);
             })
             .catch(error => {
+                subject.error(error);
                 this.runFc(fc_error, error);
             });
+
+
+        return subject.asObservable();
     }
 
     /*

@@ -5,6 +5,7 @@ import {
     IParamsResource,
 } from '../interfaces';
 import { Page } from './page';
+import { Resource } from '../resource';
 
 export class Base {
     public static Params: /* IParamsCollection | */ IParamsResource = {
@@ -13,12 +14,11 @@ export class Base {
     };
 
     public static Schema: ISchema = {
-        attributes: {},
         relationships: {},
         ttl: 0
     };
 
-    public static newCollection(): ICollection {
+    public static newCollection<R extends Resource = Resource>(): ICollection<R> {
         return Object.defineProperties(
             {},
             {

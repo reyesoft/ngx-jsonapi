@@ -5,8 +5,8 @@ import { Resource } from '../resource';
 import { Converter } from './converter';
 import { ResourceFunctions } from './resource-functions';
 
-export class CacheMemory implements ICacheMemory {
-    private collections: { [url: string]: ICollection } = {};
+export class CacheMemory<R extends Resource = Resource> implements ICacheMemory {
+    private collections: { [url: string]: ICollection<R> } = {};
     private collections_lastupdate: { [url: string]: number } = {};
     public resources: { [id: string]: Resource } = {};
 
@@ -28,7 +28,7 @@ export class CacheMemory implements ICacheMemory {
         );
     }
 
-    public getOrCreateCollection(url: string): ICollection {
+    public getOrCreateCollection(url: string): ICollection<R> {
         if (!(url in this.collections)) {
             this.collections[url] = Base.newCollection();
             this.collections[url].$source = 'new';
