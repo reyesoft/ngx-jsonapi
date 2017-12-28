@@ -23,7 +23,7 @@ export class PhotosComponent {
     }
 
     public makeRequest(id) {
-        this.photos = this.photosService.all(
+        this.photosService.all(
             succes => {
                 console.log('photos success', id, this.photos);
             }

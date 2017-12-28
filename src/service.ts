@@ -176,6 +176,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     resolve(fc_success);
                     promise
                         .then(fc_success2 => {
+                            subject.next(resource);
                             this.runFc(fc_success2, 'cachememory');
                         })
                         .catch(noop);
@@ -183,6 +184,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 }
             );
             subject.next(resource);
+            subject.complete();
 
             return subject.asObservable();
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -191,6 +193,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 .cachestore.getResource(resource)
                 .then(success => {
                     if (Base.isObjectLive(temporal_ttl, resource.lastupdate)) {
+                        subject.next(resource);
                         this.runFc(fc_success, { data: success });
                     } else {
                         this.getGetFromServer(
@@ -223,10 +226,11 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     this.getService().cachestore.setResource(resource);
                 }
                 subject.next(resource);
-
+                subject.complete();
                 this.runFc(fc_success, success);
             })
             .catch(error => {
+                subject.error(error);
                 this.runFc(fc_error, error);
             });
     }
@@ -282,6 +286,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             cached_collection = tempororay_collection;
         }
 
+        let subject = new BehaviorSubject<ICollection<R>>(cached_collection);
+
         // MEMORY_CACHE
         let temporal_ttl = params.ttl || this.schema.ttl;
         if (
@@ -316,6 +322,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                         resolve(fc_success);
                         promise
                             .then(fc_success2 => {
+                                subject.next(tempororay_collection);
                                 this.runFc(fc_success2, 'cachememory');
                             })
                             .catch(noop);
@@ -328,7 +335,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     fc_success,
                     fc_error,
                     tempororay_collection,
-                    cached_collection
+                    cached_collection,
+                    subject
                 );
             }
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -363,6 +371,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                             tempororay_collection.$cache_last_update
                         )
                     ) {
+                        subject.next(tempororay_collection);
                         this.runFc(fc_success, { data: success });
                     } else {
                         this.getAllFromServer(
@@ -371,7 +380,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                             fc_success,
                             fc_error,
                             tempororay_collection,
-                            cached_collection
+                            cached_collection,
+                            subject
                         );
                     }
                 })
@@ -382,7 +392,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                         fc_success,
                         fc_error,
                         tempororay_collection,
-                        cached_collection
+                        cached_collection,
+                        subject
                     );
                 });
         } else {
@@ -394,11 +405,10 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 fc_success,
                 fc_error,
                 tempororay_collection,
-                cached_collection
+                cached_collection,
+                subject
             );
         }
-
-        let subject = new BehaviorSubject<ICollection<R>>(cached_collection);
 
         subject.next(<ICollection<R>>cached_collection);
 
@@ -411,7 +421,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         fc_success,
         fc_error,
         tempororay_collection: ICollection<R>,
-        cached_collection: ICollection
+        cached_collection: ICollection,
+        subject: BehaviorSubject<ICollection<R>>
     ) {
         // SERVER REQUEST
         tempororay_collection.$is_loading = true;
@@ -465,12 +476,14 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     }
                 }
 
+                subject.next(tempororay_collection);
                 this.runFc(fc_success, success);
             })
             .catch(error => {
                 // do not replace $source, because localstorage don't write if = server
                 // tempororay_collection.$source = 'server';
                 tempororay_collection.$is_loading = false;
+                subject.next(tempororay_collection);
                 this.runFc(fc_error, error);
             });
     }

@@ -14,14 +14,15 @@ export class AuthorsComponent {
     public constructor(
         private authorsService: AuthorsService
     ) {
-        this.authors = authorsService.all(
-            // { include: ['books', 'photos'] },
-            success => {
-                console.log('success authors controll', this.authors);
+        authorsService.all(
+            // { include: ['books', 'photos'] }
+        )
+        .subscribe(
+            authors => {
+                this.authors = authors;
+                console.info('success authors controller', authors);
             },
-            error => {
-                console.log('error authors controll', error);
-            }
+            error => console.error('Could not load todos.')
         );
     }
 }
