@@ -42,20 +42,16 @@ export class Http {
             method !== 'get' ||
             !this.noDuplicatedHttpCallsService.hasPromises(path)
         ) {
-            let headers = new HttpHeaders({
-                'Content-Type': 'application/vnd.api+json',
-            });
-            const req = new HttpRequest(
+            let req = new HttpRequest(
                 method,
                 this.rsJsonapiConfig.url + path,
-                data || null
+                {
+                    body: data || null,
+                    headers: new HttpHeaders({ 'Content-Type': 'application/vnd.api+json' })
+                }
             );
 
-            let http_observable = this.http.request(
-                method,
-                this.rsJsonapiConfig.url + path,
-                req
-            );
+            let http_observable = this.http.request(req);
 
             if (method === 'get') {
                 this.noDuplicatedHttpCallsService.setPromiseRequest(
@@ -77,13 +73,12 @@ export class Http {
         Core.me.refreshLoadings(1);
         fakeHttpPromise
             .then(success => {
-                // timeout just for develop environment
-                setTimeout(() => {
-                    Core.me.refreshLoadings(-1);
-                    deferred.resolve(success);
-                }, 0);
+                success = success.body || success;
+                Core.me.refreshLoadings(-1);
+                deferred.resolve(success);
             })
             .catch(error => {
+                error = error.error || error;
                 Core.me.refreshLoadings(-1);
                 if (error.status <= 0) {
                     // offline?
