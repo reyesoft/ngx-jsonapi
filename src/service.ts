@@ -176,6 +176,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     resolve(fc_success);
                     promise
                         .then(fc_success2 => {
+                            console.warn('ngx-jsonapi: THIS CODE NEVER RUN, RIGHT? :/ Please check.');
                             subject.next(resource);
                             this.runFc(fc_success2, 'cachememory');
                         })
@@ -477,6 +478,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 }
 
                 subject.next(tempororay_collection);
+                subject.complete();
                 this.runFc(fc_success, success);
             })
             .catch(error => {
@@ -484,6 +486,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 // tempororay_collection.$source = 'server';
                 tempororay_collection.$is_loading = false;
                 subject.next(tempororay_collection);
+                subject.error(error);
                 this.runFc(fc_error, error);
             });
     }
@@ -500,6 +503,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             .then(success => {
                 this.getService().cachememory.removeResource(id);
                 subject.next();
+                subject.complete();
                 this.runFc(fc_success, success);
             })
             .catch(error => {
