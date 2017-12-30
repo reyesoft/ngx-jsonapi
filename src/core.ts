@@ -6,7 +6,7 @@ import { Service } from './service';
 import { Resource } from './resource';
 import { Base } from './services/base';
 import { JsonapiConfig } from './jsonapi-config';
-import { Http as JsonapiHttp } from './sources/http.service';
+import { Http as JsonapiHttpImported } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { IRelationship } from './interfaces/';
 import { forEach } from './foreach';
@@ -16,7 +16,7 @@ export class Core {
     public static me: Core;
     public static injectedServices: {
         JsonapiStoreService: any;
-        JsonapiHttp: any;
+        JsonapiHttp: JsonapiHttpImported;
         rsJsonapiConfig: JsonapiConfig;
     };
 
@@ -32,7 +32,7 @@ export class Core {
     public constructor(
         @Optional() user_config: JsonapiConfig,
         jsonapiStoreService: JsonapiStore,
-        jsonapiHttp: JsonapiHttp
+        jsonapiHttp: JsonapiHttpImported
     ) {
         this.config = new JsonapiConfig();
         for (let k in this.config)
