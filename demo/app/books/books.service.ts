@@ -7,12 +7,6 @@ import { Photo } from '../photos/photos.service';
 export class BooksService extends Service {
     public type = 'books';
     public schema: ISchema = {
-        attributes: {
-            date_published: { },
-            title: { presence: true, length: { maximum: 96 } },
-            created_at: { },
-            updated_at: { }
-        },
         relationships: {
             author: {
                 hasMany: false

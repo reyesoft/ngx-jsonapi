@@ -14,18 +14,19 @@ export class BooksComponent {
     public constructor(
         protected booksService: BooksService
     ) {
-        this.books = booksService.all(
+        booksService.all(
             {
                 page: { number: 2 },
                 include: ['author', 'photos']
-            },
-            success => {
+            }
+        )
+        .subscribe(
+            books => {
+                this.books = books;
                 console.info('success books controll', this.books);
             },
-            error => {
-                console.info('error books controll', error);
-            }
-        );
+            error => console.info('error books controll', error)
+        )
     }
 
     public getAll(remotefilter) {
@@ -36,7 +37,7 @@ export class BooksComponent {
             until: '2010-01-01'
         };
 
-        this.books = this.booksService.all(
+        let books$ = this.booksService.all(
             {
                 localfilter: {
                     // name: 'Some name'
@@ -44,9 +45,13 @@ export class BooksComponent {
                 remotefilter: remotefilter,
                 page: { number: 1 },
                 include: ['author', 'photos']
-            },
-            success => {
-                console.log('success books controller', success, this.books);
+            }
+        );
+        books$.subscribe(
+            books => {
+                this.books = books;
+
+                console.log('success books controller', this.books);
 
                 /*** YOU CAN REMOVE THE NEXT TEST LINES **/
 
@@ -69,15 +74,16 @@ export class BooksComponent {
                 console.log('BookRequest#3 requested');
                 let book1 = this.booksService.get('1',
                     success1 => {
-                        console.log('BookRequest#3 received (author data from cache)',
-                            (<Resource>book1.relationships.author.data).attributes
+                        console.log('BookRequest#3 received (author data from cache)' //,
+                            //(<Resource>book1.relationships.author.data).attributes
                         );
                     }
                 );
             },
-            error => {
-                console.log('error books controller', error);
-            }
+            error => console.log('error books controller', error)
+        );
+        books$.toPromise().then(
+            success => console.log('books loaded PROMISE')
         );
     }
 

@@ -75,23 +75,28 @@ import { Injectable } from '@angular/core';
 import { Service, ISchema } from 'ngx-jsonapi';
 
 @Injectable()
-export class AuthorsService extends Service {
-  public type = 'authors';
-  public schema: ISchema = {
-    attributes: {
-      name: { },
-      date_of_birth: { default: '1993-12-10'},
-      date_of_death: {}
-    },
-    relationships: {
-      books: {
-        hasMany: true
-      },
-      photos: {
-        hasMany: true
-      }
-    }
-  };
+export class AuthorsService extends Service<Author> {
+    public resource = Author;
+    public type = 'authors';
+    public schema: ISchema = {
+        relationships: {
+            books: {
+                hasMany: true
+            },
+            photos: {
+                hasMany: true
+            }
+        }
+    };
+}
+export class Author extends Resource {
+    public attributes: {
+        name: string,
+        date_of_birth: string,
+        date_of_death: string,
+        created_at: string,
+        updated_at: string
+    };
 }
 ```
 
@@ -102,27 +107,28 @@ export class AuthorsService extends Service {
 ```javascript
 import { Component } from '@angular/core';
 import { ICollection } from 'ngx-jsonapi';
-import { AuthorsService } from './authors.service';
+import { Author, AuthorsService } from './authors.service';
 
 @Component({
   selector: 'demo-authors',
   templateUrl: './authors.component.html'
 })
 export class AuthorsComponent {
-  public authors: ICollection;
+  public authors: ICollection<Author>;
 
   public constructor(
     private authorsService: AuthorsService
   ) {
-    this.authors = authorsService.all(
-      // { include: ['books', 'photos'] },
-      success => {
-        console.log('success authors', this.authors);
-      },
-      error => {
-        console.log('error authors', error);
-      }
-    );
+      authorsService.all(
+          // { include: ['books', 'photos'] }
+      )
+      .subscribe(
+          authors => {
+              this.authors = authors;
+              console.info('success authors controller', authors);
+          },
+          error => console.error('Could not load authors.')
+     );
   }
 }
 ```
@@ -161,15 +167,9 @@ let author = authorsService.get('some_author_id');
 #### More options? Include resources when you fetch data (or save!)
 
 ```javascript
-let author = authorsService.get(
+let author$ = authorsService.get(
   'some_author_id',
-  { include: ['books', 'photos'] },
-  success => {
-    console.log('Author loaded.', success);
-  },
-  error => {
-    console.log('Author don`t loaded. Error.', error);
-  }
+  { include: ['books', 'photos'] }
 );
 ```
 
@@ -209,7 +209,7 @@ author.save( { include: ['book'] });
 let relatedbooks = booksService.all( { beforepath: 'authors/1' } );
 
 // you need get a cached object? you can force ttl on get
-let author = authorsService.get(
+let author$ = authorsService.get(
   'some_author_id',
   { ttl: 60 } // ttl on seconds (default: 0)
 );
@@ -218,17 +218,21 @@ let author = authorsService.get(
 ### Update a resource
 
 ```javascript
-let author = authorsService.get('some_author_id');
-this.author.attributes.name += 'New Name';
-this.author.save(success => {
-  console.log('author saved!');
-});
+authorsService.get('some_author_id')
+    .suscribe(
+        author => {
+            this.author.attributes.name += 'New Name';
+            this.author.save(success => {
+                console.log('author saved!');
+            });
+        }
+    )
 ```
 
 ### Pagination
 
 ```javascript
-let authors = authorsService.all(
+let authors$ = authorsService.all(
   {
   // get page 2 of authors collection, with a limit per page of 50
   page: { number: 2 ;  size: 50 }
