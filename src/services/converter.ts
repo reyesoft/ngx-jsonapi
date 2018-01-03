@@ -94,7 +94,7 @@ export class Converter {
     }
 
     public static build(
-        document_from: IDataCollection & IDataObject,
+        document_from: IDataCollection | IDataObject,
         resource_dest: Resource | ICollection
     ) {
         // instancio los include y los guardo en included arrary
@@ -107,7 +107,7 @@ export class Converter {
 
         if (Array.isArray(document_from.data)) {
             Converter._buildCollection(
-                document_from,
+                <IDataCollection>document_from,
                 <ICollection>resource_dest,
                 included_resources
             );

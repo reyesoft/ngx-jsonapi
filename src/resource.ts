@@ -224,11 +224,11 @@ export class Resource extends ParentResourceService {
                         // is a resource?
                         if ('id' in success.data) {
                             this.id = success.data.id;
-                            Converter.build(success.data, this);
+                            Converter.build(success, this);
                             /*
-                        Si lo guardo en la caché, luego no queda bindeado con la vista
-                        Usar {{ $ctrl.service.getCachedResources() | json }}, agregar uno nuevo, editar
-                        */
+                            Si lo guardo en la caché, luego no queda bindeado con la vista
+                            Usar {{ $ctrl.service.getCachedResources() | json }}, agregar uno nuevo, editar
+                            */
                             // this.getService().cachememory.setResource(this);
                         } else if (isArray(success.data)) {
                             console.warn(
@@ -244,7 +244,7 @@ export class Resource extends ParentResourceService {
                                 'justAnUpdate'
                             );
                             Converter.build(
-                                success.data,
+                                success,
                                 tempororay_collection
                             );
                             Base.forEach(

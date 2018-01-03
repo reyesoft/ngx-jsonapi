@@ -29,7 +29,7 @@ export class Http {
         return this.exec(path, 'get');
     }
 
-    protected async exec(
+    public async exec(
         path: string,
         method: string,
         data?: IDataObject,
@@ -45,8 +45,8 @@ export class Http {
             let req = new HttpRequest(
                 method,
                 this.rsJsonapiConfig.url + path,
+                data || null,
                 {
-                    body: data || null,
                     headers: new HttpHeaders({
                         'Content-Type': 'application/vnd.api+json',
                         'Accept': 'application/vnd.api+json'
