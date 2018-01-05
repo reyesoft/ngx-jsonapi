@@ -30,8 +30,7 @@ export class ResourceRelationshipsConverter {
 
     public buildRelationships(): void {
         // recorro los relationships levanto el service correspondiente
-        Base.forEach(
-            this.relationships_from,
+        Base.forEach(this.relationships_from,
             (
                 relation_from_value: IDataCollection & IDataObject,
                 relation_key
@@ -57,15 +56,6 @@ export class ResourceRelationshipsConverter {
                     this.schema.relationships[relation_key].hasMany
                 ) {
                     // hasMany
-                    if (relation_from_value.data.length === 0) {
-                        // from data is an empty array, remove all data on relationship
-                        this.relationships_dest[relation_key] = {
-                            data: Base.newCollection(),
-                            content: 'collection',
-                        };
-
-                        return;
-                    }
                     this.__buildRelationshipHasMany(
                         relation_from_value,
                         relation_key
@@ -85,62 +75,93 @@ export class ResourceRelationshipsConverter {
         relation_from_value: IDataCollection,
         relation_key: any // number to string?
     ) {
-        let resource_service = this.getService(
-            relation_from_value.data[0].type
-        );
-        if (resource_service) {
-            let tmp_relationship_data = Base.newCollection();
-            this.relationships_dest[relation_key].content = 'collection';
-            Base.forEach(
-                relation_from_value.data,
-                (relation_value: IDataResource) => {
-                    let tmp = this.__buildRelationship(
-                        relation_value,
-                        this.included_resources
-                    );
+        let relation_type = (relation_from_value.data[0] ? relation_from_value.data[0].type : '');
+        // @todo: we need check schema. maybe relationship it's empty
+        relation_type = relation_type || relation_key /* || schema.relationship.type */;
 
-                    // sometimes we have a cache like a services
-                    if (
-                        !('attributes' in tmp) &&
-                        tmp.id in this.relationships_dest[relation_key].data &&
-                        'attributes' in
-                            this.relationships_dest[relation_key].data[tmp.id]
-                    ) {
-                        tmp_relationship_data[tmp.id] = this.relationships_dest[
-                            relation_key
-                        ].data[tmp.id];
-                    } else {
-                        tmp_relationship_data[tmp.id] = tmp;
-                    }
-
-                    // some resources are not a Resource object
-                    if (!('attributes' in tmp)) {
-                        this.relationships_dest[relation_key].content = 'ids';
-                    }
-                }
-            );
-
-            // REMOVE resources from cached collection
-            // build an array with the news ids
-            let new_ids = {};
-            Base.forEach(
-                relation_from_value.data,
-                (data_resource: IDataResource) => {
-                    new_ids[data_resource.id] = true;
-                }
-            );
-            // check if new ids are on destination. If not, delete resource
-            Base.forEach(
-                this.relationships_dest[relation_key].data,
-                (relation_dest_value: IDataResource) => {
-                    if (!(relation_dest_value.id in new_ids)) {
-                        delete this.relationships_dest[relation_dest_value.id];
-                    }
-                }
-            );
-
-            this.relationships_dest[relation_key].data = tmp_relationship_data;
+        if (this.getService(relation_type)) {
+            this.__buildRelationshipCollection(relation_from_value, relation_key);
+        } else {
+            this.__buildRelationshipDataCollection(relation_from_value, relation_key);
         }
+    }
+
+    private __buildRelationshipDataCollection(
+        relation_from_value: IDataCollection,
+        relation_key: any // number to string?
+    ) {
+        // @todo: usar collection on data?
+        this.relationships_dest[relation_key] = {
+            data: relation_from_value.data,
+            content: 'ids'
+        };
+    }
+
+    private __buildRelationshipCollection(
+        relation_from_value: IDataCollection,
+        relation_key: any // number to string?
+    ) {
+        if (relation_from_value.data.length === 0) {
+            // from data is an empty array, remove all data on relationship
+            this.relationships_dest[relation_key] = {
+                data: Base.newCollection(),
+                content: 'collection'
+            };
+
+            return;
+        }
+
+        let tmp_relationship_data = Base.newCollection();
+        this.relationships_dest[relation_key].content = 'collection';
+        Base.forEach(
+            relation_from_value.data,
+            (relation_value: IDataResource) => {
+                let tmp = this.__buildRelationship(
+                    relation_value,
+                    this.included_resources
+                );
+
+                // sometimes we have a cache like a services
+                if (
+                    !('attributes' in tmp) &&
+                    tmp.id in this.relationships_dest[relation_key].data &&
+                    'attributes' in
+                        this.relationships_dest[relation_key].data[tmp.id]
+                ) {
+                    tmp_relationship_data[tmp.id] = this.relationships_dest[
+                        relation_key
+                    ].data[tmp.id];
+                } else {
+                    tmp_relationship_data[tmp.id] = tmp;
+                }
+
+                // some resources are not a Resource object
+                if (!('attributes' in tmp)) {
+                    this.relationships_dest[relation_key].content = 'ids';
+                }
+            }
+        );
+
+        // REMOVE resources from cached collection
+        // build an array with the news ids
+        let new_ids = {};
+        Base.forEach(
+            relation_from_value.data,
+            (data_resource: IDataResource) => {
+                new_ids[data_resource.id] = true;
+            }
+        );
+        // check if new ids are on destination. If not, delete resource
+        Base.forEach(
+            this.relationships_dest[relation_key].data,
+            (relation_dest_value: IDataResource) => {
+                if (!(relation_dest_value.id in new_ids)) {
+                    delete this.relationships_dest[relation_dest_value.id];
+                }
+            }
+        );
+
+        this.relationships_dest[relation_key].data = tmp_relationship_data;
     }
 
     private __buildRelationshipHasOne(
