@@ -182,13 +182,12 @@ export class Converter {
             resource_dest.attributes
         );
 
-        let relationships_converter = new ResourceRelationshipsConverter(
+        new ResourceRelationshipsConverter(
             Converter.getService,
             resource_data_from.relationships,
             resource_dest.relationships,
             included_resources,
             service.schema
-        );
-        relationships_converter.buildRelationships();
+        ).buildRelationships();
     }
 }

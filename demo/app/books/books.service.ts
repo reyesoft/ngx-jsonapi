@@ -4,7 +4,7 @@ import { Author } from '../authors/authors.service';
 import { Photo } from '../photos/photos.service';
 
 @Injectable()
-export class BooksService extends Service {
+export class BooksService extends Service<Book> {
     public type = 'books';
     public schema: ISchema = {
         relationships: {
@@ -12,6 +12,9 @@ export class BooksService extends Service {
                 hasMany: false
             },
             photos: {
+                hasMany: true
+            },
+            stores: {
                 hasMany: true
             }
         }
@@ -31,11 +34,11 @@ export class BooksService extends Service {
 }
 
 export class Book extends Resource {
-    public attributes: {
-        date_published: { },
-        title: { presence: true, length: { maximum: 96 } },
-        created_at: { },
-        updated_at: { }
+    public attributes = {
+        date_published: '',
+        title: '',
+        created_at: '',
+        updated_at: ''
     };
 
     public author(): Author {
