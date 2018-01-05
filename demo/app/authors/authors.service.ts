@@ -19,12 +19,12 @@ export class AuthorsService extends Service<Author> {
 }
 
 export class Author extends Resource {
-    public attributes: {
-        name: string,
-        date_of_birth: string,
-        date_of_death: string,
-        created_at: string,
-        updated_at: string
+    public attributes = {
+        name: 'default name',
+        date_of_birth: '',
+        date_of_death: '',
+        created_at: '',
+        updated_at: ''
     };
 
     public getName() {
