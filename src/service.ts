@@ -63,6 +63,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     public new(): R {
         let resource = this.newResource();
         resource.type = this.type;
+        // issue #36: just if service is not registered yet.
+        this.getService();
         resource.reset();
 
         return resource;
