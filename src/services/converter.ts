@@ -166,9 +166,9 @@ export class Converter {
         resource_dest: Resource,
         included_resources: IResourcesByType
     ) {
-        resource_dest.attributes = resource_data_from.attributes;
+        resource_dest.id = resource_data_from.id || '';
+        resource_dest.attributes = resource_data_from.attributes || {};
 
-        resource_dest.id = resource_data_from.id;
         resource_dest.is_new = false;
         let service = Converter.getService(resource_data_from.type);
 
@@ -178,13 +178,11 @@ export class Converter {
             return;
         }
 
-        Converter.getService(resource_data_from.type).parseFromServer(
-            resource_dest.attributes
-        );
+        Converter.getService(resource_data_from.type).parseFromServer(resource_dest.attributes);
 
         new ResourceRelationshipsConverter(
             Converter.getService,
-            resource_data_from.relationships,
+            resource_data_from.relationships || {},
             resource_dest.relationships,
             included_resources,
             service.schema
