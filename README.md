@@ -38,7 +38,7 @@ More information on [examples section](#examples).
 First of all, you need read, read and read [Jsonapi specification](http://jsonapi.org/).
 
 ```bash
-yarn install ngx-jsonapi --save
+yarn add ngx-jsonapi --save
 # or npm if you wish...
 ```
 
