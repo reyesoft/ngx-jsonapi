@@ -2,164 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2cbe3be6-da76-4e99-816b-6160196a0b6f" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/core.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/core.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/core.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/core.ngfactory.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/decorators/autoregister.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/decorators/autoregister.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/decorators/autoregister.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/foreach.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/foreach.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/foreach.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/index.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/index.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/index.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/index.metadata.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/attributes.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/attributes.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/attributes.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cache.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cache.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cache.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cachememory.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cachememory.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cachememory.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/collection.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/collection.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/collection.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-collection.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-collection.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-collection.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-object.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-object.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-object.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-resource.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-resource.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-resource.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/document.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/document.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/document.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params-processed.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params-processed.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params-processed.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/index.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/index.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/index.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/links.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/links.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/links.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/object.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/object.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/object.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/page.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/page.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/page.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-collection.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-collection.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-collection.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-resource.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-resource.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-resource.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationship.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationship.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationship.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationships.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationships.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationships.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-id.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-id.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-id.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-type.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-type.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-type.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/schema.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/schema.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/schema.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/storeobject.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/storeobject.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/storeobject.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/jsonapi-config.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/jsonapi-config.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/jsonapi-config.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/parent-resource-service.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/parent-resource-service.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/parent-resource-service.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/public_api.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/public_api.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/public_api.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/resource.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/resource.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/resource.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/service.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/service.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/service.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/base.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/base.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/base.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachememory.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachememory.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachememory.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachestore.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachestore.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachestore.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/converter.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/converter.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/converter.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/localfilter.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/localfilter.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/localfilter.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/noduplicatedhttpcalls.service.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/noduplicatedhttpcalls.service.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/noduplicatedhttpcalls.service.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/page.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/page.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/page.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/path-builder.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/path-builder.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/path-builder.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-functions.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-functions.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-functions.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-relationships-converter.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-relationships-converter.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-relationships-converter.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/url-params-builder.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/url-params-builder.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/services/url-params-builder.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/shared/deferred.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/shared/deferred.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/shared/deferred.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/http.service.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/http.service.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/http.service.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/http.service.ngfactory.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/store.service.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/store.service.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/store.service.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/store.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/store.metadata.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.metadata.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.ngfactory.d.ts" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.ngfactory.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.ngfactory.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi/@vp-ngx-jsonapi/vp-ngx-jsonapi.es5.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi/@vp-ngx-jsonapi/vp-ngx-jsonapi.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi/bundles/vp-ngx-jsonapi.umd.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi/bundles/vp-ngx-jsonapi.umd.min.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi/bundles/vp-ngx-jsonapi.umd.min.js.map" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/dist/" />
@@ -173,38 +16,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="package.json" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/package.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="608">
-              <caret line="43" column="54" lean-forward="false" selection-start-line="43" selection-start-column="20" selection-end-line="43" selection-end-column="54" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".angular-cli.json" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.angular-cli.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="3" column="13" lean-forward="false" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/package.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="25" column="36" lean-forward="false" selection-start-line="25" selection-start-column="36" selection-end-line="25" selection-end-column="42" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -213,9 +25,11 @@
     </findStrings>
     <replaceStrings>
       <replace>vp-ngx-jsonapi</replace>
+      <replace>github.com/almelnik/vp-ngx-jsonapi</replace>
     </replaceStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
+      <dir>$PROJECT_DIR$/dist</dir>
     </dirStrings>
   </component>
   <component name="Git.Settings">
@@ -227,6 +41,7 @@
         <option value="$PROJECT_DIR$/.angular-cli.json" />
         <option value="$PROJECT_DIR$/src/package.json" />
         <option value="$PROJECT_DIR$/package.json" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -237,6 +52,9 @@
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="NodeModulesDirectoryManager">
+    <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="1926" />
@@ -270,7 +88,7 @@
             <path>
               <item name="vp-ngx-jsonapi" type="b2602c69:ProjectViewProjectNode" />
               <item name="vp-ngx-jsonapi" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="dist" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -311,12 +129,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1518779678923</updated>
-      <workItem from="1518779680179" duration="207000" />
+      <workItem from="1518779680179" duration="1630000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="207000" />
+    <option name="totallyTimeSpent" value="1630000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1926" y="0" width="1914" height="1076" extended-state="0" />
@@ -330,7 +148,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297414" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3297414" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -352,6 +170,14 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="129" lean-forward="false" selection-start-line="4" selection-start-column="129" selection-end-line="4" selection-end-column="129" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/.angular-cli.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
@@ -363,16 +189,52 @@
     <entry file="file://$PROJECT_DIR$/src/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
-          <caret line="25" column="36" lean-forward="false" selection-start-line="25" selection-start-column="36" selection-end-line="25" selection-end-column="42" />
+          <caret line="25" column="36" lean-forward="false" selection-start-line="25" selection-start-column="36" selection-end-line="25" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="608">
-          <caret line="43" column="54" lean-forward="false" selection-start-line="43" selection-start-column="20" selection-end-line="43" selection-end-column="54" />
+        <state relative-caret-position="60">
+          <caret line="16" column="19" lean-forward="false" selection-start-line="16" selection-start-column="16" selection-end-line="16" selection-end-column="19" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/vp-ngx-jsonapi.module.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#52#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/services/cachestore.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/services/converter.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

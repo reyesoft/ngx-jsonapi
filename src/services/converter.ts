@@ -132,6 +132,7 @@ export class Converter {
                 collection_data_from.meta.resources_per_page || null;
             collection_dest.page.total_resources =
                 collection_data_from.meta.total_resources || null;
+            collection_dest.page['meta'] = collection_data_from.meta;
         }
 
         // convert and add new dataresoures to final collection
