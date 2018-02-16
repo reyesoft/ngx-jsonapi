@@ -1,7 +1,166 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e99bfd4f-690c-44e3-a5ff-1a5d2af6b0c5" name="Default" comment="" />
+    <list default="true" id="2cbe3be6-da76-4e99-816b-6160196a0b6f" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/core.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/core.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/core.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/core.ngfactory.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/decorators/autoregister.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/decorators/autoregister.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/decorators/autoregister.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/foreach.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/foreach.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/foreach.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/index.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/index.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/index.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/index.metadata.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/attributes.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/attributes.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/attributes.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cache.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cache.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cache.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cachememory.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cachememory.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/cachememory.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/collection.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/collection.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/collection.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-collection.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-collection.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-collection.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-object.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-object.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-object.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-resource.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-resource.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/data-resource.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/document.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/document.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/document.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params-processed.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params-processed.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params-processed.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/exec-params.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/index.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/index.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/index.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/links.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/links.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/links.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/object.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/object.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/object.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/page.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/page.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/page.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-collection.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-collection.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-collection.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-resource.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-resource.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params-resource.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/params.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationship.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationship.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationship.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationships.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationships.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/relationships.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-id.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-id.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-id.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-type.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-type.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/resources-by-type.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/schema.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/schema.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/schema.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/storeobject.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/storeobject.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/interfaces/storeobject.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/jsonapi-config.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/jsonapi-config.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/jsonapi-config.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/parent-resource-service.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/parent-resource-service.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/parent-resource-service.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public_api.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public_api.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public_api.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/resource.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/resource.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/resource.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/service.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/service.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/service.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/base.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/base.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/base.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachememory.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachememory.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachememory.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachestore.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachestore.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/cachestore.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/converter.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/converter.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/converter.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/localfilter.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/localfilter.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/localfilter.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/noduplicatedhttpcalls.service.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/noduplicatedhttpcalls.service.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/noduplicatedhttpcalls.service.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/page.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/page.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/page.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/path-builder.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/path-builder.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/path-builder.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-functions.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-functions.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-functions.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-relationships-converter.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-relationships-converter.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/resource-relationships-converter.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/url-params-builder.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/url-params-builder.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/services/url-params-builder.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/shared/deferred.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/shared/deferred.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/shared/deferred.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/http.service.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/http.service.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/http.service.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/http.service.ngfactory.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/store.service.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/store.service.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/sources/store.service.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/store.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/store.metadata.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.metadata.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.ngfactory.d.ts" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.ngfactory.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi.module.ngfactory.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi/@vp-ngx-jsonapi/vp-ngx-jsonapi.es5.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi/@vp-ngx-jsonapi/vp-ngx-jsonapi.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi/bundles/vp-ngx-jsonapi.umd.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi/bundles/vp-ngx-jsonapi.umd.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vp-ngx-jsonapi/bundles/vp-ngx-jsonapi.umd.min.js.map" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/dist/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -15,21 +174,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
+      <file leaf-file-name="package.json" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/package.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="27" column="27" lean-forward="false" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
+            <state relative-caret-position="608">
+              <caret line="43" column="54" lean-forward="false" selection-start-line="43" selection-start-column="20" selection-end-line="43" selection-end-column="54" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="config" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.git/config">
+      <file leaf-file-name=".angular-cli.json" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.angular-cli.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="7" column="47" lean-forward="false" selection-start-line="7" selection-start-column="47" selection-end-line="7" selection-end-column="47" />
+            <state relative-caret-position="45">
+              <caret line="3" column="13" lean-forward="false" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/package.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="375">
+              <caret line="25" column="36" lean-forward="false" selection-start-line="25" selection-start-column="36" selection-end-line="25" selection-end-column="42" />
               <folding />
             </state>
           </provider>
@@ -39,20 +208,10 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>ver</find>
-      <find>private</find>
-      <find>_buildCollection</find>
-      <find>vp-ngx-jsonapi</find>
-      <find>NgxJsonapiModule</find>
-      <find>loc</find>
-      <find>loca</find>
       <find>ngx-jsonapi</find>
-      <find>vp-vp-ngx-jsonapi</find>
-      <find>run build</find>
-      <find>ngx-json</find>
+      <find>github.com/reyesoft/vp-ngx-jsonapi</find>
     </findStrings>
     <replaceStrings>
-      <replace>ngx-jsonapi</replace>
       <replace>vp-ngx-jsonapi</replace>
     </replaceStrings>
     <dirStrings>
@@ -65,31 +224,25 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/services/converter.ts" />
-        <option value="$PROJECT_DIR$/demo/app/app.module.ts" />
         <option value="$PROJECT_DIR$/.angular-cli.json" />
-        <option value="$PROJECT_DIR$/src/vp-ngx-jsonapi.module.ts" />
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/src/ngx-jsonapi.module.ts" />
         <option value="$PROJECT_DIR$/src/package.json" />
         <option value="$PROJECT_DIR$/package.json" />
-        <option value="$PROJECT_DIR$/.git/config" />
       </list>
     </option>
   </component>
   <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
-  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER">
+    <package-json value="$PROJECT_DIR$/package.json" />
+  </component>
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1920" />
-    <option name="y" value="27" />
+    <option name="x" value="1926" />
     <option name="width" value="1914" />
-    <option name="height" value="1053" />
+    <option name="height" value="1076" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
@@ -114,6 +267,11 @@
               <item name="vp-ngx-jsonapi" type="b2602c69:ProjectViewProjectNode" />
               <item name="vp-ngx-jsonapi" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="vp-ngx-jsonapi" type="b2602c69:ProjectViewProjectNode" />
+              <item name="vp-ngx-jsonapi" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -122,15 +280,14 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$USER_HOME$/work_folder/VP-Technologies-frontend" />
-    <property name="HbShouldOpenHtmlAsHb" value="" />
-    <property name="node.js.path.for.package.tslint" value="project" />
-    <property name="node.js.detected.package.tslint" value="true" />
-    <property name="node.js.selected.package.tslint" value="$PROJECT_DIR$/node_modules/tslint" />
     <property name="nodejs_interpreter_path" value="/usr/bin/node" />
+    <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.selected.package.eslint" value="" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.tslint" value="$PROJECT_DIR$/node_modules/tslint" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -149,65 +306,40 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="e99bfd4f-690c-44e3-a5ff-1a5d2af6b0c5" name="Default" comment="" />
-      <created>1518697109973</created>
+      <changelist id="2cbe3be6-da76-4e99-816b-6160196a0b6f" name="Default" comment="" />
+      <created>1518779678923</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1518697109973</updated>
-      <workItem from="1518697111383" duration="7502000" />
-      <workItem from="1518711585945" duration="4334000" />
-      <workItem from="1518771432912" duration="24000" />
-      <workItem from="1518772496500" duration="4367000" />
-      <workItem from="1518778377540" duration="524000" />
+      <updated>1518779678923</updated>
+      <workItem from="1518779680179" duration="207000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="16751000" />
+    <option name="totallyTimeSpent" value="207000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1920" y="27" width="1914" height="1053" extended-state="0" />
-    <editor active="true" />
+    <frame x="1926" y="0" width="1914" height="1076" extended-state="0" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24986765" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24986765" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297414" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32928178" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297414" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32928178" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
-    <layout-to-restore>
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32928178" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24986765" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938644" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
-    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -220,349 +352,26 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/sources/http.service.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/service.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/jsonapi-config.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tsconfig-build.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/index.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/public_api.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vp-ngx-jsonapi.module.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="14" lean-forward="false" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tsconfig.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/parent-resource-service.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="15" lean-forward="false" selection-start-line="18" selection-start-column="15" selection-end-line="18" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/sources/http.service.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/service.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tsconfig-build.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/jsonapi-config.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/index.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/public_api.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vp-ngx-jsonapi.module.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="12" column="14" lean-forward="false" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tsconfig.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/parent-resource-service.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="54" lean-forward="false" selection-start-line="10" selection-start-column="12" selection-end-line="10" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="780">
-          <caret line="52" column="9" lean-forward="false" selection-start-line="52" selection-start-column="9" selection-end-line="52" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/demo/app/app.module.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="31" lean-forward="false" selection-start-line="15" selection-start-column="31" selection-end-line="15" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.angular-cli.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
           <caret line="3" column="13" lean-forward="false" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/work_folder/VP-Technologies-frontend/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/services/converter.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="454">
-          <caret line="134" column="69" lean-forward="false" selection-start-line="134" selection-start-column="69" selection-end-line="134" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/demo/app/app.module.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="15" column="31" lean-forward="false" selection-start-line="15" selection-start-column="31" selection-end-line="15" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/sources/http.service.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/service.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/jsonapi-config.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tsconfig-build.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/index.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/public_api.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vp-ngx-jsonapi.module.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="14" lean-forward="false" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tsconfig.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/parent-resource-service.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.angular-cli.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="13" lean-forward="false" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="149" lean-forward="false" selection-start-line="4" selection-start-column="149" selection-end-line="4" selection-end-column="149" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/demo-release.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="62" lean-forward="false" selection-start-line="9" selection-start-column="38" selection-end-line="9" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/config.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/index.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/deploy-build.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/util.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1350">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/sources/store.service.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-266">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
-          <caret line="25" column="43" lean-forward="false" selection-start-line="25" selection-start-column="43" selection-end-line="25" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/vp-ngx-jsonapi.module.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="26" column="13" lean-forward="false" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
+          <caret line="25" column="36" lean-forward="false" selection-start-line="25" selection-start-column="36" selection-end-line="25" selection-end-column="42" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="27" column="27" lean-forward="false" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.git/config">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="47" lean-forward="false" selection-start-line="7" selection-start-column="47" selection-end-line="7" selection-end-column="47" />
+        <state relative-caret-position="608">
+          <caret line="43" column="54" lean-forward="false" selection-start-line="43" selection-start-column="20" selection-end-line="43" selection-end-column="54" />
           <folding />
         </state>
       </provider>

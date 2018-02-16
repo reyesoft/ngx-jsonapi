@@ -1,0 +1,33 @@
+{
+  "name": "vp-ngx-jsonapi",
+  "version": "1.1.0",
+  "description": "JSON API library for Angular",
+  "module": "vp-ngx-jsonapi/@vp-ngx-jsonapi/vp-ngx-jsonapi.es5.js",
+  "es2015": "vp-ngx-jsonapi/@vp-ngx-jsonapi/vp-ngx-jsonapi.js",
+  "main": "vp-ngx-jsonapi/bundles/vp-ngx-jsonapi.umd.js",
+  "typings": "index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/almelnik/vp-ngx-jsonapi"
+  },
+  "bugs": {
+    "url": "https://github.com/almelnik/vp-ngx-jsonapi/issues"
+  },
+  "keywords": [
+    "jsonapi",
+    "angular",
+    "angular2",
+    "angular4"
+  ],
+  "authors": [
+    "Pablo Gabriel Reyes"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/almelnik/vp-ngx-jsonapi#readme",
+  "dependencies": {
+    "localforage": "^1.5.2"
+  },
+  "peerDependencies": {
+    "@angular/core": "^4.0.0 || ^5.0.0"
+  }
+}

@@ -1,1 +1,0 @@
-{"version":3,"file":"resources-by-id.js","sourceRoot":"","sources":["../../src/interfaces/resources-by-id.ts"],"names":[],"mappings":"","sourcesContent":["import { Resource } from '../resource';\n\nexport interface IResourcesById {\n    [resource_id: string]: Resource;\n}\n"]}

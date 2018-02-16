@@ -1,1 +1,0 @@
-{"version":3,"file":"object.js","sourceRoot":"","sources":["../../src/interfaces/object.ts"],"names":[],"mappings":"","sourcesContent":["export interface IObject<T> {\n    [value: string]: T;\n}\n"]}

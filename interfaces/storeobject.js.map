@@ -1,1 +1,0 @@
-{"version":3,"file":"storeobject.js","sourceRoot":"","sources":["../../src/interfaces/storeobject.ts"],"names":[],"mappings":"","sourcesContent":["export interface IStoreObject {\n    _lastupdate_time: number;\n}\n"]}

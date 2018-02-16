@@ -1,1 +1,0 @@
-{"version":3,"file":"data-object.js","sourceRoot":"","sources":["../../src/interfaces/data-object.ts"],"names":[],"mappings":"","sourcesContent":["import { IDocument } from './document';\nimport { IDataResource } from './data-resource';\n\nexport interface IDataObject extends IDocument {\n    data: IDataResource;\n}\n"]}

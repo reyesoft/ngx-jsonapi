@@ -1,0 +1,59 @@
+<h3>Author #{{ author.id }}, with books and photos</h3>
+<pre>authors.get('{{ author.id }}', {{ '{' }} include: ['books', 'photos'] {{ '}' }});</pre>
+<ul>
+    <li>Name: <strong>{{ author.attributes.name }}</strong></li>
+    <li>Date of birth: <strong>{{ author.attributes.date_of_birth | date }}</strong></li>
+    <li>Date of dead: <strong>{{ author.attributes.date_of_death | date }}</strong></li>
+</ul>
+<p>
+    <button (click)="newAuthor()">New author</button>
+    <button (click)="updateAuthor()">Update author</button>
+    <button (click)="removeRelationship()">Remove relationship</button>
+</p>
+
+<h4>Photos</h4>
+<img *ngFor="let photo of getPhotos(author)"
+    [src]="photo.attributes?.uri" height="150" style="padding-right: 1em"
+    title="Book id #{{ photo.id }}"
+    />
+
+<h4>Books</h4>
+<table class="table table-striped" *ngIf="author.relationships.books.content == 'collection'">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Date Published</th>
+        </tr>
+    </thead>
+    <tr *ngFor="let book of author.books().$toArray">
+        <td>{{ book.id }}</td>
+        <td>
+            <a>{{ book.attributes.title  }}</a>
+        </td>
+        <td>{{ book.attributes.date_published | date }}</td>
+    </tr>
+</table>
+
+<!-- <h3>Related Books by URL</h3>
+<pre>BooksService.all( {{ '{' }} beforepath: 'authors/{{author.id}}' {{ '}' }} );</pre>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Date Published</th>
+        </tr>
+    </thead>
+    <tr *ngFor="let book of relatedbooks.$toArray">
+        <td>{{ book.id }}</td>
+        <td>
+            <a ui-sref="book({ bookId: book.id })">{{ book.attributes.title  }}</a>
+        </td>
+        <td>{{ book.attributes.date_published | date }}</td>
+    </tr>
+</table> -->
+
+<p>
+    <a ui-sref="authors">Volver</a>
+</p>

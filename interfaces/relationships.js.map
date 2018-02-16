@@ -1,1 +1,0 @@
-{"version":3,"file":"relationships.js","sourceRoot":"","sources":["../../src/interfaces/relationships.ts"],"names":[],"mappings":"","sourcesContent":["import { IRelationship } from '../interfaces/relationship';\n\nexport interface IRelationships {\n    [value: string]: IRelationship;\n}\n"]}

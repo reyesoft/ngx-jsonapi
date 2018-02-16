@@ -1,0 +1,31 @@
+<h3>Books</h3>
+<br/>
+<!-- <label>
+    Search books with:
+    <input
+    ng-model="filter_text"
+    ng-change="getAll({ title: filter_text});"
+    ng-model-options="{ debounce: 200 }"
+    ></input>
+</label> -->
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Date Published</th>
+            <th>Author</th>
+            <th>Photos</th>
+        </tr>
+    </thead>
+    <tr *ngFor="let book of books.$toArray">
+        <td>{{ book.id }}</td>
+        <td>
+            <a [routerLink]="['/books', book.id]">{{ book.attributes.title  }}</a>
+        </td>
+        <td>{{ book.attributes.date_published | date }}</td>
+        <td>{{ book.relationships.author.data.attributes.name }} #{{ book.relationships.author.data.id }}</td>
+        <td><span *ngFor="let photo of book.relationships.photos.data.$toArray">{{ photo.id }}</span></td>
+        <td><a ng-click="delete(book)" title="not supported by demo server"><small>DELETE</small></a></td>
+    </tr>
+</table>
