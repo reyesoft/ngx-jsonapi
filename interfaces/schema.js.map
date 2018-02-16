@@ -1,0 +1,1 @@
+{"version":3,"file":"schema.js","sourceRoot":"","sources":["../../src/interfaces/schema.ts"],"names":[],"mappings":"","sourcesContent":["export interface ISchema {\n    attributes?: object;    // @deprecated\n    relationships?: object;\n    ttl?: number;\n}\n"]}

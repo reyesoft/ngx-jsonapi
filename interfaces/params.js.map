@@ -1,0 +1,1 @@
+{"version":3,"file":"params.js","sourceRoot":"","sources":["../../src/interfaces/params.ts"],"names":[],"mappings":"","sourcesContent":["export interface IParams {\n    beforepath?: string;\n    include?: Array<string>;\n    ttl?: number;\n}\n"]}

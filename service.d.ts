@@ -1,0 +1,32 @@
+import { Observable } from "rxjs/Observable";
+import { Resource } from './resource';
+import { ParentResourceService } from './parent-resource-service';
+import { CacheStore } from './services/cachestore';
+import { ISchema, ICollection, IExecParams, ICacheMemory, IParamsCollection, IParamsResource, IAttributes } from './interfaces';
+export declare class Service<R extends Resource = Resource> extends ParentResourceService {
+    schema: ISchema;
+    cachememory: ICacheMemory<R>;
+    cachestore: CacheStore;
+    type: string;
+    resource: typeof Resource;
+    private path;
+    private smartfiltertype;
+    register(): Service<R> | false;
+    newResource(): R;
+    new(): R;
+    getPrePath(): string;
+    getPath(): string;
+    get(id: string, params?: IParamsResource | Function, fc_success?: Function, fc_error?: Function): Observable<R>;
+    delete(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): Observable<void>;
+    all(params?: IParamsCollection | Function, fc_success?: Function, fc_error?: Function): Observable<ICollection<R>>;
+    protected __exec(exec_params: IExecParams): Observable<R | ICollection<R> | void>;
+    _get(id: string, params: IParamsResource, fc_success: any, fc_error: any): Observable<R>;
+    private getGetFromServer(path, fc_success, fc_error, resource, subject);
+    private _all(params, fc_success, fc_error);
+    private getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection, subject);
+    private _delete(id, params, fc_success, fc_error);
+    getService<T extends Service<R>>(): T;
+    clearCacheMemory(): boolean;
+    parseToServer(attributes: IAttributes): void;
+    parseFromServer(attributes: IAttributes): void;
+}

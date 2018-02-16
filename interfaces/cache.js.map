@@ -1,0 +1,1 @@
+{"version":3,"file":"cache.js","sourceRoot":"","sources":["../../src/interfaces/cache.ts"],"names":[],"mappings":"","sourcesContent":["import { Resource } from '../resource';\n\nexport interface ICache {\n    setResource(resource: Resource): void;\n    deprecateCollections(path_start_with: string): boolean;\n}\n"]}

@@ -1,0 +1,1 @@
+{"version":3,"file":"page.js","sourceRoot":"","sources":["../../src/services/page.ts"],"names":[],"mappings":";;;;AAEA,MAAM;;sBACc,CAAC;+BAEQ,CAAC;kCACE,CAAC;;CAChC","sourcesContent":["import { IPage } from '../interfaces/page';\n\nexport class Page implements IPage {\n    public number = 0;\n\n    public total_resources = 0;\n    public resources_per_page = 0;\n}\n"]}
