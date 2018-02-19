@@ -8,6 +8,7 @@ export class JsonapiConfig {
         page: {
             number: 'page[number]',
             size: 'page[size]'
-        }
+        },
+        sort: 'sort'
     };
 }

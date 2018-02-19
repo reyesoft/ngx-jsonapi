@@ -260,7 +260,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             path.addParam(paramsurl.toparams({ filter: params.remotefilter }));
         }
         if (params.page) {
-            if (params.page.number > 1) {
+            if (params.page.number > 0) {
                 path.addParam(
                     Core.injectedServices.rsJsonapiConfig.parameters.page.number +
                         '=' + params.page.number
@@ -273,7 +273,13 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 );
             }
         }
+        if (params.sort) {
 
+                path.addParam(
+                    Core.injectedServices.rsJsonapiConfig.parameters.sort +
+                    '=' + params.sort
+                );
+        }
         // make request
         // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
         let tempororay_collection = this.getService().cachememory.getOrCreateCollection(
