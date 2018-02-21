@@ -280,6 +280,13 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     '=' + params.sort
                 );
         }
+        if (params.search) {
+
+            path.addParam(
+                Core.injectedServices.rsJsonapiConfig.parameters.search +
+                '=' + params.search
+            );
+        }
         // make request
         // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
         let tempororay_collection = this.getService().cachememory.getOrCreateCollection(
