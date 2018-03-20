@@ -75,12 +75,11 @@ export class Core {
     }
 
     // just an helper
-    public duplicateResource(resource: Resource, ...relations_alias_to_duplicate_too: Array<string>): Resource {
-        let newresource = <Resource>this.getResourceService(resource.type).new();
+    public duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: Array<string>): R {
+        let newresource = <R>this.getResourceService(resource.type).new();
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };
-        newresource.attributes.name = newresource.attributes.name + ' xXx';
 
-        forEach(resource.relationships, (relationship: IRelationship, alias: string) => {
+        forEach(resource.relationships, (alias: string, relationship: IRelationship) => {
             if ('id' in relationship.data) {
                 // relation hasOne
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
