@@ -201,6 +201,7 @@ export class Resource extends ParentResourceService {
                 }
 
                 let promise = Core.injectedServices.JsonapiHttp.exec(
+                    this.getService().url,
                     path.get(),
                     this.id ? 'PATCH' : 'POST',
                     object,
