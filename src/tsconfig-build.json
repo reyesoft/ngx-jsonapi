@@ -23,6 +23,6 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "flatModuleOutFile": "index.js",
-    "flatModuleId": "ngx-jsonapi"
+    "flatModuleId": "pt-ngx-jsonapi"
   }
 }

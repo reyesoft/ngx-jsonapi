@@ -150,7 +150,7 @@ export async function cleanJavaScriptFiles(config: Config) {
         .getTopLevelPackages(config)
         .filter(pkg => !util.shouldBundle(config, pkg));
     const jsFilesGlob = './dist/**/*.js';
-    const jsExcludeFilesFlob = './dist/(bundles|ngx-jsonapi)/**/*.js';
+    const jsExcludeFilesFlob = './dist/(bundles|pt-ngx-jsonapi)/**/*.js';
     const filesToRemove = await util.getListOfFiles(
         jsFilesGlob,
         jsExcludeFilesFlob

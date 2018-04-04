@@ -2,7 +2,7 @@ import build from './builder';
 import { packages } from './config';
 
 build({
-    scope: '@ngx-jsonapi',
+    scope: '@pt-ngx-jsonapi',
     packages,
 }).catch(err => {
     console.error(err);

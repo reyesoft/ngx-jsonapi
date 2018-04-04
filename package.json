@@ -1,5 +1,5 @@
 {
-  "name": "ngx-jsonapi",
+  "name": "pt-ngx-jsonapi",
   "description": "JSON API library for Angular",
   "scripts": {
     "build": "ts-node ./build/index.ts",
@@ -40,7 +40,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/reyesoft/ngx-jsonapi"
+    "url": "https://github.com/zeevkatz/ngx-jsonapi"
   },
   "nyc": {
     "extension": [
@@ -150,10 +150,10 @@
       "/src/*.*/"
     ],
     "moduleNameMapper": {
-      "^ngx-jsonapi/(?!db)(.*)": "<rootDir>/src/$1"
+      "^pt-ngx-jsonapi/(?!db)(.*)": "<rootDir>/src/$1"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!ngx-jsonapi)"
+      "node_modules/(?!pt-ngx-jsonapi)"
     ],
     "modulePathIgnorePatterns": [
       "dist"

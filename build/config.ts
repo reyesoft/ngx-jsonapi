@@ -11,7 +11,7 @@ export interface Config {
 
 export const packages: PackageDescription[] = [
     {
-        name: 'ngx-jsonapi',
+        name: 'pt-ngx-jsonapi',
         hasTestingModule: false,
         bundle: true,
     },

@@ -25,7 +25,7 @@ import { JsonapiConfig } from './jsonapi-config';
     ]
 })
 export class NgxJsonapiModule {
-    public static forRoot(config: JsonapiConfig): ModuleWithProviders {
+    public static forRoot(config = new JsonapiConfig()): ModuleWithProviders {
         return {
             ngModule: NgxJsonapiModule,
             providers: [
