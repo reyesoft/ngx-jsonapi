@@ -45,7 +45,7 @@ export class Http {
         ) {
             let req = new HttpRequest(
                 method,
-                url + path,
+                url + '/' + path,
                 data || null,
                 {
                     headers: new HttpHeaders({
