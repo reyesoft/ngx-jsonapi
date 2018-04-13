@@ -31,7 +31,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     public type: string;
     public resource = Resource;
 
-    private path: string; // without slashes
+    public path: string; // without slashes
     private smartfiltertype = 'undefined';
 
     /*
