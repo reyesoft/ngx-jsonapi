@@ -21,15 +21,16 @@ export class Http {
         private noDuplicatedHttpCallsService: NoDuplicatedHttpCallsService // private $q
     ) {}
 
-    public async delete(path: string): Promise<IDataObject> {
-        return this.exec(path, 'DELETE');
+    public async delete(path: string, url: string = this.rsJsonapiConfig.url): Promise<IDataObject> {
+               return this.exec(url, path, 'DELETE');
     }
 
-    public async get(path: string): Promise<IDataObject> {
-        return this.exec(path, 'get');
+    public async get(path: string, url: string = this.rsJsonapiConfig.url): Promise<IDataObject> {
+               return this.exec(url, path, 'get');
     }
 
     public async exec(
+        url: string,
         path: string,
         method: string,
         data?: IDataObject,
@@ -44,7 +45,7 @@ export class Http {
         ) {
             let req = new HttpRequest(
                 method,
-                this.rsJsonapiConfig.url + path,
+                url + path,
                 data || null,
                 {
                     headers: new HttpHeaders({
