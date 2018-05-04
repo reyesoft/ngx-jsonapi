@@ -1,14 +1,14 @@
 import { Injectable, Optional, Inject } from '@angular/core';
 import { noop } from 'rxjs/util/noop';
 
-import { ICollection } from './interfaces';
+import { ICollection, IRelationshipResource, IRelationshipCollection } from './interfaces';
 import { Service } from './service';
 import { Resource } from './resource';
 import { Base } from './services/base';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
-import { IRelationship } from './interfaces/';
+import { IRelationshipNone } from './interfaces/';
 import { forEach } from './foreach';
 
 @Injectable()
@@ -79,7 +79,7 @@ export class Core {
         let newresource = <R>this.getResourceService(resource.type).new();
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };
 
-        forEach(resource.relationships, (alias: string, relationship: IRelationship) => {
+        forEach(resource.relationships, (alias: string, relationship: IRelationshipResource | IRelationshipCollection) => {
             if ('id' in relationship.data) {
                 // relation hasOne
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
