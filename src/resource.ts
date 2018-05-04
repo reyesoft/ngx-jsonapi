@@ -16,7 +16,9 @@ import {
     IExecParams,
     IParamsResource,
     IRelationships,
-    IRelationship,
+    IRelationshipCollection,
+    IRelationshipNone,
+    IRelationshipResource,
 } from './interfaces';
 
 export class Resource extends ParentResourceService {
@@ -35,13 +37,14 @@ export class Resource extends ParentResourceService {
         this.relationships = {};
         Base.forEach(this.getService().schema.relationships, (value, key) => {
             if (this.getService().schema.relationships[key].hasMany) {
-                let relation: IRelationship = {
+                let relation: IRelationshipCollection = {
                     data: Base.newCollection(),
+                    hasid: false,
                     content: 'collection',
                 };
                 this.relationships[key] = relation;
             } else {
-                let relation: IRelationship = { data: {}, content: 'none' };
+                let relation: IRelationshipNone = { data: {}, hasid: false, content: 'none' };
                 this.relationships[key] = relation;
             }
         });
@@ -58,7 +61,7 @@ export class Resource extends ParentResourceService {
         // REALTIONSHIPS
         Base.forEach(
             this.relationships,
-            (relationship: IRelationship, relation_alias: string) => {
+            (relationship: IRelationshipResource | IRelationshipCollection, relation_alias: string) => {
                 if (
                     this.getService().schema.relationships[relation_alias] &&
                     this.getService().schema.relationships[relation_alias]
@@ -297,7 +300,7 @@ export class Resource extends ParentResourceService {
 
         type_alias = type_alias ? type_alias : resource.type;
         if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = { data: {}, content: 'none' };
+            this.relationships[type_alias] = { data: {}, hasid: false, content: 'none' };
         }
 
         if (
@@ -312,7 +315,7 @@ export class Resource extends ParentResourceService {
 
     public addRelationships(resources: ICollection, type_alias: string) {
         if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = { data: {}, content: 'none' };
+            this.relationships[type_alias] = { data: {}, hasid: false, content: 'none' };
         } else {
             // we receive a new collection of this relationship. We need remove old (if don't exist on new collection)
             Base.forEach(this.relationships[type_alias].data, resource => {
