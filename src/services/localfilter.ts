@@ -21,9 +21,7 @@ export class LocalFilter {
                 );
             } else if (typeof resource.attributes[attribute] === 'string') {
                 // just a string
-                return (
-                    resource.attributes[attribute] === localfilter[attribute]
-                );
+                return resource.attributes[attribute].includes(localfilter[attribute]);
             }
         }
 
@@ -41,5 +39,6 @@ export class LocalFilter {
                 }
             });
         }
+        console.log('y quedó así', dest_collection);
     }
 }
