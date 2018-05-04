@@ -14,7 +14,9 @@ This is a JSON API library for Angular 4+. Please use [ts-angular-jsonapi](https
 You can test library on this online example 👌 <http://ngx-jsonapi.reyesoft.com/>.
 
 <div align="center">
-[![angular jsonapi](https://user-images.githubusercontent.com/938894/39630783-c6f55ed4-4f86-11e8-9376-9acb587fe4c4.gif)](http://ngx-jsonapi.reyesoft.com/)
+
+[![demo app](https://user-images.githubusercontent.com/938894/39630783-c6f55ed4-4f86-11e8-9376-9acb587fe4c4.gif)](http://ngx-jsonapi.reyesoft.com/)
+
 </div>
 
 Data is obtained from [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
