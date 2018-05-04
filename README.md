@@ -153,7 +153,7 @@ export class AuthorsComponent {
 Filter resources with `attribute: value` values. Filters are used as 'exact match' (only resources with attribute value same as value are returned). `value` can also be an array, then only objects with same `attribute` value as one of `values` array elements are returned.
 
 ```javascript
-let authors = authorsService.all(
+let authors$ = authorsService.all(
   {
   localfilter: { name: 'xx' },      // request all data and next filter locally
   remotefilter: { country: 'Argentina' }  // request data with filter url parameter
@@ -166,7 +166,7 @@ let authors = authorsService.all(
 From this point, you only see important code for this library. For a full example, clone and see demo directory.
 
 ```javascript
-let author = authorsService.get('some_author_id');
+let author$ = authorsService.get('some_author_id');
 ```
 
 #### More options? Include resources when you fetch data (or save!)

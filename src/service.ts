@@ -424,7 +424,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         fc_success,
         fc_error,
         tempororay_collection: ICollection<R>,
-        cached_collection: ICollection,
+        cached_collection: ICollection<R>,
         subject: BehaviorSubject<ICollection<R>>
     ) {
         // SERVER REQUEST
@@ -479,7 +479,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     }
                 }
 
-                subject.next(tempororay_collection);
+                subject.next(cached_collection);
                 subject.complete();
                 this.runFc(fc_success, success);
             })
