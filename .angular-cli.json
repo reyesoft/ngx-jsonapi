@@ -50,6 +50,9 @@
   },
   "defaults": {
     "styleExt": "css",
+    "build": {
+      "showCircularDependencies": false
+    },
     "component": {
       "inlineStyle": true,
       "inlineTemplate": true,
