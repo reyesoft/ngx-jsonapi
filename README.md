@@ -72,7 +72,7 @@ Like you know, the better way is with examples. Lets go! 🚀
 
 ```typescript
 import { Injectable } from '@angular/core';
-import { Service, ISchema } from 'ngx-jsonapi';
+import { Service, ISchema, Resource } from 'ngx-jsonapi';
 
 @Injectable()
 export class AuthorsService extends Service<Author> {
