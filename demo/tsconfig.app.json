@@ -14,7 +14,12 @@
     "module": "es2015",
     "types": [],
     "baseUrl": ".",
-    "rootDir": "../"
+    "rootDir": "../",
+    "paths": {
+      "ngx-jsonapi": [
+        "../src"
+      ]
+    }
   },
   "exclude": [
     "../node_modules",
