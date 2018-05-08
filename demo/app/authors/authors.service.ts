@@ -35,7 +35,7 @@ export class Author extends Resource {
         return <ICollection<Book>>this.relationships.books.data;
     }
 
-    public photos()/*: ICollection<Photo>*/ {
+    public photos() /*: ICollection<Photo>*/ {
         return <ICollection>this.relationships.photos.data;
     }
 }

@@ -12,7 +12,13 @@ This is a JSON API library for Angular 4+. Please use [ts-angular-jsonapi](https
 
 ## Online demo
 
-You can test library on this online example 👌 <http://vp-ngx-jsonapi.reyesoft.com/>.
+You can test library on this online example 👌 <http://ngx-jsonapi.reyesoft.com/>.
+
+<div align="center">
+
+[![demo app](https://user-images.githubusercontent.com/938894/39630783-c6f55ed4-4f86-11e8-9376-9acb587fe4c4.gif)](http://ngx-jsonapi.reyesoft.com/)
+
+</div>
 
 Data is obtained from [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
 
@@ -148,7 +154,7 @@ export class AuthorsComponent {
 Filter resources with `attribute: value` values. Filters are used as 'exact match' (only resources with attribute value same as value are returned). `value` can also be an array, then only objects with same `attribute` value as one of `values` array elements are returned.
 
 ```javascript
-let authors = authorsService.all(
+let authors$ = authorsService.all(
   {
   localfilter: { name: 'xx' },      // request all data and next filter locally
   remotefilter: { country: 'Argentina' }  // request data with filter url parameter
@@ -161,7 +167,7 @@ let authors = authorsService.all(
 From this point, you only see important code for this library. For a full example, clone and see demo directory.
 
 ```javascript
-let author = authorsService.get('some_author_id');
+let author$ = authorsService.get('some_author_id');
 ```
 
 #### More options? Include resources when you fetch data (or save!)
@@ -248,11 +254,11 @@ let authors$ = authorsService.all(
 
 ## Local Demo App
 
-You can run [JsonApi Demo App](http://vp-ngx-jsonapi.reyesoft.com/) locally following the next steps:
+You can run [JsonApi Demo App](http://ngx-jsonapi.reyesoft.com/) locally following the next steps:
 
 ```bash
-git clone git@github.com:reyesoft/vp-ngx-jsonapi.git
-cd vp-ngx-jsonapi
+git clone git@github.com:amelnik/vp-ngx-jsonapi.git
+cd ngx-jsonapi
 yarn
 yarn start
 ```

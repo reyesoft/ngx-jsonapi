@@ -80,7 +80,7 @@ export class Converter {
         if (data.id in Converter.getService(data.type).cachememory.resources) {
             resource = Converter.getService(data.type).cachememory.resources[
                 data.id
-            ];
+                ];
         } else {
             resource = Converter.getService(
                 data.type

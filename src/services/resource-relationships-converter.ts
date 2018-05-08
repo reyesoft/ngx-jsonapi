@@ -40,8 +40,9 @@ export class ResourceRelationshipsConverter {
                     !(relation_key in this.relationships_dest) &&
                     'data' in relation_from_value
                 ) {
-                    this.relationships_dest[relation_key] = {
+                    this.relationships_dest[relation_key]  = {
                         data: Base.newCollection(),
+                        hasid: false,
                         content: 'collection',
                     };
                 }
@@ -93,6 +94,7 @@ export class ResourceRelationshipsConverter {
         // @todo: usar collection on data?
         this.relationships_dest[relation_key] = {
             data: relation_from_value.data,
+            hasid: false,
             content: 'ids'
         };
     }
@@ -105,6 +107,7 @@ export class ResourceRelationshipsConverter {
             // from data is an empty array, remove all data on relationship
             this.relationships_dest[relation_key] = {
                 data: Base.newCollection(),
+                hasid: false,
                 content: 'collection'
             };
 

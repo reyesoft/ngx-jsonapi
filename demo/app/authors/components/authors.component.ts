@@ -16,6 +16,12 @@ export class AuthorsComponent {
     ) {
         authorsService.all(
             // { include: ['books', 'photos'] }
+            // {
+            //     localfilter: {
+            //         name: 'y',                  // authors with a `y` character on name
+            //         date_of_birth: /^2016\-.*/  // we can use regular expresions too :)
+            //     }
+            // }
         )
         .subscribe(
             authors => {
