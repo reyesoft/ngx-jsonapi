@@ -1,7 +1,7 @@
 import { noop } from 'rxjs/util/noop';
-import { Observable } from "rxjs/Observable";
-import { Subject } from "rxjs/Subject";
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { of } from 'rxjs/observable/of';
 
 import { Core } from './core';
@@ -30,8 +30,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     public cachestore: CacheStore;
     public type: string;
     public resource = Resource;
-
-    private path: string; // without slashes
+    public url: string;
+    public path: string; // without slashes
     private smartfiltertype = 'undefined';
 
     /*
@@ -178,7 +178,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     resolve(fc_success);
                     promise
                         .then(fc_success2 => {
-                            console.warn('ngx-jsonapi: THIS CODE NEVER RUN, RIGHT? :/ Please check.');
+                            console.warn('vp-ngx-jsonapi: THIS CODE NEVER RUN, RIGHT? :/ Please check.');
                             subject.next(resource);
                             this.runFc(fc_success2, 'cachememory');
                         })
@@ -220,7 +220,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     }
 
     private getGetFromServer(path, fc_success, fc_error, resource: R, subject: Subject<R>) {
-        Core.injectedServices.JsonapiHttp.get(path.get())
+        Core.injectedServices.JsonapiHttp.get(path.get(), this.url)
             .then(success => {
                 Converter.build(success /*.data*/, resource);
                 resource.is_loading = false;
@@ -260,7 +260,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             path.addParam(paramsurl.toparams({ filter: params.remotefilter }));
         }
         if (params.page) {
-            if (params.page.number > 1) {
+            if (params.page.number > 0) {
                 path.addParam(
                     Core.injectedServices.rsJsonapiConfig.parameters.page.number +
                         '=' + params.page.number
@@ -273,7 +273,20 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 );
             }
         }
+        if (params.sort) {
 
+                path.addParam(
+                    Core.injectedServices.rsJsonapiConfig.parameters.sort +
+                    '=' + params.sort
+                );
+        }
+        if (params.search) {
+
+            path.addParam(
+                Core.injectedServices.rsJsonapiConfig.parameters.search +
+                '=' + params.search
+            );
+        }
         // make request
         // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
         let tempororay_collection = this.getService().cachememory.getOrCreateCollection(
@@ -429,7 +442,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     ) {
         // SERVER REQUEST
         tempororay_collection.$is_loading = true;
-        Core.injectedServices.JsonapiHttp.get(path.get())
+        Core.injectedServices.JsonapiHttp.get(path.get(), this.url)
             .then(success => {
                 tempororay_collection.$source = 'server';
                 tempororay_collection.$is_loading = false;
@@ -501,7 +514,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
         let subject = new Subject<void>();
 
-        Core.injectedServices.JsonapiHttp.delete(path.get())
+        Core.injectedServices.JsonapiHttp.delete(path.get(), this.url)
             .then(success => {
                 this.getService().cachememory.removeResource(id);
                 subject.next();

@@ -39,6 +39,5 @@ export class LocalFilter {
                 }
             });
         }
-        console.log('y quedó así', dest_collection);
     }
 }

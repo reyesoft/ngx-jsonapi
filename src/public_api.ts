@@ -1,4 +1,4 @@
-export * from './ngx-jsonapi.module';
+export * from './vp-ngx-jsonapi.module';
 export * from './interfaces';
 export { Autoregister } from './decorators/autoregister';
 export { Core as JsonapiCore } from './core';

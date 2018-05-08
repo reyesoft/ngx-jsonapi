@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
-import { environment } from "../environments/environment";
-import { NgxJsonapiModule } from 'ngx-jsonapi';
+import { environment } from '../environments/environment';
 
+import { NgxJsonapiModule } from 'vp-ngx-jsonapi';
 import { AppComponent } from './app.component';
 import { AuthorsService } from './authors/authors.service';
 import { BooksService } from './books/books.service';

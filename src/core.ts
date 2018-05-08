@@ -20,7 +20,7 @@ export class Core {
         rsJsonapiConfig: JsonapiConfig;
     };
 
-    private resourceServices: { [type:string]: Service } = {};
+    private resourceServices: { [type: string]: Service } = {};
     public loadingsCounter: number = 0;
     public loadingsStart: Function = noop;
     public loadingsDone: Function = noop;
@@ -74,7 +74,7 @@ export class Core {
         return true;
     }
 
-    // just an helper
+    // just a helper
     public duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: Array<string>): R {
         let newresource = <R>this.getResourceService(resource.type).new();
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };

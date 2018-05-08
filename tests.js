@@ -20,7 +20,7 @@ const { ServerTestingModule, platformServerTesting } = require('@angular/platfor
 
 getTestBed().initTestEnvironment(ServerTestingModule, platformServerTesting());
 
-moduleAlias.addAlias('ngx-jsonapi', __dirname + '/src');
+moduleAlias.addAlias('vp-ngx-jsonapi', __dirname + '/src');
 
 runner.loadConfig({
     spec_dir: 'src',

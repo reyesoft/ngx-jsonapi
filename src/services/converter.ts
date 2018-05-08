@@ -80,7 +80,7 @@ export class Converter {
         if (data.id in Converter.getService(data.type).cachememory.resources) {
             resource = Converter.getService(data.type).cachememory.resources[
                 data.id
-            ];
+                ];
         } else {
             resource = Converter.getService(
                 data.type
@@ -132,6 +132,7 @@ export class Converter {
                 collection_data_from.meta.resources_per_page || null;
             collection_dest.page.total_resources =
                 collection_data_from.meta.total_resources || null;
+            collection_dest.page['meta'] = collection_data_from.meta;
         }
 
         // convert and add new dataresoures to final collection

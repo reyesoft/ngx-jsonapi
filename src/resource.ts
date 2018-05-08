@@ -114,7 +114,7 @@ export class Resource extends ParentResourceService {
                         relationships[relation_alias] = { data: {} };
                     }
 
-                    // no se agregó aún a included && se ha pedido incluir con el parms.include
+                    // has not yet been added to included && has been asked to include with the params.include
                     let temporal_id =
                         relationship_data.type + '_' + relationship_data.id;
                     if (
@@ -204,6 +204,7 @@ export class Resource extends ParentResourceService {
                 }
 
                 let promise = Core.injectedServices.JsonapiHttp.exec(
+                    this.getService().url,
                     path.get(),
                     this.id ? 'PATCH' : 'POST',
                     object,

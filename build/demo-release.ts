@@ -7,8 +7,8 @@ var dir = path.resolve(path.join(__dirname, '../', 'demo-dist'));
 
 // CNAME FILE
 cmd('mkdir ', [`-p ${dir}/docs`]);
-fs.writeFile(`${dir}/docs/CNAME`, "ngx-jsonapi.reyesoft.com", function(err) {
-    if(err) {
+fs.writeFile(`${dir}/docs/CNAME`, 'vp-ngx-jsonapi.reyesoft.com', function (err) {
+    if (err) {
         return console.log(err);
     }
 });
@@ -19,7 +19,7 @@ ghpages.publish(dir, {
         email: 'pablo@reyesoft.com'
     },
     message: '(deploy): CI',
-    logger: function(message: string) {
+    logger: function (message: string) {
         console.log('gh-pages: ', message);
     }
 });

@@ -1,9 +1,9 @@
 export default {
-    entry: './dist/ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.es5.js',
-    dest: './dist/ngx-jsonapi/bundles/ngx-jsonapi.umd.js',
+    entry: './dist/vp-ngx-jsonapi/@vp-ngx-jsonapi/vp-ngx-jsonapi.es5.js',
+    dest: './dist/vp-ngx-jsonapi/bundles/vp-ngx-jsonapi.umd.js',
     format: 'umd',
     exports: 'named',
-    moduleName: 'ngx-jsonapi',
+    moduleName: 'vp-ngx-jsonapi',
     globals: {
         '@angular/core': 'ng.core'
     }

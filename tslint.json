@@ -1,5 +1,5 @@
 {
-    "extends": ["tslint:all", "codelyzer"],
+    "extends": ["tslint:recommended", "codelyzer"],
     "rulesDirectory": [
         "node_modules/codelyzer"
     ],
@@ -84,10 +84,7 @@
         "switch-default": false,
         "switch-final-break": [true, "always"],
         "trailing-comma": [
-            true, {
-                "multiline": "never",
-                "singleline": "never"
-            }
+            true
         ],
         "triple-equals": [true, "allow-null-check"],
         "typedef": [

@@ -15,6 +15,7 @@ yarn demo:release
 ## Publish new version
 
 ```bash
+yarn build
 yarn release
 ```
 ## ToDo

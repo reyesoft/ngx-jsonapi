@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "project": {
-    "name": "ngx-jsonapi"
+    "name": "vp-ngx-jsonapi"
   },
   "apps": [
     {
@@ -50,9 +50,6 @@
   },
   "defaults": {
     "styleExt": "css",
-    "build": {
-      "showCircularDependencies": false
-    },
     "component": {
       "inlineStyle": true,
       "inlineTemplate": true,

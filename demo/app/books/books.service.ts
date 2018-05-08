@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Service, ISchema, Resource, ICollection } from 'ngx-jsonapi';
+import { Service, ISchema, Resource, ICollection } from 'vp-ngx-jsonapi';
 import { Author } from '../authors/authors.service';
 import { Photo } from '../photos/photos.service';
 

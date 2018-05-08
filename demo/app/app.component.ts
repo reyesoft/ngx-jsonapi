@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { JsonapiCore } from 'ngx-jsonapi';
+import { JsonapiCore } from 'vp-ngx-jsonapi';
 
 @Component({
     selector: 'demo-app',
