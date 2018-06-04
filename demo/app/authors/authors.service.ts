@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Service, ISchema, Resource, ICollection } from 'ngx-jsonapi';
 import { Book } from '../books/books.service';
+import { Autoregister } from 'ngx-jsonapi';
 
 @Injectable()
+@Autoregister()
 export class AuthorsService extends Service<Author> {
     public resource = Author;
     public type = 'authors';
