@@ -15,6 +15,9 @@
         "module": "commonjs",
         "baseUrl": "",
         "rootDir": "./",
+        "paths": {
+            "ngx-jsonapi": [ "./src" ]
+        },
         "strict": false
     },
     "exclude": [
