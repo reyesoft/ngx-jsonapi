@@ -15,9 +15,7 @@
   },
   "keywords": [
     "jsonapi",
-    "angular",
-    "angular2",
-    "angular4"
+    "angular"
   ],
   "authors": [
     "Pablo Gabriel Reyes"
@@ -28,6 +26,6 @@
     "localforage": "^1.5.2"
   },
   "peerDependencies": {
-    "@angular/core": "^4.0.0 || ^5.0.0"
+    "@angular/core": "^5.0.0 || ^6.0.0"
   }
 }
