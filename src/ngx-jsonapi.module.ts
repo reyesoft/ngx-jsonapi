@@ -21,6 +21,7 @@ import { JsonapiConfig } from './jsonapi-config';
         JsonapiCore,
         NoDuplicatedHttpCallsService,
         JsonapiStore,
+        JsonapiConfig, // Need this here for testing
         JsonapiHttp
     ]
 })
