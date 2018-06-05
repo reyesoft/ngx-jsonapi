@@ -1,4 +1,5 @@
 import { NgxJsonapiModule } from '.';
+import { JsonapiCore } from '.';
 
 /*
   This file is to import the main module. By importing it into this
