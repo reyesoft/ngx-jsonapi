@@ -7,6 +7,8 @@ import { Core as JsonapiCore } from './core';
 import { Http as JsonapiHttp } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { NoDuplicatedHttpCallsService } from './services/noduplicatedhttpcalls.service';
+
+// testing
 import { JsonapiConfig } from './jsonapi-config';
 
 @NgModule({
