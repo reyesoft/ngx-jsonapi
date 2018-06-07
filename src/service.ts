@@ -180,8 +180,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 }
             );                     
             promise
-                .then(fc_success2 => {
-                    console.warn('ngx-jsonapi: THIS CODE NEVER RUN, RIGHT? :/ Please check.');
+                .then(fc_success2 => {                    
                     subject.next(resource);
                     this.runFc(fc_success2, 'cachememory');
                 })
