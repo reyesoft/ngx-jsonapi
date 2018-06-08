@@ -182,6 +182,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             promise
                 .then(fc_success2 => {                    
                     subject.next(resource);
+                    subject.complete();
                     this.runFc(fc_success2, 'cachememory');
                 })
                 .catch(noop);
