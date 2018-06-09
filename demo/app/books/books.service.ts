@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core';
 import { Service, ISchema, Resource, ICollection } from 'ngx-jsonapi';
 import { Author } from '../authors/authors.service';
 import { Photo } from '../photos/photos.service';
+import { Autoregister } from 'ngx-jsonapi';
 
 @Injectable()
+@Autoregister()
 export class BooksService extends Service<Book> {
     public type = 'books';
     public schema: ISchema = {

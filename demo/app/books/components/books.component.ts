@@ -3,6 +3,7 @@ import { Service, ICollection, Resource } from 'ngx-jsonapi';
 
 import { forEach } from '../../../foreach';
 import { BooksService } from './../books.service';
+import { AuthorsService } from './../../authors/authors.service';
 
 @Component({
     selector: 'demo-books',
@@ -12,6 +13,7 @@ export class BooksComponent {
     public books: ICollection;
 
     public constructor(
+        protected authorsService: AuthorsService,
         protected booksService: BooksService
     ) {
         booksService.all(

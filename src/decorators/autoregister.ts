@@ -1,7 +1,8 @@
 import { Service } from '../service';
 
 export function Autoregister() {
-    return function<T extends typeof Service>(target: T): T {
+    // @todo specify the correct types `return function<T extends typeof Service>(target: T): T`
+    return function(target: any): any {
         // save a reference to the original constructor
         var original = target;
 
