@@ -169,26 +169,23 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         let subject = new BehaviorSubject<R>(resource);
 
         // exit if ttl is not expired
-        let temporal_ttl = params.ttl || 0; // this.schema.ttl
+        let temporal_ttl = params.ttl || this.schema.ttl;
         if (this.getService().cachememory.isResourceLive(id, temporal_ttl)) {
             // we create a promise because we need return collection before
             // run success client function
             let promise: Promise<void> = new Promise(
                 (resolve, reject): void => {
-                    resolve(fc_success);
-                    promise
-                        .then(fc_success2 => {
-                            console.warn('ngx-jsonapi: THIS CODE NEVER RUN, RIGHT? :/ Please check.');
-                            subject.next(resource);
-                            this.runFc(fc_success2, 'cachememory');
-                        })
-                        .catch(noop);
                     resource.is_loading = false;
+                    resolve(fc_success);                    
                 }
-            );
-            subject.next(resource);
-            subject.complete();
-
+            );                     
+            promise
+                .then(fc_success2 => {                    
+                    subject.next(resource);
+                    subject.complete();
+                    this.runFc(fc_success2, 'cachememory');
+                })
+                .catch(noop);
             return subject.asObservable();
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
@@ -196,6 +193,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 .cachestore.getResource(resource)
                 .then(success => {
                     if (Base.isObjectLive(temporal_ttl, resource.lastupdate)) {
+                        resource.is_loading = false;
                         subject.next(resource);
                         this.runFc(fc_success, { data: success });
                     } else {
