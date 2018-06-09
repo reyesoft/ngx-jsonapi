@@ -31,7 +31,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     public type: string;
     public resource = Resource;
 
-    private path: string; // without slashes
+    protected path: string; // without slashes
+
     private smartfiltertype = 'undefined';
 
     /*
@@ -219,7 +220,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         return subject.asObservable();
     }
 
-    private getGetFromServer(path, fc_success, fc_error, resource: R, subject: Subject<R>) {
+    protected getGetFromServer(path, fc_success, fc_error, resource: R, subject: Subject<R>) {
         Core.injectedServices.JsonapiHttp.get(path.get())
             .then(success => {
                 Converter.build(success /*.data*/, resource);
@@ -418,7 +419,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         return subject.asObservable();
     }
 
-    private getAllFromServer(
+    protected getAllFromServer(
         path,
         params,
         fc_success,
