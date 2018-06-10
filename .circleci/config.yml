@@ -12,6 +12,7 @@ jobs:
           key: *cache_key
       - run: yarn
       - run: yarn run prettier
+      - run: yarn run ng lint
       - save_cache:
           key: *cache_key
           paths:
