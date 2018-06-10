@@ -21,7 +21,7 @@
     <tr *ngFor="let book of books.$toArray">
         <td>{{ book.id }}</td>
         <td>
-            <a [routerLink]="['/books', book.id]">{{ book.attributes.title  }}</a>
+            <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
         </td>
         <td>{{ book.attributes.date_published | date }}</td>
         <td>{{ book.relationships.author.data.attributes.name }} #{{ book.relationships.author.data.id }}</td>

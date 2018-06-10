@@ -12,7 +12,7 @@
     <tr *ngFor="let author of authors.$toArray">
         <td>{{ author.id }}</td>
         <td>
-            <a [routerLink]="['/authors', author.id]">{{ author.attributes.name  }}</a>
+            <a [routerLink]="['/authors', author.id]">{{ author.attributes.name }}</a>
         </td>
         <td>{{ author.attributes.date_of_birth | date }}</td>
         <td>{{ author.attributes.date_of_death | date }}</td>
