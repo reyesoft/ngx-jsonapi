@@ -27,6 +27,14 @@ jobs:
           key: *cache_key
       - run: yarn
       - run: yarn run ci
+    #   - run:
+    #       name: Upload code coverage report to Coveralls
+    #       command: |-
+    #         if [ ! -z "$COVERALLS_REPO_TOKEN" ]; then
+    #           npx @cedx/coveralls build/logs/clover.xml
+    #         else
+    #           echo 'Skipped'
+    #         fi
       - run: yarn run demo:build
       - run: yarn run demo:test --watch=false
       - run: yarn run build
