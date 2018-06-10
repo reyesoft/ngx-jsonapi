@@ -24,47 +24,6 @@ export class StoreService {
         this.checkIfIsTimeToClean();
     }
 
-    private checkIfIsTimeToClean() {
-        // check if is time to check cachestore
-        this.globalstore
-            .getItem('_lastclean_time')
-            .then((success: IStoreElement) => {
-                if (Date.now() >= success.time + 12 * 3600 * 1000) {
-                    // is time to check cachestore!
-                    this.globalstore.setItem('_lastclean_time', {
-                        time: Date.now()
-                    });
-                    this.checkAndDeleteOldElements();
-                }
-            })
-            .catch(() => {
-                this.globalstore.setItem('_lastclean_time', {
-                    time: Date.now()
-                });
-            });
-    }
-
-    private checkAndDeleteOldElements() {
-        this.allstore
-            .keys()
-            .then(success => {
-                Base.forEach(success, key => {
-                    // recorremos cada item y vemos si es tiempo de removerlo
-                    this.allstore
-                        .getItem(key)
-                        .then((success2: IStoreElement2) => {
-                            // es tiempo de removerlo?
-                            if (Date.now() >= success2._lastupdate_time + 24 * 3600 * 1000) {
-                                // removemos!!
-                                this.allstore.removeItem(key);
-                            }
-                        })
-                        .catch(noop);
-                });
-            })
-            .catch(noop);
-    }
-
     public async getObjet(key: string): Promise<object> {
         let deferred: Deferred<object> = new Deferred();
 
@@ -109,6 +68,47 @@ export class StoreService {
                             })
                             .catch(noop);
                     }
+                });
+            })
+            .catch(noop);
+    }
+
+    private checkIfIsTimeToClean() {
+        // check if is time to check cachestore
+        this.globalstore
+            .getItem('_lastclean_time')
+            .then((success: IStoreElement) => {
+                if (Date.now() >= success.time + 12 * 3600 * 1000) {
+                    // is time to check cachestore!
+                    this.globalstore.setItem('_lastclean_time', {
+                        time: Date.now()
+                    });
+                    this.checkAndDeleteOldElements();
+                }
+            })
+            .catch(() => {
+                this.globalstore.setItem('_lastclean_time', {
+                    time: Date.now()
+                });
+            });
+    }
+
+    private checkAndDeleteOldElements() {
+        this.allstore
+            .keys()
+            .then(success => {
+                Base.forEach(success, key => {
+                    // recorremos cada item y vemos si es tiempo de removerlo
+                    this.allstore
+                        .getItem(key)
+                        .then((success2: IStoreElement2) => {
+                            // es tiempo de removerlo?
+                            if (Date.now() >= success2._lastupdate_time + 24 * 3600 * 1000) {
+                                // removemos!!
+                                this.allstore.removeItem(key);
+                            }
+                        })
+                        .catch(noop);
                 });
             })
             .catch(noop);

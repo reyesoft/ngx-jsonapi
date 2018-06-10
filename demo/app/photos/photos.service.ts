@@ -9,10 +9,10 @@ export class PhotosService extends Service {
 
 export class Photo extends Resource {
     public attributes: {
-        title: string,
-        uri: string,
-        imageable_id: string,
-        created_at: string,
-        updated_at: string
+        title: string;
+        uri: string;
+        imageable_id: string;
+        created_at: string;
+        updated_at: string;
     };
 }

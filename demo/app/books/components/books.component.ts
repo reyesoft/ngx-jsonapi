@@ -28,7 +28,7 @@ export class BooksComponent {
                 console.info('success books controll', this.books);
             },
             error => console.info('error books controll', error)
-        )
+        );
     }
 
     public getAll(remotefilter) {
@@ -76,9 +76,7 @@ export class BooksComponent {
                 console.log('BookRequest#3 requested');
                 let book1 = this.booksService.get('1',
                     success1 => {
-                        console.log('BookRequest#3 received (author data from cache)' //,
-                            //(<Resource>book1.relationships.author.data).attributes
-                        );
+                        console.log('BookRequest#3 received (author data from cache)');
                     }
                 );
             },

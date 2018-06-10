@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Service, ISchema, Resource, ICollection } from 'ngx-jsonapi';
+import { Autoregister, Service, ISchema, Resource, ICollection } from 'ngx-jsonapi';
 import { Author } from '../authors/authors.service';
 import { Photo } from '../photos/photos.service';
-import { Autoregister } from 'ngx-jsonapi';
 
 @Injectable()
 @Autoregister()

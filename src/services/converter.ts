@@ -11,16 +11,6 @@ import { Base } from '../services/base';
 
 export class Converter {
     /*
-    Convert json arrays (like included) to an Resources arrays without [keys]
-    */
-    private static json_array2resources_array(json_array: Array<IDataResource>, destination_array: IResourcesById = {}): void {
-        for (let data of json_array) {
-            let resource = Converter.json2resource(data, false);
-            destination_array[resource.type + '_' + resource.id] = resource;
-        }
-    }
-
-    /*
     Convert json arrays (like included) to an indexed Resources array by [type][id]
     */
     public static json_array2resources_array_by_type(json_array: Array<IDataResource>): IResourcesByType {
@@ -59,6 +49,20 @@ export class Converter {
         return resource_service;
     }
 
+    public static build(document_from: IDataCollection | IDataObject, resource_dest: Resource | ICollection) {
+        // instancio los include y los guardo en included arrary
+        let included_resources: IResourcesByType = {};
+        if ('included' in document_from) {
+            included_resources = Converter.json_array2resources_array_by_type(document_from.included);
+        }
+
+        if (Array.isArray(document_from.data)) {
+            Converter._buildCollection(<IDataCollection>document_from, <ICollection>resource_dest, included_resources);
+        } else {
+            Converter._buildResource(document_from.data, <Resource>resource_dest, included_resources);
+        }
+    }
+
     /* return a resource type(resoruce_service) with data(data) */
     private static procreate(data: IDataResource): Resource {
         if (!('type' in data && 'id' in data)) {
@@ -78,17 +82,13 @@ export class Converter {
         return resource;
     }
 
-    public static build(document_from: IDataCollection | IDataObject, resource_dest: Resource | ICollection) {
-        // instancio los include y los guardo en included arrary
-        let included_resources: IResourcesByType = {};
-        if ('included' in document_from) {
-            included_resources = Converter.json_array2resources_array_by_type(document_from.included);
-        }
-
-        if (Array.isArray(document_from.data)) {
-            Converter._buildCollection(<IDataCollection>document_from, <ICollection>resource_dest, included_resources);
-        } else {
-            Converter._buildResource(document_from.data, <Resource>resource_dest, included_resources);
+    /*
+    Convert json arrays (like included) to an Resources arrays without [keys]
+    */
+    private static json_array2resources_array(json_array: Array<IDataResource>, destination_array: IResourcesById = {}): void {
+        for (let data of json_array) {
+            let resource = Converter.json2resource(data, false);
+            destination_array[resource.type + '_' + resource.id] = resource;
         }
     }
 

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
-import { environment } from "../environments/environment";
+import { environment } from '../environments/environment';
 import { NgxJsonapiModule } from 'ngx-jsonapi';
 
 import { AppComponent } from './app.component';

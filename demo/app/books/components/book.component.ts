@@ -37,13 +37,14 @@ export class BookComponent {
                     console.log('PROMISE success book', this.book);
                 },
                 error => console.log('PROMISE error books controll', error)
-            )
+            );
         });
 
     }
 
     public getAuthorName(book: Resource): string {
         let data = <Resource>book.relationships.author.data;
+
         return data.attributes ? data.attributes.name : '';
     }
 }
