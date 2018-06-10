@@ -15,6 +15,7 @@
         "demo:start": "yarn run cli serve",
         "demo:start:aot": "yarn run cli serve -prod",
         "demo:test": "jest --watch",
+        "demo:test:nowatch": "jest",
         "demo:build": "yarn build && yarn run copy:dist && yarn cli build -prod --base-href \"/\" --output-path \"./demo-dist\"",
         "demo:release": "ts-node ./build/demo-release.ts",
         "ci": "yarn run build && yarn run test && nyc report --reporter=text-lcov | coveralls",
