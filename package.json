@@ -73,7 +73,10 @@
         "url": "https://github.com/reyesoft/ngx-jsonapi"
     },
     "nyc": {
-        "lines": 99,
+        "statements": 25,
+        "branches": 2,
+        "functions": 15,
+        "lines": 25,
         "extension": [
             ".ts"
         ],
