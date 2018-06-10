@@ -1,5 +1,3 @@
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
 
-describe('ResourceRelationshipsConverter', () => {
-
-});
+describe('ResourceRelationshipsConverter', () => {});

@@ -1,7 +1,7 @@
 import { noop } from 'rxjs/util/noop';
-import { Observable } from "rxjs/Observable";
-import { Subject } from "rxjs/Subject";
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { of } from 'rxjs/observable/of';
 
 import { Core } from './core';
@@ -14,15 +14,7 @@ import { Converter } from './services/converter';
 import { LocalFilter } from './services/localfilter';
 import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
-import {
-    ISchema,
-    ICollection,
-    IExecParams,
-    ICacheMemory,
-    IParamsCollection,
-    IParamsResource,
-    IAttributes,
-} from './interfaces';
+import { ISchema, ICollection, IExecParams, ICacheMemory, IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 
 export class Service<R extends Resource = Resource> extends ParentResourceService {
     public schema: ISchema;
@@ -41,11 +33,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     */
     public register(): Service<R> | false {
         if (Core.me === null) {
-            throw new Error(
-                'Error: you are trying register `' +
-                    this.type +
-                    '` before inject JsonapiCore somewhere, almost one time.'
-            );
+            throw new Error('Error: you are trying register `' + this.type + '` before inject JsonapiCore somewhere, almost one time.');
         }
         // only when service is registered, not cloned object
         this.cachememory = new CacheMemory();
@@ -78,47 +66,33 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         return this.path ? this.path : this.type;
     }
 
-    public get(
-        id: string,
-        params?: IParamsResource | Function,
-        fc_success?: Function,
-        fc_error?: Function
-    ): Observable<R> {
+    public get(id: string, params?: IParamsResource | Function, fc_success?: Function, fc_error?: Function): Observable<R> {
         return <Observable<R>>this.__exec({
             id: id,
             params: params,
             fc_success: fc_success,
             fc_error: fc_error,
-            exec_type: 'get',
+            exec_type: 'get'
         });
     }
 
-    public delete(
-        id: string,
-        params?: Object | Function,
-        fc_success?: Function,
-        fc_error?: Function
-    ): Observable<void> {
+    public delete(id: string, params?: Object | Function, fc_success?: Function, fc_error?: Function): Observable<void> {
         return <Observable<void>>this.__exec({
             id: id,
             params: params,
             fc_success: fc_success,
             fc_error: fc_error,
-            exec_type: 'delete',
+            exec_type: 'delete'
         });
     }
 
-    public all(
-        params?: IParamsCollection | Function,
-        fc_success?: Function,
-        fc_error?: Function
-    ): Observable<ICollection<R>> {
+    public all(params?: IParamsCollection | Function, fc_success?: Function, fc_error?: Function): Observable<ICollection<R>> {
         return <Observable<ICollection<R>>>this.__exec({
             id: null,
             params: params,
             fc_success: fc_success,
             fc_error: fc_error,
-            exec_type: 'all',
+            exec_type: 'all'
         });
     }
 
@@ -127,44 +101,22 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
         switch (exec_pp.exec_type) {
             case 'get':
-                return this._get(
-                    exec_pp.id,
-                    exec_pp.params,
-                    exec_pp.fc_success,
-                    exec_pp.fc_error
-                );
+                return this._get(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
             case 'delete':
-                return this._delete(
-                    exec_pp.id,
-                    exec_pp.params,
-                    exec_pp.fc_success,
-                    exec_pp.fc_error
-                );
+                return this._delete(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
             case 'all':
-                return this._all(
-                    exec_pp.params,
-                    exec_pp.fc_success,
-                    exec_pp.fc_error
-                );
+                return this._all(exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
         }
     }
 
-    public _get(
-        id: string,
-        params: IParamsResource,
-        fc_success,
-        fc_error
-    ): Observable<R> {
+    public _get(id: string, params: IParamsResource, fc_success, fc_error): Observable<R> {
         // http request
         let path = new PathBuilder();
         path.applyParams(this, params);
         path.appendPath(id);
 
         // CACHEMEMORY
-        let resource = <R>this.getService().cachememory.getOrCreateResource(
-            this.type,
-            id
-        );
+        let resource = <R>this.getService().cachememory.getOrCreateResource(this.type, id);
         resource.is_loading = true;
 
         let subject = new BehaviorSubject<R>(resource);
@@ -177,11 +129,11 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             let promise: Promise<void> = new Promise(
                 (resolve, reject): void => {
                     resource.is_loading = false;
-                    resolve(fc_success);                    
+                    resolve(fc_success);
                 }
-            );                     
+            );
             promise
-                .then(fc_success2 => {                    
+                .then(fc_success2 => {
                     subject.next(resource);
                     subject.complete();
                     this.runFc(fc_success2, 'cachememory');
@@ -198,13 +150,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                         subject.next(resource);
                         this.runFc(fc_success, { data: success });
                     } else {
-                        this.getGetFromServer(
-                            path,
-                            fc_success,
-                            fc_error,
-                            resource,
-                            subject
-                        );
+                        this.getGetFromServer(path, fc_success, fc_error, resource, subject);
                     }
                 })
                 .catch(error => {
@@ -249,10 +195,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         let path = new PathBuilder();
         let paramsurl = new UrlParamsBuilder();
         path.applyParams(this, params);
-        if (
-            params.remotefilter &&
-            Object.keys(params.remotefilter).length > 0
-        ) {
+        if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
             if (this.getService().parseToServer) {
                 this.getService().parseToServer(params.remotefilter);
             }
@@ -260,24 +203,16 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         }
         if (params.page) {
             if (params.page.number > 1) {
-                path.addParam(
-                    Core.injectedServices.rsJsonapiConfig.parameters.page.number +
-                        '=' + params.page.number
-                );
+                path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number);
             }
             if (params.page.size) {
-                path.addParam(
-                    Core.injectedServices.rsJsonapiConfig.parameters.page.size +
-                        '=' + params.page.size
-                );
+                path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.size + '=' + params.page.size);
             }
         }
 
         // make request
         // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
-        let tempororay_collection = this.getService().cachememory.getOrCreateCollection(
-            path.getForCache()
-        );
+        let tempororay_collection = this.getService().cachememory.getOrCreateCollection(path.getForCache());
 
         // creamos otra colleción si luego será filtrada
         let localfilter = new LocalFilter(params.localfilter);
@@ -292,10 +227,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
         // MEMORY_CACHE
         let temporal_ttl = params.ttl || this.schema.ttl;
-        if (
-            temporal_ttl >= 0 &&
-            this.getService().cachememory.isCollectionExist(path.getForCache())
-        ) {
+        if (temporal_ttl >= 0 && this.getService().cachememory.isCollectionExist(path.getForCache())) {
             // get cached data and merge with temporal collection
             tempororay_collection.$source = 'memory';
 
@@ -305,18 +237,10 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             }
 
             // fill collection and localfilter
-            localfilter.filterCollection(
-                tempororay_collection,
-                cached_collection
-            );
+            localfilter.filterCollection(tempororay_collection, cached_collection);
 
             // exit if ttl is not expired
-            if (
-                this.getService().cachememory.isCollectionLive(
-                    path.getForCache(),
-                    temporal_ttl
-                )
-            ) {
+            if (this.getService().cachememory.isCollectionLive(path.getForCache(), temporal_ttl)) {
                 // we create a promise because we need return collection before
                 // run success client function
                 let promise: Promise<void> = new Promise(
@@ -331,85 +255,38 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     }
                 );
             } else {
-                this.getAllFromServer(
-                    path,
-                    params,
-                    fc_success,
-                    fc_error,
-                    tempororay_collection,
-                    cached_collection,
-                    subject
-                );
+                this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection, subject);
             }
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // STORE
             tempororay_collection.$is_loading = true;
 
             this.getService()
-                .cachestore.getCollectionFromStorePromise(
-                    path.getForCache(),
-                    path.includes,
-                    tempororay_collection
-                )
+                .cachestore.getCollectionFromStorePromise(path.getForCache(), path.includes, tempororay_collection)
                 .then(success => {
                     tempororay_collection.$source = 'store';
                     tempororay_collection.$is_loading = false;
 
                     // when load collection from store, we save collection on memory
-                    this.getService().cachememory.setCollection(
-                        path.getForCache(),
-                        tempororay_collection
-                    );
+                    this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
 
                     // localfilter getted data
-                    localfilter.filterCollection(
-                        tempororay_collection,
-                        cached_collection
-                    );
+                    localfilter.filterCollection(tempororay_collection, cached_collection);
 
-                    if (
-                        Base.isObjectLive(
-                            temporal_ttl,
-                            tempororay_collection.$cache_last_update
-                        )
-                    ) {
+                    if (Base.isObjectLive(temporal_ttl, tempororay_collection.$cache_last_update)) {
                         subject.next(tempororay_collection);
                         this.runFc(fc_success, { data: success });
                     } else {
-                        this.getAllFromServer(
-                            path,
-                            params,
-                            fc_success,
-                            fc_error,
-                            tempororay_collection,
-                            cached_collection,
-                            subject
-                        );
+                        this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection, subject);
                     }
                 })
                 .catch(error => {
-                    this.getAllFromServer(
-                        path,
-                        params,
-                        fc_success,
-                        fc_error,
-                        tempororay_collection,
-                        cached_collection,
-                        subject
-                    );
+                    this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection, subject);
                 });
         } else {
             // STORE
             tempororay_collection.$is_loading = true;
-            this.getAllFromServer(
-                path,
-                params,
-                fc_success,
-                fc_error,
-                tempororay_collection,
-                cached_collection,
-                subject
-            );
+            this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection, subject);
         }
 
         subject.next(<ICollection<R>>cached_collection);
@@ -443,37 +320,21 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
                 Converter.build(success /*.data*/, tempororay_collection);
 
-                this.getService().cachememory.setCollection(
-                    path.getForCache(),
-                    tempororay_collection
-                );
+                this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    this.getService().cachestore.setCollection(
-                        path.getForCache(),
-                        tempororay_collection,
-                        params.include
-                    );
+                    this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
                 }
 
                 // localfilter getted data
                 let localfilter = new LocalFilter(params.localfilter);
-                localfilter.filterCollection(
-                    tempororay_collection,
-                    cached_collection
-                );
+                localfilter.filterCollection(tempororay_collection, cached_collection);
 
                 // trying to define smartfiltertype
                 if (this.smartfiltertype === 'undefined') {
                     let page = tempororay_collection.page;
-                    if (
-                        page.number === 1 &&
-                        page.total_resources <= page.resources_per_page
-                    ) {
+                    if (page.number === 1 && page.total_resources <= page.resources_per_page) {
                         this.smartfiltertype = 'localfilter';
-                    } else if (
-                        page.number === 1 &&
-                        page.total_resources > page.resources_per_page
-                    ) {
+                    } else if (page.number === 1 && page.total_resources > page.resources_per_page) {
                         this.smartfiltertype = 'remotefilter';
                     }
                 }
@@ -512,7 +373,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 this.runFc(fc_error, error);
             });
 
-
         return subject.asObservable();
     }
 
@@ -534,12 +394,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         path.applyParams(this);
 
         return (
-            this.getService().cachememory.deprecateCollections(
-                path.getForCache()
-            ) &&
-            this.getService().cachestore.deprecateCollections(
-                path.getForCache()
-            )
+            this.getService().cachememory.deprecateCollections(path.getForCache()) &&
+            this.getService().cachestore.deprecateCollections(path.getForCache())
         );
     }
 

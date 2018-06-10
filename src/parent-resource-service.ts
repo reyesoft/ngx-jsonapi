@@ -17,7 +17,7 @@ export class ParentResourceService {
             if (typeof exec_params.params === 'undefined') {
                 exec_params.params = { ...{}, ...Base.Params };
             } else {
-                exec_params.params = {...{}, ...Base.Params,...exec_params.params };
+                exec_params.params = { ...{}, ...Base.Params, ...exec_params.params };
             }
         }
 

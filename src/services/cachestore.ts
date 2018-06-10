@@ -8,15 +8,10 @@ import { Resource } from '../resource';
 import { Converter } from './converter';
 
 export class CacheStore implements ICache {
-    public async getResource(
-        resource: Resource /* | IDataResource*/,
-        include: Array<string> = []
-    ): Promise<object> {
+    public async getResource(resource: Resource /* | IDataResource*/, include: Array<string> = []): Promise<object> {
         let mypromise: Promise<object> = new Promise(
             (resolve, reject): void => {
-                Core.injectedServices.JsonapiStoreService.getObjet(
-                    resource.type + '.' + resource.id
-                )
+                Core.injectedServices.JsonapiStoreService.getObjet(resource.type + '.' + resource.id)
                     .then(success => {
                         Converter.build({ data: success }, resource);
 
@@ -28,26 +23,17 @@ export class CacheStore implements ICache {
                             //  && ('attributes' in resource.relationships[resource_type].data)
                             if (resource_type in resource.relationships) {
                                 // hasOne
-                                let related_resource = <IDataResource>resource
-                                    .relationships[resource_type].data;
+                                let related_resource = <IDataResource>resource.relationships[resource_type].data;
                                 if (!('attributes' in related_resource)) {
                                     // no está cargado aún
-                                    let builded_resource = this.getResourceFromMemory(
-                                        related_resource
-                                    );
+                                    let builded_resource = this.getResourceFromMemory(related_resource);
                                     if (builded_resource.is_new) {
                                         // no está en memoria, la pedimos a store
-                                        promises.push(
-                                            this.getResource(builded_resource)
-                                        );
+                                        promises.push(this.getResource(builded_resource));
                                     } else {
-                                        console.warn(
-                                            'ts-angular-json: esto no debería pasar #isdjf2l1a'
-                                        );
+                                        console.warn('ts-angular-json: esto no debería pasar #isdjf2l1a');
                                     }
-                                    resource.relationships[
-                                        resource_type
-                                    ].data = builded_resource;
+                                    resource.relationships[resource_type].data = builded_resource;
                                 }
                             }
                         });
@@ -87,29 +73,13 @@ export class CacheStore implements ICache {
     }
 
     public setResource(resource: Resource) {
-        Core.injectedServices.JsonapiStoreService.saveObject(
-            resource.type + '.' + resource.id,
-            resource.toObject().data
-        );
+        Core.injectedServices.JsonapiStoreService.saveObject(resource.type + '.' + resource.id, resource.toObject().data);
     }
 
-    public async getCollectionFromStorePromise(
-        url: string,
-        include: Array<string>,
-        collection: ICollection
-    ): Promise<ICollection> {
+    public async getCollectionFromStorePromise(url: string, include: Array<string>, collection: ICollection): Promise<ICollection> {
         let promise = new Promise(
-            (
-                resolve: (value: ICollection) => void,
-                reject: () => void
-            ): void => {
-                this.getCollectionFromStore(
-                    url,
-                    include,
-                    collection,
-                    resolve,
-                    reject
-                );
+            (resolve: (value: ICollection) => void, reject: () => void): void => {
+                this.getCollectionFromStore(url, include, collection, resolve, reject);
             }
         );
 
@@ -123,19 +93,12 @@ export class CacheStore implements ICache {
         resolve: (value: ICollection) => void,
         reject: () => void
     ) {
-        let promise = Core.injectedServices.JsonapiStoreService.getObjet(
-            'collection.' + url
-        );
+        let promise = Core.injectedServices.JsonapiStoreService.getObjet('collection.' + url);
         promise
             .then((success: IDataCollection) => {
                 // build collection from store and resources from memory
                 // @todo success.data is a collection, not an array
-                if (
-                    this.fillCollectionWithArrrayAndResourcesOnMemory(
-                        success.data,
-                        collection
-                    )
-                ) {
+                if (this.fillCollectionWithArrrayAndResourcesOnMemory(success.data, collection)) {
                     collection.$source = 'store'; // collection from storeservice, resources from memory
                     collection.$cache_last_update = success._lastupdate_time;
                     resolve(collection);
@@ -143,25 +106,16 @@ export class CacheStore implements ICache {
                     return;
                 }
 
-                let promise2 = this.fillCollectionWithArrrayAndResourcesOnStore(
-                    success,
-                    include,
-                    collection
-                );
+                let promise2 = this.fillCollectionWithArrrayAndResourcesOnStore(success, include, collection);
                 promise2
                     .then(() => {
                         // just for precaution, we not rewrite server data
                         if (collection.$source !== 'new') {
-                            console.warn(
-                                'ts-angular-json: esto no debería pasar. buscar eEa2ASd2#'
-                            );
-                            throw new Error(
-                                'ts-angular-json: esto no debería pasar. buscar eEa2ASd2#'
-                            );
+                            console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
+                            throw new Error('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
                         }
                         collection.$source = 'store'; // collection and resources from storeservice
-                        collection.$cache_last_update =
-                            success._lastupdate_time;
+                        collection.$cache_last_update = success._lastupdate_time;
                         resolve(collection);
                     })
                     .catch(() => {
@@ -173,10 +127,7 @@ export class CacheStore implements ICache {
             });
     }
 
-    private fillCollectionWithArrrayAndResourcesOnMemory(
-        dataresources: Array<IDataResource>,
-        collection: ICollection
-    ): boolean {
+    private fillCollectionWithArrrayAndResourcesOnMemory(dataresources: Array<IDataResource>, collection: ICollection): boolean {
         let all_ok = true;
         for (let key in dataresources) {
             let dataresource = dataresources[key];
@@ -194,10 +145,7 @@ export class CacheStore implements ICache {
 
     private getResourceFromMemory(dataresource: IDataResource): Resource {
         let cachememory = Converter.getService(dataresource.type).cachememory;
-        let resource = cachememory.getOrCreateResource(
-            dataresource.type,
-            dataresource.id
-        );
+        let resource = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
 
         return resource;
     }
@@ -208,29 +156,15 @@ export class CacheStore implements ICache {
         collection: ICollection
     ): Promise<object> {
         let promise = new Promise(
-            (
-                resolve: (value: object) => void,
-                reject: (value: any) => void
-            ): void => {
+            (resolve: (value: object) => void, reject: (value: any) => void): void => {
                 // request resources from store
                 let temporalcollection = {};
                 let promises = [];
                 for (let key in datacollection.data) {
                     let dataresource: IDataResource = datacollection.data[key];
-                    let cachememory = Converter.getService(dataresource.type)
-                        .cachememory;
-                    temporalcollection[
-                        dataresource.id
-                    ] = cachememory.getOrCreateResource(
-                        dataresource.type,
-                        dataresource.id
-                    );
-                    promises.push(
-                        this.getResource(
-                            temporalcollection[dataresource.id],
-                            include
-                        )
-                    );
+                    let cachememory = Converter.getService(dataresource.type).cachememory;
+                    temporalcollection[dataresource.id] = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
+                    promises.push(this.getResource(temporalcollection[dataresource.id], include));
                 }
 
                 // build collection and resources from store
@@ -254,11 +188,7 @@ export class CacheStore implements ICache {
         return promise;
     }
 
-    public setCollection(
-        url: string,
-        collection: ICollection,
-        include: Array<string>
-    ) {
+    public setCollection(url: string, collection: ICollection, include: Array<string>) {
         let tmp = { data: {}, page: {} };
         let resources_for_save: { [uniqkey: string]: Resource } = {};
         Base.forEach(collection, (resource: Resource) => {
@@ -268,47 +198,31 @@ export class CacheStore implements ICache {
             Base.forEach(include, resource_type_alias => {
                 if ('id' in resource.relationships[resource_type_alias].data) {
                     // hasOne
-                    let ress = <Resource>resource.relationships[
-                        resource_type_alias
-                    ].data;
+                    let ress = <Resource>resource.relationships[resource_type_alias].data;
                     resources_for_save[resource_type_alias + ress.id] = ress;
                 } else {
                     // hasMany
-                    let collection2 = <ICollection>resource.relationships[
-                        resource_type_alias
-                    ].data;
+                    let collection2 = <ICollection>resource.relationships[resource_type_alias].data;
                     Base.forEach(collection2, (inc_resource: Resource) => {
-                        resources_for_save[
-                            resource_type_alias + inc_resource.id
-                        ] = inc_resource;
+                        resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
                     });
                 }
             });
         });
         tmp.page = collection.page;
-        Core.injectedServices.JsonapiStoreService.saveObject(
-            'collection.' + url,
-            tmp
-        );
+        Core.injectedServices.JsonapiStoreService.saveObject('collection.' + url, tmp);
 
         Base.forEach(resources_for_save, resource_for_save => {
             if ('is_new' in resource_for_save) {
                 this.setResource(resource_for_save);
             } else {
-                console.warn(
-                    'No se pudo guardar en la cache el',
-                    resource_for_save.type,
-                    'por no se ser Resource.',
-                    resource_for_save
-                );
+                console.warn('No se pudo guardar en la cache el', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
             }
         });
     }
 
     public deprecateCollections(path_start_with: string) {
-        Core.injectedServices.JsonapiStoreService.deprecateObjectsWithKey(
-            'collection.' + path_start_with
-        );
+        Core.injectedServices.JsonapiStoreService.deprecateObjectsWithKey('collection.' + path_start_with);
 
         return true;
     }

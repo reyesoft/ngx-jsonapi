@@ -1,5 +1,5 @@
 export interface ISchema {
-    attributes?: object;    // @deprecated
+    attributes?: object; // @deprecated
     relationships?: object;
     ttl?: number;
 }

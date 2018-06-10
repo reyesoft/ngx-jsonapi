@@ -1,9 +1,4 @@
-import {
-    ISchema,
-    ICollection,
-    IParamsCollection,
-    IParamsResource,
-} from '../interfaces';
+import { ISchema, ICollection, IParamsCollection, IParamsResource } from '../interfaces';
 import { Page } from './page';
 import { Resource } from '../resource';
 
@@ -26,7 +21,7 @@ export class Base {
                     get: function() {
                         return Object.keys(this).length * 1;
                     },
-                    enumerable: false,
+                    enumerable: false
                 },
                 $toArray: {
                     get: function() {
@@ -34,12 +29,12 @@ export class Base {
                             return this[key];
                         });
                     },
-                    enumerable: false,
+                    enumerable: false
                 },
                 $is_loading: {
                     value: false,
                     enumerable: false,
-                    writable: true,
+                    writable: true
                 },
                 $source: { value: '', enumerable: false, writable: true },
                 $cache_last_update: {
@@ -53,13 +48,10 @@ export class Base {
     }
 
     public static isObjectLive(ttl: number, last_update: number) {
-        return (ttl >= 0 && Date.now() <= (last_update + ttl * 1000));
+        return ttl >= 0 && Date.now() <= last_update + ttl * 1000;
     }
 
-    public static forEach<T extends { [keyx: string ]: any } >(
-        collection: T,
-        fc: (object: any, key?: string | number) => void
-    ): void {
+    public static forEach<T extends { [keyx: string]: any }>(collection: T, fc: (object: any, key?: string | number) => void): void {
         Object.keys(collection).forEach(key => {
             fc(collection[key], key);
         });
