@@ -226,5 +226,4 @@ export class CacheStore implements ICache {
 
         return promise;
     }
-
 }

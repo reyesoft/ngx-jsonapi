@@ -60,9 +60,8 @@
     },
     "keywords": [
         "jsonapi",
-        "angular",
-        "angular2",
-        "angular4"
+        "json-api",
+        "angular"
     ],
     "authors": [
         "Pablo Gabriel Reyes"

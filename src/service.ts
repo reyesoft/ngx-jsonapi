@@ -120,30 +120,30 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 }
             );
             promise
-            .then(fc_success2 => {
-                subject.next(resource);
-                subject.complete();
-                this.runFc(fc_success2, 'cachememory');
-            })
-            .catch(noop);
+                .then(fc_success2 => {
+                    subject.next(resource);
+                    subject.complete();
+                    this.runFc(fc_success2, 'cachememory');
+                })
+                .catch(noop);
 
             return subject.asObservable();
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
             this.getService()
-            .cachestore.getResource(resource)
-            .then(success => {
-                if (Base.isObjectLive(temporal_ttl, resource.lastupdate)) {
-                    resource.is_loading = false;
-                    subject.next(resource);
-                    this.runFc(fc_success, { data: success });
-                } else {
+                .cachestore.getResource(resource)
+                .then(success => {
+                    if (Base.isObjectLive(temporal_ttl, resource.lastupdate)) {
+                        resource.is_loading = false;
+                        subject.next(resource);
+                        this.runFc(fc_success, { data: success });
+                    } else {
+                        this.getGetFromServer(path, fc_success, fc_error, resource, subject);
+                    }
+                })
+                .catch(error => {
                     this.getGetFromServer(path, fc_success, fc_error, resource, subject);
-                }
-            })
-            .catch(error => {
-                this.getGetFromServer(path, fc_success, fc_error, resource, subject);
-            });
+                });
         } else {
             this.getGetFromServer(path, fc_success, fc_error, resource, subject);
         }
@@ -185,21 +185,21 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
     protected getGetFromServer(path, fc_success, fc_error, resource: R, subject: Subject<R>) {
         Core.injectedServices.JsonapiHttp.get(path.get())
-        .then(success => {
-            Converter.build(success /*.data*/, resource);
-            resource.is_loading = false;
-            this.getService().cachememory.setResource(resource);
-            if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                this.getService().cachestore.setResource(resource);
-            }
-            subject.next(resource);
-            subject.complete();
-            this.runFc(fc_success, success);
-        })
-        .catch(error => {
-            subject.error(error);
-            this.runFc(fc_error, error);
-        });
+            .then(success => {
+                Converter.build(success /*.data*/, resource);
+                resource.is_loading = false;
+                this.getService().cachememory.setResource(resource);
+                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+                    this.getService().cachestore.setResource(resource);
+                }
+                subject.next(resource);
+                subject.complete();
+                this.runFc(fc_success, success);
+            })
+            .catch(error => {
+                subject.error(error);
+                this.runFc(fc_error, error);
+            });
     }
 
     protected __exec(exec_params: IExecParams): Observable<R | ICollection<R> | void> {
@@ -207,11 +207,11 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
         switch (exec_pp.exec_type) {
             case 'get':
-            return this._get(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
+                return this._get(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
             case 'delete':
-            return this._delete(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
+                return this._delete(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
             case 'all':
-            return this._all(exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
+                return this._all(exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
         }
     }
 
@@ -227,51 +227,51 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         // SERVER REQUEST
         tempororay_collection.$is_loading = true;
         Core.injectedServices.JsonapiHttp.get(path.get())
-        .then(success => {
-            tempororay_collection.$source = 'server';
-            tempororay_collection.$is_loading = false;
+            .then(success => {
+                tempororay_collection.$source = 'server';
+                tempororay_collection.$is_loading = false;
 
-            // this create a new ID for every resource (for caching proposes)
-            // for example, two URL return same objects but with different attributes
-            if (params.cachehash) {
-                Base.forEach(success.data, resource => {
-                    resource.id = resource.id + params.cachehash;
-                });
-            }
-
-            Converter.build(success /*.data*/, tempororay_collection);
-
-            this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
-            if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
-            }
-
-            // localfilter getted data
-            let localfilter = new LocalFilter(params.localfilter);
-            localfilter.filterCollection(tempororay_collection, cached_collection);
-
-            // trying to define smartfiltertype
-            if (this.smartfiltertype === 'undefined') {
-                let page = tempororay_collection.page;
-                if (page.number === 1 && page.total_resources <= page.resources_per_page) {
-                    this.smartfiltertype = 'localfilter';
-                } else if (page.number === 1 && page.total_resources > page.resources_per_page) {
-                    this.smartfiltertype = 'remotefilter';
+                // this create a new ID for every resource (for caching proposes)
+                // for example, two URL return same objects but with different attributes
+                if (params.cachehash) {
+                    Base.forEach(success.data, resource => {
+                        resource.id = resource.id + params.cachehash;
+                    });
                 }
-            }
 
-            subject.next(cached_collection);
-            subject.complete();
-            this.runFc(fc_success, success);
-        })
-        .catch(error => {
-            // do not replace $source, because localstorage don't write if = server
-            // tempororay_collection.$source = 'server';
-            tempororay_collection.$is_loading = false;
-            subject.next(tempororay_collection);
-            subject.error(error);
-            this.runFc(fc_error, error);
-        });
+                Converter.build(success /*.data*/, tempororay_collection);
+
+                this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
+                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+                    this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
+                }
+
+                // localfilter getted data
+                let localfilter = new LocalFilter(params.localfilter);
+                localfilter.filterCollection(tempororay_collection, cached_collection);
+
+                // trying to define smartfiltertype
+                if (this.smartfiltertype === 'undefined') {
+                    let page = tempororay_collection.page;
+                    if (page.number === 1 && page.total_resources <= page.resources_per_page) {
+                        this.smartfiltertype = 'localfilter';
+                    } else if (page.number === 1 && page.total_resources > page.resources_per_page) {
+                        this.smartfiltertype = 'remotefilter';
+                    }
+                }
+
+                subject.next(cached_collection);
+                subject.complete();
+                this.runFc(fc_success, success);
+            })
+            .catch(error => {
+                // do not replace $source, because localstorage don't write if = server
+                // tempororay_collection.$source = 'server';
+                tempororay_collection.$is_loading = false;
+                subject.next(tempororay_collection);
+                subject.error(error);
+                this.runFc(fc_error, error);
+            });
     }
 
     private _delete(id: string, params, fc_success, fc_error): Observable<void> {
@@ -283,16 +283,16 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         let subject = new Subject<void>();
 
         Core.injectedServices.JsonapiHttp.delete(path.get())
-        .then(success => {
-            this.getService().cachememory.removeResource(id);
-            subject.next();
-            subject.complete();
-            this.runFc(fc_success, success);
-        })
-        .catch(error => {
-            subject.error(error);
-            this.runFc(fc_error, error);
-        });
+            .then(success => {
+                this.getService().cachememory.removeResource(id);
+                subject.next();
+                subject.complete();
+                this.runFc(fc_success, success);
+            })
+            .catch(error => {
+                subject.error(error);
+                this.runFc(fc_error, error);
+            });
 
         return subject.asObservable();
     }
@@ -361,11 +361,11 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     (resolve, reject): void => {
                         resolve(fc_success);
                         promise
-                        .then(fc_success2 => {
-                            subject.next(tempororay_collection);
-                            this.runFc(fc_success2, 'cachememory');
-                        })
-                        .catch(noop);
+                            .then(fc_success2 => {
+                                subject.next(tempororay_collection);
+                                this.runFc(fc_success2, 'cachememory');
+                            })
+                            .catch(noop);
                     }
                 );
             } else {
@@ -376,27 +376,27 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             tempororay_collection.$is_loading = true;
 
             this.getService()
-            .cachestore.getCollectionFromStorePromise(path.getForCache(), path.includes, tempororay_collection)
-            .then(success => {
-                tempororay_collection.$source = 'store';
-                tempororay_collection.$is_loading = false;
+                .cachestore.getCollectionFromStorePromise(path.getForCache(), path.includes, tempororay_collection)
+                .then(success => {
+                    tempororay_collection.$source = 'store';
+                    tempororay_collection.$is_loading = false;
 
-                // when load collection from store, we save collection on memory
-                this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
+                    // when load collection from store, we save collection on memory
+                    this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
 
-                // localfilter getted data
-                localfilter.filterCollection(tempororay_collection, cached_collection);
+                    // localfilter getted data
+                    localfilter.filterCollection(tempororay_collection, cached_collection);
 
-                if (Base.isObjectLive(temporal_ttl, tempororay_collection.$cache_last_update)) {
-                    subject.next(tempororay_collection);
-                    this.runFc(fc_success, { data: success });
-                } else {
+                    if (Base.isObjectLive(temporal_ttl, tempororay_collection.$cache_last_update)) {
+                        subject.next(tempororay_collection);
+                        this.runFc(fc_success, { data: success });
+                    } else {
+                        this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection, subject);
+                    }
+                })
+                .catch(error => {
                     this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection, subject);
-                }
-            })
-            .catch(error => {
-                this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection, subject);
-            });
+                });
         } else {
             // STORE
             tempororay_collection.$is_loading = true;

@@ -124,7 +124,7 @@
         "whitespace": [
             true,
             "check-branch",
-            "check-decl",
+            // "check-decl", // no compatibility with prettier
             "check-operator",
             "check-module",
             "check-separator",
