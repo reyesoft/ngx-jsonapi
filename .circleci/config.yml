@@ -1,0 +1,55 @@
+version: 2
+
+var_1: &cache_key yarn-cache-{{ checksum "yarn.lock" }}
+
+jobs:
+  lint:
+    docker:
+      - image: circleci/node:7.10
+    steps:
+      - checkout
+      - restore_cache:
+          key: *cache_key
+      - run: yarn
+      - run: yarn run prettier
+      - save_cache:
+          key: *cache_key
+          paths:
+            - ~/.cache/yarn
+            - node_modules
+
+  test:
+    docker:
+      - image: circleci/node:7.10
+    steps:
+      - checkout
+      - restore_cache:
+          key: *cache_key
+      - run: yarn
+      - run: yarn run ci
+    #   - run:
+    #       name: Upload code coverage report to Coveralls
+    #       command: |-
+    #         if [ ! -z "$COVERALLS_REPO_TOKEN" ]; then
+    #           npx @cedx/coveralls build/logs/clover.xml
+    #         else
+    #           echo 'Skipped'
+    #         fi
+      - run: yarn run demo:build
+    #   - run: yarn run demo:test:nowatch
+      - run: yarn run build
+      - run: yarn run test
+
+  build:
+    docker:
+      - image: circleci/node:7.10
+    working_directory: ~/repo
+    steps:
+      - run: yarn
+
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - lint
+      - test

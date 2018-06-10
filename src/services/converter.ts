@@ -13,10 +13,7 @@ export class Converter {
     /*
     Convert json arrays (like included) to an Resources arrays without [keys]
     */
-    private static json_array2resources_array(
-        json_array: Array<IDataResource>,
-        destination_array: IResourcesById = {}
-    ): void {
+    private static json_array2resources_array(json_array: Array<IDataResource>, destination_array: IResourcesById = {}): void {
         for (let data of json_array) {
             let resource = Converter.json2resource(data, false);
             destination_array[resource.type + '_' + resource.id] = resource;
@@ -26,9 +23,7 @@ export class Converter {
     /*
     Convert json arrays (like included) to an indexed Resources array by [type][id]
     */
-    public static json_array2resources_array_by_type(
-        json_array: Array<IDataResource>
-    ): IResourcesByType {
+    public static json_array2resources_array_by_type(json_array: Array<IDataResource>): IResourcesByType {
         let all_resources: IResourcesById = {};
         let resources_by_type: IResourcesByType = {};
 
@@ -43,19 +38,13 @@ export class Converter {
         return resources_by_type;
     }
 
-    public static json2resource(
-        json_resource: IDataResource,
-        instance_relationships
-    ): Resource {
+    public static json2resource(json_resource: IDataResource, instance_relationships): Resource {
         let resource_service = Converter.getService(json_resource.type);
         if (resource_service) {
             return Converter.procreate(json_resource);
         } else {
             // service not registered
-            console.warn(
-                '`' + json_resource.type + '`',
-                'service not found on json2resource()'
-            );
+            console.warn('`' + json_resource.type + '`', 'service not found on json2resource()');
             let temp = new Resource();
             temp.id = json_resource.id;
             temp.type = json_resource.type;
@@ -78,13 +67,9 @@ export class Converter {
 
         let resource: Resource;
         if (data.id in Converter.getService(data.type).cachememory.resources) {
-            resource = Converter.getService(data.type).cachememory.resources[
-                data.id
-            ];
+            resource = Converter.getService(data.type).cachememory.resources[data.id];
         } else {
-            resource = Converter.getService(
-                data.type
-            ).cachememory.getOrCreateResource(data.type, data.id);
+            resource = Converter.getService(data.type).cachememory.getOrCreateResource(data.type, data.id);
         }
 
         resource.attributes = data.attributes || {};
@@ -93,30 +78,17 @@ export class Converter {
         return resource;
     }
 
-    public static build(
-        document_from: IDataCollection | IDataObject,
-        resource_dest: Resource | ICollection
-    ) {
+    public static build(document_from: IDataCollection | IDataObject, resource_dest: Resource | ICollection) {
         // instancio los include y los guardo en included arrary
         let included_resources: IResourcesByType = {};
         if ('included' in document_from) {
-            included_resources = Converter.json_array2resources_array_by_type(
-                document_from.included
-            );
+            included_resources = Converter.json_array2resources_array_by_type(document_from.included);
         }
 
         if (Array.isArray(document_from.data)) {
-            Converter._buildCollection(
-                <IDataCollection>document_from,
-                <ICollection>resource_dest,
-                included_resources
-            );
+            Converter._buildCollection(<IDataCollection>document_from, <ICollection>resource_dest, included_resources);
         } else {
-            Converter._buildResource(
-                document_from.data,
-                <Resource>resource_dest,
-                included_resources
-            );
+            Converter._buildResource(document_from.data, <Resource>resource_dest, included_resources);
         }
     }
 
@@ -128,28 +100,20 @@ export class Converter {
         // sometime get Cannot set property 'number' of undefined (page)
         if (collection_dest.page && collection_data_from.meta) {
             collection_dest.page.number = collection_data_from.meta.page || 1;
-            collection_dest.page.resources_per_page =
-                collection_data_from.meta.resources_per_page || null;
-            collection_dest.page.total_resources =
-                collection_data_from.meta.total_resources || null;
+            collection_dest.page.resources_per_page = collection_data_from.meta.resources_per_page || null;
+            collection_dest.page.total_resources = collection_data_from.meta.total_resources || null;
         }
 
         // convert and add new dataresoures to final collection
         let new_ids = {};
         for (let dataresource of collection_data_from.data) {
             if (!(dataresource.id in collection_dest)) {
-                collection_dest[dataresource.id] = Converter.getService(
-                    dataresource.type
-                ).cachememory.getOrCreateResource(
+                collection_dest[dataresource.id] = Converter.getService(dataresource.type).cachememory.getOrCreateResource(
                     dataresource.type,
                     dataresource.id
                 );
             }
-            Converter._buildResource(
-                dataresource,
-                collection_dest[dataresource.id],
-                included_resources
-            );
+            Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources);
             new_ids[dataresource.id] = dataresource.id;
         }
 
@@ -161,11 +125,7 @@ export class Converter {
         });
     }
 
-    private static _buildResource(
-        resource_data_from: IDataResource,
-        resource_dest: Resource,
-        included_resources: IResourcesByType
-    ) {
+    private static _buildResource(resource_data_from: IDataResource, resource_dest: Resource, included_resources: IResourcesByType) {
         resource_dest.id = resource_data_from.id || '';
         resource_dest.attributes = resource_data_from.attributes || {};
 

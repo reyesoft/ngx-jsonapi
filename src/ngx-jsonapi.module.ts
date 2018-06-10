@@ -12,9 +12,7 @@ import { NoDuplicatedHttpCallsService } from './services/noduplicatedhttpcalls.s
 import { JsonapiConfig } from './jsonapi-config';
 
 @NgModule({
-    imports: [
-        CommonModule
-    ],
+    imports: [CommonModule],
     exports: [
         // BrowserModule,  // needed by HttpClientModule?
         HttpClientModule
@@ -31,13 +29,16 @@ export class NgxJsonapiModule {
     public static forRoot(config: JsonapiConfig): ModuleWithProviders {
         return {
             ngModule: NgxJsonapiModule,
-            providers: [
-                { provide: JsonapiConfig, useValue: config }
-            ]
+            providers: [{ provide: JsonapiConfig, useValue: config }]
         };
     }
 
-    public constructor(@Optional() @SkipSelf() parentModule: NgxJsonapiModule, jsonapiCore: JsonapiCore) {
+    public constructor(
+        @Optional()
+        @SkipSelf()
+        parentModule: NgxJsonapiModule,
+        jsonapiCore: JsonapiCore
+    ) {
         if (parentModule) {
             throw new Error('NgxJsonapiModule is already loaded. Import it in the AppModule only');
         }

@@ -20,7 +20,7 @@ export class Core {
         rsJsonapiConfig: JsonapiConfig;
     };
 
-    private resourceServices: { [type:string]: Service } = {};
+    private resourceServices: { [type: string]: Service } = {};
     public loadingsCounter: number = 0;
     public loadingsStart: Function = noop;
     public loadingsDone: Function = noop;
@@ -29,14 +29,10 @@ export class Core {
 
     public config: JsonapiConfig;
 
-    public constructor(
-        @Optional() user_config: JsonapiConfig,
-        jsonapiStoreService: JsonapiStore,
-        jsonapiHttp: JsonapiHttpImported
-    ) {
+    public constructor(@Optional() user_config: JsonapiConfig, jsonapiStoreService: JsonapiStore, jsonapiHttp: JsonapiHttpImported) {
         this.config = new JsonapiConfig();
         for (let k in this.config)
-            (<any>this.config)[k] = ((<any>this.config)[k] !== undefined ? (<any>this.config)[k] : (<any>this.config)[k]);
+            (<any>this.config)[k] = (<any>this.config)[k] !== undefined ? (<any>this.config)[k] : (<any>this.config)[k];
 
         Core.me = this;
         Core.injectedServices = {
