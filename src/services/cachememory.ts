@@ -6,9 +6,9 @@ import { Converter } from './converter';
 import { ResourceFunctions } from './resource-functions';
 
 export class CacheMemory<R extends Resource = Resource> implements ICacheMemory {
+    public resources: { [id: string]: Resource } = {};
     private collections: { [url: string]: ICollection<R> } = {};
     private collections_lastupdate: { [url: string]: number } = {};
-    public resources: { [id: string]: Resource } = {};
 
     public isCollectionExist(url: string): boolean {
         return url in this.collections && this.collections[url].$source !== 'new' ? true : false;

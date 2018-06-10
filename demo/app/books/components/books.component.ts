@@ -27,7 +27,7 @@ export class BooksComponent {
                 this.books = books;
                 console.info('success books controll', this.books);
             },
-            error => console.info('error books controll', error)
+            (error): void => console.info('error books controll', error)
         );
     }
 
@@ -80,7 +80,7 @@ export class BooksComponent {
                     }
                 );
             },
-            error => console.log('error books controller', error)
+            error => console.info('error books controller', error)
         );
         books$.toPromise().then(
             success => console.log('books loaded PROMISE')

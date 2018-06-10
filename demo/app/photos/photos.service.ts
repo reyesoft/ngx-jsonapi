@@ -3,7 +3,7 @@ import { Service, ISchema, Resource } from 'ngx-jsonapi';
 
 @Injectable()
 export class PhotosService extends Service {
-    public resource = Photo;
+    // public resource = Photo;
     public type = 'photos';
 }
 

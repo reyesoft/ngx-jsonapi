@@ -9,6 +9,17 @@ export class LocalFilter {
         this.localfilterparams = localfilter || {};
     }
 
+    public filterCollection(source_collection: ICollection, dest_collection: ICollection) {
+        if (Object.keys(this.localfilterparams).length) {
+            Base.forEach(source_collection, (resource, key) => {
+                if (this.passFilter(resource, this.localfilterparams)) {
+                    dest_collection[key] = resource;
+                }
+            });
+        }
+        console.log('y quedó así', dest_collection);
+    }
+
     private passFilter(resource: Resource, localfilter): boolean {
         for (let attribute in localfilter) {
             if (typeof resource !== 'object' || !('attributes' in resource)) {
@@ -24,16 +35,5 @@ export class LocalFilter {
         }
 
         return false;
-    }
-
-    public filterCollection(source_collection: ICollection, dest_collection: ICollection) {
-        if (Object.keys(this.localfilterparams).length) {
-            Base.forEach(source_collection, (resource, key) => {
-                if (this.passFilter(resource, this.localfilterparams)) {
-                    dest_collection[key] = resource;
-                }
-            });
-        }
-        console.log('y quedó así', dest_collection);
     }
 }

@@ -139,6 +139,7 @@
         "prefer-readonly": false,
         "no-dynamic-delete": false,
         "object-literal-key-quotes": false,
+        "no-void-expression": [true, "ignore-arrow-function-shorthand"],
 
         "angular-whitespace": [true, "check-interpolation", "check-semicolon"],
         "use-input-property-decorator": true,

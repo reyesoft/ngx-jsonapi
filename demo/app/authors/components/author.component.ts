@@ -20,19 +20,17 @@ export class AuthorComponent {
         protected photosService: PhotosService,
         private route: ActivatedRoute
     ) {
-        route.params.subscribe(
-            ({ id }) => {
-                authorsService.get(
-                    id,
-                    { include: ['books', 'photos'] }
-                )
-                .subscribe(
-                    author => {
-                        this.author = author;
-                        console.info('success author controller', author);
-                    },
-                    error => console.error('Could not load author.'
-                )
+        route.params.subscribe(({ id }) => {
+            authorsService.get(
+                id,
+                { include: ['books', 'photos'] }
+            )
+            .subscribe(
+                author => {
+                    this.author = author;
+                    console.info('success author controller', author);
+                },
+                error => console.error('Could not load author.', error)
             );
         });
     }
