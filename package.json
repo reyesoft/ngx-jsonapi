@@ -31,7 +31,8 @@
         "prettier-md": "yarn prettier-md:show --write",
         "prettier-md:show": "prettier --parser markdown --single-quote es5 --tab-width 4 --print-width 140 --single-quote true --prose-wrap never \"**/*.md\"",
         "prettier-scss": "yarn prettier-scss:show --write",
-        "prettier-scss:show": "prettier --parser scss --single-quote es5 --tab-width 4 --print-width 140 --single-quote true \"**/*.scss\""
+        "prettier-scss:show": "prettier --parser scss --single-quote es5 --tab-width 4 --print-width 140 --single-quote true \"**/*.scss\"",
+        "precommit": "lint-staged"
     },
     "lint-staged": {
         "*.ts": [
