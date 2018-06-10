@@ -30,8 +30,6 @@ export class ParentResourceService {
     protected runFc(some_fc, param): void {
         if (isFunction(some_fc)) {
             some_fc(param);
-        } else {
-            noop();
         }
     }
 }
