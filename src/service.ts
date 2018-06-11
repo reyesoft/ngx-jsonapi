@@ -96,19 +96,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         });
     }
 
-    protected __exec(exec_params: IExecParams): Observable<R | ICollection<R> | void> {
-        let exec_pp = super.proccess_exec_params(exec_params);
-
-        switch (exec_pp.exec_type) {
-            case 'get':
-                return this._get(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
-            case 'delete':
-                return this._delete(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
-            case 'all':
-                return this._all(exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
-        }
-    }
-
     public _get(id: string, params: IParamsResource, fc_success, fc_error): Observable<R> {
         // http request
         let path = new PathBuilder();
@@ -139,6 +126,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     this.runFc(fc_success2, 'cachememory');
                 })
                 .catch(noop);
+
             return subject.asObservable();
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
@@ -164,6 +152,37 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         return subject.asObservable();
     }
 
+    /*
+    @return This resource like a service
+    */
+    public getService<T extends Service<R>>(): T {
+        return <T>(Converter.getService(this.type) || this.register());
+        // let serv = Converter.getService(this.type);
+        // if (serv) {
+        //     return serv;
+        // } else {
+        //     return this.register();
+        // }
+    }
+
+    public clearCacheMemory(): boolean {
+        let path = new PathBuilder();
+        path.applyParams(this);
+
+        return (
+            this.getService().cachememory.deprecateCollections(path.getForCache()) &&
+            this.getService().cachestore.deprecateCollections(path.getForCache())
+        );
+    }
+
+    public parseToServer(attributes: IAttributes): void {
+        /* */
+    }
+
+    public parseFromServer(attributes: IAttributes): void {
+        /* */
+    }
+
     protected getGetFromServer(path, fc_success, fc_error, resource: R, subject: Subject<R>) {
         Core.injectedServices.JsonapiHttp.get(path.get())
             .then(success => {
@@ -181,6 +200,101 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 subject.error(error);
                 this.runFc(fc_error, error);
             });
+    }
+
+    protected __exec(exec_params: IExecParams): Observable<R | ICollection<R> | void> {
+        let exec_pp = super.proccess_exec_params(exec_params);
+
+        switch (exec_pp.exec_type) {
+            case 'get':
+                return this._get(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
+            case 'delete':
+                return this._delete(exec_pp.id, exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
+            case 'all':
+                return this._all(exec_pp.params, exec_pp.fc_success, exec_pp.fc_error);
+        }
+    }
+
+    protected getAllFromServer(
+        path,
+        params,
+        fc_success,
+        fc_error,
+        tempororay_collection: ICollection<R>,
+        cached_collection: ICollection<R>,
+        subject: BehaviorSubject<ICollection<R>>
+    ) {
+        // SERVER REQUEST
+        tempororay_collection.$is_loading = true;
+        Core.injectedServices.JsonapiHttp.get(path.get())
+            .then(success => {
+                tempororay_collection.$source = 'server';
+                tempororay_collection.$is_loading = false;
+
+                // this create a new ID for every resource (for caching proposes)
+                // for example, two URL return same objects but with different attributes
+                if (params.cachehash) {
+                    Base.forEach(success.data, resource => {
+                        resource.id = resource.id + params.cachehash;
+                    });
+                }
+
+                Converter.build(success /*.data*/, tempororay_collection);
+
+                this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
+                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+                    this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
+                }
+
+                // localfilter getted data
+                let localfilter = new LocalFilter(params.localfilter);
+                localfilter.filterCollection(tempororay_collection, cached_collection);
+
+                // trying to define smartfiltertype
+                if (this.smartfiltertype === 'undefined') {
+                    let page = tempororay_collection.page;
+                    if (page.number === 1 && page.total_resources <= page.resources_per_page) {
+                        this.smartfiltertype = 'localfilter';
+                    } else if (page.number === 1 && page.total_resources > page.resources_per_page) {
+                        this.smartfiltertype = 'remotefilter';
+                    }
+                }
+
+                subject.next(cached_collection);
+                subject.complete();
+                this.runFc(fc_success, success);
+            })
+            .catch(error => {
+                // do not replace $source, because localstorage don't write if = server
+                // tempororay_collection.$source = 'server';
+                tempororay_collection.$is_loading = false;
+                subject.next(tempororay_collection);
+                subject.error(error);
+                this.runFc(fc_error, error);
+            });
+    }
+
+    private _delete(id: string, params, fc_success, fc_error): Observable<void> {
+        // http request
+        let path = new PathBuilder();
+        path.applyParams(this, params);
+        path.appendPath(id);
+
+        let subject = new Subject<void>();
+
+        Core.injectedServices.JsonapiHttp.delete(path.get())
+            .then(success => {
+                this.getService().cachememory.removeResource(id);
+                subject.next();
+                subject.complete();
+                this.runFc(fc_success, success);
+            })
+            .catch(error => {
+                subject.error(error);
+                this.runFc(fc_error, error);
+            });
+
+        return subject.asObservable();
     }
 
     private _all(params: IParamsCollection, fc_success, fc_error): Observable<ICollection<R>> {
@@ -292,118 +406,5 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         subject.next(<ICollection<R>>cached_collection);
 
         return subject.asObservable();
-    }
-
-    protected getAllFromServer(
-        path,
-        params,
-        fc_success,
-        fc_error,
-        tempororay_collection: ICollection<R>,
-        cached_collection: ICollection<R>,
-        subject: BehaviorSubject<ICollection<R>>
-    ) {
-        // SERVER REQUEST
-        tempororay_collection.$is_loading = true;
-        Core.injectedServices.JsonapiHttp.get(path.get())
-            .then(success => {
-                tempororay_collection.$source = 'server';
-                tempororay_collection.$is_loading = false;
-
-                // this create a new ID for every resource (for caching proposes)
-                // for example, two URL return same objects but with different attributes
-                if (params.cachehash) {
-                    Base.forEach(success.data, resource => {
-                        resource.id = resource.id + params.cachehash;
-                    });
-                }
-
-                Converter.build(success /*.data*/, tempororay_collection);
-
-                this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
-                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
-                }
-
-                // localfilter getted data
-                let localfilter = new LocalFilter(params.localfilter);
-                localfilter.filterCollection(tempororay_collection, cached_collection);
-
-                // trying to define smartfiltertype
-                if (this.smartfiltertype === 'undefined') {
-                    let page = tempororay_collection.page;
-                    if (page.number === 1 && page.total_resources <= page.resources_per_page) {
-                        this.smartfiltertype = 'localfilter';
-                    } else if (page.number === 1 && page.total_resources > page.resources_per_page) {
-                        this.smartfiltertype = 'remotefilter';
-                    }
-                }
-
-                subject.next(cached_collection);
-                subject.complete();
-                this.runFc(fc_success, success);
-            })
-            .catch(error => {
-                // do not replace $source, because localstorage don't write if = server
-                // tempororay_collection.$source = 'server';
-                tempororay_collection.$is_loading = false;
-                subject.next(tempororay_collection);
-                subject.error(error);
-                this.runFc(fc_error, error);
-            });
-    }
-
-    private _delete(id: string, params, fc_success, fc_error): Observable<void> {
-        // http request
-        let path = new PathBuilder();
-        path.applyParams(this, params);
-        path.appendPath(id);
-
-        let subject = new Subject<void>();
-
-        Core.injectedServices.JsonapiHttp.delete(path.get())
-            .then(success => {
-                this.getService().cachememory.removeResource(id);
-                subject.next();
-                subject.complete();
-                this.runFc(fc_success, success);
-            })
-            .catch(error => {
-                subject.error(error);
-                this.runFc(fc_error, error);
-            });
-
-        return subject.asObservable();
-    }
-
-    /*
-    @return This resource like a service
-    */
-    public getService<T extends Service<R>>(): T {
-        return <T>(Converter.getService(this.type) || this.register());
-        // let serv = Converter.getService(this.type);
-        // if (serv) {
-        //     return serv;
-        // } else {
-        //     return this.register();
-        // }
-    }
-
-    public clearCacheMemory(): boolean {
-        let path = new PathBuilder();
-        path.applyParams(this);
-
-        return (
-            this.getService().cachememory.deprecateCollections(path.getForCache()) &&
-            this.getService().cachestore.deprecateCollections(path.getForCache())
-        );
-    }
-
-    public parseToServer(attributes: IAttributes): void {
-        /* */
-    }
-
-    public parseFromServer(attributes: IAttributes): void {
-        /* */
     }
 }

@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from "@angular/router/testing";
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { AuthorsService } from '../authors.service';
 import { AuthorsComponent } from './authors.component';
@@ -26,7 +26,7 @@ describe('AuthorsComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-    it('authors should be filled', () =>{
+    it('authors should be filled', () => {
         expect(component.authors).toBeTruthy();
     });
 });

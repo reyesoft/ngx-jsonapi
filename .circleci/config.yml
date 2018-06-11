@@ -11,7 +11,10 @@ jobs:
       - restore_cache:
           key: *cache_key
       - run: yarn
-      - run: yarn run prettier
+      - run: yarn prettier-ts:show --list-different
+      - run: yarn prettier-md:show --list-different
+      - run: yarn prettier-scss:show --list-different
+      - run: yarn run ng lint
       - save_cache:
           key: *cache_key
           paths:
@@ -37,8 +40,8 @@ jobs:
     #         fi
       - run: yarn run demo:build
     #   - run: yarn run demo:test:nowatch
-      - run: yarn run build
-      - run: yarn run test
+    #   - run: yarn run build # runned by yarn run demo:build
+    #   - run: yarn run test # runned by yarn run ci
 
   build:
     docker:

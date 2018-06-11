@@ -141,86 +141,6 @@ export class Resource extends ParentResourceService {
         });
     }
 
-    protected async __exec<T extends Resource>(exec_params: IExecParams): Promise<object> {
-        let exec_pp = this.proccess_exec_params(exec_params);
-
-        switch (exec_params.exec_type) {
-            case 'save':
-                return this._save(exec_pp.params, exec_params.fc_success, exec_params.fc_error);
-        }
-    }
-
-    private async _save<T extends Resource>(params: IParamsResource, fc_success: Function, fc_error: Function): Promise<object> {
-        let promisesave: Promise<object> = new Promise(
-            (resolve, reject): void => {
-                if (this.is_saving || this.is_loading) {
-                    return;
-                }
-                this.is_saving = true;
-
-                let object = this.toObject(params);
-
-                // http request
-                let path = new PathBuilder();
-                path.applyParams(this.getService(), params);
-                if (this.id) {
-                    path.appendPath(this.id);
-                }
-
-                let promise = Core.injectedServices.JsonapiHttp.exec(path.get(), this.id ? 'PATCH' : 'POST', object, !isFunction(fc_error));
-
-                promise
-                    .then(success => {
-                        this.is_saving = false;
-
-                        // foce reload cache (for example, we add a new element)
-                        if (!this.id) {
-                            this.getService().cachememory.deprecateCollections(path.get());
-                            this.getService().cachestore.deprecateCollections(path.get());
-                        }
-
-                        // is a resource?
-                        if ('id' in success.data) {
-                            this.id = success.data.id;
-                            Converter.build(success, this);
-                            /*
-                            Si lo guardo en la caché, luego no queda bindeado con la vista
-                            Usar {{ $ctrl.service.getCachedResources() | json }}, agregar uno nuevo, editar
-                            */
-                            // this.getService().cachememory.setResource(this);
-                        } else if (isArray(success.data)) {
-                            console.warn('Server return a collection when we save()', success.data);
-
-                            /*
-                        we request the service again, because server maybe are giving
-                        us another type of resource (getService(resource.type))
-                        */
-                            let tempororay_collection = this.getService().cachememory.getOrCreateCollection('justAnUpdate');
-                            Converter.build(success, tempororay_collection);
-                            Base.forEach(tempororay_collection, (resource_value: Resource, key: string) => {
-                                let res = Converter.getService(resource_value.type).cachememory.resources[resource_value.id];
-                                Converter.getService(resource_value.type).cachememory.setResource(resource_value);
-                                Converter.getService(resource_value.type).cachestore.setResource(resource_value);
-                                res.id = res.id + 'x';
-                            });
-
-                            console.warn('Temporal collection for a resource_value update', tempororay_collection);
-                        }
-
-                        this.runFc(fc_success, success);
-                        resolve(success);
-                    })
-                    .catch(error => {
-                        this.is_saving = false;
-                        this.runFc(fc_error, 'data' in error ? error.data : error);
-                        reject('data' in error ? error.data : error);
-                    });
-            }
-        );
-
-        return promisesave;
-    }
-
     public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
         let object_key = resource.id;
         if (!object_key) {
@@ -287,5 +207,85 @@ export class Resource extends ParentResourceService {
     */
     public getService(): Service {
         return Converter.getService(this.type);
+    }
+
+    protected async __exec<T extends Resource>(exec_params: IExecParams): Promise<object> {
+        let exec_pp = this.proccess_exec_params(exec_params);
+
+        switch (exec_params.exec_type) {
+            case 'save':
+                return this._save(exec_pp.params, exec_params.fc_success, exec_params.fc_error);
+        }
+    }
+
+    private async _save<T extends Resource>(params: IParamsResource, fc_success: Function, fc_error: Function): Promise<object> {
+        let promisesave: Promise<object> = new Promise(
+            (resolve, reject): void => {
+                if (this.is_saving || this.is_loading) {
+                    return;
+                }
+                this.is_saving = true;
+
+                let object = this.toObject(params);
+
+                // http request
+                let path = new PathBuilder();
+                path.applyParams(this.getService(), params);
+                if (this.id) {
+                    path.appendPath(this.id);
+                }
+
+                let promise = Core.injectedServices.JsonapiHttp.exec(path.get(), this.id ? 'PATCH' : 'POST', object, !isFunction(fc_error));
+
+                promise
+                    .then(success => {
+                        this.is_saving = false;
+
+                        // foce reload cache (for example, we add a new element)
+                        if (!this.id) {
+                            this.getService().cachememory.deprecateCollections(path.get());
+                            this.getService().cachestore.deprecateCollections(path.get());
+                        }
+
+                        // is a resource?
+                        if ('id' in success.data) {
+                            this.id = success.data.id;
+                            Converter.build(success, this);
+                            /*
+                        Si lo guardo en la caché, luego no queda bindeado con la vista
+                        Usar {{ $ctrl.service.getCachedResources() | json }}, agregar uno nuevo, editar
+                        */
+                            // this.getService().cachememory.setResource(this);
+                        } else if (isArray(success.data)) {
+                            console.warn('Server return a collection when we save()', success.data);
+
+                            /*
+                        we request the service again, because server maybe are giving
+                        us another type of resource (getService(resource.type))
+                        */
+                            let tempororay_collection = this.getService().cachememory.getOrCreateCollection('justAnUpdate');
+                            Converter.build(success, tempororay_collection);
+                            Base.forEach(tempororay_collection, (resource_value: Resource, key: string) => {
+                                let res = Converter.getService(resource_value.type).cachememory.resources[resource_value.id];
+                                Converter.getService(resource_value.type).cachememory.setResource(resource_value);
+                                Converter.getService(resource_value.type).cachestore.setResource(resource_value);
+                                res.id = res.id + 'x';
+                            });
+
+                            console.warn('Temporal collection for a resource_value update', tempororay_collection);
+                        }
+
+                        this.runFc(fc_success, success);
+                        resolve(success);
+                    })
+                    .catch(error => {
+                        this.is_saving = false;
+                        this.runFc(fc_error, 'data' in error ? error.data : error);
+                        reject('data' in error ? error.data : error);
+                    });
+            }
+        );
+
+        return promisesave;
     }
 }

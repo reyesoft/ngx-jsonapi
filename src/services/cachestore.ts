@@ -86,6 +86,45 @@ export class CacheStore implements ICache {
         return promise;
     }
 
+    public setCollection(url: string, collection: ICollection, include: Array<string>) {
+        let tmp = { data: {}, page: {} };
+        let resources_for_save: { [uniqkey: string]: Resource } = {};
+        Base.forEach(collection, (resource: Resource) => {
+            this.setResource(resource);
+            tmp.data[resource.id] = { id: resource.id, type: resource.type };
+
+            Base.forEach(include, resource_type_alias => {
+                if ('id' in resource.relationships[resource_type_alias].data) {
+                    // hasOne
+                    let ress = <Resource>resource.relationships[resource_type_alias].data;
+                    resources_for_save[resource_type_alias + ress.id] = ress;
+                } else {
+                    // hasMany
+                    let collection2 = <ICollection>resource.relationships[resource_type_alias].data;
+                    Base.forEach(collection2, (inc_resource: Resource) => {
+                        resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
+                    });
+                }
+            });
+        });
+        tmp.page = collection.page;
+        Core.injectedServices.JsonapiStoreService.saveObject('collection.' + url, tmp);
+
+        Base.forEach(resources_for_save, resource_for_save => {
+            if ('is_new' in resource_for_save) {
+                this.setResource(resource_for_save);
+            } else {
+                console.warn('No se pudo guardar en la cache el', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
+            }
+        });
+    }
+
+    public deprecateCollections(path_start_with: string) {
+        Core.injectedServices.JsonapiStoreService.deprecateObjectsWithKey('collection.' + path_start_with);
+
+        return true;
+    }
+
     private getCollectionFromStore(
         url: string,
         include: Array<string>,
@@ -186,44 +225,5 @@ export class CacheStore implements ICache {
         );
 
         return promise;
-    }
-
-    public setCollection(url: string, collection: ICollection, include: Array<string>) {
-        let tmp = { data: {}, page: {} };
-        let resources_for_save: { [uniqkey: string]: Resource } = {};
-        Base.forEach(collection, (resource: Resource) => {
-            this.setResource(resource);
-            tmp.data[resource.id] = { id: resource.id, type: resource.type };
-
-            Base.forEach(include, resource_type_alias => {
-                if ('id' in resource.relationships[resource_type_alias].data) {
-                    // hasOne
-                    let ress = <Resource>resource.relationships[resource_type_alias].data;
-                    resources_for_save[resource_type_alias + ress.id] = ress;
-                } else {
-                    // hasMany
-                    let collection2 = <ICollection>resource.relationships[resource_type_alias].data;
-                    Base.forEach(collection2, (inc_resource: Resource) => {
-                        resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
-                    });
-                }
-            });
-        });
-        tmp.page = collection.page;
-        Core.injectedServices.JsonapiStoreService.saveObject('collection.' + url, tmp);
-
-        Base.forEach(resources_for_save, resource_for_save => {
-            if ('is_new' in resource_for_save) {
-                this.setResource(resource_for_save);
-            } else {
-                console.warn('No se pudo guardar en la cache el', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
-            }
-        });
-    }
-
-    public deprecateCollections(path_start_with: string) {
-        Core.injectedServices.JsonapiStoreService.deprecateObjectsWithKey('collection.' + path_start_with);
-
-        return true;
     }
 }
