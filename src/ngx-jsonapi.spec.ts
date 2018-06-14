@@ -13,8 +13,10 @@ describe('ngx-jsonapi Module', () => {
     });
 
     it('should throw error when imported more than once', () => {
-        expect((): void => {
-            new NgxJsonapiModule(NgxJsonapiModule, new JsonapiCore(undefined, undefined, undefined))
-        }).toThrow(new Error("NgxJsonapiModule is already loaded. Import it in the AppModule only"));
+        expect(
+            (): void => {
+                new NgxJsonapiModule(NgxJsonapiModule, new JsonapiCore(undefined, undefined, undefined));
+            }
+        ).toThrow(new Error('NgxJsonapiModule is already loaded. Import it in the AppModule only'));
     });
 });

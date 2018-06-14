@@ -17,7 +17,7 @@ export class ParentResourceService {
             if (typeof exec_params.params === 'undefined') {
                 exec_params.params = { ...{}, ...Base.Params };
             } else {
-                exec_params.params = {...{}, ...Base.Params,...exec_params.params };
+                exec_params.params = { ...{}, ...Base.Params, ...exec_params.params };
             }
         }
 
@@ -27,7 +27,9 @@ export class ParentResourceService {
         return <IExecParamsProcessed>exec_params; // @todo
     }
 
-    protected runFc(some_fc, param) {
-        return isFunction(some_fc) ? some_fc(param) : noop();
+    protected runFc(some_fc, param): void {
+        if (isFunction(some_fc)) {
+            some_fc(param);
+        }
     }
 }

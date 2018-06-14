@@ -29,7 +29,7 @@
     <tr *ngFor="let book of author.books().$toArray">
         <td>{{ book.id }}</td>
         <td>
-            <a>{{ book.attributes.title  }}</a>
+            <a>{{ book.attributes.title }}</a>
         </td>
         <td>{{ book.attributes.date_published | date }}</td>
     </tr>

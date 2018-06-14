@@ -19,24 +19,20 @@ export class Core {
         JsonapiHttp: JsonapiHttpImported;
         rsJsonapiConfig: JsonapiConfig;
     };
-
-    private resourceServices: { [type:string]: Service } = {};
     public loadingsCounter: number = 0;
     public loadingsStart: Function = noop;
     public loadingsDone: Function = noop;
     public loadingsError: Function = noop;
     public loadingsOffline: Function = noop;
-
     public config: JsonapiConfig;
 
-    public constructor(
-        @Optional() user_config: JsonapiConfig,
-        jsonapiStoreService: JsonapiStore,
-        jsonapiHttp: JsonapiHttpImported
-    ) {
+    private resourceServices: { [type: string]: Service } = {};
+
+    public constructor(@Optional() user_config: JsonapiConfig, jsonapiStoreService: JsonapiStore, jsonapiHttp: JsonapiHttpImported) {
         this.config = new JsonapiConfig();
-        for (let k in this.config)
-            (<any>this.config)[k] = ((<any>this.config)[k] !== undefined ? (<any>this.config)[k] : (<any>this.config)[k]);
+        for (let k in this.config) {
+            (<any>this.config)[k] = (<any>this.config)[k] !== undefined ? (<any>this.config)[k] : (<any>this.config)[k];
+        }
 
         Core.me = this;
         Core.injectedServices = {

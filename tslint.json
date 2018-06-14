@@ -1,13 +1,12 @@
 {
-    "extends": ["tslint:all", "codelyzer"],
+    "extends": [
+        "tslint:all"
+    ],
     "rulesDirectory": [
         "node_modules/codelyzer"
     ],
     "rules": {
-        "no-var-requires": false,
-
         "arrow-return-shorthand": false,
-        "linebreak-style": false,
         "no-require-imports": false,
         "no-inferrable-types": false,
         "prefer-function-over-method": false,
@@ -17,9 +16,15 @@
         "no-import-side-effect": false,
         "prefer-template": false,
         "no-any": false,
+        "max-classes-per-file": false,
+        "linebreak-style": [true, "LF"],
         "no-unsafe-any": false,
         "completed-docs": false,
         "forin": false,
+        "import-blacklist": [
+            true,
+            "rxjs/Rx"
+        ],
         "align": [true, "elements", "members", "parameters", "statements"],
         "no-unnecessary-type-assertion": false,
         "no-unused-variable": false,
@@ -41,17 +46,15 @@
             "check-space"
         ],
         "curly": [true, "ignore-same-line"],
-        "deprecation": {
-            "severity": "warn"
-        },
+        "eofline": true,
+        "encoding": true,
         "indent": [
             true,
             "spaces"
         ],
-        "max-line-length": [true, 140],
+        "max-line-length": [true, 149],
         "member-ordering": [true,
-            "static-before-instance",
-            "variables-before-functions"
+            { "order": "fields-first" }
         ],
         "no-angle-bracket-type-assertion": false,
         "no-conditional-assignment": false,
@@ -65,7 +68,7 @@
         "no-duplicate-variable": [true, "check-parameters"],
         "no-submodule-imports": false,
         "no-parameter-reassignment": false,
-        "no-unbound-method": [true, "ignore-static"],
+        "no-unbound-method": [false],
         "object-literal-shorthand": false,
         "object-literal-sort-keys": false,
         "only-arrow-functions": [true, "allow-declarations"],
@@ -121,37 +124,37 @@
         "whitespace": [
             true,
             "check-branch",
-            "check-decl",
+            // "check-decl", // no compatibility with prettier
             "check-operator",
             "check-module",
             "check-separator",
             "check-type",
             "check-preblock"
         ],
+        "no-implicit-dependencies": false,
+        "no-redundant-jsdoc": false,
+        "no-unnecessary-class": false,
 
+        "newline-per-chained-call": false,
+        "prefer-readonly": false,
+        "no-dynamic-delete": false,
+        "object-literal-key-quotes": false,
 
-        "directive-selector": [true, "attribute", ["dir-prefix1", "dir-prefix2"], "camelCase"],
-        "component-selector": [true, "element", ["demo"], "kebab-case"],
-        "no-output-on-prefix": true,
+        "no-void-expression": [true, "ignore-arrow-function-shorthand"],
+        "no-for-in-array": false, // @todo
 
+        "angular-whitespace": [true, "check-interpolation", "check-semicolon"],
         "use-input-property-decorator": true,
         "use-output-property-decorator": true,
         "use-host-property-decorator": true,
         "no-attribute-parameter-decorator": true,
         "no-input-rename": true,
+        "no-output-on-prefix": true,
         "no-output-rename": true,
         "no-forward-ref": true,
         "use-life-cycle-interface": true,
         "use-pipe-transform-interface": true,
-
-        "component-class-suffix": [true, "Component"],
-        "directive-class-suffix": [true, "Directive"],
-        "templates-use-public": true,
-        "no-access-missing-member": true,
-        "invoke-injectable": true,
-
-        "no-implicit-dependencies": false,
-        "no-unnecessary-class": false,
-        "no-void-expression": false
+        "directive-selector": [true, "attribute", ["demo"], "camelCase"],
+        "component-selector": [true, "element", ["demo"], "kebab-case"]
     }
 }

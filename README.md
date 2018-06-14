@@ -4,10 +4,10 @@
 
 [![angular jsonapi](https://user-images.githubusercontent.com/938894/34119450-fa59fec0-e400-11e7-92c1-dd2aff2ebc00.png)](https://github.com/reyesoft/ngx-jsonapi)
 
-[![Build Status](https://travis-ci.org/reyesoft/ngx-jsonapi.svg?branch=master)](https://travis-ci.org/reyesoft/ngx-jsonapi) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b097196f7f544412a79a99080a41bbc1)](https://www.codacy.com/app/Swimlane/ngx-charts?utm_source=github.com&utm_medium=referral&utm_content=swimlane/ngx-charts&utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/ngx-jsonapi.png)](https://badge.fury.io/js/ngx-jsonapi)
+[![CircleCI](https://circleci.com/gh/reyesoft/ngx-jsonapi.svg?style=svg)](https://circleci.com/gh/reyesoft/ngx-jsonapi) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b097196f7f544412a79a99080a41bbc1)](https://www.codacy.com/app/Swimlane/ngx-charts?utm_source=github.com&utm_medium=referral&utm_content=swimlane/ngx-charts&utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/ngx-jsonapi.png)](https://badge.fury.io/js/ngx-jsonapi) [![Coverage Status](https://coveralls.io/repos/github/reyesoft/ngx-jsonapi/badge.svg?branch=master)](https://coveralls.io/github/reyesoft/ngx-jsonapi?branch=master)
 
 </div>
-This is a JSON API library for Angular 4+. Please use [ts-angular-jsonapi](https://github.com/reyesoft/ts-angular-jsonapi) for AngularJS.
+This is a JSON API library for Angular 5+. Please use [ts-angular-jsonapi](https://github.com/reyesoft/ts-angular-jsonapi) for AngularJS.
 
 ## Online demo
 
@@ -23,16 +23,16 @@ Data is obtained from [Json Api Playground](http://jsonapiplayground.reyesoft.co
 
 ## Supported features
 
-- Cache (on memory): Before a HTTP request objects are setted with cached data.
-- Cache (on memory): TTL for collections and resources
-- Cache on localstorage
-- Pagination
-- Filtering by attributes through a string or a regular expression
-- [Include param support](http://jsonapi.org/format/#fetching-includes) (also, when you save)
-- Two+ equal resource request, only one HTTP call.
-- Equal requests, return a same ResourceObject on memory
-- Default values for a new resource (hydrator).
-- [Properties on collections](https://github.com/reyesoft/ngx-jsonapi/blob/master/src/interfaces/collection.ts) like `$length`, `$is_loading` or `$source` (_`empty`_ |`cache`|`server`)
+-   Cache (on memory): Before a HTTP request objects are setted with cached data.
+-   Cache (on memory): TTL for collections and resources
+-   Cache on localstorage
+-   Pagination
+-   Filtering by attributes through a string or a regular expression
+-   [Include param support](http://jsonapi.org/format/#fetching-includes) (also, when you save)
+-   Two+ equal resource request, only one HTTP call.
+-   Equal requests, return a same ResourceObject on memory
+-   Default values for a new resource (hydrator).
+-   [Properties on collections](https://github.com/reyesoft/ngx-jsonapi/blob/master/src/interfaces/collection.ts) like `$length`, `$is_loading` or `$source` (_`empty`_ |`cache`|`server`)
 
 ## Usage
 
@@ -49,22 +49,22 @@ yarn add ngx-jsonapi --save
 
 ### Dependecies and customization
 
-1. Add Jsonapi dependency.
-2. Configure your url and other paramemeters.
-3. Inject JsonapiCore somewhere before you extend any class from `Jsonapi.Resource`.
+1.  Add Jsonapi dependency.
+2.  Configure your url and other paramemeters.
+3.  Inject JsonapiCore somewhere before you extend any class from `Jsonapi.Resource`.
 
 ```javascript
 import { NgModule } from '@angular/core';
 import { NgxJsonapiModule } from 'ngx-jsonapi';
 
 @NgModule({
-  imports: [
-    NgxJsonapiModule.forRoot({
-      url: '//jsonapiplayground.reyesoft.com/v2/'
-    })
-  ]
+    imports: [
+        NgxJsonapiModule.forRoot({
+            url: '//jsonapiplayground.reyesoft.com/v2/'
+        })
+    ]
 })
-export class AppModule { }
+export class AppModule {}
 ```
 
 ## Examples
@@ -96,11 +96,11 @@ export class AuthorsService extends Service<Author> {
 }
 export class Author extends Resource {
     public attributes: {
-        name: string,
-        date_of_birth: string,
-        date_of_death: string,
-        created_at: string,
-        updated_at: string
+        name: string;
+        date_of_birth: string;
+        date_of_death: string;
+        created_at: string;
+        updated_at: string;
     };
 }
 ```
@@ -153,12 +153,10 @@ export class AuthorsComponent {
 Filter resources with `attribute: value` values. Filters are used as 'exact match' (only resources with attribute value same as value are returned). `value` can also be an array, then only objects with same `attribute` value as one of `values` array elements are returned.
 
 ```javascript
-let authors$ = authorsService.all(
-  {
-  localfilter: { name: 'xx' },      // request all data and next filter locally
-  remotefilter: { country: 'Argentina' }  // request data with filter url parameter
-  }
-);
+let authors$ = authorsService.all({
+    localfilter: { name: 'xx' }, // request all data and next filter locally
+    remotefilter: { country: 'Argentina' } // request data with filter url parameter
+});
 ```
 
 ### Get a single resource
@@ -172,10 +170,7 @@ let author$ = authorsService.get('some_author_id');
 #### More options? Include resources when you fetch data (or save!)
 
 ```javascript
-let author$ = authorsService.get(
-  'some_author_id',
-  { include: ['books', 'photos'] }
-);
+let author$ = authorsService.get('some_author_id', { include: ['books', 'photos'] });
 ```
 
 TIP: these parameters work with `all()` and `save()` methods too.
@@ -208,30 +203,27 @@ author.addRelationship(some_publisher, 'company');
 author.removeRelationship('books', 'book_id');
 
 // this library can send include information to server, for atomicity
-author.save( { include: ['book'] });
+author.save({ include: ['book'] });
 
 // mmmm, if I need get related resources? For example, books related with author 1
-let relatedbooks = booksService.all( { beforepath: 'authors/1' } );
+let relatedbooks = booksService.all({ beforepath: 'authors/1' });
 
 // you need get a cached object? you can force ttl on get
 let author$ = authorsService.get(
-  'some_author_id',
-  { ttl: 60 } // ttl on seconds (default: 0)
+    'some_author_id',
+    { ttl: 60 } // ttl on seconds (default: 0)
 );
 ```
 
 ### Update a resource
 
 ```javascript
-authorsService.get('some_author_id')
-    .suscribe(
-        author => {
-            this.author.attributes.name += 'New Name';
-            this.author.save(success => {
-                console.log('author saved!');
-            });
-        }
-    )
+authorsService.get('some_author_id').suscribe(author => {
+    this.author.attributes.name += 'New Name';
+    this.author.save(success => {
+        console.log('author saved!');
+    });
+});
 ```
 
 ### Pagination
@@ -247,9 +239,9 @@ let authors$ = authorsService.all(
 
 #### Collection page
 
-- number: number of the current page
-- size: size of resources per page ([it's sended to server by url](http://jsonapi.org/format/#fetching-pagination))
-- information returned from server (check if is avaible) **total_resources: total of avaible resources on server** resources_per_page: total of resources returned per page requested
+-   number: number of the current page
+-   size: size of resources per page ([it's sended to server by url](http://jsonapi.org/format/#fetching-pagination))
+-   information returned from server (check if is avaible) **total_resources: total of avaible resources on server** resources_per_page: total of resources returned per page requested
 
 ## Local Demo App
 
