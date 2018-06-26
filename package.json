@@ -1,6 +1,6 @@
 {
-    "name": "ngx-jsonapi",
-    "description": "JSON API library for Angular",
+    "name": "ngx-jsonapi-demo",
+    "description": "Demo app for JSON API library for Angular",
     "scripts": {
         "build": "ts-node ./build/index.ts",
         "postbuild": "rimraf **/dist/**/*.ngsummary.json",
@@ -190,7 +190,8 @@
             "node_modules/(?!ngx-jsonapi)"
         ],
         "modulePathIgnorePatterns": [
-            "dist"
+            "dist",
+            "node_modules/ngx-jsonapi"
         ]
     }
 }
