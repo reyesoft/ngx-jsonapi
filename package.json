@@ -1,6 +1,6 @@
 {
-    "name": "ngx-jsonapi",
-    "description": "JSON API library for Angular",
+    "name": "ngx-jsonapi-demo",
+    "description": "Demo app for JSON API library for Angular",
     "scripts": {
         "build": "ts-node ./build/index.ts",
         "postbuild": "rimraf **/dist/**/*.ngsummary.json",
@@ -131,12 +131,6 @@
         "jest": "^21.0.2",
         "jest-preset-angular": "^3.0.1",
         "jest-zone-patch": "^0.0.7",
-        "karma": "~1.4.1",
-        "karma-chrome-launcher": "~2.0.0",
-        "karma-cli": "~1.0.1",
-        "karma-coverage-istanbul-reporter": "^0.2.0",
-        "karma-jasmine": "~1.1.0",
-        "karma-jasmine-html-reporter": "^0.2.2",
         "module-alias": "^2.0.0",
         "ncp": "^2.0.0",
         "nyc": "^10.1.2",
@@ -190,7 +184,8 @@
             "node_modules/(?!ngx-jsonapi)"
         ],
         "modulePathIgnorePatterns": [
-            "dist"
+            "dist",
+            "node_modules/ngx-jsonapi"
         ]
     }
 }
