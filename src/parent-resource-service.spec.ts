@@ -15,7 +15,7 @@ class ParentResourceServiceTest extends ParentResourceService {
     }
 }
 
-describe('ngx-jsonapi Module', () => {
+describe('parent-resource-service test', () => {
     let parentResourceServiceTest = new ParentResourceServiceTest();
     it('should load', () => {
         expect(ParentResourceServiceTest).toBeDefined();
