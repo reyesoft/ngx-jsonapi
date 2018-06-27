@@ -1,5 +1,4 @@
-import { NgxJsonapiModule } from '.';
-import { JsonapiCore } from '.';
+import { JsonapiCore, NgxJsonapiModule } from '.';
 
 /*
   This file is to import the main module. By importing it into this
@@ -14,9 +13,7 @@ describe('ngx-jsonapi Module', () => {
 
     it('should throw error when imported more than once', () => {
         expect(
-            (): void => {
-                new NgxJsonapiModule(NgxJsonapiModule, new JsonapiCore(undefined, undefined, undefined));
-            }
+            (): NgxJsonapiModule => new NgxJsonapiModule(NgxJsonapiModule, new JsonapiCore(undefined, undefined, undefined))
         ).toThrow(new Error('NgxJsonapiModule is already loaded. Import it in the AppModule only'));
     });
 });

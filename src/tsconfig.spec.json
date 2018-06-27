@@ -17,10 +17,7 @@
       "node"
     ],
     "baseUrl": ".",
-    "rootDir": "../",
-    "paths": {
-      "ngx-jsonapi": [ "../src" ]
-    }
+    "rootDir": "../"
   },
   "include": [
     "**/*.spec.ts"
