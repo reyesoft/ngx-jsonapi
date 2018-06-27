@@ -1,9 +1,4 @@
-// export const mockRefreshLoadings = jest.fn();
-// const mock = jest.fn().mockImplementation(() => {
-//     return {refreshLoadings: mockRefreshLoadings};
-// });
-//
-// export default mock;
+// TODO: fix ciercular dependencies => COL-1448 (si no se necesita más la clase, puede borrarse)
 
 export class Core {
     public me: Core;

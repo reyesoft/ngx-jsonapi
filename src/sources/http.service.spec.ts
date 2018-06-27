@@ -5,13 +5,13 @@ import { NoDuplicatedHttpCallsService } from '../services/noduplicatedhttpcalls.
 import { JsonapiConfig } from '../jsonapi-config';
 import { Core } from '../core';
 
+// TODO: completar después de COL-1448 => fix ciercular dependencies
 jest.mock('../core');
 
 describe('http service test', () => {
     let injector: TestBed;
     let httpMock: HttpTestingController;
     let http: Http;
-    let core: Core;
 
     beforeEach(() => {
         // Core.mockClear();
@@ -22,7 +22,6 @@ describe('http service test', () => {
         injector = getTestBed();
         httpMock = injector.get(HttpTestingController);
         http = injector.get(Http);
-        core = injector.get(Core);
     });
     // afterEach(() => {
     //     httpMock.verify();
