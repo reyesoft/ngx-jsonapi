@@ -31,7 +31,7 @@ export class Core {
     public constructor(@Optional() user_config: JsonapiConfig, jsonapiStoreService: JsonapiStore, jsonapiHttp: JsonapiHttpImported) {
         this.config = new JsonapiConfig();
         for (let k in this.config) {
-            (<any>this.config)[k] = (<any>this.config)[k] !== undefined ? (<any>this.config)[k] : (<any>this.config)[k];
+            (<any>this.config)[k] = (<any>user_config)[k] !== undefined ? (<any>user_config)[k] : (<any>this.config)[k];
         }
 
         Core.me = this;
