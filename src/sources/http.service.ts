@@ -55,7 +55,6 @@ export class Http {
         }
 
         let deferred: Deferred<IDataObject> = new Deferred();
-        // TODO: fix ciercular dependencies => COL-1448
         Core.me.refreshLoadings(1);
         fakeHttpPromise
             .then(success => {
