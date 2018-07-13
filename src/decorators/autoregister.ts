@@ -8,8 +8,11 @@ export function Autoregister() {
 
         // the new constructor behaviour
         let f: any = function(...args) {
+            console.log('this', this);
+            console.log('args', args);
             let instance = original.apply(this, args);
             instance.register();
+            console.log('instance in new constructor', instance);
 
             return instance;
         };
