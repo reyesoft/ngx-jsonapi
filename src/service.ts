@@ -184,7 +184,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     }
 
     protected getGetFromServer(path, fc_success, fc_error, resource: R, subject: Subject<R>) {
-        Core.injectedServices.JsonapiHttp.get(path.get())
+        // Core.injectedServices.JsonapiHttp.get(path.get())
+        Core.get(path.get())
             .then(success => {
                 Converter.build(success /*.data*/, resource);
                 resource.is_loading = false;
@@ -226,7 +227,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     ) {
         // SERVER REQUEST
         tempororay_collection.$is_loading = true;
-        Core.injectedServices.JsonapiHttp.get(path.get())
+        // Core.injectedServices.JsonapiHttp.get(path.get())
+        Core.get(path.get())
             .then(success => {
                 tempororay_collection.$source = 'server';
                 tempororay_collection.$is_loading = false;
@@ -282,7 +284,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
         let subject = new Subject<void>();
 
-        Core.injectedServices.JsonapiHttp.delete(path.get())
+        // Core.injectedServices.JsonapiHttp.delete(path.get())
+        Core.delete(path.get())
             .then(success => {
                 this.getService().cachememory.removeResource(id);
                 subject.next();

@@ -2,9 +2,8 @@ import { Deferred } from '../shared/deferred';
 import { Injectable } from '@angular/core';
 import { IDataObject } from '../interfaces/data-object';
 import { NoDuplicatedHttpCallsService } from '../services/noduplicatedhttpcalls.service';
-import { Core } from '../core';
 import { Base } from '../services/base';
-import { HttpClient, HttpRequest, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpHeaders, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { JsonapiConfig } from '../jsonapi-config';
 
@@ -21,15 +20,7 @@ export class Http {
         private noDuplicatedHttpCallsService: NoDuplicatedHttpCallsService // private $q
     ) {}
 
-    public async delete(path: string): Promise<IDataObject> {
-        return this.exec(path, 'DELETE');
-    }
-
-    public async get(path: string): Promise<IDataObject> {
-        return this.exec(path, 'get');
-    }
-
-    public async exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true): Promise<IDataObject> {
+    public async exec(path: string, method: string, data?: IDataObject): Promise<any> {
         let fakeHttpPromise = null;
 
         // http request (if we don't have any GET request yet)
@@ -46,7 +37,7 @@ export class Http {
             if (method === 'get') {
                 this.noDuplicatedHttpCallsService.setPromiseRequest(path, http_observable.toPromise());
             } else {
-                fakeHttpPromise = http_observable.toPromise();
+                return fakeHttpPromise = http_observable.toPromise();
             }
         }
         if (fakeHttpPromise === null) {
@@ -54,30 +45,6 @@ export class Http {
             fakeHttpPromise = this.noDuplicatedHttpCallsService.getAPromise(path);
         }
 
-        let deferred: Deferred<IDataObject> = new Deferred();
-        Core.me.refreshLoadings(1);
-        fakeHttpPromise
-            .then(success => {
-                success = success.body || success;
-                Core.me.refreshLoadings(-1);
-                deferred.resolve(success);
-            })
-            .catch(error => {
-                error = error.error || error;
-                Core.me.refreshLoadings(-1);
-                if (error.status <= 0) {
-                    // offline?
-                    if (!Core.me.loadingsOffline(error)) {
-                        console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>', error);
-                    }
-                } else {
-                    if (call_loadings_error && !Core.me.loadingsError(error)) {
-                        console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
-                    }
-                }
-                deferred.reject(error);
-            });
-
-        return deferred.promise;
+        return fakeHttpPromise;
     }
 }

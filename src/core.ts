@@ -11,6 +11,9 @@ import { StoreService as JsonapiStore } from './sources/store.service';
 import { IRelationshipNone } from './interfaces/';
 import { forEach } from './foreach';
 
+import { IDataObject } from './interfaces/data-object';
+import { Deferred } from './shared/deferred';
+
 @Injectable()
 export class Core {
     public static me: Core;
@@ -40,6 +43,44 @@ export class Core {
             JsonapiHttp: jsonapiHttp,
             rsJsonapiConfig: this.config
         };
+    }
+
+    public static async delete(path: string): Promise<IDataObject> {
+        return Core.exec(path, 'DELETE');
+    }
+
+    public static async get(path: string): Promise<IDataObject> {
+        return Core.exec(path, 'get');
+    }
+
+    public static async exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true) {
+        // let fakeHttpPromise = Core.injectedServices.JsonapiHttp.exec(path, method, data);
+        let fakeHttpPromise = Core.injectedServices.JsonapiHttp.exec(path, method);
+        let deferred: Deferred<IDataObject> = new Deferred();
+        Core.me.refreshLoadings(1);
+        fakeHttpPromise
+            .then(success => {
+                success = success.body || success;
+                Core.me.refreshLoadings(-1);
+                deferred.resolve(success);
+            })
+            .catch(error => {
+                error = error.error || error;
+                Core.me.refreshLoadings(-1);
+                if (error.status <= 0) {
+                    // offline?
+                    if (!Core.me.loadingsOffline(error)) {
+                        console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>', error);
+                    }
+                } else {
+                    if (call_loadings_error && !Core.me.loadingsError(error)) {
+                        console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
+                    }
+                }
+                deferred.reject(error);
+            });
+
+        return deferred.promise;
     }
 
     public registerService<R extends Resource>(clase: Service): Service<R> | false {
