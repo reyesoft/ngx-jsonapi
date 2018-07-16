@@ -184,8 +184,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     }
 
     protected getGetFromServer(path, fc_success, fc_error, resource: R, subject: Subject<R>) {
-        console.log('ngx-jsonapi subject', subject);
-        console.log('ngx-jsonapi subject.next resource', resource);
         Core.injectedServices.JsonapiHttp.get(path.get())
             .then(success => {
                 Converter.build(success /*.data*/, resource);
