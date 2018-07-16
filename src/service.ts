@@ -282,7 +282,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
         let subject = new Subject<void>();
 
-        // Core.injectedServices.JsonapiHttp.delete(path.get())
         Core.delete(path.get())
             .then(success => {
                 this.getService().cachememory.removeResource(id);
