@@ -184,7 +184,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     }
 
     protected getGetFromServer(path, fc_success, fc_error, resource: R, subject: Subject<R>) {
-        // Core.injectedServices.JsonapiHttp.get(path.get())
         Core.get(path.get())
             .then(success => {
                 Converter.build(success /*.data*/, resource);
@@ -227,7 +226,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     ) {
         // SERVER REQUEST
         tempororay_collection.$is_loading = true;
-        // Core.injectedServices.JsonapiHttp.get(path.get())
         Core.get(path.get())
             .then(success => {
                 tempororay_collection.$source = 'server';
