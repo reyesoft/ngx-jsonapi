@@ -49,6 +49,10 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         return <R>resource;
     }
 
+    public newCollection(): ICollection<R> {
+        return Base.newCollection();
+    }
+
     public new(): R {
         let resource = this.newResource();
         resource.type = this.type;
