@@ -88,11 +88,19 @@ describe('parent-resource-service test', () => {
         });
     });
     it('proccess_exec_params() should fail if provided with a non IExecParams object', () => {
-        // TODO: cahnge test or fix method to return false or an error in such case
         let exec_params = {
             id: 'test_exec_params',
-            params: 'test_exec_params'
+            params: 'PaRaM'
         };
-        expect(parentResourceServiceTest.testProccessExecParams(exec_params)).toBeFalsy();
+        // expect error, typescript won't allow this
+        expect(parentResourceServiceTest.testProccessExecParams(exec_params).params).toEqual({
+            0: 'P',
+            1: 'a',
+            2: 'R',
+            3: 'a',
+            4: 'M',
+            id: '',
+            include: []
+        });
     });
 });
