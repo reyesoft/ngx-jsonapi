@@ -25,16 +25,22 @@ describe('parent-resource-service test', () => {
         parentResourceServiceTest.testRunFc(parentResourceServiceTest.returnArgs, 'runFc is working');
         expect(returnArgsSpy).toHaveBeenCalledWith('runFc is working');
     });
-    it('runFc shouldn\'t do anything if the first attribute given is not a function', () => {
+    it("runFc shouldn't do anything if the first attribute given is not a function", () => {
         let runFcSpy = spyOn(parentResourceServiceTest, 'runFc');
         expect(parentResourceServiceTest.testRunFc('something', 'runFc is working')).toBe(undefined);
     });
     it('if IExecParams object with a function in params property is provided as argument \
         to proccess_exec_params(), it should return an IExecParamsProcessed object with Base.params in params property, \
         .params function in fc_success and fc_success function in fc_error', () => {
-        let params = (): string => { return 'test_exec_params'; };
-        let fc_success = (): string => { return 'test_exec_params success'; };
-        let fc_error = (): string => { return 'test_exec_params error'; };
+        let params = (): string => {
+            return 'test_exec_params';
+        };
+        let fc_success = (): string => {
+            return 'test_exec_params success';
+        };
+        let fc_error = (): string => {
+            return 'test_exec_params error';
+        };
         let exec_params_with_function = {
             id: 'test_exec_params',
             params: params,
@@ -51,8 +57,12 @@ describe('parent-resource-service test', () => {
         let exec_params_with_undefined = {
             id: 'test_exec_params',
             params: undefined,
-            fc_success: (): string => { return 'test_exec_params success'; },
-            fc_error: (): string => { return 'test_exec_params error'; },
+            fc_success: (): string => {
+                return 'test_exec_params success';
+            },
+            fc_error: (): string => {
+                return 'test_exec_params error';
+            },
             exec_type: 'get'
         };
         expect(parentResourceServiceTest.testProccessExecParams(exec_params_with_undefined).params).toEqual({ ...{}, ...Base.Params });
@@ -63,40 +73,34 @@ describe('parent-resource-service test', () => {
         let exec_params_with_object = {
             id: 'test_exec_params',
             params: { test: 'test_exec_params' },
-            fc_success: (): string => { return 'test_exec_params success'; },
-            fc_error: (): string => { return 'test_exec_params error'; },
+            fc_success: (): string => {
+                return 'test_exec_params success';
+            },
+            fc_error: (): string => {
+                return 'test_exec_params error';
+            },
             exec_type: 'all'
         };
-        expect(parentResourceServiceTest.testProccessExecParams(exec_params_with_object).params)
-            .toEqual({ ...{}, ...Base.Params, ...exec_params_with_object.params });
+        expect(parentResourceServiceTest.testProccessExecParams(exec_params_with_object).params).toEqual({
+            ...{},
+            ...Base.Params,
+            ...exec_params_with_object.params
+        });
     });
     it('proccess_exec_params() should fail if provided with a non IExecParams object', () => {
         let exec_params = {
             id: 'test_exec_params',
-            params: 'test_exec_params'
+            params: 'PaRaM'
         };
         // expect error, typescript won't allow this
-        expect(parentResourceServiceTest.testProccessExecParams(exec_params).params).toEqual(
-            {
-                0: 't',
-                1: 'e',
-                2: 's',
-                3: 't',
-                4: '_',
-                5: 'e',
-                6: 'x',
-                7: 'e',
-                8: 'c',
-                9: '_',
-                10: 'p',
-                11: 'a',
-                12: 'r',
-                13: 'a',
-                14: 'm',
-                15: 's',
-                id: '',
-                include: [  ]
-            }
-        );
+        expect(parentResourceServiceTest.testProccessExecParams(exec_params).params).toEqual({
+            0: 'P',
+            1: 'a',
+            2: 'R',
+            3: 'a',
+            4: 'M',
+            id: '',
+            include: []
+        });
     });
 });

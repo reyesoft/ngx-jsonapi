@@ -6,7 +6,6 @@ import { Base } from '../services/base';
 import { HttpClient, HttpRequest, HttpHeaders, HttpEvent } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { JsonapiConfig } from '../jsonapi-config';
-
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 
@@ -15,8 +14,6 @@ export class Http {
     public constructor(
         private http: HttpClient,
         private rsJsonapiConfig: JsonapiConfig,
-        // private $timeout,
-        // private rsJsonapiConfig,
         private noDuplicatedHttpCallsService: NoDuplicatedHttpCallsService // private $q
     ) {}
 
@@ -37,7 +34,7 @@ export class Http {
             if (method === 'get') {
                 this.noDuplicatedHttpCallsService.setPromiseRequest(path, http_observable.toPromise());
             } else {
-                return fakeHttpPromise = http_observable.toPromise();
+                return (fakeHttpPromise = http_observable.toPromise());
             }
         }
         if (fakeHttpPromise === null) {
