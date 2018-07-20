@@ -17,7 +17,6 @@ export class LocalFilter {
                 }
             });
         }
-        console.log('y quedó así', dest_collection);
     }
 
     private passFilter(resource: Resource, localfilter): boolean {
