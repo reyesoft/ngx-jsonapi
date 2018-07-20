@@ -7,7 +7,6 @@ import { Base } from '../services/base';
 import { HttpClient, HttpRequest, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { JsonapiConfig } from '../jsonapi-config';
-
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 
@@ -16,8 +15,6 @@ export class Http {
     public constructor(
         private http: HttpClient,
         private rsJsonapiConfig: JsonapiConfig,
-        // private $timeout,
-        // private rsJsonapiConfig,
         private noDuplicatedHttpCallsService: NoDuplicatedHttpCallsService // private $q
     ) {}
 
