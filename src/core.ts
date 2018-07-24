@@ -54,7 +54,7 @@ export class Core {
     }
 
     public static async exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true) {
-        let fakeHttpPromise = Core.injectedServices.JsonapiHttp.exec(path, method);
+        let fakeHttpPromise = Core.injectedServices.JsonapiHttp.exec(path, method, data);
         let deferred: Deferred<IDataObject> = new Deferred();
         Core.me.refreshLoadings(1);
         fakeHttpPromise
