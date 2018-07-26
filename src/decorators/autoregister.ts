@@ -1,21 +1,24 @@
 import { Service } from '../service';
 
 export function Autoregister() {
-    return function<T extends typeof Service>(target: T): T {
-        // save a reference to the original constructor
-        var original = target;
+    return (target): any => {
+        const original = target;
 
-        // the new constructor behaviour
-        var f: any = function (...args) {
-            let instance = original.apply(this, args)
+        /*tslint:disable: only-arrow-functions*/
+        // function name is required
+        const newConstructor: any = function newCtor(...args) {
+            const c: any = function childConstuctor() {
+                return original.apply(this, arguments);
+            };
+            c.prototype = Object.create(original.prototype);
+            const instance = new c(...args);
             instance.register();
+
             return instance;
-        }
+        };
 
-        // copy prototype so intanceof operator still works
-        f.prototype = original.prototype;
+        newConstructor.prototype = Object.create(target.prototype);
 
-        // return new constructor (will override original)
-        return f;
+        return newConstructor;
     };
 }

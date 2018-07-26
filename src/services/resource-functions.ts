@@ -2,10 +2,7 @@ import { ICollection } from '../interfaces';
 import { Resource } from '../resource';
 
 export class ResourceFunctions {
-    public static resourceToResource(
-        source: Resource,
-        destination: Resource
-    ): void {
+    public static resourceToResource(source: Resource, destination: Resource): void {
         destination.attributes = source.attributes;
 
         // remove relationships on destination resource
@@ -27,15 +24,9 @@ export class ResourceFunctions {
         // add source relationships to destination
         for (let type_alias in source.relationships) {
             if ('id' in source.relationships[type_alias].data) {
-                destination.addRelationship(
-                    <Resource>source.relationships[type_alias].data,
-                    type_alias
-                );
+                destination.addRelationship(<Resource>source.relationships[type_alias].data, type_alias);
             } else {
-                destination.addRelationships(
-                    <ICollection>source.relationships[type_alias].data,
-                    type_alias
-                );
+                destination.addRelationships(<ICollection>source.relationships[type_alias].data, type_alias);
             }
         }
     }

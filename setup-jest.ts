@@ -6,10 +6,10 @@ global['CSS'] = null;
  * Workaround for JSDOM missing transform property
  */
 Object.defineProperty(document.body.style, 'transform', {
-    value: () => {
+    value: (): Object => {
         return {
             enumerable: true,
-            configurable: true,
+            configurable: true
         };
-    },
+    }
 });
