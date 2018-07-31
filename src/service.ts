@@ -135,7 +135,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
             this.getService()
-                .cachestore.getResource(resource)
+                .cachestore.getResource(resource, params.include)
                 .then(success => {
                     if (Base.isObjectLive(temporal_ttl, resource.lastupdate)) {
                         resource.is_loading = false;
