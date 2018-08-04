@@ -361,17 +361,10 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             if (this.getService().cachememory.isCollectionLive(path.getForCache(), temporal_ttl)) {
                 // we create a promise because we need return collection before
                 // run success client function
-                let promise: Promise<void> = new Promise(
-                    (resolve, reject): void => {
-                        resolve(fc_success);
-                        promise
-                            .then(fc_success2 => {
-                                subject.next(tempororay_collection);
-                                this.runFc(fc_success2, 'cachememory');
-                            })
-                            .catch(noop);
-                    }
-                );
+                setTimeout(() => {
+                    subject.next(tempororay_collection);
+                    this.runFc(fc_success, 'cachememory');
+                }, 0);
             } else {
                 this.getAllFromServer(path, params, fc_success, fc_error, tempororay_collection, cached_collection, subject);
             }

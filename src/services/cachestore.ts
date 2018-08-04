@@ -150,7 +150,7 @@ export class CacheStore implements ICache {
                     .then(() => {
                         // just for precaution, we not rewrite server data
                         if (collection.$source !== 'new') {
-                            console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
+                            console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#', collection.$source);
                             throw new Error('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
                         }
                         collection.$source = 'store'; // collection and resources from storeservice
