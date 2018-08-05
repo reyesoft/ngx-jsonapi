@@ -141,6 +141,9 @@ export class Resource extends ParentResourceService {
         });
     }
 
+    /**
+     * @todo content don't change when relation resource/collection is updated
+     */
     public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
         let object_key = resource.id;
         if (!object_key) {

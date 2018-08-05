@@ -1,4 +1,5 @@
 import * as localForage from 'localforage';
+import 'localforage-getitems';
 import { Base } from '../services/base';
 import { IStoreObject } from '../interfaces';
 import { noop } from 'rxjs/util/noop';
@@ -39,8 +40,19 @@ export class StoreService {
         return deferred.promise;
     }
 
-    public async getObjets(keys: Array<string>): Promise<object> {
-        return this.allstore.getItem('jsonapi.' + keys[0]);
+    public async getObjets(keys: Array<string>): Promise<Array<object>> {
+        let deferred: Deferred<Array<object>> = new Deferred();
+        let real_keys = keys.map(key => 'jsonapi.' + key);
+        this.allstore
+            .getItems(real_keys)
+            .then((success: Array<object>) => {
+                deferred.resolve(success);
+            })
+            .catch(error => {
+                deferred.reject(error);
+            });
+
+        return deferred.promise;
     }
 
     public saveObject(key: string, value: IStoreObject): void {

@@ -150,7 +150,8 @@
         "zone.js": "^0.8.12"
     },
     "dependencies": {
-        "localforage": "^1.5.2"
+        "localforage": "^1.5.2",
+        "localforage-getitems": "^1.4.2"
     },
     "jest": {
         "setupTestFrameworkScriptFile": "<rootDir>/setup-jest.ts",
