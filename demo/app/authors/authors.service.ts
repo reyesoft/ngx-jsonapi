@@ -8,7 +8,6 @@ export class AuthorsService extends Service<Author> {
     // public resource = Author;
     public type = 'authors';
     public schema: ISchema = {
-        ttl: 53600,
         relationships: {
             books: {
                 hasMany: true

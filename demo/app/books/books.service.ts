@@ -8,7 +8,6 @@ import { Photo } from '../photos/photos.service';
 export class BooksService extends Service<Book> {
     public type = 'books';
     public schema: ISchema = {
-        ttl: 53600,
         relationships: {
             author: {
                 hasMany: false
