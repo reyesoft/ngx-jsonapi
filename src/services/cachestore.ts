@@ -86,13 +86,13 @@ export class CacheStore implements ICache {
 
         Base.forEach(resources_for_save, resource_for_save => {
             if (!('is_new' in resource_for_save)) {
-                console.warn('No se pudo guardar en la cache el', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
+                // console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
 
                 return;
             }
 
             if (Object.keys(resource_for_save.attributes).length === 0) {
-                console.warn('No se pudo guardar en la cache el', resource_for_save.type, 'por no tener attributes.', resource_for_save);
+                console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no tener attributes.', resource_for_save);
 
                 return;
             }

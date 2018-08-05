@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ICollection, Resource } from 'ngx-jsonapi';
 import { BooksService } from './../books.service';
 import { AuthorsService } from './../../authors/authors.service';
+import { PhotosService } from '../../photos/photos.service';
 
 @Component({
     selector: 'demo-books',
@@ -10,7 +11,11 @@ import { AuthorsService } from './../../authors/authors.service';
 export class BooksComponent {
     public books: ICollection;
 
-    public constructor(protected authorsService: AuthorsService, protected booksService: BooksService) {
+    public constructor(
+        protected authorsService: AuthorsService,
+        protected booksService: BooksService,
+        protected photosService: PhotosService
+    ) {
         booksService
             .all({
                 page: { number: 2 },
