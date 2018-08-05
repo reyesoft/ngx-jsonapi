@@ -148,6 +148,6 @@ export class Converter {
             service.schema
         ).buildRelationships();
 
-        // resource_dest.updateParentRelationship();
+        resource_dest.updateParentRelationship();
     }
 }

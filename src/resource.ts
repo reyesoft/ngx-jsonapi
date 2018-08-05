@@ -164,7 +164,7 @@ export class Resource extends ParentResourceService {
             // hasOne
             this.relationships[type_alias].data = resource;
             if ('relationships' in resource) {
-                // resource.addParentRelationship(this.relationships[type_alias]);
+                resource.addParentRelationship(this.relationships[type_alias]);
             }
         }
     }
@@ -227,7 +227,6 @@ export class Resource extends ParentResourceService {
         for (let relationship of this.parents) {
             relationship.content = 'resource';
         }
-        console.log('deberíamos actualiar LOS PADRES de ', this.parents);
     }
 
     protected async __exec<T extends Resource>(exec_params: IExecParams): Promise<object> {
