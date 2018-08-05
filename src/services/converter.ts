@@ -28,7 +28,7 @@ export class Converter {
         return resources_by_type;
     }
 
-    public static json2resource(json_resource: IDataResource, instance_relationships): Resource {
+    public static json2resource(json_resource: IDataResource): Resource {
         let resource_service = Converter.getService(json_resource.type);
         if (resource_service) {
             return Converter.procreate(json_resource);
@@ -50,7 +50,7 @@ export class Converter {
     }
 
     public static build(document_from: IDataCollection | IDataObject, resource_dest: Resource | ICollection) {
-        // instancio los include y los guardo en included arrary
+        // instancio los include y los guardo en included array
         let included_resources: IResourcesByType = {};
         if ('included' in document_from) {
             included_resources = Converter.json_array2resources_array_by_type(document_from.included);
@@ -87,7 +87,7 @@ export class Converter {
     */
     private static json_array2resources_array(json_array: Array<IDataResource>, destination_array: IResourcesById = {}): void {
         for (let data of json_array) {
-            let resource = Converter.json2resource(data, false);
+            let resource = Converter.json2resource(data);
             destination_array[resource.type + '_' + resource.id] = resource;
         }
     }
@@ -147,5 +147,7 @@ export class Converter {
             included_resources,
             service.schema
         ).buildRelationships();
+
+        // resource_dest.updateParentRelationship();
     }
 }

@@ -15,7 +15,7 @@ export interface IRelationshipNone extends IRelationship {
 }
 
 export interface IRelationshipIds extends IRelationship {
-    data: Array<IDataResource>;
+    data: { [id: string]: IDataResource };
     hasid: false;
     content: 'ids';
 }

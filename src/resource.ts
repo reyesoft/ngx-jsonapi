@@ -15,6 +15,7 @@ import {
     ICollection,
     IExecParams,
     IParamsResource,
+    IRelationship,
     IRelationships,
     IRelationshipCollection,
     IRelationshipNone,
@@ -30,6 +31,7 @@ export class Resource extends ParentResourceService {
     public attributes: IAttributes = {};
     public relationships: IRelationships = {};
     public lastupdate: number;
+    private parents: Array<any> = [];
 
     public reset(): void {
         this.id = '';
@@ -156,9 +158,14 @@ export class Resource extends ParentResourceService {
         }
 
         if (type_alias in this.getService().schema.relationships && this.getService().schema.relationships[type_alias].hasMany) {
+            // hasMany
             this.relationships[type_alias].data[object_key] = resource;
         } else {
+            // hasOne
             this.relationships[type_alias].data = resource;
+            if ('relationships' in resource) {
+                // resource.addParentRelationship(this.relationships[type_alias]);
+            }
         }
     }
 
@@ -210,6 +217,17 @@ export class Resource extends ParentResourceService {
     */
     public getService(): Service {
         return Converter.getService(this.type);
+    }
+
+    public addParentRelationship(parent: IRelationship) {
+        this.parents.push(parent);
+    }
+
+    public updateParentRelationship() {
+        for (let relationship of this.parents) {
+            relationship.content = 'resource';
+        }
+        console.log('deberíamos actualiar LOS PADRES de ', this.parents);
     }
 
     protected async __exec<T extends Resource>(exec_params: IExecParams): Promise<object> {

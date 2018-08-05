@@ -74,9 +74,14 @@ export class ResourceRelationshipsConverter {
         relation_from_value: IDataCollection,
         relation_key: any // number to string?
     ) {
-        // @todo: usar collection on data?
+        // convert array to object
+        let collection = {};
+        for (let resource of relation_from_value.data) {
+            collection[resource.id] = resource;
+        }
+
         this.relationships_dest[relation_key] = {
-            data: relation_from_value.data,
+            data: collection,
             hasid: false,
             content: 'ids'
         };

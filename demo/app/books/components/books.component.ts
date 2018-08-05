@@ -18,6 +18,7 @@ export class BooksComponent {
             })
             .subscribe(books => {
                 this.books = books;
+
                 console.info('success books controll', this.books);
             }, (error): void => console.info('error books controll', error));
     }
