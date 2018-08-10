@@ -103,7 +103,6 @@ export class ResourceRelationshipsConverter {
         this.relationships_dest[relation_key].content = 'collection';
 
         relation_from_value.data.forEach((relation_value: IDataResource) => {
-            // let relation_value: IDataResource = relation_from_value.data[relation_key_x];
             let tmp = this.__buildRelationship(relation_value, this.included_resources);
 
             // sometimes we have a cache like a services
