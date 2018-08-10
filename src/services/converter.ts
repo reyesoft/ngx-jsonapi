@@ -18,12 +18,14 @@ export class Converter {
         let resources_by_type: IResourcesByType = {};
 
         Converter.json_array2resources_array(json_array, all_resources);
-        Base.forEach(all_resources, (resource: Resource) => {
+        for (const key in all_resources) {
+            let resource: Resource = all_resources[key];
+
             if (!(resource.type in resources_by_type)) {
                 resources_by_type[resource.type] = {};
             }
             resources_by_type[resource.type][resource.id] = resource;
-        });
+        }
 
         return resources_by_type;
     }

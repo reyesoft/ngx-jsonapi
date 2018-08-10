@@ -238,9 +238,10 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 // this create a new ID for every resource (for caching proposes)
                 // for example, two URL return same objects but with different attributes
                 if (params.cachehash) {
-                    Base.forEach(success.data, resource => {
+                    for (const key in success.data) {
+                        let resource = success.data[key];
                         resource.id = resource.id + params.cachehash;
-                    });
+                    }
                 }
 
                 Converter.build(success /*.data*/, tempororay_collection);
