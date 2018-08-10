@@ -126,7 +126,7 @@ export class Core {
             } else {
                 // relation hasMany
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
-                    Base.forEach(relationship.data, relationresource => {
+                    Object.values(relationship.data).forEach(relationresource => {
                         newresource.addRelationship(this.duplicateResource(relationresource), alias);
                     });
                 } else {

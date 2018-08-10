@@ -7,7 +7,7 @@
         "experimentalDecorators": true,
         "noStrictGenericChecks": true,
         "lib": [
-            "es2016",
+            "es2017",
             "dom"
         ],
         "outDir": "../out-tsc/app",

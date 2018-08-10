@@ -34,11 +34,11 @@ export class CacheMemory<R extends Resource = Resource> implements ICacheMemory 
     public setCollection(url: string, collection: ICollection): void {
         // clone collection, because after maybe delete items for localfilter o pagination
         this.collections[url] = Base.newCollection();
-        Object.keys(collection).forEach(resource_id => {
+        for (const resource_id in collection) {
             let resource: Resource = collection[resource_id];
             this.collections[url][resource_id] = resource;
             this.setResource(resource);
-        });
+        }
         this.collections[url].page = collection.page;
         this.collections_lastupdate[url] = Date.now();
     }

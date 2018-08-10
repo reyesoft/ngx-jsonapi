@@ -30,7 +30,9 @@ export class ResourceRelationshipsConverter {
 
     public buildRelationships(): void {
         // recorro los relationships levanto el service correspondiente
-        Base.forEach(this.relationships_from, (relation_from_value: IDataCollection & IDataObject, relation_key) => {
+        for (const relation_key in this.relationships_from) {
+            let relation_from_value: IDataCollection & IDataObject = this.relationships_from[relation_key];
+
             // relation is in schema? have data or just links?
             if (!(relation_key in this.relationships_dest) && 'data' in relation_from_value) {
                 this.relationships_dest[relation_key] = {
@@ -52,7 +54,7 @@ export class ResourceRelationshipsConverter {
                 // hasOne
                 this.__buildRelationshipHasOne(relation_from_value, relation_key);
             }
-        });
+        }
     }
 
     private __buildRelationshipHasMany(
@@ -99,7 +101,9 @@ export class ResourceRelationshipsConverter {
 
         let tmp_relationship_data = Base.newCollection();
         this.relationships_dest[relation_key].content = 'collection';
-        Base.forEach(relation_from_value.data, (relation_value: IDataResource) => {
+
+        for (const relation_key_x in relation_from_value.data) {
+            let relation_value: IDataResource = relation_from_value.data[relation_key_x];
             let tmp = this.__buildRelationship(relation_value, this.included_resources);
 
             // sometimes we have a cache like a services
@@ -117,14 +121,14 @@ export class ResourceRelationshipsConverter {
             if (!('attributes' in tmp)) {
                 this.relationships_dest[relation_key].content = 'ids';
             }
-        });
+        }
 
         // REMOVE resources from cached collection
         // build an array with the news ids
         let new_ids = {};
-        Base.forEach(relation_from_value.data, (data_resource: IDataResource) => {
-            new_ids[data_resource.id] = true;
-        });
+        for (const key in relation_from_value.data) {
+            new_ids[relation_from_value.data[key].id] = true;
+        }
         // check if new ids are on destination. If not, delete resource
         Base.forEach(this.relationships_dest[relation_key].data, (relation_dest_value: IDataResource) => {
             if (!(relation_dest_value.id in new_ids)) {

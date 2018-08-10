@@ -35,8 +35,10 @@ export class Resource extends ParentResourceService {
         this.id = '';
         this.attributes = {};
         this.relationships = {};
-        Base.forEach(this.getService().schema.relationships, (value, key) => {
-            if (this.getService().schema.relationships[key].hasMany) {
+
+        let relationships = this.getService().schema.relationships;
+        for (const key in relationships) {
+            if (relationships[key].hasMany) {
                 let relation: IRelationshipCollection = {
                     data: Base.newCollection(),
                     hasid: false,
@@ -47,7 +49,8 @@ export class Resource extends ParentResourceService {
                 let relation: IRelationshipNone = { data: {}, hasid: false, content: 'none' };
                 this.relationships[key] = relation;
             }
-        });
+        }
+
         this.is_new = true;
     }
 
@@ -59,12 +62,15 @@ export class Resource extends ParentResourceService {
         let included_ids = []; // just for control don't repeat any resource
 
         // REALTIONSHIPS
-        Base.forEach(this.relationships, (relationship: IRelationshipResource | IRelationshipCollection, relation_alias: string) => {
+        for (const relation_alias in this.relationships) {
+            let relationship = this.relationships[relation_alias];
+
             if (this.getService().schema.relationships[relation_alias] && this.getService().schema.relationships[relation_alias].hasMany) {
                 // has many (hasMany:true)
                 relationships[relation_alias] = { data: [] };
 
-                Base.forEach(relationship.data, (resource: Resource) => {
+                for (const key in relationship.data) {
+                    let resource: Resource = relationship.data[key];
                     let reational_object = {
                         id: resource.id,
                         type: resource.type
@@ -77,7 +83,7 @@ export class Resource extends ParentResourceService {
                         included_ids.push(temporal_id);
                         included.push(resource.toObject({}).data);
                     }
-                });
+                }
             } else {
                 // has one (hasMany:false)
 
@@ -104,7 +110,7 @@ export class Resource extends ParentResourceService {
                     included.push(relationship_data.toObject({}).data);
                 }
             }
-        });
+        }
 
         // just for performance dont copy if not necessary
         let attributes;
@@ -164,16 +170,18 @@ export class Resource extends ParentResourceService {
             this.relationships[type_alias] = { data: {}, hasid: false, content: 'none' };
         } else {
             // we receive a new collection of this relationship. We need remove old (if don't exist on new collection)
-            Base.forEach(this.relationships[type_alias].data, resource => {
+            for (const key in this.relationships[type_alias].data) {
+                let resource: Resource = this.relationships[type_alias].data[key];
                 if (!(resource.id in resources)) {
                     delete this.relationships[type_alias].data[resource.id];
                 }
-            });
+            }
         }
 
-        Base.forEach(resources, resource => {
+        for (const key in resources) {
+            let resource: Resource = resources[key];
             this.relationships[type_alias].data[resource.id] = resource;
-        });
+        }
     }
 
     public addRelationshipsArray<T extends Resource>(resources: Array<T>, type_alias?: string): void {
