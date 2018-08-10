@@ -18,7 +18,6 @@ export class CacheStore implements ICache {
                         let promises: Array<Promise<object>> = [];
 
                         // include some times is a collection :S
-                        // for (let keys in include) {
                         include.forEach(resource_type => {
                             //  && ('attributes' in resource.relationships[resource_type].data)
                             if (resource_type in resource.relationships) {
