@@ -144,10 +144,8 @@ export class ResourceRelationshipsConverter {
         relation_data_key: any // number to string?
     ): void {
         // new related resource <> cached related resource <> ? delete!
-        console.log('------ 1 >', relation_data_from, relation_data_key);
         if (!('type' in relation_data_from.data)) {
             this.relationships_dest[relation_data_key].data = {};
-            console.log('------ 2 >', this.relationships_dest[relation_data_key], relation_data_key);
 
             return;
         }
@@ -156,8 +154,6 @@ export class ResourceRelationshipsConverter {
             this.relationships_dest[relation_data_key].data == null ||
             relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_data_key].data).id
         ) {
-            console.log('------ 3 >');
-
             this.relationships_dest[relation_data_key].data = {};
         }
 
@@ -167,12 +163,9 @@ export class ResourceRelationshipsConverter {
             !(<Resource>this.relationships_dest[relation_data_key].data).attributes || // we have only a  dataresource
             (<Resource>this.relationships_dest[relation_data_key].data).id !== relation_data_from.data.id
         ) {
-            console.log('------ 4 >');
             let resource_data = this.__buildRelationship(relation_data_from.data, this.included_resources);
             this.relationships_dest[relation_data_key].data = resource_data;
         }
-
-        console.log('------ 5 >', this.relationships_dest[relation_data_key].data);
     }
 
     private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): Resource | IDataResource {
