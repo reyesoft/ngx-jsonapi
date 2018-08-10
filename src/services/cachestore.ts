@@ -19,8 +19,7 @@ export class CacheStore implements ICache {
 
                         // include some times is a collection :S
                         // for (let keys in include) {
-                        for (const key in include) {
-                            let resource_type = include[key];
+                        include.forEach(resource_type => {
                             //  && ('attributes' in resource.relationships[resource_type].data)
                             if (resource_type in resource.relationships) {
                                 // hasOne
@@ -37,7 +36,7 @@ export class CacheStore implements ICache {
                                     resource.relationships[resource_type].data = builded_resource;
                                 }
                             }
-                        }
+                        });
 
                         resource.lastupdate = success._lastupdate_time;
 
@@ -94,7 +93,7 @@ export class CacheStore implements ICache {
             this.setResource(resource);
             tmp.data[resource.id] = { id: resource.id, type: resource.type };
 
-            for (const resource_type_alias in include) {
+            include.forEach(resource_type_alias => {
                 if ('id' in resource.relationships[resource_type_alias].data) {
                     // hasOne
                     let ress = <Resource>resource.relationships[resource_type_alias].data;
@@ -106,7 +105,7 @@ export class CacheStore implements ICache {
                         resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
                     });
                 }
-            }
+            });
         });
         tmp.page = collection.page;
         Core.injectedServices.JsonapiStoreService.saveObject('collection.' + url, tmp);
