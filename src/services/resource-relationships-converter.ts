@@ -44,7 +44,7 @@ export class ResourceRelationshipsConverter {
 
             // sometime data=null or simple { }
             if (!relation_from_value.data) {
-                return;
+                continue;
             }
 
             if (this.schema.relationships[relation_key] && this.schema.relationships[relation_key].hasMany) {
@@ -102,8 +102,8 @@ export class ResourceRelationshipsConverter {
         let tmp_relationship_data = Base.newCollection();
         this.relationships_dest[relation_key].content = 'collection';
 
-        for (const relation_key_x in relation_from_value.data) {
-            let relation_value: IDataResource = relation_from_value.data[relation_key_x];
+        relation_from_value.data.forEach((relation_value: IDataResource) => {
+            // let relation_value: IDataResource = relation_from_value.data[relation_key_x];
             let tmp = this.__buildRelationship(relation_value, this.included_resources);
 
             // sometimes we have a cache like a services
@@ -121,14 +121,14 @@ export class ResourceRelationshipsConverter {
             if (!('attributes' in tmp)) {
                 this.relationships_dest[relation_key].content = 'ids';
             }
-        }
+        });
 
         // REMOVE resources from cached collection
         // build an array with the news ids
         let new_ids = {};
-        for (const key in relation_from_value.data) {
-            new_ids[relation_from_value.data[key].id] = true;
-        }
+        relation_from_value.data.forEach(data_resource => {
+            new_ids[data_resource.id] = true;
+        });
         // check if new ids are on destination. If not, delete resource
         Base.forEach(this.relationships_dest[relation_key].data, (relation_dest_value: IDataResource) => {
             if (!(relation_dest_value.id in new_ids)) {
@@ -144,8 +144,10 @@ export class ResourceRelationshipsConverter {
         relation_data_key: any // number to string?
     ): void {
         // new related resource <> cached related resource <> ? delete!
+        console.log('------ 1 >', relation_data_from, relation_data_key);
         if (!('type' in relation_data_from.data)) {
             this.relationships_dest[relation_data_key].data = {};
+            console.log('------ 2 >', this.relationships_dest[relation_data_key], relation_data_key);
 
             return;
         }
@@ -154,6 +156,8 @@ export class ResourceRelationshipsConverter {
             this.relationships_dest[relation_data_key].data == null ||
             relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_data_key].data).id
         ) {
+            console.log('------ 3 >');
+
             this.relationships_dest[relation_data_key].data = {};
         }
 
@@ -163,9 +167,12 @@ export class ResourceRelationshipsConverter {
             !(<Resource>this.relationships_dest[relation_data_key].data).attributes || // we have only a  dataresource
             (<Resource>this.relationships_dest[relation_data_key].data).id !== relation_data_from.data.id
         ) {
+            console.log('------ 4 >');
             let resource_data = this.__buildRelationship(relation_data_from.data, this.included_resources);
             this.relationships_dest[relation_data_key].data = resource_data;
         }
+
+        console.log('------ 5 >', this.relationships_dest[relation_data_key].data);
     }
 
     private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): Resource | IDataResource {
