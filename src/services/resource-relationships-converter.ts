@@ -76,11 +76,15 @@ export class ResourceRelationshipsConverter {
         relation_from_value: IDataCollection,
         relation_key: any // number to string?
     ) {
-        // @todo: usar collection on data?
+        let relation_collection = Base.newCollection();
+        relation_from_value.data.forEach(resource_data => {
+            relation_collection[resource_data.id] = resource_data;
+        });
+
         this.relationships_dest[relation_key] = {
-            data: relation_from_value.data,
+            data: relation_collection,
             hasid: false,
-            content: 'ids'
+            content: 'ids' // @todo. if resources are only ids? if resources are complete resources?
         };
     }
 
