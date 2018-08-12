@@ -33,7 +33,7 @@
         "no-floating-promises": false,
         "cyclomatic-complexity": false,
         "await-promise": [true, "Thenable"],
-        "array-type": [true, "generic"],
+        "array-type": [true, "array-simple"],
         "arrow-parens": false,
         "ban": [true,
             ["_", "extend"],
