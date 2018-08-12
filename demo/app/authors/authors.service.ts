@@ -2,23 +2,6 @@ import { Injectable } from '@angular/core';
 import { Autoregister, Service, ISchema, Resource, ICollection } from 'ngx-jsonapi';
 import { Book } from '../books/books.service';
 
-@Injectable()
-@Autoregister()
-export class AuthorsService extends Service<Author> {
-    // public resource = Author;
-    public type = 'authors';
-    public schema: ISchema = {
-        relationships: {
-            books: {
-                hasMany: true
-            },
-            photos: {
-                hasMany: true
-            }
-        }
-    };
-}
-
 export class Author extends Resource {
     public attributes = {
         name: 'default name',
@@ -39,4 +22,21 @@ export class Author extends Resource {
     public photos() /*: ICollection<Photo>*/ {
         return <ICollection>this.relationships.photos.data;
     }
+}
+
+@Injectable()
+@Autoregister()
+export class AuthorsService extends Service<Author> {
+    public resource = Author;
+    public type = 'authors';
+    public schema: ISchema = {
+        relationships: {
+            books: {
+                hasMany: true
+            },
+            photos: {
+                hasMany: true
+            }
+        }
+    };
 }
