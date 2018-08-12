@@ -3,7 +3,7 @@ import { Page } from './page';
 import { Resource } from '../resource';
 
 export class Base {
-    public static Params: /* IParamsCollection | */ IParamsResource = {
+    public static Params: IParamsResource = {
         id: '',
         include: []
     };
