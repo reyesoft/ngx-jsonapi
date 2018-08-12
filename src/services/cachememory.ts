@@ -31,7 +31,7 @@ export class CacheMemory<R extends Resource = Resource> implements ICacheMemory 
         return this.collections[url];
     }
 
-    public setCollection(url: string, collection: ICollection): void {
+    public setCollection(url: string, collection: ICollection<R>): void {
         // clone collection, because after maybe delete items for localfilter o pagination
         this.collections[url] = Base.newCollection();
         for (const resource_id in collection) {
@@ -39,6 +39,7 @@ export class CacheMemory<R extends Resource = Resource> implements ICacheMemory 
             this.collections[url][resource_id] = resource;
             this.setResource(resource);
         }
+        this.collections[url].data = collection.data;
         this.collections[url].page = collection.page;
         this.collections_lastupdate[url] = Date.now();
     }

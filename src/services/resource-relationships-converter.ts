@@ -84,7 +84,7 @@ export class ResourceRelationshipsConverter {
         this.relationships_dest[relation_key] = {
             data: relation_collection,
             hasid: false,
-            content: 'ids' // @todo. if resources are only ids? if resources are complete resources?
+            content: 'collection' // @todo. if resources are only ids? if resources are complete resources?
         };
     }
 
