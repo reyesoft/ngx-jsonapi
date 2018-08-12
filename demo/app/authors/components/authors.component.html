@@ -9,7 +9,7 @@
             <th>Date of dead</th>
         </tr>
     </thead>
-    <tr *ngFor="let author of authors.data">
+    <tr *ngFor="let author of authors.data; trackBy: authors.trackBy">
         <td>{{ author.id }}</td>
         <td>
             <a [routerLink]="['/authors', author.id]">{{ author.attributes.name }}</a>
