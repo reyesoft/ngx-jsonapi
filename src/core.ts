@@ -111,7 +111,7 @@ export class Core {
     }
 
     // just an helper
-    public duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: Array<string>): R {
+    public duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: string[]): R {
         let newresource = <R>this.getResourceService(resource.type).new();
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };
 

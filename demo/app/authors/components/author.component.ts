@@ -13,26 +13,22 @@ import { Observable } from 'rxjs/Observable';
 })
 export class AuthorComponent {
     public author: Author;
-    public relatedbooks: Array<Resource>;
+    public relatedbooks: Resource[];
 
-    public constructor(
-        protected authorsService: AuthorsService,
-        protected photosService: PhotosService,
-        private route: ActivatedRoute
-    ) {
-        route.params.subscribe(({ id }) => {
-            authorsService.get(
-                id,
-                { include: ['books', 'photos'] }
-            )
-            .subscribe(
-                author => {
-                    this.author = author;
-                    console.info('success author controller', author);
-                },
-                error => console.error('Could not load author.', error)
-            );
-        });
+    public constructor(protected authorsService: AuthorsService, protected photosService: PhotosService, private route: ActivatedRoute) {
+        route.params
+            .finally(() => {
+                console.log('xxxx finally');
+            })
+            .subscribe(({ id }) => {
+                authorsService.get(id, { include: ['books', 'photos'] }).subscribe(
+                    author => {
+                        this.author = author;
+                        console.info('success author controller', author);
+                    },
+                    error => console.error('Could not load author.', error)
+                );
+            });
     }
 
     /*
@@ -42,7 +38,7 @@ export class AuthorComponent {
         let author = this.authorsService.new();
         author.attributes.name = prompt('New author name:', 'John Doe');
         if (!author.attributes.name) {
-            return ;
+            return;
         }
         author.attributes.date_of_birth = '2030-12-10';
         console.log('author data for save', author.toObject());
@@ -69,7 +65,7 @@ export class AuthorComponent {
         );
     }
 
-    public getPhotos(author: Resource): Array<Resource> {
+    public getPhotos(author: Resource): Resource[] {
         return (<ICollection>author.relationships.photos.data).$toArray;
     }
 

@@ -137,12 +137,10 @@ export class Resource extends ParentResourceService {
         return ret;
     }
 
-    public async save<T extends Resource>(params?: Object | Function, fc_success?: Function, fc_error?: Function): Promise<object> {
+    public async save<T extends Resource>(params?: Object): Promise<object> {
         return this.__exec({
             id: null,
             params: params,
-            fc_success: fc_success,
-            fc_error: fc_error,
             exec_type: 'save'
         });
     }
@@ -184,7 +182,7 @@ export class Resource extends ParentResourceService {
         }
     }
 
-    public addRelationshipsArray<T extends Resource>(resources: Array<T>, type_alias?: string): void {
+    public addRelationshipsArray<R extends Resource>(resources: R[], type_alias?: string): void {
         resources.forEach((item: Resource) => {
             this.addRelationship(item, type_alias || item.type);
         });
@@ -222,11 +220,11 @@ export class Resource extends ParentResourceService {
 
         switch (exec_params.exec_type) {
             case 'save':
-                return this._save(exec_pp.params, exec_params.fc_success, exec_params.fc_error);
+                return this._save(exec_pp.params);
         }
     }
 
-    private async _save<T extends Resource>(params: IParamsResource, fc_success: Function, fc_error: Function): Promise<object> {
+    private async _save<T extends Resource>(params: IParamsResource): Promise<object> {
         let promisesave: Promise<object> = new Promise(
             (resolve, reject): void => {
                 if (this.is_saving || this.is_loading) {
@@ -243,7 +241,7 @@ export class Resource extends ParentResourceService {
                     path.appendPath(this.id);
                 }
 
-                let promise = Core.exec(path.get(), this.id ? 'PATCH' : 'POST', object, !isFunction(fc_error));
+                let promise = Core.exec(path.get(), this.id ? 'PATCH' : 'POST', object, true);
 
                 promise
                     .then(success => {
@@ -283,12 +281,10 @@ export class Resource extends ParentResourceService {
                             console.warn('Temporal collection for a resource_value update', tempororay_collection);
                         }
 
-                        this.runFc(fc_success, success);
                         resolve(success);
                     })
                     .catch(error => {
                         this.is_saving = false;
-                        this.runFc(fc_error, 'data' in error ? error.data : error);
                         reject('data' in error ? error.data : error);
                     });
             }
