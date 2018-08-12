@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { AuthorsService } from './authors/authors.service';
 import { BooksService } from './books/books.service';
 import { PhotosService } from './photos/photos.service';
+import { SharedModule } from './shared/shared.module';
 
 const appRoutes: Routes = [
     {
@@ -27,27 +28,17 @@ const appRoutes: Routes = [
 ];
 
 @NgModule({
-    providers: [
-        AuthorsService,
-        BooksService,
-        PhotosService
-    ],
+    providers: [AuthorsService, BooksService, PhotosService],
     imports: [
         BrowserModule,
         HttpClientModule,
-        RouterModule.forRoot(
-            appRoutes,
-            { useHash: true }
-        ),
+        SharedModule,
+        RouterModule.forRoot(appRoutes, { useHash: true }),
         NgxJsonapiModule.forRoot({
             url: environment.jsonapi_url
         })
     ],
-    declarations: [
-        AppComponent
-    ],
-    bootstrap: [
-        AppComponent
-    ]
+    declarations: [AppComponent],
+    bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
