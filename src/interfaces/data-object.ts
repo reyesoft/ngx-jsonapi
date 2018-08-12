@@ -1,6 +1,6 @@
-import { IDocument } from './document';
+import { IDocument, IDocumentData } from './document';
 import { IDataResource } from './data-resource';
 
-export interface IDataObject extends IDocument {
+export interface IDataObject extends IDocumentData {
     data: IDataResource;
 }
