@@ -141,14 +141,24 @@ export class AuthorsComponent {
 #### View for this controller
 
 ```html
-<p *ngFor="let author of authors.$toArray">
+<p *ngFor="let author of authors.data; trackBy: authors.trackBy">
   id: {{ author.id }} <br />
   name: {{ author.attributes.name }} <br />
   birth date: {{ author.attributes.date_of_birth | date }}
 </p>
 ```
 
-#### More options? Collection filtering
+#### Collection sort
+
+Ex: `name` is a authors attribute, and makes a query like `/authors?sort=name,job_title`
+
+```javascript
+let authors$ = authorsService.all({
+    sort: ['name', 'job_title']
+});
+```
+
+#### Collection filtering
 
 Filter resources with `attribute: value` values. Filters are used as 'exact match' (only resources with attribute value same as value are returned). `value` can also be an array, then only objects with same `attribute` value as one of `values` array elements are returned.
 
