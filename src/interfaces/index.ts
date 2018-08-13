@@ -5,6 +5,7 @@ export * from './relationship';
 export * from './relationships';
 export * from './cache';
 export * from './cachememory';
+export * from './links';
 export * from './params-collection';
 export * from './params-resource';
 export * from './resources-by-id';
