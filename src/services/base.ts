@@ -35,7 +35,10 @@ export class Base {
                 },
                 $toArray: {
                     get: function() {
-                        return this.data;
+                        // return this.data;    // @todo add data to relationship.data
+                        return Object.keys(this).map(key => {
+                            return this[key];
+                        });
                     },
                     enumerable: false
                 },
