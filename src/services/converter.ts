@@ -35,8 +35,11 @@ export class Converter {
         if (resource_service) {
             return Converter.procreate(json_resource);
         } else {
-            // service not registered
-            console.warn('`' + json_resource.type + '`', 'service not found on json2resource()');
+            console.warn(
+                '`' + json_resource.type + '`',
+                'service not found on json2resource().',
+                'Use @Autoregister() on service and inject it on component.'
+            );
             let temp = new Resource();
             temp.id = json_resource.id;
             temp.type = json_resource.type;
