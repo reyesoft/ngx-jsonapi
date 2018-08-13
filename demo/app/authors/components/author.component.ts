@@ -6,6 +6,7 @@ import { forEach } from '../../../foreach';
 import { PhotosService } from '../../photos/photos.service';
 import { AuthorsService, Author } from '../authors.service';
 import { Observable } from 'rxjs/Observable';
+import { BooksService } from '../../books/books.service';
 
 @Component({
     selector: 'demo-author',
@@ -15,20 +16,21 @@ export class AuthorComponent {
     public author: Author;
     public relatedbooks: Resource[];
 
-    public constructor(protected authorsService: AuthorsService, protected photosService: PhotosService, private route: ActivatedRoute) {
-        route.params
-            .finally(() => {
-                console.log('xxxx finally');
-            })
-            .subscribe(({ id }) => {
-                authorsService.get(id, { include: ['books', 'photos'] }).subscribe(
-                    author => {
-                        this.author = author;
-                        console.info('success author controller', author);
-                    },
-                    error => console.error('Could not load author.', error)
-                );
-            });
+    public constructor(
+        protected authorsService: AuthorsService,
+        protected photosService: PhotosService,
+        booksService: BooksService,
+        private route: ActivatedRoute
+    ) {
+        route.params.subscribe(({ id }) => {
+            authorsService.get(id, { include: ['books', 'photos'] }).subscribe(
+                author => {
+                    this.author = author;
+                    console.info('success author controller', author);
+                },
+                error => console.error('Could not load author.', error)
+            );
+        });
     }
 
     /*
