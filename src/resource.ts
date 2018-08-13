@@ -18,7 +18,7 @@ import {
     IRelationships,
     IRelationshipCollection,
     IRelationshipNone,
-    IRelationshipResource
+    ILinks
 } from './interfaces';
 
 export class Resource extends ParentResourceService {
@@ -29,6 +29,7 @@ export class Resource extends ParentResourceService {
     public type: string = '';
     public attributes: IAttributes = {};
     public relationships: IRelationships = {};
+    public links: ILinks = {};
     public lastupdate: number;
 
     public reset(): void {

@@ -175,10 +175,10 @@ export class ResourceRelationshipsConverter {
         if (resource_data_from.type in included_array && resource_data_from.id in included_array[resource_data_from.type]) {
             // it's in included
             let data = included_array[resource_data_from.type][resource_data_from.id];
-            
+
             // Store the include in cache
             this.getService(resource_data_from.type).cachestore.setResource(data);
-            
+
             return data;
         } else {
             // OPTIONAL: return cached Resource
