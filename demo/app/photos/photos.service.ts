@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Service, ISchema, Resource } from 'ngx-jsonapi';
+import { Service, ISchema, Resource, Autoregister } from 'ngx-jsonapi';
 
 @Injectable()
 export class PhotosService extends Service {
@@ -7,6 +7,7 @@ export class PhotosService extends Service {
     public type = 'photos';
 }
 
+@Autoregister()
 export class Photo extends Resource {
     public attributes: {
         title: string;
