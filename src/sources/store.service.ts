@@ -39,7 +39,7 @@ export class StoreService {
         return deferred.promise;
     }
 
-    public async getObjets(keys: Array<string>): Promise<object> {
+    public async getObjets(keys: string[]): Promise<object> {
         return this.allstore.getItem('jsonapi.' + keys[0]);
     }
 

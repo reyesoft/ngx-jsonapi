@@ -30,39 +30,22 @@ describe('parent-resource-service test', () => {
         expect(parentResourceServiceTest.testRunFc('something', 'runFc is working')).toBe(undefined);
     });
     it('if IExecParams object with a function in params property is provided as argument \
-        to proccess_exec_params(), it should return an IExecParamsProcessed object with Base.params in params property, \
-        .params function in fc_success and fc_success function in fc_error', () => {
+        to proccess_exec_params(), it should return an IExecParamsProcessed object with Base.params in params property', () => {
         let params = (): string => {
             return 'test_exec_params';
-        };
-        let fc_success = (): string => {
-            return 'test_exec_params success';
-        };
-        let fc_error = (): string => {
-            return 'test_exec_params error';
         };
         let exec_params_with_function = {
             id: 'test_exec_params',
             params: params,
-            fc_success: fc_success,
-            fc_error: fc_error,
             exec_type: 'all'
         };
         expect(parentResourceServiceTest.testProccessExecParams(exec_params_with_function).params).toEqual({ ...{}, ...Base.Params });
-        expect(parentResourceServiceTest.testProccessExecParams(exec_params_with_function).fc_success).toEqual(params);
-        expect(parentResourceServiceTest.testProccessExecParams(exec_params_with_function).fc_error).toEqual(fc_success);
     });
     it('if IExecParams object with undefined in params property is provided as argument \
         to proccess_exec_params(), it should return an IExecParamsProcessed object with Base.params in params property', () => {
         let exec_params_with_undefined = {
             id: 'test_exec_params',
             params: undefined,
-            fc_success: (): string => {
-                return 'test_exec_params success';
-            },
-            fc_error: (): string => {
-                return 'test_exec_params error';
-            },
             exec_type: 'get'
         };
         expect(parentResourceServiceTest.testProccessExecParams(exec_params_with_undefined).params).toEqual({ ...{}, ...Base.Params });
@@ -73,12 +56,6 @@ describe('parent-resource-service test', () => {
         let exec_params_with_object = {
             id: 'test_exec_params',
             params: { test: 'test_exec_params' },
-            fc_success: (): string => {
-                return 'test_exec_params success';
-            },
-            fc_error: (): string => {
-                return 'test_exec_params error';
-            },
             exec_type: 'all'
         };
         expect(parentResourceServiceTest.testProccessExecParams(exec_params_with_object).params).toEqual({

@@ -3,7 +3,7 @@ import { Page } from './page';
 import { Resource } from '../resource';
 
 export class Base {
-    public static Params: /* IParamsCollection | */ IParamsResource = {
+    public static Params: IParamsResource = {
         id: '',
         include: []
     };
@@ -14,17 +14,28 @@ export class Base {
     };
 
     public static newCollection<R extends Resource = Resource>(): ICollection<R> {
-        return Object.defineProperties(
+        /** this way wil bee deprectaed since 2.0.0 */
+        let collection = Object.defineProperties(
             {},
             {
+                data: {
+                    writable: true,
+                    value: [],
+                    enumerable: false
+                },
+                trackBy: {
+                    writable: true,
+                    enumerable: false
+                },
                 $length: {
                     get: function() {
-                        return Object.keys(this).length * 1;
+                        return this.data.length;
                     },
                     enumerable: false
                 },
                 $toArray: {
                     get: function() {
+                        // return this.data;    // @todo add data to relationship.data
                         return Object.keys(this).map(key => {
                             return this[key];
                         });
@@ -45,6 +56,12 @@ export class Base {
                 page: { value: new Page(), enumerable: false, writable: true }
             }
         );
+
+        collection.trackBy = (index, item): string => {
+            return item.id;
+        };
+
+        return collection;
     }
 
     public static isObjectLive(ttl: number, last_update: number) {

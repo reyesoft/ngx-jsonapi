@@ -30,7 +30,9 @@ export class ResourceRelationshipsConverter {
 
     public buildRelationships(): void {
         // recorro los relationships levanto el service correspondiente
-        Base.forEach(this.relationships_from, (relation_from_value: IDataCollection & IDataObject, relation_key) => {
+        for (const relation_key in this.relationships_from) {
+            let relation_from_value: IDataCollection & IDataObject = this.relationships_from[relation_key];
+
             // relation is in schema? have data or just links?
             if (!(relation_key in this.relationships_dest) && 'data' in relation_from_value) {
                 this.relationships_dest[relation_key] = {
@@ -42,7 +44,7 @@ export class ResourceRelationshipsConverter {
 
             // sometime data=null or simple { }
             if (!relation_from_value.data) {
-                return;
+                continue;
             }
 
             if (this.schema.relationships[relation_key] && this.schema.relationships[relation_key].hasMany) {
@@ -52,7 +54,7 @@ export class ResourceRelationshipsConverter {
                 // hasOne
                 this.__buildRelationshipHasOne(relation_from_value, relation_key);
             }
-        });
+        }
     }
 
     private __buildRelationshipHasMany(
@@ -74,11 +76,15 @@ export class ResourceRelationshipsConverter {
         relation_from_value: IDataCollection,
         relation_key: any // number to string?
     ) {
-        // @todo: usar collection on data?
+        let relation_collection = Base.newCollection();
+        relation_from_value.data.forEach(resource_data => {
+            relation_collection[resource_data.id] = resource_data;
+        });
+
         this.relationships_dest[relation_key] = {
-            data: relation_from_value.data,
+            data: relation_collection,
             hasid: false,
-            content: 'ids'
+            content: 'collection' // @todo. if resources are only ids? if resources are complete resources?
         };
     }
 
@@ -99,7 +105,8 @@ export class ResourceRelationshipsConverter {
 
         let tmp_relationship_data = Base.newCollection();
         this.relationships_dest[relation_key].content = 'collection';
-        Base.forEach(relation_from_value.data, (relation_value: IDataResource) => {
+
+        relation_from_value.data.forEach((relation_value: IDataResource) => {
             let tmp = this.__buildRelationship(relation_value, this.included_resources);
 
             // sometimes we have a cache like a services
@@ -122,7 +129,7 @@ export class ResourceRelationshipsConverter {
         // REMOVE resources from cached collection
         // build an array with the news ids
         let new_ids = {};
-        Base.forEach(relation_from_value.data, (data_resource: IDataResource) => {
+        relation_from_value.data.forEach(data_resource => {
             new_ids[data_resource.id] = true;
         });
         // check if new ids are on destination. If not, delete resource
@@ -167,7 +174,12 @@ export class ResourceRelationshipsConverter {
     private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): Resource | IDataResource {
         if (resource_data_from.type in included_array && resource_data_from.id in included_array[resource_data_from.type]) {
             // it's in included
-            return included_array[resource_data_from.type][resource_data_from.id];
+            let data = included_array[resource_data_from.type][resource_data_from.id];
+            
+            // Store the include in cache
+            this.getService(resource_data_from.type).cachestore.setResource(data);
+            
+            return data;
         } else {
             // OPTIONAL: return cached Resource
             let service = this.getService(resource_data_from.type);

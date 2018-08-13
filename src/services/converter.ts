@@ -13,17 +13,19 @@ export class Converter {
     /*
     Convert json arrays (like included) to an indexed Resources array by [type][id]
     */
-    public static json_array2resources_array_by_type(json_array: Array<IDataResource>): IResourcesByType {
+    public static json_array2resources_array_by_type(json_array: IDataResource[]): IResourcesByType {
         let all_resources: IResourcesById = {};
         let resources_by_type: IResourcesByType = {};
 
         Converter.json_array2resources_array(json_array, all_resources);
-        Base.forEach(all_resources, (resource: Resource) => {
+        for (const key in all_resources) {
+            let resource: Resource = all_resources[key];
+
             if (!(resource.type in resources_by_type)) {
                 resources_by_type[resource.type] = {};
             }
             resources_by_type[resource.type][resource.id] = resource;
-        });
+        }
 
         return resources_by_type;
     }
@@ -33,8 +35,11 @@ export class Converter {
         if (resource_service) {
             return Converter.procreate(json_resource);
         } else {
-            // service not registered
-            console.warn('`' + json_resource.type + '`', 'service not found on json2resource()');
+            console.warn(
+                '`' + json_resource.type + '`',
+                'service not found on json2resource().',
+                'Use @Autoregister() on service and inject it on component.'
+            );
             let temp = new Resource();
             temp.id = json_resource.id;
             temp.type = json_resource.type;
@@ -85,7 +90,7 @@ export class Converter {
     /*
     Convert json arrays (like included) to an Resources arrays without [keys]
     */
-    private static json_array2resources_array(json_array: Array<IDataResource>, destination_array: IResourcesById = {}): void {
+    private static json_array2resources_array(json_array: IDataResource[], destination_array: IResourcesById = {}): void {
         for (let data of json_array) {
             let resource = Converter.json2resource(data, false);
             destination_array[resource.type + '_' + resource.id] = resource;
@@ -106,6 +111,7 @@ export class Converter {
 
         // convert and add new dataresoures to final collection
         let new_ids = {};
+        collection_dest.data = [];
         for (let dataresource of collection_data_from.data) {
             if (!(dataresource.id in collection_dest)) {
                 collection_dest[dataresource.id] = Converter.getService(dataresource.type).cachememory.getOrCreateResource(
@@ -115,6 +121,7 @@ export class Converter {
             }
             Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources);
             new_ids[dataresource.id] = dataresource.id;
+            collection_dest.data.push(collection_dest[dataresource.id]);
         }
 
         // remove old members of collection (bug, for example, when request something like orders/10/details and has new ids)

@@ -8,7 +8,7 @@ import { Resource } from '../resource';
 import { Converter } from './converter';
 
 export class CacheStore implements ICache {
-    public async getResource(resource: Resource /* | IDataResource*/, include: Array<string> = []): Promise<object> {
+    public async getResource(resource: Resource, include: string[] = []): Promise<object> {
         let mypromise: Promise<object> = new Promise(
             (resolve, reject): void => {
                 Core.injectedServices.JsonapiStoreService.getObjet(resource.type + '.' + resource.id)
@@ -18,8 +18,7 @@ export class CacheStore implements ICache {
                         let promises: Array<Promise<object>> = [];
 
                         // include some times is a collection :S
-                        // for (let keys in include) {
-                        Base.forEach(include, resource_type => {
+                        include.forEach(resource_type => {
                             //  && ('attributes' in resource.relationships[resource_type].data)
                             if (resource_type in resource.relationships) {
                                 // hasOne
@@ -76,7 +75,7 @@ export class CacheStore implements ICache {
         Core.injectedServices.JsonapiStoreService.saveObject(resource.type + '.' + resource.id, resource.toObject().data);
     }
 
-    public async getCollectionFromStorePromise(url: string, include: Array<string>, collection: ICollection): Promise<ICollection> {
+    public async getCollectionFromStorePromise(url: string, include: string[], collection: ICollection): Promise<ICollection> {
         let promise = new Promise(
             (resolve: (value: ICollection) => void, reject: () => void): void => {
                 this.getCollectionFromStore(url, include, collection, resolve, reject);
@@ -86,14 +85,14 @@ export class CacheStore implements ICache {
         return promise;
     }
 
-    public setCollection(url: string, collection: ICollection, include: Array<string>) {
-        let tmp = { data: {}, page: {} };
+    public setCollection(url: string, collection: ICollection, include: string[]) {
+        let tmp = { data: [], page: {} };
         let resources_for_save: { [uniqkey: string]: Resource } = {};
-        Base.forEach(collection, (resource: Resource) => {
+        Base.forEach(collection.data, (resource: Resource) => {
             this.setResource(resource);
-            tmp.data[resource.id] = { id: resource.id, type: resource.type };
+            tmp.data.push({ id: resource.id, type: resource.type });
 
-            Base.forEach(include, resource_type_alias => {
+            include.forEach(resource_type_alias => {
                 if ('id' in resource.relationships[resource_type_alias].data) {
                     // hasOne
                     let ress = <Resource>resource.relationships[resource_type_alias].data;
@@ -110,13 +109,14 @@ export class CacheStore implements ICache {
         tmp.page = collection.page;
         Core.injectedServices.JsonapiStoreService.saveObject('collection.' + url, tmp);
 
-        Base.forEach(resources_for_save, resource_for_save => {
+        for (const key in resources_for_save) {
+            let resource_for_save: Resource = resources_for_save[key];
             if ('is_new' in resource_for_save) {
                 this.setResource(resource_for_save);
             } else {
-                console.warn('No se pudo guardar en la cache el', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
+                console.warn('No se pudo guardar en la cache el', resource_for_save, 'por no se ser Resource.', resource_for_save);
             }
-        });
+        }
     }
 
     public deprecateCollections(path_start_with: string) {
@@ -127,7 +127,7 @@ export class CacheStore implements ICache {
 
     private getCollectionFromStore(
         url: string,
-        include: Array<string>,
+        include: string[],
         collection: ICollection,
         resolve: (value: ICollection) => void,
         reject: () => void
@@ -150,7 +150,7 @@ export class CacheStore implements ICache {
                     .then(() => {
                         // just for precaution, we not rewrite server data
                         if (collection.$source !== 'new') {
-                            console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
+                            console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#', collection.$source);
                             throw new Error('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
                         }
                         collection.$source = 'store'; // collection and resources from storeservice
@@ -166,7 +166,7 @@ export class CacheStore implements ICache {
             });
     }
 
-    private fillCollectionWithArrrayAndResourcesOnMemory(dataresources: Array<IDataResource>, collection: ICollection): boolean {
+    private fillCollectionWithArrrayAndResourcesOnMemory(dataresources: IDataResource[], collection: ICollection): boolean {
         let all_ok = true;
         for (let key in dataresources) {
             let dataresource = dataresources[key];
@@ -191,18 +191,20 @@ export class CacheStore implements ICache {
 
     private async fillCollectionWithArrrayAndResourcesOnStore(
         datacollection: IDataCollection,
-        include: Array<string>,
+        include: string[],
         collection: ICollection
     ): Promise<object> {
         let promise = new Promise(
             (resolve: (value: object) => void, reject: (value: any) => void): void => {
                 // request resources from store
                 let temporalcollection = {};
+                let temporalarray = [];
                 let promises = [];
                 for (let key in datacollection.data) {
                     let dataresource: IDataResource = datacollection.data[key];
                     let cachememory = Converter.getService(dataresource.type).cachememory;
                     temporalcollection[dataresource.id] = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
+                    temporalarray.push(temporalcollection[dataresource.id]);
                     promises.push(this.getResource(temporalcollection[dataresource.id], include));
                 }
 
@@ -216,6 +218,7 @@ export class CacheStore implements ICache {
                             let resource: Resource = temporalcollection[key];
                             collection[resource.id] = resource; // collection from storeservice, resources from memory
                         }
+                        collection.data = temporalarray;
                         resolve(collection);
                     })
                     .catch(error2 => {

@@ -1,5 +1,5 @@
 import { Converter } from './converter';
-import { IDataResource } from 'dist/interfaces/data-resource';
+import { IDataResource } from '../interfaces/data-resource';
 import { IResourcesByType } from 'ngx-jsonapi';
 
 describe('Converter', () => {
