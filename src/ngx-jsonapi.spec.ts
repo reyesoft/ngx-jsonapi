@@ -1,5 +1,5 @@
-import { NgxJsonapiModule } from '.';
-
+import { JsonapiCore, NgxJsonapiModule } from '.';
+import { JsonapiConfig } from './jsonapi-config';
 /*
   This file is to import the main module. By importing it into this
   spec file, all the attached components get traversed and recognized
@@ -9,5 +9,11 @@ import { NgxJsonapiModule } from '.';
 describe('ngx-jsonapi Module', () => {
     it('should load', () => {
         expect(NgxJsonapiModule).toBeDefined();
+    });
+
+    it('should throw error when imported more than once', () => {
+        expect(
+            (): NgxJsonapiModule => new NgxJsonapiModule(NgxJsonapiModule, new JsonapiCore(new JsonapiConfig(), undefined, undefined))
+        ).toThrow(new Error('NgxJsonapiModule is already loaded. Import it in the AppModule only'));
     });
 });

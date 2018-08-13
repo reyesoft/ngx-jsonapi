@@ -3,14 +3,11 @@ import { Core } from '../core';
 import { Service } from '../service';
 
 export class PathBuilder {
-    public paths: Array<string> = [];
-    public includes: Array<string> = [];
-    private get_params: Array<string> = [];
+    public paths: string[] = [];
+    public includes: string[] = [];
+    private get_params: string[] = [];
 
-    public applyParams(
-        service: Service,
-        params: IParamsResource | IParamsCollection = {}
-    ) {
+    public applyParams(service: Service, params: IParamsResource | IParamsCollection = {}) {
         this.appendPath(service.getPrePath());
         if (params.beforepath) {
             this.appendPath(params.beforepath);
@@ -31,10 +28,6 @@ export class PathBuilder {
         this.get_params.push(param);
     }
 
-    private setInclude(strings_array: Array<string>) {
-        this.includes = strings_array;
-    }
-
     public getForCache(): string {
         return this.paths.join('/') + this.get_params.join('/');
     }
@@ -46,12 +39,10 @@ export class PathBuilder {
             params.push('include=' + this.includes.join(','));
         }
 
-        return (
-            this.paths.join('/') +
-            (params.length > 0
-                ? Core.injectedServices.rsJsonapiConfig.params_separator +
-                  params.join('&')
-                : '')
-        );
+        return this.paths.join('/') + (params.length > 0 ? Core.injectedServices.rsJsonapiConfig.params_separator + params.join('&') : '');
+    }
+
+    private setInclude(strings_array: string[]) {
+        this.includes = strings_array;
     }
 }

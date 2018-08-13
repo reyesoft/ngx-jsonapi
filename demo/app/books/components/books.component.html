@@ -1,13 +1,5 @@
 <h3>Books</h3>
-<br/>
-<!-- <label>
-    Search books with:
-    <input
-    ng-model="filter_text"
-    ng-change="getAll({ title: filter_text});"
-    ng-model-options="{ debounce: 200 }"
-    ></input>
-</label> -->
+<demo-collection-info [collection]="books"></demo-collection-info>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -18,10 +10,11 @@
             <th>Photos</th>
         </tr>
     </thead>
+    <!-- Use authors example. @deprected since version 2.0.0 -->
     <tr *ngFor="let book of books.$toArray">
         <td>{{ book.id }}</td>
         <td>
-            <a [routerLink]="['/books', book.id]">{{ book.attributes.title  }}</a>
+            <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
         </td>
         <td>{{ book.attributes.date_published | date }}</td>
         <td>{{ book.relationships.author.data.attributes.name }} #{{ book.relationships.author.data.id }}</td>

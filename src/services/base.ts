@@ -1,14 +1,9 @@
-import {
-    ISchema,
-    ICollection,
-    IParamsCollection,
-    IParamsResource,
-} from '../interfaces';
+import { ISchema, ICollection, IParamsCollection, IParamsResource } from '../interfaces';
 import { Page } from './page';
 import { Resource } from '../resource';
 
 export class Base {
-    public static Params: /* IParamsCollection | */ IParamsResource = {
+    public static Params: IParamsResource = {
         id: '',
         include: []
     };
@@ -19,27 +14,38 @@ export class Base {
     };
 
     public static newCollection<R extends Resource = Resource>(): ICollection<R> {
-        return Object.defineProperties(
+        /** this way wil bee deprectaed since 2.0.0 */
+        let collection = Object.defineProperties(
             {},
             {
+                data: {
+                    writable: true,
+                    value: [],
+                    enumerable: false
+                },
+                trackBy: {
+                    writable: true,
+                    enumerable: false
+                },
                 $length: {
                     get: function() {
-                        return Object.keys(this).length * 1;
+                        return this.data.length;
                     },
-                    enumerable: false,
+                    enumerable: false
                 },
                 $toArray: {
                     get: function() {
+                        // return this.data;    // @todo add data to relationship.data
                         return Object.keys(this).map(key => {
                             return this[key];
                         });
                     },
-                    enumerable: false,
+                    enumerable: false
                 },
                 $is_loading: {
                     value: false,
                     enumerable: false,
-                    writable: true,
+                    writable: true
                 },
                 $source: { value: '', enumerable: false, writable: true },
                 $cache_last_update: {
@@ -50,16 +56,19 @@ export class Base {
                 page: { value: new Page(), enumerable: false, writable: true }
             }
         );
+
+        collection.trackBy = (index, item): string => {
+            return item.id;
+        };
+
+        return collection;
     }
 
     public static isObjectLive(ttl: number, last_update: number) {
-        return (ttl >= 0 && Date.now() <= (last_update + ttl * 1000));
+        return ttl >= 0 && Date.now() <= last_update + ttl * 1000;
     }
 
-    public static forEach<T extends { [keyx: string ]: any } >(
-        collection: T,
-        fc: (object: any, key?: string | number) => void
-    ): void {
+    public static forEach<T extends { [keyx: string]: any }>(collection: T, fc: (object: any, key?: string | number) => void): void {
         Object.keys(collection).forEach(key => {
             fc(collection[key], key);
         });

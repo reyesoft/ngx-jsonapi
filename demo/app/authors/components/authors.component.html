@@ -1,5 +1,5 @@
 <h3>Authors</h3>
-<p><code>$length={{ authors.$length }}. $is_loading={{ authors.$is_loading }}. $source={{ authors.$source }}.</code></p>
+<demo-collection-info [collection]="authors"></demo-collection-info>
 <table class="table table-striped">
     <thead>
         <tr>
@@ -9,10 +9,10 @@
             <th>Date of dead</th>
         </tr>
     </thead>
-    <tr *ngFor="let author of authors.$toArray">
+    <tr *ngFor="let author of authors.data; trackBy: authors.trackBy">
         <td>{{ author.id }}</td>
         <td>
-            <a [routerLink]="['/authors', author.id]">{{ author.attributes.name  }}</a>
+            <a [routerLink]="['/authors', author.id]">{{ author.attributes.name }}</a>
         </td>
         <td>{{ author.attributes.date_of_birth | date }}</td>
         <td>{{ author.attributes.date_of_death | date }}</td>

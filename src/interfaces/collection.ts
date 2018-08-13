@@ -1,13 +1,15 @@
 import { Resource } from '../resource';
 import { IPage } from './page';
 import { IDataResource } from './data-resource';
+import { IDocumentData } from './document';
 
-export interface ICollection<R extends Resource = Resource> extends Array<Resource> {
+export interface ICollection<R extends Resource = Resource> extends IDocumentData {
     $length: number;
-    $toArray: Array<R>;
+    $toArray: R[];
     $is_loading: boolean;
     $source: 'new' | 'memory' | 'store' | 'server';
     $cache_last_update: number;
-    data: Array<IDataResource>; // this need disapear is for datacollection
     page: IPage;
+    data: R[];
+    trackBy: Function;
 }

@@ -7,12 +7,12 @@ import { Core as JsonapiCore } from './core';
 import { Http as JsonapiHttp } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { NoDuplicatedHttpCallsService } from './services/noduplicatedhttpcalls.service';
+
+// testing
 import { JsonapiConfig } from './jsonapi-config';
 
 @NgModule({
-    imports: [
-        CommonModule
-    ],
+    imports: [CommonModule],
     exports: [
         // BrowserModule,  // needed by HttpClientModule?
         HttpClientModule
@@ -21,22 +21,26 @@ import { JsonapiConfig } from './jsonapi-config';
         JsonapiCore,
         NoDuplicatedHttpCallsService,
         JsonapiStore,
+        JsonapiConfig, // Need this here for testing
         JsonapiHttp
     ]
 })
 export class NgxJsonapiModule {
-    public static forRoot(config: JsonapiConfig): ModuleWithProviders {
-        return {
-            ngModule: NgxJsonapiModule,
-            providers: [
-                { provide: JsonapiConfig, useValue: config }
-            ]
-        };
-    }
-
-    public constructor(@Optional() @SkipSelf() parentModule: NgxJsonapiModule, jsonapiCore: JsonapiCore) {
+    public constructor(
+        @Optional()
+        @SkipSelf()
+        parentModule: NgxJsonapiModule,
+        jsonapiCore: JsonapiCore
+    ) {
         if (parentModule) {
             throw new Error('NgxJsonapiModule is already loaded. Import it in the AppModule only');
         }
+    }
+
+    public static forRoot(config: JsonapiConfig): ModuleWithProviders {
+        return {
+            ngModule: NgxJsonapiModule,
+            providers: [{ provide: JsonapiConfig, useValue: config }]
+        };
     }
 }
