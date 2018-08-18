@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { ICollection } from 'ngx-jsonapi';
 import 'rxjs/add/operator/finally';
-import { AuthorsService } from './../authors.service';
+import { AuthorsService, Author } from './../authors.service';
 
 @Component({
     selector: 'demo-authors',
     templateUrl: './authors.component.html'
 })
 export class AuthorsComponent {
-    public authors: ICollection;
+    public authors: ICollection<Author>;
 
     public constructor(private authorsService: AuthorsService) {
         authorsService
