@@ -4,36 +4,37 @@ import { IDataResource } from './data-resource';
 
 export interface IRelationship {
     data: any;
-    hasid: boolean;
+    builded: boolean;
+    hasid?: boolean; // @deprecated since 2.0.0
     content: string;
 }
 
 export interface IRelationshipNone extends IRelationship {
     data: {};
-    hasid: false;
+    builded: false;
     content: 'none';
 }
 
 export interface IRelationshipIds extends IRelationship {
     data: IDataResource[];
-    hasid: false;
+    builded: false;
     content: 'ids';
 }
 
-export interface IRelationshipCollection extends IRelationship {
-    data: ICollection;
-    hasid: false;
+export interface IRelationshipCollection<R extends Resource = R> extends IRelationship {
+    data: ICollection<R>;
+    builded: true;
     content: 'collection';
 }
 
 export interface IRelationshipId extends IRelationship {
     data: IDataResource;
-    hasid: true;
+    builded: false;
     content: 'id';
 }
 
 export interface IRelationshipResource extends IRelationship {
     data: Resource;
-    hasid: true;
+    builded: true;
     content: 'resource';
 }

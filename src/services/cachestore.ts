@@ -13,7 +13,7 @@ export class CacheStore implements ICache {
             (resolve, reject): void => {
                 Core.injectedServices.JsonapiStoreService.getObjet(resource.type + '.' + resource.id)
                     .then(success => {
-                        Converter.build({ data: success }, resource);
+                        Converter.build({ data: success, builded: false, content: '' }, resource);
 
                         let promises: Array<Promise<object>> = [];
 
@@ -56,15 +56,6 @@ export class CacheStore implements ICache {
                     .catch(() => {
                         reject();
                     });
-
-                // build collection and resources from store
-                // Core.injectedServices.$q.all(promises)
-                // .then(success2 => {
-                //     deferred.resolve(success2);
-                // })
-                // .catch(() => {
-                //     deferred.reject();
-                // });
             }
         );
 

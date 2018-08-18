@@ -23,10 +23,16 @@ export class AuthorComponent {
         private route: ActivatedRoute
     ) {
         route.params.subscribe(({ id }) => {
-            authorsService.get(id, { include: ['books', 'photos'] }).subscribe(
+            authorsService.get(id, { include: ['books', 'photos'], ttl: 100 }).subscribe(
                 author => {
                     this.author = author;
-                    console.info('success author controller', author);
+
+                    // fix problem with  https://lorempixel.com
+                    if (author.relationships.photos.content === 'collection') {
+                        author.relationships.photos.data.data.forEach(photo => {
+                            photo.attributes.uri = 'https://picsum.photos/458/354?image=' + photo.id;
+                        });
+                    }
                 },
                 error => console.error('Could not load author.', error)
             );
