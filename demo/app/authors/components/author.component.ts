@@ -26,13 +26,6 @@ export class AuthorComponent {
             authorsService.get(id, { include: ['books', 'photos'], ttl: 100 }).subscribe(
                 author => {
                     this.author = author;
-
-                    // fix problem with  https://lorempixel.com
-                    if (author.relationships.photos.content === 'collection') {
-                        author.relationships.photos.data.data.forEach(photo => {
-                            photo.attributes.uri = 'https://picsum.photos/458/354?image=' + photo.id;
-                        });
-                    }
                 },
                 error => console.error('Could not load author.', error)
             );
