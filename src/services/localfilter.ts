@@ -1,6 +1,6 @@
 import { Base } from '../services/base';
 import { Resource } from '../resource';
-import { ICollection } from '../interfaces/';
+import { DocumentCollection } from '../document-collection';
 
 export class LocalFilter {
     private localfilterparams;
@@ -9,7 +9,7 @@ export class LocalFilter {
         this.localfilterparams = localfilter || {};
     }
 
-    public filterCollection(source_collection: ICollection, dest_collection: ICollection) {
+    public filterCollection(source_collection: DocumentCollection, dest_collection: DocumentCollection) {
         if (Object.keys(this.localfilterparams).length) {
             Base.forEach(source_collection, (resource, key) => {
                 if (this.passFilter(resource, this.localfilterparams)) {

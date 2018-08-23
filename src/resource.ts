@@ -3,25 +3,16 @@ import { Service } from './service';
 import { Base } from './services/base';
 import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
-// import { UrlParamsBuilder } from './services/url-params-builder';
 import { Converter } from './services/converter';
 import { IDataObject } from './interfaces/data-object';
-
-import { isFunction } from 'rxjs/util/isFunction';
 import { isArray } from 'rxjs/util/isArray';
+import { IAttributes, IExecParams, IParamsResource, ILinks, IRelationships } from './interfaces';
+import { DocumentCollection } from './document-collection';
+import { DocumentResource } from './document-resource';
+import { ICacheable } from './interfaces/cacheable';
+import { IDataResource } from './interfaces/data-resource';
 
-import {
-    IAttributes,
-    ICollection,
-    IExecParams,
-    IParamsResource,
-    IRelationships,
-    IRelationshipCollection,
-    IRelationshipNone,
-    ILinks
-} from './interfaces';
-
-export class Resource extends ParentResourceService {
+export class Resource extends ParentResourceService implements ICacheable {
     public is_new = true;
     public is_loading = false;
     public is_saving = false;
@@ -32,27 +23,24 @@ export class Resource extends ParentResourceService {
     public links: ILinks = {};
     public lastupdate: number;
 
+    public $is_loading = true;
+    public $source: 'new' | 'store' = 'new';
+    public $cache_last_update = 0;
+
     public reset(): void {
         this.id = '';
         this.attributes = {};
         this.relationships = {};
+        this.is_new = true;
 
         let relationships = this.getService().schema.relationships;
         for (const key in relationships) {
             if (relationships[key].hasMany) {
-                let relation: IRelationshipCollection = {
-                    data: Base.newCollection(),
-                    builded: true,
-                    content: 'collection'
-                };
-                this.relationships[key] = relation;
+                this.relationships[key] = new DocumentCollection();
             } else {
-                let relation: IRelationshipNone = { data: {}, builded: false, content: 'none' };
-                this.relationships[key] = relation;
+                this.relationships[key] = new DocumentResource();
             }
         }
-
-        this.is_new = true;
     }
 
     public toObject(params?: IParamsResource): IDataObject {
@@ -129,7 +117,7 @@ export class Resource extends ParentResourceService {
                 attributes: attributes,
                 relationships: relationships
             },
-            builded: true,
+            builded: false,
             content: 'resource'
         };
 
@@ -138,6 +126,10 @@ export class Resource extends ParentResourceService {
         }
 
         return ret;
+    }
+
+    public fill(data_object: IDataObject): void {
+        Converter.build(data_object, this);
     }
 
     public async save<T extends Resource>(params?: Object): Promise<object> {
@@ -156,19 +148,19 @@ export class Resource extends ParentResourceService {
 
         type_alias = type_alias ? type_alias : resource.type;
         if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = { data: {}, builded: false, content: 'none' };
+            this.relationships[type_alias] = new DocumentResource(); // @todo DocumentCollection
         }
 
         if (type_alias in this.getService().schema.relationships && this.getService().schema.relationships[type_alias].hasMany) {
-            this.relationships[type_alias].data[object_key] = resource;
+            (<DocumentCollection>this.relationships[type_alias]).data.push(resource);
         } else {
             this.relationships[type_alias].data = resource;
         }
     }
 
-    public addRelationships(resources: ICollection, type_alias: string) {
+    public addRelationships(resources: Array<Resource>, type_alias: string) {
         if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = { data: {}, builded: false, content: 'none' };
+            this.relationships[type_alias] = new DocumentCollection();
         } else {
             // we receive a new collection of this relationship. We need remove old (if don't exist on new collection)
             for (const key in this.relationships[type_alias].data) {
@@ -179,13 +171,12 @@ export class Resource extends ParentResourceService {
             }
         }
 
-        for (const key in resources) {
-            let resource: Resource = resources[key];
+        for (const resource of resources) {
             this.relationships[type_alias].data[resource.id] = resource;
         }
     }
 
-    public addRelationshipsArray<R extends Resource>(resources: R[], type_alias?: string): void {
+    public addRelationshipsArray<R extends Resource>(resources: Array<R>, type_alias?: string): void {
         resources.forEach((item: Resource) => {
             this.addRelationship(item, type_alias || item.type);
         });
@@ -205,7 +196,7 @@ export class Resource extends ParentResourceService {
             }
             delete this.relationships[type_alias].data[id];
         } else {
-            this.relationships[type_alias].data = {};
+            this.relationships[type_alias].data = [];
         }
 
         return true;

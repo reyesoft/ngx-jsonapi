@@ -1,3 +1,5 @@
+import { IDocumentData } from './document';
+
 import {
     IRelationshipNone,
     IRelationshipId,
@@ -7,5 +9,11 @@ import {
 } from '../interfaces/relationship';
 
 export interface IRelationships {
-    [value: string]: IRelationshipNone | IRelationshipId | IRelationshipIds | IRelationshipResource | IRelationshipCollection;
+    [value: string]:
+        | IRelationshipNone
+        | IRelationshipId
+        | IRelationshipIds
+        | IRelationshipResource
+        | IRelationshipCollection
+        | IDocumentData;
 }

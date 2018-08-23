@@ -1,7 +1,7 @@
 import { Base } from './services/base';
 import { isFunction } from 'rxjs/util/isFunction';
 import { noop } from 'rxjs/util/noop';
-import { ICollection, IExecParams, IExecParamsProcessed } from './interfaces';
+import { IExecParams, IExecParamsProcessed } from './interfaces';
 
 export class ParentResourceService {
     /*
@@ -22,6 +22,7 @@ export class ParentResourceService {
         return <IExecParamsProcessed>exec_params; // @todo
     }
 
+    // @deprecated
     protected runFc(some_fc, param): void {
         if (isFunction(some_fc)) {
             some_fc(param);

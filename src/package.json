@@ -26,7 +26,7 @@
         "localforage": "^1.5.2"
     },
     "peerDependencies": {
-        "@angular/core": "^5.0.0 || ^6.0.0"
+        "@angular/core": "^6.0.0"
     },
     "jest": {
         "setupTestFrameworkScriptFile": "../setup-jest.ts",

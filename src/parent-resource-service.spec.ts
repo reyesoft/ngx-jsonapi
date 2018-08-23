@@ -1,7 +1,6 @@
 import { JsonapiCore } from '.';
 import { Base } from './services/base';
 import { ParentResourceService } from './parent-resource-service';
-import { ICollection, IExecParams, IExecParamsProcessed } from './interfaces';
 
 class ParentResourceServiceTest extends ParentResourceService {
     public testProccessExecParams(exec_params) {

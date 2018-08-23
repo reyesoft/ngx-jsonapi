@@ -1,16 +1,11 @@
 import { Injectable, Optional, Inject } from '@angular/core';
 import { noop } from 'rxjs/util/noop';
-
-import { ICollection, IRelationshipResource, IRelationshipCollection } from './interfaces';
+import { IRelationshipResource, IRelationshipCollection } from './interfaces';
 import { Service } from './service';
 import { Resource } from './resource';
-import { Base } from './services/base';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
-import { IRelationshipNone } from './interfaces/';
-import { forEach } from './foreach';
-
 import { IDataObject } from './interfaces/data-object';
 import { Deferred } from './shared/deferred';
 
@@ -111,11 +106,13 @@ export class Core {
     }
 
     // just an helper
-    public duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: string[]): R {
+    public duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: Array<string>): R {
         let newresource = <R>this.getResourceService(resource.type).new();
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };
 
-        forEach(resource.relationships, (alias: string, relationship: IRelationshipResource | IRelationshipCollection) => {
+        for (const alias in resource.relationships) {
+            let relationship /*: IRelationshipResource | IRelationshipCollection */ = resource.relationships[alias];
+
             if ('id' in relationship.data) {
                 // relation hasOne
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
@@ -127,13 +124,13 @@ export class Core {
                 // relation hasMany
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
                     Object.values(relationship.data).forEach(relationresource => {
-                        newresource.addRelationship(this.duplicateResource(relationresource), alias);
+                        newresource.addRelationship(this.duplicateResource(<R>relationresource), alias);
                     });
                 } else {
-                    newresource.addRelationships(<ICollection>relationship.data, alias);
+                    newresource.addRelationships(<Array<Resource>>relationship.data, alias);
                 }
             }
-        });
+        }
 
         return newresource;
     }

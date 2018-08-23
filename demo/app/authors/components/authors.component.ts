@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { ICollection } from 'ngx-jsonapi';
-import 'rxjs/add/operator/finally';
+import { DocumentCollection } from 'ngx-jsonapi';
 import { AuthorsService, Author } from './../authors.service';
 
 @Component({
@@ -8,7 +7,7 @@ import { AuthorsService, Author } from './../authors.service';
     templateUrl: './authors.component.html'
 })
 export class AuthorsComponent {
-    public authors: ICollection<Author>;
+    public authors: DocumentCollection<Author>;
 
     public constructor(private authorsService: AuthorsService) {
         authorsService
@@ -26,7 +25,7 @@ export class AuthorsComponent {
                     this.authors = authors;
                     console.info('success authors controller', authors);
                 },
-                error => console.error('Could not load authors.')
+                error => console.error('Could not load authors :(', error)
             );
     }
 }

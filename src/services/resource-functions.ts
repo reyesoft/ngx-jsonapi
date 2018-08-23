@@ -1,5 +1,5 @@
-import { ICollection } from '../interfaces';
 import { Resource } from '../resource';
+import { DocumentCollection } from '../document-collection';
 
 export class ResourceFunctions {
     public static resourceToResource(source: Resource, destination: Resource): void {
@@ -26,7 +26,7 @@ export class ResourceFunctions {
             if ('id' in source.relationships[type_alias].data) {
                 destination.addRelationship(<Resource>source.relationships[type_alias].data, type_alias);
             } else {
-                destination.addRelationships(<ICollection>source.relationships[type_alias].data, type_alias);
+                destination.addRelationships(<Array<Resource>>source.relationships[type_alias].data, type_alias);
             }
         }
     }

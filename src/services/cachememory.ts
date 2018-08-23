@@ -1,13 +1,13 @@
-import { ICollection } from '../interfaces';
 import { ICacheMemory } from '../interfaces/cachememory';
 import { Base } from './base';
 import { Resource } from '../resource';
 import { Converter } from './converter';
 import { ResourceFunctions } from './resource-functions';
+import { DocumentCollection } from '../document-collection';
 
 export class CacheMemory<R extends Resource = Resource> implements ICacheMemory {
     public resources: { [id: string]: Resource } = {};
-    private collections: { [url: string]: ICollection<R> } = {};
+    private collections: { [url: string]: DocumentCollection<R> } = {};
     private collections_lastupdate: { [url: string]: number } = {};
 
     public isCollectionExist(url: string): boolean {
@@ -22,21 +22,21 @@ export class CacheMemory<R extends Resource = Resource> implements ICacheMemory 
         return this.resources[id] && Date.now() <= this.resources[id].lastupdate + ttl * 1000;
     }
 
-    public getOrCreateCollection(url: string): ICollection<R> {
+    public getOrCreateCollection(url: string): DocumentCollection<R> {
         if (!(url in this.collections)) {
-            this.collections[url] = Base.newCollection();
+            this.collections[url] = new DocumentCollection();
             this.collections[url].$source = 'new';
         }
 
         return this.collections[url];
     }
 
-    public setCollection(url: string, collection: ICollection<R>): void {
+    public setCollection(url: string, collection: DocumentCollection<R>): void {
         // clone collection, because after maybe delete items for localfilter o pagination
-        this.collections[url] = Base.newCollection();
-        for (const resource_id in collection) {
-            let resource: Resource = collection[resource_id];
-            this.collections[url][resource_id] = resource;
+        this.collections[url] = new DocumentCollection();
+        for (let i = 0; i < collection.data.length; i++) {
+            let resource = collection.data[i];
+            // this.collections[url].data.push(resource);
             this.setResource(resource);
         }
         this.collections[url].data = collection.data;
@@ -58,7 +58,6 @@ export class CacheMemory<R extends Resource = Resource> implements ICacheMemory 
     }
 
     public setResource(resource: Resource, update_lastupdate = false): void {
-        // we cannot redefine object, because view don't update.
         if (resource.id in this.resources) {
             ResourceFunctions.resourceToResource(resource, this.resources[resource.id]);
         } else {

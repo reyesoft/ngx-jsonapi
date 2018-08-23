@@ -1,28 +1,21 @@
-import { ICollection } from '../interfaces';
 import { Resource } from '../resource';
 import { IDataResource } from './data-resource';
+import { IDocument } from './document';
 
-export interface IRelationship {
-    data: any;
-    builded: boolean;
+export interface IRelationship<R extends Resource = Resource> extends IDocument<R> {
     hasid?: boolean; // @deprecated since 2.0.0
-    content: string;
 }
 
 export interface IRelationshipNone extends IRelationship {
-    data: {};
     builded: false;
-    content: 'none';
 }
 
 export interface IRelationshipIds extends IRelationship {
-    data: IDataResource[];
     builded: false;
-    content: 'ids';
 }
 
 export interface IRelationshipCollection<R extends Resource = R> extends IRelationship {
-    data: ICollection<R>;
+    data: Array<R>;
     builded: true;
     content: 'collection';
 }
@@ -33,8 +26,8 @@ export interface IRelationshipId extends IRelationship {
     content: 'id';
 }
 
-export interface IRelationshipResource extends IRelationship {
-    data: Resource;
+export interface IRelationshipResource<R extends Resource = R> extends IRelationship {
+    data: R;
     builded: true;
     content: 'resource';
 }

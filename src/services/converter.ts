@@ -2,18 +2,19 @@
 import { Core } from '../core';
 import { Resource } from '../resource';
 import { Service } from '../service';
-import { ICollection, IResourcesById, IResourcesByType } from '../interfaces';
+import { IResourcesById, IResourcesByType } from '../interfaces';
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataResource } from '../interfaces/data-resource';
 import { Base } from '../services/base';
+import { DocumentCollection } from '../document-collection';
 
-export class Converter {
+export class Converter<R extends Resource> {
     /*
     Convert json arrays (like included) to an indexed Resources array by [type][id]
     */
-    public static json_array2resources_array_by_type(json_array: IDataResource[]): IResourcesByType {
+    public static json_array2resources_array_by_type(json_array: Array<IDataResource>): IResourcesByType {
         let all_resources: IResourcesById = {};
         let resources_by_type: IResourcesByType = {};
 
@@ -54,7 +55,10 @@ export class Converter {
         return resource_service;
     }
 
-    public static build(document_from: IDataCollection | IDataObject, resource_dest: Resource | ICollection) {
+    /**
+     * @todo deprecated
+     */
+    public static build(document_from: IDataCollection | IDataObject, resource_dest: Resource | DocumentCollection) {
         // instancio los include y los guardo en included arrary
         let included_resources: IResourcesByType = {};
         if ('included' in document_from) {
@@ -62,7 +66,7 @@ export class Converter {
         }
 
         if (Array.isArray(document_from.data)) {
-            Converter._buildCollection(<IDataCollection>document_from, <ICollection>resource_dest, included_resources);
+            Converter._buildCollection(<IDataCollection>document_from, <DocumentCollection>resource_dest, included_resources);
         } else {
             Converter._buildResource(document_from.data, <Resource>resource_dest, included_resources);
         }
@@ -78,7 +82,7 @@ export class Converter {
         if (data.id in Converter.getService(data.type).cachememory.resources) {
             resource = Converter.getService(data.type).cachememory.resources[data.id];
         } else {
-            resource = Converter.getService(data.type).cachememory.getOrCreateResource(data.type, data.id);
+            resource = Converter.getService(data.type).getOrCreateResource(data.id);
         }
 
         resource.attributes = data.attributes || {};
@@ -90,7 +94,7 @@ export class Converter {
     /*
     Convert json arrays (like included) to an Resources arrays without [keys]
     */
-    private static json_array2resources_array(json_array: IDataResource[], destination_array: IResourcesById = {}): void {
+    private static json_array2resources_array(json_array: Array<IDataResource>, destination_array: IResourcesById = {}): void {
         for (let data of json_array) {
             let resource = Converter.json2resource(data, false);
             destination_array[resource.type + '_' + resource.id] = resource;
@@ -99,7 +103,7 @@ export class Converter {
 
     private static _buildCollection(
         collection_data_from: IDataCollection,
-        collection_dest: ICollection,
+        collection_dest: DocumentCollection,
         included_resources: IResourcesByType
     ) {
         // sometime get Cannot set property 'number' of undefined (page)
@@ -113,15 +117,10 @@ export class Converter {
         let new_ids = {};
         collection_dest.data = [];
         for (let dataresource of collection_data_from.data) {
-            if (!(dataresource.id in collection_dest)) {
-                collection_dest[dataresource.id] = Converter.getService(dataresource.type).cachememory.getOrCreateResource(
-                    dataresource.type,
-                    dataresource.id
-                );
-            }
-            Converter._buildResource(dataresource, collection_dest[dataresource.id], included_resources);
+            let res = collection_dest.find(dataresource.id) || Converter.getService(dataresource.type).getOrCreateResource(dataresource.id);
+            Converter._buildResource(dataresource, res, included_resources);
             new_ids[dataresource.id] = dataresource.id;
-            collection_dest.data.push(collection_dest[dataresource.id]);
+            collection_dest.data.push(res);
         }
 
         // remove old members of collection (bug, for example, when request something like orders/10/details and has new ids)

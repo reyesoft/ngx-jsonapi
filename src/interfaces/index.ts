@@ -1,5 +1,4 @@
 export * from './attributes';
-export * from './collection';
 export * from './schema';
 export * from './relationship';
 export * from './relationships';

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Resource, IRelationship, ICollection } from 'ngx-jsonapi';
+import { Resource } from 'ngx-jsonapi';
 
 import { forEach } from '../../../foreach';
 import { PhotosService } from '../../photos/photos.service';
@@ -14,7 +14,7 @@ import { BooksService } from '../../books/books.service';
 })
 export class AuthorComponent {
     public author: Author;
-    public relatedbooks: Resource[];
+    public relatedbooks: Array<Resource>;
 
     public constructor(
         protected authorsService: AuthorsService,
@@ -26,6 +26,7 @@ export class AuthorComponent {
             authorsService.get(id, { include: ['books', 'photos'], ttl: 100 }).subscribe(
                 author => {
                     this.author = author;
+                    console.log(author.relationships.books.data);
                 },
                 error => console.error('Could not load author.', error)
             );
@@ -64,10 +65,6 @@ export class AuthorComponent {
                 console.log('author saved', this.author.toObject());
             }
         );
-    }
-
-    public getPhotos(author: Resource): Resource[] {
-        return (<ICollection>author.relationships.photos.data).$toArray;
     }
 
     public removeRelationship() {

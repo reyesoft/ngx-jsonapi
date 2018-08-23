@@ -1,11 +1,12 @@
 import { noop } from 'rxjs/util/noop';
 
-import { IRelationships, ISchema, IResourcesByType, ICollection } from '../interfaces';
+import { IRelationships, ISchema, IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataResource } from '../interfaces/data-resource';
 import { Base } from '../services/base';
 import { Resource } from '../resource';
+import { DocumentCollection } from '../document-collection';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;
@@ -35,11 +36,12 @@ export class ResourceRelationshipsConverter {
 
             // relation is in schema? have data or just links?
             if (!(relation_key in this.relationships_dest) && 'data' in relation_from_value) {
-                this.relationships_dest[relation_key] = {
-                    data: Base.newCollection(),
-                    builded: true,
-                    content: 'collection'
-                };
+                this.relationships_dest[relation_key] = new DocumentCollection();
+                // {
+                //     data: Base.newCollection(),
+                //     builded: true,
+                //     content: 'collection'
+                // };
             }
 
             // sometime data=null or simple { }
@@ -81,11 +83,12 @@ export class ResourceRelationshipsConverter {
             relation_collection[resource_data.id] = resource_data;
         });
 
-        this.relationships_dest[relation_key] = {
-            data: relation_collection,
-            builded: true,
-            content: 'collection' // @todo. if resources are only ids? if resources are complete resources?
-        };
+        this.relationships_dest[relation_key] = new DocumentCollection();
+        // {
+        //     data: relation_collection,
+        //     builded: true,
+        //     content: 'collection' // @todo. if resources are only ids? if resources are complete resources?
+        // };
     }
 
     private __buildRelationshipCollection(
@@ -93,17 +96,12 @@ export class ResourceRelationshipsConverter {
         relation_key: any // number to string?
     ) {
         if (relation_from_value.data.length === 0) {
-            // from data is an empty array, remove all data on relationship
-            this.relationships_dest[relation_key] = {
-                data: Base.newCollection(),
-                builded: true,
-                content: 'collection'
-            };
+            this.relationships_dest[relation_key] = new DocumentCollection();
 
             return;
         }
 
-        let tmp_relationship_data = Base.newCollection();
+        let tmp_relationship_data = [];
         this.relationships_dest[relation_key].builded = true;
         this.relationships_dest[relation_key].content = 'collection';
 
@@ -111,15 +109,15 @@ export class ResourceRelationshipsConverter {
             let tmp = this.__buildRelationship(relation_value, this.included_resources);
 
             // sometimes we have a cache like a services
-            if (
-                !('attributes' in tmp) &&
-                tmp.id in this.relationships_dest[relation_key].data &&
-                'attributes' in this.relationships_dest[relation_key].data[tmp.id]
-            ) {
-                tmp_relationship_data[tmp.id] = this.relationships_dest[relation_key].data[tmp.id];
-            } else {
-                tmp_relationship_data[tmp.id] = tmp;
-            }
+            // if (
+            //     !('attributes' in tmp) &&
+            //     tmp.id in this.relationships_dest[relation_key].data &&
+            //     'attributes' in this.relationships_dest[relation_key].data[tmp.id]
+            // ) {
+            //     tmp_relationship_data.push(this.relationships_dest[relation_key].data[tmp.id]);
+            // } else {
+            tmp_relationship_data.push(tmp);
+            // }
 
             // some resources are not a Resource object
             if (!('attributes' in tmp)) {
@@ -142,7 +140,6 @@ export class ResourceRelationshipsConverter {
         });
 
         this.relationships_dest[relation_key].data = tmp_relationship_data;
-        (<ICollection>this.relationships_dest[relation_key].data).data = tmp_relationship_data.$toArray;
     }
 
     private __buildRelationshipHasOne(
@@ -151,7 +148,7 @@ export class ResourceRelationshipsConverter {
     ): void {
         // new related resource <> cached related resource <> ? delete!
         if (!('type' in relation_data_from.data)) {
-            this.relationships_dest[relation_data_key].data = {};
+            this.relationships_dest[relation_data_key].data = [];
 
             return;
         }
@@ -160,7 +157,7 @@ export class ResourceRelationshipsConverter {
             this.relationships_dest[relation_data_key].data == null ||
             relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_data_key].data).id
         ) {
-            this.relationships_dest[relation_data_key].data = {};
+            this.relationships_dest[relation_data_key].data = [];
         }
 
         // trae datos o cambió resource? actualizamos!
