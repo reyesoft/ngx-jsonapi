@@ -4,6 +4,17 @@
         "./node_modules/reyesoft-ci/js/rules/tslint.json"
     ],
     "rules": {
+        "prefer-for-of": false,
+        "member-ordering": [false,
+            { "order": "fields-first" }
+        ],
+        "no-console": [true,
+            "debug",
+            "time",
+            "timeEnd",
+            "trace"
+        ],
+        "no-void-expression": [true, "ignore-arrow-function-shorthand"],
 
         "rxjs-add": true,
         "rxjs-ban-observables": true,

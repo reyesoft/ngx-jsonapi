@@ -5,7 +5,7 @@ export interface IParamsCollection extends IParams {
     localfilter?: object;
     remotefilter?: object;
     smartfilter?: object;
-    sort?: string[];
+    sort?: Array<string>;
     page?: IPage;
     storage_ttl?: number;
     cachehash?: string; // solution for when we have different resources with a same id
