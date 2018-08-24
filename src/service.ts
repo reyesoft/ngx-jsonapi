@@ -1,19 +1,18 @@
 import { Core } from './core';
 import { Base } from './services/base';
 import { Resource } from './resource';
-import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
 import { Converter } from './services/converter';
 import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
-import { ISchema, IExecParams, IParamsCollection, IParamsResource, IAttributes } from './interfaces';
+import { ISchema, IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { isLive } from './common';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDataObject } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
 
-export class Service<R extends Resource = Resource> extends ParentResourceService {
+export class Service<R extends Resource = Resource> {
     public schema: ISchema;
     public cachememory: CacheMemory;
     public cachestore: CacheStore;
@@ -61,8 +60,9 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     public getPrePath(): string {
         return '';
     }
+
     public getPath(): string {
-        return this.path ? this.path : this.type;
+        return this.path || this.type;
     }
 
     public get(id: string, params: IParamsResource = {}): Observable<R> {

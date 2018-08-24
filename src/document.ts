@@ -1,7 +1,6 @@
-import { IAttributes, IExecParams, IParamsResource, IRelationshipCollection, IRelationshipNone, ILinks, ISchema } from './interfaces';
+import { ISchema } from './interfaces';
 import { IDocumentData } from './interfaces/document';
 import { Resource } from './resource';
-import { ICacheable } from './interfaces/cacheable';
 import { Page } from './services/page';
 
 export class Document implements IDocumentData {

@@ -41,12 +41,13 @@ export class AuthorComponent {
         }
         author.attributes.date_of_birth = '2030-12-10';
         console.log('author data for save', author.toObject());
-        author.save(
+        author
+            .save
             /* { include: ['book'] } */
-            success => {
+            ()
+            .then(success => {
                 console.log('author saved', author.toObject());
-            }
-        );
+            });
     }
 
     /*
@@ -56,12 +57,13 @@ export class AuthorComponent {
         this.author.attributes.name = prompt('Author name:', this.author.attributes.name);
         console.log('author data for save with book include', this.author.toObject({ include: ['books'] }));
         console.log('author data for save without any include', this.author.toObject());
-        this.author.save(
+        this.author
+            .save
             /* { include: ['book'] } */
-            success => {
+            ()
+            .then(success => {
                 console.log('author saved', this.author.toObject());
-            }
-        );
+            });
     }
 
     public removeRelationship() {

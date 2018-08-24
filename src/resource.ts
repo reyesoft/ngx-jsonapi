@@ -1,19 +1,17 @@
 import { Core } from './core';
 import { Service } from './service';
 import { Base } from './services/base';
-import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
 import { Converter } from './services/converter';
 import { IDataObject } from './interfaces/data-object';
-import { IAttributes, IExecParams, IParamsResource, ILinks, IRelationships } from './interfaces';
+import { IAttributes, IParamsResource, ILinks, IRelationships } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { DocumentResource } from './document-resource';
 import { ICacheable } from './interfaces/cacheable';
-import { IDataResource } from './interfaces/data-resource';
 import { isArray } from 'util';
 import { IDataCollection } from './interfaces/data-collection';
 
-export class Resource extends ParentResourceService implements ICacheable {
+export class Resource implements ICacheable {
     public is_new = true;
     public is_loading = false;
     public is_saving = false;
@@ -133,14 +131,6 @@ export class Resource extends ParentResourceService implements ICacheable {
         Converter.build(data_object, this);
     }
 
-    public async save<T extends Resource>(params?: Object): Promise<object> {
-        return this.__exec({
-            id: null,
-            params: params,
-            exec_type: 'save'
-        });
-    }
-
     public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
         let object_key = resource.id;
         if (!object_key) {
@@ -214,16 +204,9 @@ export class Resource extends ParentResourceService implements ICacheable {
         return Converter.getService(this.type);
     }
 
-    protected async __exec<T extends Resource>(exec_params: IExecParams): Promise<object> {
-        let exec_pp = this.proccess_exec_params(exec_params);
+    public async save<T extends Resource>(params?: IParamsResource): Promise<object> {
+        params = { ...Base.Params, ...params };
 
-        switch (exec_params.exec_type) {
-            case 'save':
-                return this._save(exec_pp.params);
-        }
-    }
-
-    private async _save<T extends Resource>(params: IParamsResource): Promise<object> {
         let promisesave: Promise<object> = new Promise(
             (resolve, reject): void => {
                 if (this.is_saving || this.is_loading) {
