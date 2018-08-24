@@ -65,14 +65,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         return this.path ? this.path : this.type;
     }
 
-    public delete(id: string, params?: Object): Observable<void> {
-        return <Observable<void>>this.__exec({
-            id: id,
-            params: params,
-            exec_type: 'delete'
-        });
-    }
-
     public get(id: string, params: IParamsResource = {}): Observable<R> {
         params = { ...Base.Params, ...params };
 
@@ -117,6 +109,24 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         return subject.asObservable();
     }
 
+    protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
+        Core.get(path.get()).subscribe(
+            success => {
+                resource.fill(<IDataObject>success);
+                resource.is_loading = false;
+                this.getService().cachememory.setResource(resource);
+                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+                    this.getService().cachestore.setResource(resource);
+                }
+                subject.next(resource);
+                subject.complete();
+            },
+            error => {
+                subject.error(error);
+            }
+        );
+    }
+
     public getService<T extends Service<R>>(): T {
         return <T>(Converter.getService(this.type) || this.register());
     }
@@ -159,34 +169,9 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         /* */
     }
 
-    protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
-        Core.get(path.get()).subscribe(
-            success => {
-                resource.fill(<IDataObject>success);
-                resource.is_loading = false;
-                this.getService().cachememory.setResource(resource);
-                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    this.getService().cachestore.setResource(resource);
-                }
-                subject.next(resource);
-                subject.complete();
-            },
-            error => {
-                subject.error(error);
-            }
-        );
-    }
+    public delete(id: string, params?: Object): Observable<void> {
+        params = { ...{}, ...Base.Params, params };
 
-    protected __exec(exec_params: IExecParams): Observable<R | DocumentCollection<R> | void> {
-        let exec_pp = super.proccess_exec_params(exec_params);
-
-        switch (exec_pp.exec_type) {
-            case 'delete':
-                return this._delete(exec_pp.id, exec_pp.params);
-        }
-    }
-
-    private _delete(id: string, params): Observable<void> {
         // http request
         let path = new PathBuilder();
         path.applyParams(this, params);
