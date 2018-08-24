@@ -42,7 +42,7 @@ export class PathBuilder {
         return this.paths.join('/') + (params.length > 0 ? Core.injectedServices.rsJsonapiConfig.params_separator + params.join('&') : '');
     }
 
-    private setInclude(strings_array: Array<string>) {
+    protected setInclude(strings_array: Array<string>) {
         this.includes = strings_array;
     }
 }

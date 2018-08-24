@@ -3,29 +3,24 @@ import { Base } from './services/base';
 import { Resource } from './resource';
 import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
-import { UrlParamsBuilder } from './services/url-params-builder';
 import { Converter } from './services/converter';
-import { LocalFilter } from './services/localfilter';
 import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
-import { ISchema, IExecParams, ICacheMemory, IParamsCollection, IParamsResource, IAttributes } from './interfaces';
+import { ISchema, IExecParams, IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { isLive } from './common';
-import { timeout } from 'q';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
-import { IDataResource } from './interfaces/data-resource';
 import { IDataObject } from './interfaces/data-object';
+import { PathCollectionBuilder } from './services/path-collection-builder';
 
 export class Service<R extends Resource = Resource> extends ParentResourceService {
     public schema: ISchema;
-    public cachememory: ICacheMemory;
+    public cachememory: CacheMemory;
     public cachestore: CacheStore;
     public type: string;
     public resource = Resource;
 
     protected path: string; // without slashes
-
-    private smartfiltertype = 'undefined';
 
     /*
     Register schema on Core
@@ -126,6 +121,13 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         return <T>(Converter.getService(this.type) || this.register());
     }
 
+    public getOrCreateCollection(path: PathCollectionBuilder): DocumentCollection<R> {
+        let collection = <DocumentCollection<R>>this.getService().cachememory.getOrCreateCollection(path.getForCache());
+        collection.schema = this.schema;
+
+        return collection;
+    }
+
     public getOrCreateResource(id: string): R {
         let service = Converter.getService(this.type);
         if (service.cachememory && id in service.cachememory.resources) {
@@ -209,58 +211,18 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     public all(params: IParamsCollection = {}): Observable<DocumentCollection<R>> {
         params = { ...{ remotefilter: {}, cachehash: '', include: [], ttl: null }, ...params };
 
-        // check smartfiltertype, and set on remotefilter
-        if (params.smartfilter && this.smartfiltertype !== 'localfilter') {
-            Object.assign(params.remotefilter, params.smartfilter);
-        }
-
-        // http request
-        let path = new PathBuilder();
-        let paramsurl = new UrlParamsBuilder();
+        let path = new PathCollectionBuilder();
         path.applyParams(this, params);
-        if (Object.keys(params.remotefilter).length > 0) {
-            if (this.getService().parseToServer) {
-                this.getService().parseToServer(params.remotefilter);
-            }
-            path.addParam(paramsurl.toparams({ filter: params.remotefilter }));
-        }
-        if (params.page) {
-            if (params.page.number > 1) {
-                path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number);
-            }
-            if (params.page.size) {
-                path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.size + '=' + params.page.size);
-            }
-        }
-        if (params.sort) {
-            path.addParam('sort=' + params.sort.join(','));
-        }
 
         // make request
-        let temporary_collection = <DocumentCollection<R>>this.getService().cachememory.getOrCreateCollection(path.getForCache());
-        temporary_collection.schema = this.schema;
+        let temporary_collection = this.getOrCreateCollection(path);
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
-        // MEMORY_CACHE
-        let temporal_ttl = params.ttl || this.schema.ttl;
-        if (isLive(temporary_collection, temporal_ttl)) {
-            // get cached data and merge with temporal collection
+        if (isLive(temporary_collection, params.ttl)) {
             temporary_collection.$source = 'memory';
 
-            // fill collection and localfilter
-            // localfilter.filterCollection(temporary_collection, cached_collection);
-
-            // exit if ttl is not expired
-            if (this.getService().cachememory.isCollectionLive(path.getForCache(), temporal_ttl)) {
-                // we create a promise because we need return collection before
-                // run success client function
-                setTimeout(() => {
-                    subject.next(temporary_collection);
-                }, 0);
-            } else {
-                this.getAllFromServer(path, params, temporary_collection, subject);
-            }
+            subject.next(temporary_collection);
             // } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             //     // STORE
             //     temporary_collection.$is_loading = true;
@@ -287,7 +249,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             //             this.getAllFromServer(path, params, temporary_collection, cached_collection, subject);
             //         });
         } else {
-            // STORE
             temporary_collection.$is_loading = true;
             this.getAllFromServer(path, params, temporary_collection, subject);
         }
@@ -318,16 +279,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setCollection(path.getForCache(), temporary_collection, params.include);
-                }
-
-                // trying to define smartfiltertype
-                if (this.smartfiltertype === 'undefined') {
-                    let page = temporary_collection.page;
-                    if (page.number === 1 && page.total_resources <= page.resources_per_page) {
-                        this.smartfiltertype = 'localfilter';
-                    } else if (page.number === 1 && page.total_resources > page.resources_per_page) {
-                        this.smartfiltertype = 'remotefilter';
-                    }
                 }
 
                 subject.next(temporary_collection);

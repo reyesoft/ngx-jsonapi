@@ -1,11 +1,10 @@
-import { ICacheMemory } from '../interfaces/cachememory';
 import { Base } from './base';
 import { Resource } from '../resource';
 import { Converter } from './converter';
 import { ResourceFunctions } from './resource-functions';
 import { DocumentCollection } from '../document-collection';
 
-export class CacheMemory<R extends Resource = Resource> implements ICacheMemory {
+export class CacheMemory<R extends Resource = Resource> {
     public resources: { [id: string]: Resource } = {};
     private collections: { [url: string]: DocumentCollection<R> } = {};
     private collections_lastupdate: { [url: string]: number } = {};
