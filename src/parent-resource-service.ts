@@ -1,7 +1,6 @@
 import { Base } from './services/base';
-import { isFunction } from 'rxjs/util/isFunction';
-import { noop } from 'rxjs/util/noop';
 import { IExecParams, IExecParamsProcessed } from './interfaces';
+import { isFunction } from 'util';
 
 export class ParentResourceService {
     /*

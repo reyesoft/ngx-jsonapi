@@ -15,13 +15,13 @@ export interface IDocument<R extends Resource = Resource> {
     links?: ILinks;
 
     // No Json Api specification attributes
-    builded: boolean;
-    content: 'ids' | 'collection' | 'id' | 'resource' | 'error' | '';
+    builded?: boolean;
+    content?: 'ids' | 'collection' | 'id' | 'resource' | 'error' | '';
 }
 
 export interface IDocumentData<R extends Resource = Resource> extends IDocument {
     data: R | Array<R> | IDataResource | Array<IDataResource>; // @todo remover IDataResource[]    included?: any;
-    content: 'collection' | 'resource' | 'id' | 'ids' | '';
+    content?: 'collection' | 'resource' | 'id' | 'ids' | '';
     included?: Array<any>;
 
     // $is_loading: boolean;

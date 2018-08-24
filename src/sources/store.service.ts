@@ -1,8 +1,8 @@
 import * as localForage from 'localforage';
 import { Base } from '../services/base';
 import { IStoreObject } from '../interfaces';
-import { noop } from 'rxjs/util/noop';
 import { Deferred } from '../shared/deferred';
+import { noop } from 'rxjs';
 
 interface IStoreElement {
     time: number;

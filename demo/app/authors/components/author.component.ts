@@ -1,11 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Resource } from 'ngx-jsonapi';
-
-import { forEach } from '../../../foreach';
 import { PhotosService } from '../../photos/photos.service';
 import { AuthorsService, Author } from '../authors.service';
-import { Observable } from 'rxjs/Observable';
 import { BooksService } from '../../books/books.service';
 
 @Component({

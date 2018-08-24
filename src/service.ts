@@ -1,9 +1,3 @@
-import { noop } from 'rxjs/util/noop';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { of } from 'rxjs/observable/of';
-
 import { Core } from './core';
 import { Base } from './services/base';
 import { Resource } from './resource';
@@ -18,6 +12,9 @@ import { ISchema, IExecParams, ICacheMemory, IParamsCollection, IParamsResource,
 import { DocumentCollection } from './document-collection';
 import { isLive } from './common';
 import { timeout } from 'q';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
+import { IDataResource } from './interfaces/data-resource';
+import { IDataObject } from './interfaces/data-object';
 
 export class Service<R extends Resource = Resource> extends ParentResourceService {
     public schema: ISchema;
@@ -161,9 +158,9 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     }
 
     protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
-        Core.get(path.get())
-            .then(success => {
-                resource.fill(success);
+        Core.get(path.get()).subscribe(
+            success => {
+                resource.fill(<IDataObject>success);
                 resource.is_loading = false;
                 this.getService().cachememory.setResource(resource);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -171,10 +168,11 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 }
                 subject.next(resource);
                 subject.complete();
-            })
-            .catch(error => {
+            },
+            error => {
                 subject.error(error);
-            });
+            }
+        );
     }
 
     protected __exec(exec_params: IExecParams): Observable<R | DocumentCollection<R> | void> {
@@ -193,8 +191,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         cached_collection: DocumentCollection<R>,
         subject: BehaviorSubject<DocumentCollection<R>>
     ) {
-        Core.get(path.get())
-            .then(success => {
+        Core.get(path.get()).subscribe(
+            success => {
                 temporary_collection.$source = 'server';
                 temporary_collection.$is_loading = false;
 
@@ -207,7 +205,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     }
                 }
 
-                temporary_collection.fill(success);
+                temporary_collection.fill(<IDataObject>success);
 
                 this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -230,14 +228,15 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
                 subject.next(cached_collection);
                 subject.complete();
-            })
-            .catch(error => {
+            },
+            error => {
                 // do not replace $source, because localstorage don't write if = server
                 // temporary_collection.$source = 'server';
                 temporary_collection.$is_loading = false;
                 subject.next(temporary_collection);
                 subject.error(error);
-            });
+            }
+        );
     }
 
     private _delete(id: string, params): Observable<void> {
@@ -248,15 +247,16 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
 
         let subject = new Subject<void>();
 
-        Core.delete(path.get())
-            .then(success => {
+        Core.delete(path.get()).subscribe(
+            success => {
                 this.getService().cachememory.removeResource(id);
                 subject.next();
                 subject.complete();
-            })
-            .catch(error => {
+            },
+            error => {
                 subject.error(error);
-            });
+            }
+        );
 
         return subject.asObservable();
     }

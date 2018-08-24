@@ -1,13 +1,14 @@
-import { Injectable, Optional, Inject } from '@angular/core';
-import { noop } from 'rxjs/util/noop';
-import { IRelationshipResource, IRelationshipCollection } from './interfaces';
+import { Injectable, Optional } from '@angular/core';
 import { Service } from './service';
 import { Resource } from './resource';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { IDataObject } from './interfaces/data-object';
-import { Deferred } from './shared/deferred';
+import { noop } from 'rxjs/internal/util/noop';
+import { Observable, throwError } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
+import { IDocumentData } from './interfaces/document';
 
 @Injectable()
 export class Core {
@@ -40,41 +41,36 @@ export class Core {
         };
     }
 
-    public static async delete(path: string): Promise<IDataObject> {
+    public static delete(path: string): Observable<IDocumentData> {
         return Core.exec(path, 'DELETE');
     }
 
-    public static async get(path: string): Promise<IDataObject> {
+    public static get(path: string): Observable<IDocumentData> {
         return Core.exec(path, 'get');
     }
 
-    public static async exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true) {
-        let fakeHttpPromise = Core.injectedServices.JsonapiHttp.exec(path, method, data);
-        let deferred: Deferred<IDataObject> = new Deferred();
+    public static exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true): Observable<IDocumentData> {
         Core.me.refreshLoadings(1);
-        fakeHttpPromise
-            .then(success => {
-                success = success.body || success;
-                Core.me.refreshLoadings(-1);
-                deferred.resolve(success);
-            })
-            .catch(error => {
+
+        return Core.injectedServices.JsonapiHttp.exec(path, method, data).pipe(
+            // map(data => { return data.body }),
+            tap(() => Core.me.refreshLoadings(-1)),
+            catchError(error => {
                 error = error.error || error;
                 Core.me.refreshLoadings(-1);
+
                 if (error.status <= 0) {
                     // offline?
                     if (!Core.me.loadingsOffline(error)) {
                         console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>', error);
                     }
-                } else {
-                    if (call_loadings_error && !Core.me.loadingsError(error)) {
-                        console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
-                    }
+                } else if (call_loadings_error && !Core.me.loadingsError(error)) {
+                    console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
                 }
-                deferred.reject(error);
-            });
 
-        return deferred.promise;
+                return throwError(new Error(error));
+            })
+        );
     }
 
     public registerService<R extends Resource>(clase: Service): Service<R> | false {

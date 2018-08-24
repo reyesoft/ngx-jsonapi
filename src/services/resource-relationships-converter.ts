@@ -1,5 +1,3 @@
-import { noop } from 'rxjs/util/noop';
-
 import { IRelationships, ISchema, IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataObject } from '../interfaces/data-object';
@@ -7,6 +5,7 @@ import { IDataResource } from '../interfaces/data-resource';
 import { Base } from '../services/base';
 import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
+import { noop } from 'rxjs';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;
