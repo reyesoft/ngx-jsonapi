@@ -184,61 +184,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         }
     }
 
-    protected getAllFromServer(
-        path,
-        params,
-        temporary_collection: DocumentCollection<R>,
-        cached_collection: DocumentCollection<R>,
-        subject: BehaviorSubject<DocumentCollection<R>>
-    ) {
-        Core.get(path.get()).subscribe(
-            success => {
-                temporary_collection.$source = 'server';
-                temporary_collection.$is_loading = false;
-
-                // this create a new ID for every resource (for caching proposes)
-                // for example, two URL return same objects but with different attributes
-                if (params.cachehash) {
-                    for (const key in success.data) {
-                        let resource = success.data[key];
-                        resource.id = resource.id + params.cachehash;
-                    }
-                }
-
-                temporary_collection.fill(<IDataObject>success);
-
-                this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
-                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    this.getService().cachestore.setCollection(path.getForCache(), temporary_collection, params.include);
-                }
-
-                // localfilter getted data
-                let localfilter = new LocalFilter(params.localfilter);
-                localfilter.filterCollection(temporary_collection, cached_collection);
-
-                // trying to define smartfiltertype
-                if (this.smartfiltertype === 'undefined') {
-                    let page = temporary_collection.page;
-                    if (page.number === 1 && page.total_resources <= page.resources_per_page) {
-                        this.smartfiltertype = 'localfilter';
-                    } else if (page.number === 1 && page.total_resources > page.resources_per_page) {
-                        this.smartfiltertype = 'remotefilter';
-                    }
-                }
-
-                subject.next(cached_collection);
-                subject.complete();
-            },
-            error => {
-                // do not replace $source, because localstorage don't write if = server
-                // temporary_collection.$source = 'server';
-                temporary_collection.$is_loading = false;
-                subject.next(temporary_collection);
-                subject.error(error);
-            }
-        );
-    }
-
     private _delete(id: string, params): Observable<void> {
         // http request
         let path = new PathBuilder();
@@ -262,7 +207,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     }
 
     public all(params: IParamsCollection = {}): Observable<DocumentCollection<R>> {
-        params = { ...{ remotefilter: {}, cachehash: '', include: [] }, ...params };
+        params = { ...{ remotefilter: {}, cachehash: '', include: [], ttl: null }, ...params };
 
         // check smartfiltertype, and set on remotefilter
         if (params.smartfilter && this.smartfiltertype !== 'localfilter') {
@@ -292,33 +237,19 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         }
 
         // make request
-        // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
         let temporary_collection = <DocumentCollection<R>>this.getService().cachememory.getOrCreateCollection(path.getForCache());
+        temporary_collection.schema = this.schema;
 
-        // creamos otra colleción si luego será filtrada
-        let localfilter = new LocalFilter(params.localfilter);
-        let cached_collection: DocumentCollection<R>;
-        if (params.localfilter && Object.keys(params.localfilter).length > 0) {
-            cached_collection = new DocumentCollection();
-        } else {
-            cached_collection = temporary_collection;
-        }
-
-        let subject = new BehaviorSubject<DocumentCollection<R>>(cached_collection);
+        let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
         // MEMORY_CACHE
         let temporal_ttl = params.ttl || this.schema.ttl;
-        if (temporal_ttl >= 0 && this.getService().cachememory.isCollectionExist(path.getForCache())) {
+        if (isLive(temporary_collection, temporal_ttl)) {
             // get cached data and merge with temporal collection
             temporary_collection.$source = 'memory';
 
-            // check smartfiltertype, and set on localfilter
-            if (params.smartfilter && this.smartfiltertype === 'localfilter') {
-                Object.assign(params.localfilter, params.smartfilter);
-            }
-
             // fill collection and localfilter
-            localfilter.filterCollection(temporary_collection, cached_collection);
+            // localfilter.filterCollection(temporary_collection, cached_collection);
 
             // exit if ttl is not expired
             if (this.getService().cachememory.isCollectionLive(path.getForCache(), temporal_ttl)) {
@@ -328,7 +259,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                     subject.next(temporary_collection);
                 }, 0);
             } else {
-                this.getAllFromServer(path, params, temporary_collection, cached_collection, subject);
+                this.getAllFromServer(path, params, temporary_collection, subject);
             }
             // } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             //     // STORE
@@ -358,11 +289,57 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         } else {
             // STORE
             temporary_collection.$is_loading = true;
-            this.getAllFromServer(path, params, temporary_collection, cached_collection, subject);
+            this.getAllFromServer(path, params, temporary_collection, subject);
         }
 
-        subject.next(cached_collection);
+        subject.next(temporary_collection);
 
         return subject.asObservable();
+    }
+
+    protected getAllFromServer(path, params, temporary_collection: DocumentCollection<R>, subject: BehaviorSubject<DocumentCollection<R>>) {
+        Core.get(path.get()).subscribe(
+            success => {
+                temporary_collection.$source = 'server';
+                temporary_collection.$is_loading = false;
+
+                // this create a new ID for every resource (for caching proposes)
+                // for example, two URL return same objects but with different attributes
+                if (params.cachehash) {
+                    for (const key in success.data) {
+                        let resource = success.data[key];
+                        resource.id = resource.id + params.cachehash;
+                    }
+                }
+
+                temporary_collection.fill(<IDataObject>success);
+                temporary_collection.$cache_last_update = Date.now();
+
+                this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
+                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+                    this.getService().cachestore.setCollection(path.getForCache(), temporary_collection, params.include);
+                }
+
+                // trying to define smartfiltertype
+                if (this.smartfiltertype === 'undefined') {
+                    let page = temporary_collection.page;
+                    if (page.number === 1 && page.total_resources <= page.resources_per_page) {
+                        this.smartfiltertype = 'localfilter';
+                    } else if (page.number === 1 && page.total_resources > page.resources_per_page) {
+                        this.smartfiltertype = 'remotefilter';
+                    }
+                }
+
+                subject.next(temporary_collection);
+                subject.complete();
+            },
+            error => {
+                // do not replace $source, because localstorage don't write if = server
+                // temporary_collection.$source = 'server';
+                temporary_collection.$is_loading = false;
+                subject.next(temporary_collection);
+                subject.error(error);
+            }
+        );
     }
 }

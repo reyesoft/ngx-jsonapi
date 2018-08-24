@@ -159,22 +159,26 @@ export class Resource extends ParentResourceService implements ICacheable {
         }
     }
 
-    public addRelationships(resources: Array<Resource>, type_alias: string) {
+    public addRelationships(resources: Array<Resource>, type_alias: string): void {
+        // let collection: DocumentCollection;
+
         if (!(type_alias in this.relationships)) {
             this.relationships[type_alias] = new DocumentCollection();
         } else {
-            // we receive a new collection of this relationship. We need remove old (if don't exist on new collection)
-            for (const key in this.relationships[type_alias].data) {
-                let resource: Resource = this.relationships[type_alias].data[key];
-                if (!(resource.id in resources)) {
-                    delete this.relationships[type_alias].data[resource.id];
-                }
-            }
+            // collection = (<DocumentCollection>this.relationships[type_alias]);
+            // for (const key in (collection).data) {
+            //     let resource: Resource = collection.data[key];
+            //     if (!(resource.id in resources)) {
+            //         delete collection.data[resource.id];
+            //     }
+            // }
         }
 
-        for (const resource of resources) {
-            this.relationships[type_alias].data[resource.id] = resource;
-        }
+        this.relationships[type_alias].data = resources;
+
+        // for (const resource of resources) {
+        //     collection.data.push(resource);
+        // }
     }
 
     public addRelationshipsArray<R extends Resource>(resources: Array<R>, type_alias?: string): void {

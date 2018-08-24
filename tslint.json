@@ -16,17 +16,13 @@
         ],
         "no-void-expression": [true, "ignore-arrow-function-shorthand"],
 
-        "rxjs-add": true,
         "rxjs-ban-observables": true,
         "rxjs-ban-operators": true,
-        "rxjs-deep-operators": true,
         "rxjs-no-create": true,
         "rxjs-no-unsafe-catch": true,
         "rxjs-no-unsafe-first": true,
         "rxjs-no-unsafe-switchmap": true,
         "rxjs-no-unsafe-takeuntil": true,
-        "rxjs-no-unused-add": true,
-        "rxjs-no-wholesale": true,
         "rxjs-throw-error": true,
 
         "directive-selector": [true, "attribute", ["demo"], "camelCase"],

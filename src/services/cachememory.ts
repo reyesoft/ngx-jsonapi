@@ -32,8 +32,10 @@ export class CacheMemory<R extends Resource = Resource> implements ICacheMemory 
     }
 
     public setCollection(url: string, collection: DocumentCollection<R>): void {
-        // clone collection, because after maybe delete items for localfilter o pagination
-        this.collections[url] = new DocumentCollection();
+        // v1: clone collection, because after maybe delete items for localfilter o pagination
+        if (!(url in this.collections)) {
+            this.collections[url] = new DocumentCollection();
+        }
         for (let i = 0; i < collection.data.length; i++) {
             let resource = collection.data[i];
             // this.collections[url].data.push(resource);
