@@ -58,87 +58,34 @@ export class ResourceRelationshipsConverter {
         }
     }
 
-    private __buildRelationshipHasMany(
-        relation_from_value: IDataCollection,
-        relation_key: any // number to string?
-    ) {
+    private __buildRelationshipHasMany(relation_from_value: IDataCollection, relation_alias: string) {
         let relation_type = relation_from_value.data[0] ? relation_from_value.data[0].type : '';
-        // @todo: we need check schema. maybe relationship it's empty
-        relation_type = relation_type || relation_key /* || schema.relationship.type */;
+        relation_alias = relation_alias || relation_type;
 
         if (this.getService(relation_type)) {
-            this.__buildRelationshipCollection(relation_from_value, relation_key);
+            this.__buildRelationshipCollection(relation_from_value, relation_alias);
         } else {
-            this.__buildRelationshipDataCollection(relation_from_value, relation_key);
+            this.__buildRelationshipDataCollection(relation_from_value, relation_alias);
         }
     }
 
-    private __buildRelationshipDataCollection(
-        relation_from_value: IDataCollection,
-        relation_key: any // number to string?
-    ) {
+    private __buildRelationshipDataCollection(relation_from_value: IDataCollection, relation_alias: string) {
         let relation_collection = Base.newCollection();
         relation_from_value.data.forEach(resource_data => {
             relation_collection[resource_data.id] = resource_data;
         });
 
-        this.relationships_dest[relation_key] = new DocumentCollection();
-        // {
-        //     data: relation_collection,
-        //     builded: true,
-        //     content: 'collection' // @todo. if resources are only ids? if resources are complete resources?
-        // };
+        this.relationships_dest[relation_alias] = new DocumentCollection();
     }
 
-    private __buildRelationshipCollection(
-        relation_from_value: IDataCollection,
-        relation_key: any // number to string?
-    ) {
+    private __buildRelationshipCollection(relation_from_value: IDataCollection, relation_key: string) {
         if (relation_from_value.data.length === 0) {
             this.relationships_dest[relation_key] = new DocumentCollection();
 
             return;
         }
 
-        let tmp_relationship_data = [];
-        this.relationships_dest[relation_key].builded = true;
-        this.relationships_dest[relation_key].content = 'collection';
-
-        relation_from_value.data.forEach((relation_value: IDataResource) => {
-            let tmp = this.__buildRelationship(relation_value, this.included_resources);
-
-            // sometimes we have a cache like a services
-            // if (
-            //     !('attributes' in tmp) &&
-            //     tmp.id in this.relationships_dest[relation_key].data &&
-            //     'attributes' in this.relationships_dest[relation_key].data[tmp.id]
-            // ) {
-            //     tmp_relationship_data.push(this.relationships_dest[relation_key].data[tmp.id]);
-            // } else {
-            tmp_relationship_data.push(tmp);
-            // }
-
-            // some resources are not a Resource object
-            if (!('attributes' in tmp)) {
-                this.relationships_dest[relation_key].builded = false;
-                this.relationships_dest[relation_key].content = 'ids';
-            }
-        });
-
-        // REMOVE resources from cached collection
-        // build an array with the news ids
-        let new_ids = {};
-        relation_from_value.data.forEach(data_resource => {
-            new_ids[data_resource.id] = true;
-        });
-        // check if new ids are on destination. If not, delete resource
-        Base.forEach(this.relationships_dest[relation_key].data, (relation_dest_value: IDataResource) => {
-            if (!(relation_dest_value.id in new_ids)) {
-                delete this.relationships_dest[relation_dest_value.id];
-            }
-        });
-
-        this.relationships_dest[relation_key].data = tmp_relationship_data;
+        (<DocumentCollection>this.relationships_dest[relation_key]).fill(relation_from_value);
     }
 
     private __buildRelationshipHasOne(

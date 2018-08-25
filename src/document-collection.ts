@@ -6,6 +6,7 @@ import { Converter } from './services/converter';
 import { IDataObject } from './interfaces/data-object';
 import { IDataCollection } from './interfaces/data-collection';
 import { Base } from './services/base';
+import { IResourcesByType } from './interfaces';
 
 export class DocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
     public data: Array<R> = [];
@@ -29,7 +30,7 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
     public fill(data_collection: IDataCollection): void {
         let included_resources = Converter.buildIncluded(data_collection);
 
-        // sometime get Cannot set property 'number' of undefined (page)
+        // sometimes get Cannot set property 'number' of undefined (page)
         if (this.page && data_collection.meta) {
             this.page.number = data_collection.meta.page || 1;
             this.page.resources_per_page = data_collection.meta.resources_per_page || null;
@@ -39,11 +40,15 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         // convert and add new dataresoures to final collection
         let new_ids = {};
         this.data = [];
+        this.builded = false;
         for (let dataresource of data_collection.data) {
             let res = this.find(dataresource.id) || Converter.getService(dataresource.type).getOrCreateResource(dataresource.id);
             res.fill({ data: dataresource } /* , included_resources */); // @todo check with included resources?
             new_ids[dataresource.id] = dataresource.id;
             this.data.push(<R>res);
+            if (Object.keys(res.attributes).length > 0) {
+                this.builded = true;
+            }
         }
 
         // remove old members of collection (bug, for example, when request something like orders/10/details and has new ids)

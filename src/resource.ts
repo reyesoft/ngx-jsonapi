@@ -133,7 +133,7 @@ export class Resource implements ICacheable {
         let included_resources = Converter.buildIncluded(data_object);
 
         this.id = data_object.data.id || '';
-        this.attributes = data_object.data.attributes || {};
+        this.attributes = data_object.data.attributes || this.attributes;
 
         this.is_new = false;
         let service = Converter.getService(data_object.data.type);
@@ -144,7 +144,10 @@ export class Resource implements ICacheable {
             return;
         }
 
-        Converter.getService(this.type).parseFromServer(this.attributes);
+        // only ids?
+        if (Object.keys(this.attributes).length) {
+            Converter.getService(this.type).parseFromServer(this.attributes);
+        }
 
         new ResourceRelationshipsConverter(
             Converter.getService,
