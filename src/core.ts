@@ -107,7 +107,7 @@ export class Core {
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };
 
         for (const alias in resource.relationships) {
-            let relationship /*: IRelationshipResource | IRelationshipCollection */ = resource.relationships[alias];
+            let relationship = resource.relationships[alias];
 
             if ('id' in relationship.data) {
                 // relation hasOne

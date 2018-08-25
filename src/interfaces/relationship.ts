@@ -14,12 +14,6 @@ export interface IRelationshipIds extends IRelationship {
     builded: false;
 }
 
-export interface IRelationshipCollection<R extends Resource = R> extends IRelationship {
-    data: Array<R>;
-    builded: true;
-    content: 'collection';
-}
-
 export interface IRelationshipId extends IRelationship {
     data: IDataResource;
     builded: false;
