@@ -2,7 +2,6 @@ import { IRelationships, ISchema, IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataResource } from '../interfaces/data-resource';
-import { Base } from '../services/base';
 import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
 import { noop } from 'rxjs';
@@ -36,11 +35,6 @@ export class ResourceRelationshipsConverter {
             // relation is in schema? have data or just links?
             if (!(relation_key in this.relationships_dest) && 'data' in relation_from_value) {
                 this.relationships_dest[relation_key] = new DocumentCollection();
-                // {
-                //     data: Base.newCollection(),
-                //     builded: true,
-                //     content: 'collection'
-                // };
             }
 
             // sometime data=null or simple { }
@@ -60,32 +54,30 @@ export class ResourceRelationshipsConverter {
 
     private __buildRelationshipHasMany(relation_from_value: IDataCollection, relation_alias: string) {
         let relation_type = relation_from_value.data[0] ? relation_from_value.data[0].type : '';
-        relation_alias = relation_alias || relation_type;
-
-        if (this.getService(relation_type)) {
-            this.__buildRelationshipCollection(relation_from_value, relation_alias);
-        } else {
-            this.__buildRelationshipDataCollection(relation_from_value, relation_alias);
+        if (relation_type === '') {
+            return;
         }
-    }
 
-    private __buildRelationshipDataCollection(relation_from_value: IDataCollection, relation_alias: string) {
-        let relation_collection = Base.newCollection();
-        relation_from_value.data.forEach(resource_data => {
-            relation_collection[resource_data.id] = resource_data;
-        });
-
-        this.relationships_dest[relation_alias] = new DocumentCollection();
-    }
-
-    private __buildRelationshipCollection(relation_from_value: IDataCollection, relation_key: string) {
-        if (relation_from_value.data.length === 0) {
-            this.relationships_dest[relation_key] = new DocumentCollection();
+        relation_alias = relation_alias || relation_type;
+        if (!this.getService(relation_type)) {
+            console.warn(
+                'The relationship',
+                relation_alias,
+                '(type',
+                relation_type,
+                ') cant be generated because service for this type has not been injected.'
+            );
 
             return;
         }
 
-        (<DocumentCollection>this.relationships_dest[relation_key]).fill(relation_from_value);
+        if (relation_from_value.data.length === 0) {
+            this.relationships_dest[relation_alias] = new DocumentCollection();
+
+            return;
+        }
+
+        (<DocumentCollection>this.relationships_dest[relation_alias]).fill(relation_from_value);
     }
 
     private __buildRelationshipHasOne(
