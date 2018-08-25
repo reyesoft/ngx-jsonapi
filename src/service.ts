@@ -80,10 +80,7 @@ export class Service<R extends Resource = Resource> {
         let subject = new BehaviorSubject<R>(resource);
 
         if (isLive(resource, params.ttl)) {
-            // we create a promise because we need return collection before
-            setTimeout(() => {
-                subject.complete();
-            }, 0);
+            subject.complete();
             resource.is_loading = false;
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE

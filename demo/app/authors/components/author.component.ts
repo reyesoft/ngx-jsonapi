@@ -45,7 +45,7 @@ export class AuthorComponent {
             .save
             /* { include: ['book'] } */
             ()
-            .then(success => {
+            .subscribe(success => {
                 console.log('author saved', author.toObject());
             });
     }
@@ -57,13 +57,9 @@ export class AuthorComponent {
         this.author.attributes.name = prompt('Author name:', this.author.attributes.name);
         console.log('author data for save with book include', this.author.toObject({ include: ['books'] }));
         console.log('author data for save without any include', this.author.toObject());
-        this.author
-            .save
-            /* { include: ['book'] } */
-            ()
-            .then(success => {
-                console.log('author saved', this.author.toObject());
-            });
+        this.author.save(/* { include: ['book'] } */).subscribe(success => {
+            console.log('author saved', this.author.toObject());
+        });
     }
 
     public removeRelationship() {

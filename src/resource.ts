@@ -10,6 +10,7 @@ import { DocumentResource } from './document-resource';
 import { ICacheable } from './interfaces/cacheable';
 import { isArray } from 'util';
 import { IDataCollection } from './interfaces/data-collection';
+import { Observable, Subject, of } from 'rxjs';
 
 export class Resource implements ICacheable {
     public is_new = true;
@@ -204,71 +205,50 @@ export class Resource implements ICacheable {
         return Converter.getService(this.type);
     }
 
-    public async save<T extends Resource>(params?: IParamsResource): Promise<object> {
+    public save<T extends Resource>(params?: IParamsResource): Observable<object> {
         params = { ...Base.Params, ...params };
+        if (this.is_saving || this.is_loading) {
+            return of({});
+        }
+        this.is_saving = true;
 
-        let promisesave: Promise<object> = new Promise(
-            (resolve, reject): void => {
-                if (this.is_saving || this.is_loading) {
-                    return;
+        let subject = new Subject<object>();
+        let object = this.toObject(params);
+
+        // http request
+        let path = new PathBuilder();
+        path.applyParams(this.getService(), params);
+        if (this.id) {
+            path.appendPath(this.id);
+        }
+
+        Core.exec(path.get(), this.id ? 'PATCH' : 'POST', object, true).subscribe(
+            success => {
+                this.is_saving = false;
+
+                // foce reload cache (for example, we add a new element)
+                if (!this.id) {
+                    this.getService().cachememory.deprecateCollections(path.get());
+                    this.getService().cachestore.deprecateCollections(path.get());
                 }
-                this.is_saving = true;
 
-                let object = this.toObject(params);
-
-                // http request
-                let path = new PathBuilder();
-                path.applyParams(this.getService(), params);
-                if (this.id) {
-                    path.appendPath(this.id);
+                // is a resource?
+                if ('id' in success.data) {
+                    this.id = success.data.id;
+                    Converter.build(<IDataCollection>success, this);
+                } else if (isArray(success.data)) {
+                    console.warn('Server return a collection when we save()', success.data);
                 }
 
-                Core.exec(path.get(), this.id ? 'PATCH' : 'POST', object, true).subscribe(success => {
-                    this.is_saving = false;
-
-                    // foce reload cache (for example, we add a new element)
-                    if (!this.id) {
-                        this.getService().cachememory.deprecateCollections(path.get());
-                        this.getService().cachestore.deprecateCollections(path.get());
-                    }
-
-                    // is a resource?
-                    if ('id' in success.data) {
-                        this.id = success.data.id;
-                        Converter.build(<IDataCollection>success, this);
-                        /*
-                        Si lo guardo en la caché, luego no queda bindeado con la vista
-                        Usar {{ $ctrl.service.getCachedResources() | json }}, agregar uno nuevo, editar
-                        */
-                        // this.getService().cachememory.setResource(this);
-                    } else if (isArray(success.data)) {
-                        console.warn('Server return a collection when we save()', success.data);
-
-                        /*
-                        we request the service again, because server maybe are giving
-                        us another type of resource (getService(resource.type))
-                        */
-                        let tempororay_collection = this.getService().cachememory.getOrCreateCollection('justAnUpdate');
-                        Converter.build(<IDataCollection>success, tempororay_collection);
-                        Base.forEach(tempororay_collection, (resource_value: Resource, key: string) => {
-                            let res = Converter.getService(resource_value.type).cachememory.resources[resource_value.id];
-                            Converter.getService(resource_value.type).cachememory.setResource(resource_value);
-                            Converter.getService(resource_value.type).cachestore.setResource(resource_value);
-                            res.id = res.id + 'x';
-                        });
-
-                        console.warn('Temporal collection for a resource_value update', tempororay_collection);
-                    }
-
-                    resolve(success);
-                });
-                // .catch(error => {
-                //     this.is_saving = false;
-                //     reject('data' in error ? error.data : error);
-                // })
+                subject.next(success);
+                subject.complete();
+            },
+            error => {
+                this.is_saving = false;
+                subject.error('data' in error ? error.data : error);
             }
         );
 
-        return promisesave;
+        return subject;
     }
 }
