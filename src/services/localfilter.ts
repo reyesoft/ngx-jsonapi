@@ -22,7 +22,7 @@ export class LocalFilter {
     private passFilter(resource: Resource, localfilter): boolean {
         for (let attribute in localfilter) {
             if (typeof resource !== 'object' || !('attributes' in resource)) {
-                // is not a resource. Is an internal property, for example $source
+                // is not a resource. Is an internal property, for example source
                 return true;
             } else if (typeof localfilter[attribute] === 'object') {
                 // its a regular expression

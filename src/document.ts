@@ -8,9 +8,9 @@ export class Document implements IDocumentData {
     public builded = false;
     public content: 'ids' | 'collection' | 'id' | 'resource';
 
-    public $is_loading = true;
-    public $source: 'new' | 'memory' | 'store' | 'server' = 'new';
-    public $cache_last_update = 0;
+    public is_loading = true;
+    public source: 'new' | 'memory' | 'store' | 'server' = 'new';
+    public cache_last_update = 0;
     public schema: ISchema;
 
     // for problem detection v1 @ todo remove next line

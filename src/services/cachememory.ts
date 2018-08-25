@@ -10,7 +10,7 @@ export class CacheMemory<R extends Resource = Resource> {
     private collections_lastupdate: { [url: string]: number } = {};
 
     public isCollectionExist(url: string): boolean {
-        return url in this.collections && this.collections[url].$source !== 'new' ? true : false;
+        return url in this.collections && this.collections[url].source !== 'new' ? true : false;
     }
 
     public isCollectionLive(url: string, ttl: number): boolean {
@@ -18,13 +18,13 @@ export class CacheMemory<R extends Resource = Resource> {
     }
 
     public isResourceLive(id: string, ttl: number): boolean {
-        return this.resources[id] && Date.now() <= this.resources[id].$lastupdate + ttl * 1000;
+        return this.resources[id] && Date.now() <= this.resources[id].lastupdate + ttl * 1000;
     }
 
     public getOrCreateCollection(url: string): DocumentCollection<R> {
         if (!(url in this.collections)) {
             this.collections[url] = new DocumentCollection();
-            this.collections[url].$source = 'new';
+            this.collections[url].source = 'new';
         }
 
         return this.collections[url];
@@ -64,7 +64,7 @@ export class CacheMemory<R extends Resource = Resource> {
         } else {
             this.resources[resource.id] = resource;
         }
-        this.resources[resource.id].$lastupdate = update_lastupdate ? Date.now() : 0;
+        this.resources[resource.id].lastupdate = update_lastupdate ? Date.now() : 0;
     }
 
     public deprecateCollections(path_start_with: string): boolean {

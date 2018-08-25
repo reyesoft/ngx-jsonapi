@@ -14,38 +14,22 @@ export class CacheStore implements ICache {
             (resolve, reject): void => {
                 Core.injectedServices.JsonapiStoreService.getObjet(resource.type + '.' + resource.id)
                     .then(success => {
-                        resource.fill({ data: success, builded: false, content: '' });
-
-                        let promises: Array<Promise<object>> = [];
+                        resource.fill({ data: success });
 
                         // include some times is a collection :S
-                        include.forEach(resource_type => {
-                            //  && ('attributes' in resource.relationships[resource_type].data)
-                            if (resource_type in resource.relationships) {
-                                // hasOne
-                                let related_resource = <IDataResource>resource.relationships[resource_type].data;
-                                if (!('attributes' in related_resource)) {
-                                    // no está cargado aún
-                                    let builded_resource = this.getResourceFromMemory(related_resource);
-                                    if (builded_resource.$is_new) {
-                                        // no está en memoria, la pedimos a store
-                                        promises.push(this.getResource(builded_resource));
-                                    } else {
-                                        console.warn('ts-angular-json: esto no debería pasar #isdjf2l1a');
-                                    }
-                                    resource.relationships[resource_type].data = builded_resource;
-                                }
-                            }
+                        let include_promises: Array<Promise<object>> = [];
+                        Base.forEach(include, resource_alias => {
+                            this.fillRelationshipFromStore(resource, resource_alias, include_promises);
                         });
 
-                        resource.$lastupdate = success._lastupdate_time;
+                        resource.lastupdate = success._lastupdate_time;
 
                         // no debo esperar a que se resuelvan los include
-                        if (promises.length === 0) {
+                        if (include_promises.length === 0) {
                             resolve(success);
                         } else {
                             // esperamos las promesas de los include antes de dar el resolve
-                            Promise.all(promises)
+                            Promise.all(include_promises)
                                 .then(success3 => {
                                     resolve(success3);
                                 })
@@ -82,20 +66,20 @@ export class CacheStore implements ICache {
     }
 
     public setCollection(url: string, collection: DocumentCollection, include: Array<string>) {
-        let tmp = { data: [], page: {} };
+        let tmp = { data: {}, page: {} };
         let resources_for_save: { [uniqkey: string]: Resource } = {};
-        Base.forEach(collection.data, (resource: Resource) => {
+        Base.forEach(collection, (resource: Resource) => {
             this.setResource(resource);
-            tmp.data.push({ id: resource.id, type: resource.type });
+            tmp.data[resource.id] = { id: resource.id, type: resource.type };
 
-            include.forEach(resource_type_alias => {
+            Base.forEach(include, resource_type_alias => {
                 if ('id' in resource.relationships[resource_type_alias].data) {
                     // hasOne
                     let ress = <Resource>resource.relationships[resource_type_alias].data;
                     resources_for_save[resource_type_alias + ress.id] = ress;
                 } else {
                     // hasMany
-                    let collection2 = resource.relationships[resource_type_alias].data;
+                    let collection2 = <DocumentCollection>resource.relationships[resource_type_alias].data;
                     Base.forEach(collection2, (inc_resource: Resource) => {
                         resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
                     });
@@ -105,14 +89,21 @@ export class CacheStore implements ICache {
         tmp.page = collection.page;
         Core.injectedServices.JsonapiStoreService.saveObject('collection.' + url, tmp);
 
-        for (const key in resources_for_save) {
-            let resource_for_save: Resource = resources_for_save[key];
-            if ('is_new' in resource_for_save) {
-                this.setResource(resource_for_save);
-            } else {
-                console.warn('No se pudo guardar en la cache el', resource_for_save, 'por no se ser Resource.', resource_for_save);
+        Base.forEach(resources_for_save, resource_for_save => {
+            if (!('is_new' in resource_for_save)) {
+                // console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
+
+                return;
             }
-        }
+
+            if (Object.keys(resource_for_save.attributes).length === 0) {
+                console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no tener attributes.', resource_for_save);
+
+                return;
+            }
+
+            this.setResource(resource_for_save);
+        });
     }
 
     public deprecateCollections(path_start_with: string) {
@@ -130,18 +121,18 @@ export class CacheStore implements ICache {
     ) {
         let promise = Core.injectedServices.JsonapiStoreService.getObjet('collection.' + url);
         promise
-            .then((success: IDataCollection) => {
+            .then((data_collection: IDataCollection) => {
                 // build collection from store and resources from memory
                 // @todo success.data is a collection, not an array
-                if (this.fillCollectionWithArrrayAndResourcesOnMemory(success.data, collection)) {
+                if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
                     collection.$source = 'store'; // collection from storeservice, resources from memory
-                    collection.$cache_last_update = success._lastupdate_time;
+                    collection.$cache_last_update = data_collection._lastupdate_time;
                     resolve(collection);
 
                     return;
                 }
 
-                let promise2 = this.fillCollectionWithArrrayAndResourcesOnStore(success, include, collection);
+                let promise2 = this.fillCollectionWithArrrayAndResourcesOnStore(data_collection, include, collection);
                 promise2
                     .then(() => {
                         // just for precaution, we not rewrite server data
@@ -150,7 +141,7 @@ export class CacheStore implements ICache {
                             throw new Error('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
                         }
                         collection.$source = 'store'; // collection and resources from storeservice
-                        collection.$cache_last_update = success._lastupdate_time;
+                        collection.$cache_last_update = data_collection._lastupdate_time;
                         resolve(collection);
                     })
                     .catch(() => {
@@ -166,7 +157,7 @@ export class CacheStore implements ICache {
         let all_ok = true;
         for (let dataresource of dataresources) {
             let resource = this.getResourceFromMemory(dataresource);
-            if (resource.$is_new) {
+            if (resource.is_new) {
                 all_ok = false;
                 break;
             }
@@ -177,7 +168,10 @@ export class CacheStore implements ICache {
     }
 
     private getResourceFromMemory(dataresource: IDataResource): Resource {
-        return Converter.getService(dataresource.type).getOrCreateResource(dataresource.id);
+        let cachememory = Converter.getService(dataresource.type).cachememory;
+        let resource = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
+
+        return resource;
     }
 
     private async fillCollectionWithArrrayAndResourcesOnStore(
@@ -189,33 +183,87 @@ export class CacheStore implements ICache {
             (resolve: (value: object) => void, reject: (value: any) => void): void => {
                 // request resources from store
                 let temporalcollection = {};
-                let temporalarray = [];
-                let promises = [];
+                let requested_ids = [];
                 for (let dataresource of datacollection.data) {
-                    temporalcollection[dataresource.id] = Converter.getService(dataresource.type).getOrCreateResource(dataresource.id);
-                    temporalarray.push(temporalcollection[dataresource.id]);
-                    promises.push(this.getResource(temporalcollection[dataresource.id], include));
+                    let cachememory = Converter.getService(dataresource.type).cachememory;
+                    temporalcollection[dataresource.id] = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
+                    requested_ids.push(temporalcollection[dataresource.id].type + '.' + dataresource.id);
                 }
 
-                // build collection and resources from store
-                Promise.all(promises)
-                    .then(success2 => {
-                        if (datacollection.page) {
-                            // collection.page = datacollection.page; @todo
-                        }
-                        for (let key in temporalcollection) {
-                            let resource: Resource = temporalcollection[key];
-                            collection[resource.id] = resource; // collection from storeservice, resources from memory
-                        }
-                        collection.data = temporalarray;
-                        resolve(collection);
+                // new method
+                Core.injectedServices.JsonapiStoreService.getObjets(requested_ids)
+                    .then(store_data_resources => {
+                        Base.forEach(store_data_resources, data_resource => {
+                            temporalcollection[data_resource.id].fill({ data: data_resource });
+
+                            // include some times is a collection :S
+                            let include_promises: Array<Promise<object>> = [];
+                            Base.forEach(include, resource_alias => {
+                                this.fillRelationshipFromStore(temporalcollection[data_resource.id], resource_alias, include_promises);
+                            });
+
+                            temporalcollection[data_resource.id].lastupdate = data_resource._lastupdate_time;
+
+                            // no debo esperar a que se resuelvan los include
+                            if (include_promises.length === 0) {
+                                if (datacollection.page) {
+                                    collection.page.number = datacollection.page.number;
+                                }
+
+                                for (let key in temporalcollection) {
+                                    let resource: Resource = temporalcollection[key];
+                                    collection[resource.id] = resource; // collection from storeservice, resources from memory
+                                }
+
+                                resolve(temporalcollection);
+                            } else {
+                                // esperamos las promesas de los include antes de dar el resolve
+                                Promise.all(include_promises)
+                                    .then(success3 => {
+                                        if (datacollection.page) {
+                                            collection.page.number = datacollection.page.number;
+                                        }
+
+                                        for (let key in temporalcollection) {
+                                            let resource: Resource = temporalcollection[key];
+                                            collection[resource.id] = resource; // collection from storeservice, resources from memory
+                                        }
+
+                                        resolve(temporalcollection);
+                                    })
+                                    .catch(error3 => {
+                                        reject(error3);
+                                    });
+                            }
+                        });
                     })
-                    .catch(error2 => {
-                        reject(error2);
+                    .catch(err => {
+                        reject([]);
                     });
             }
         );
 
         return promise;
+    }
+
+    private fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
+        let resource_type = Converter.getService(resource.type).schema.relationships[resource_alias].type || resource_alias;
+
+        if (resource_alias in resource.relationships && 'type' in resource.relationships[resource_type].data) {
+            // hasOne
+            let related_resource = <IDataResource>resource.relationships[resource_type].data;
+            if (!('attributes' in related_resource)) {
+                // no está cargado aún
+                let builded_resource = this.getResourceFromMemory(related_resource);
+                if (builded_resource.is_new) {
+                    // no está en memoria, la pedimos a store
+                    include_promises.push(this.getResource(builded_resource));
+                } else {
+                    console.warn('ts-angular-json: esto no debería pasar #isdjf2l1a');
+                }
+                resource.addRelationship(builded_resource, resource_alias);
+            }
+        }
+        // else hasMany??
     }
 }

@@ -23,7 +23,8 @@
     "license": "MIT",
     "homepage": "https://github.com/reyesoft/ngx-jsonapi#readme",
     "dependencies": {
-        "localforage": "^1.5.2"
+        "localforage": "^1.5.2",
+        "localforage-getitems": "^1.4.2"
     },
     "peerDependencies": {
         "@angular/core": "^6.0.0"

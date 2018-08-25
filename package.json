@@ -153,6 +153,7 @@
     },
     "dependencies": {
         "localforage": "^1.5.2",
+        "localforage-getitems": "^1.4.2",
         "rxjs": "^6.2"
     },
     "jest": {

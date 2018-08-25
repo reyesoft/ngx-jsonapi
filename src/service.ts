@@ -76,13 +76,13 @@ export class Service<R extends Resource = Resource> {
 
         // CACHEMEMORY
         let resource = this.getOrCreateResource(id);
-        resource.$is_loading = true;
+        resource.is_loading = true;
 
         let subject = new BehaviorSubject<R>(resource);
 
         if (isLive(resource, params.ttl)) {
             subject.complete();
-            resource.$is_loading = false;
+            resource.is_loading = false;
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
             this.getService()
@@ -92,7 +92,7 @@ export class Service<R extends Resource = Resource> {
                         subject.next(resource);
                         throw new Error('No está viva la caché de localstorage');
                     }
-                    resource.$is_loading = false;
+                    resource.is_loading = false;
                     subject.next(resource);
                     subject.complete();
                 })
@@ -111,7 +111,7 @@ export class Service<R extends Resource = Resource> {
         Core.get(path.get()).subscribe(
             success => {
                 resource.fill(<IDataObject>success);
-                resource.$is_loading = false;
+                resource.is_loading = false;
                 this.getService().cachememory.setResource(resource);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
@@ -203,49 +203,46 @@ export class Service<R extends Resource = Resource> {
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
         if (isLive(temporary_collection, params.ttl)) {
-            temporary_collection.$source = 'memory';
-
+            temporary_collection.source = 'memory';
             subject.next(temporary_collection);
-            // } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            //     // STORE
-            //     temporary_collection.$is_loading = true;
+            subject.complete();
+        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+            // STORE
+            temporary_collection.is_loading = true;
 
-            //     this.getService()
-            //         .cachestore.getCollectionFromStorePromise(path.getForCache(), path.includes, temporary_collection)
-            //         .then(() => {
-            //             temporary_collection.$source = 'store';
-            //             temporary_collection.$is_loading = false;
+            this.getService()
+                .cachestore.getCollectionFromStorePromise(path.getForCache(), path.includes, temporary_collection)
+                .then(() => {
+                    temporary_collection.source = 'store';
 
-            //             // when load collection from store, we save collection on memory
-            //             this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
+                    // when load collection from store, we save collection on memory
+                    this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
 
-            //             // localfilter getted data
-            //             localfilter.filterCollection(temporary_collection, cached_collection);
-
-            //             if (Base.isObjectLive(temporal_ttl, temporary_collection.$cache_last_update)) {
-            //                 subject.next(temporary_collection);
-            //             } else {
-            //                 this.getAllFromServer(path, params, temporary_collection, cached_collection, subject);
-            //             }
-            //         })
-            //         .catch(() => {
-            //             this.getAllFromServer(path, params, temporary_collection, cached_collection, subject);
-            //         });
+                    if (isLive(temporary_collection, params.ttl)) {
+                        temporary_collection.is_loading = false;
+                        subject.next(temporary_collection);
+                        subject.complete();
+                    } else {
+                        this.getAllFromServer(path, params, temporary_collection, subject);
+                    }
+                })
+                .catch(() => {
+                    this.getAllFromServer(path, params, temporary_collection, subject);
+                });
         } else {
-            temporary_collection.$is_loading = true;
             this.getAllFromServer(path, params, temporary_collection, subject);
         }
-
-        subject.next(temporary_collection);
 
         return subject.asObservable();
     }
 
     protected getAllFromServer(path, params, temporary_collection: DocumentCollection<R>, subject: BehaviorSubject<DocumentCollection<R>>) {
+        temporary_collection.is_loading = true;
+        subject.next(temporary_collection);
         Core.get(path.get()).subscribe(
             success => {
-                temporary_collection.$source = 'server';
-                temporary_collection.$is_loading = false;
+                temporary_collection.source = 'server';
+                temporary_collection.is_loading = false;
 
                 // this create a new ID for every resource (for caching proposes)
                 // for example, two URL return same objects but with different attributes
@@ -257,7 +254,7 @@ export class Service<R extends Resource = Resource> {
                 }
 
                 temporary_collection.fill(<IDataCollection>success);
-                temporary_collection.$cache_last_update = Date.now();
+                temporary_collection.cache_last_update = Date.now();
 
                 this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -268,9 +265,9 @@ export class Service<R extends Resource = Resource> {
                 subject.complete();
             },
             error => {
-                // do not replace $source, because localstorage don't write if = server
-                // temporary_collection.$source = 'server';
-                temporary_collection.$is_loading = false;
+                // do not replace source, because localstorage don't write if = server
+                // temporary_collection.source = 'server';
+                temporary_collection.is_loading = false;
                 subject.next(temporary_collection);
                 subject.error(error);
             }
