@@ -27,7 +27,7 @@ export class CacheStore implements ICache {
                                 if (!('attributes' in related_resource)) {
                                     // no está cargado aún
                                     let builded_resource = this.getResourceFromMemory(related_resource);
-                                    if (builded_resource.is_new) {
+                                    if (builded_resource.$is_new) {
                                         // no está en memoria, la pedimos a store
                                         promises.push(this.getResource(builded_resource));
                                     } else {
@@ -38,7 +38,7 @@ export class CacheStore implements ICache {
                             }
                         });
 
-                        resource.lastupdate = success._lastupdate_time;
+                        resource.$lastupdate = success._lastupdate_time;
 
                         // no debo esperar a que se resuelvan los include
                         if (promises.length === 0) {
@@ -166,7 +166,7 @@ export class CacheStore implements ICache {
         let all_ok = true;
         for (let dataresource of dataresources) {
             let resource = this.getResourceFromMemory(dataresource);
-            if (resource.is_new) {
+            if (resource.$is_new) {
                 all_ok = false;
                 break;
             }

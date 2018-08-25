@@ -76,13 +76,13 @@ export class Service<R extends Resource = Resource> {
 
         // CACHEMEMORY
         let resource = this.getOrCreateResource(id);
-        resource.is_loading = true;
+        resource.$is_loading = true;
 
         let subject = new BehaviorSubject<R>(resource);
 
         if (isLive(resource, params.ttl)) {
             subject.complete();
-            resource.is_loading = false;
+            resource.$is_loading = false;
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
             this.getService()
@@ -92,7 +92,7 @@ export class Service<R extends Resource = Resource> {
                         subject.next(resource);
                         throw new Error('No está viva la caché de localstorage');
                     }
-                    resource.is_loading = false;
+                    resource.$is_loading = false;
                     subject.next(resource);
                     subject.complete();
                 })
@@ -111,7 +111,7 @@ export class Service<R extends Resource = Resource> {
         Core.get(path.get()).subscribe(
             success => {
                 resource.fill(<IDataObject>success);
-                resource.is_loading = false;
+                resource.$is_loading = false;
                 this.getService().cachememory.setResource(resource);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);

@@ -18,7 +18,7 @@ export class CacheMemory<R extends Resource = Resource> {
     }
 
     public isResourceLive(id: string, ttl: number): boolean {
-        return this.resources[id] && Date.now() <= this.resources[id].lastupdate + ttl * 1000;
+        return this.resources[id] && Date.now() <= this.resources[id].$lastupdate + ttl * 1000;
     }
 
     public getOrCreateCollection(url: string): DocumentCollection<R> {
@@ -64,7 +64,7 @@ export class CacheMemory<R extends Resource = Resource> {
         } else {
             this.resources[resource.id] = resource;
         }
-        this.resources[resource.id].lastupdate = update_lastupdate ? Date.now() : 0;
+        this.resources[resource.id].$lastupdate = update_lastupdate ? Date.now() : 0;
     }
 
     public deprecateCollections(path_start_with: string): boolean {

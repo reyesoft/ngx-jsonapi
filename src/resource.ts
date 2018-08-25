@@ -14,25 +14,24 @@ import { Observable, Subject, of } from 'rxjs';
 import { ResourceRelationshipsConverter } from './services/resource-relationships-converter';
 
 export class Resource implements ICacheable {
-    public is_new = true;
-    public is_loading = false;
-    public is_saving = false;
     public id: string = '';
     public type: string = '';
     public attributes: IAttributes = {};
     public relationships: IRelationships = {};
     public links: ILinks = {};
-    public lastupdate: number;
 
+    public $is_new = true;
+    public $is_saving = false;
     public $is_loading = true;
     public $source: 'new' | 'store' = 'new';
     public $cache_last_update = 0;
+    public $lastupdate: number;
 
     public reset(): void {
         this.id = '';
         this.attributes = {};
         this.relationships = {};
-        this.is_new = true;
+        this.$is_new = true;
 
         let relationships = this.getService().schema.relationships;
         for (const key in relationships) {
@@ -135,7 +134,7 @@ export class Resource implements ICacheable {
         this.id = data_object.data.id || '';
         this.attributes = data_object.data.attributes || this.attributes;
 
-        this.is_new = false;
+        this.$is_new = false;
         let service = Converter.getService(data_object.data.type);
 
         // esto previene la creación indefinida de resources
@@ -219,10 +218,10 @@ export class Resource implements ICacheable {
 
     public save<T extends Resource>(params?: IParamsResource): Observable<object> {
         params = { ...Base.ParamsResource, ...params };
-        if (this.is_saving || this.is_loading) {
+        if (this.$is_saving || this.$is_loading) {
             return of({});
         }
-        this.is_saving = true;
+        this.$is_saving = true;
 
         let subject = new Subject<object>();
         let object = this.toObject(params);
@@ -236,7 +235,7 @@ export class Resource implements ICacheable {
 
         Core.exec(path.get(), this.id ? 'PATCH' : 'POST', object, true).subscribe(
             success => {
-                this.is_saving = false;
+                this.$is_saving = false;
 
                 // foce reload cache (for example, we add a new element)
                 if (!this.id) {
@@ -256,7 +255,7 @@ export class Resource implements ICacheable {
                 subject.complete();
             },
             error => {
-                this.is_saving = false;
+                this.$is_saving = false;
                 subject.error('data' in error ? error.data : error);
             }
         );

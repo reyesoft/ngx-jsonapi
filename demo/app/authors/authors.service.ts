@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Autoregister, Service, ISchema, Resource, IRelationshipCollection } from 'ngx-jsonapi';
+import { Autoregister, Service, ISchema, Resource, DocumentCollection } from 'ngx-jsonapi';
 import { Book } from '../books/books.service';
 import { Photo } from '../photos/photos.service';
 
@@ -13,8 +13,8 @@ export class Author extends Resource {
     };
 
     public relationships: {
-        books: IRelationshipCollection<Book>;
-        photos: IRelationshipCollection<Photo>;
+        books: DocumentCollection<Book>;
+        photos: DocumentCollection<Photo>;
     };
 }
 

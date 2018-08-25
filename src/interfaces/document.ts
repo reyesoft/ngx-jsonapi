@@ -24,9 +24,6 @@ export interface IDocumentData<R extends Resource = Resource> extends IDocument 
     content?: 'collection' | 'resource' | 'id' | 'ids' | '';
     included?: Array<any>;
 
-    // $is_loading: boolean;
-    // $source: 'new' | 'memory' | 'store' | 'server';
-    // $cache_last_update: number;
     page?: IPage;
     trackBy?(r: Resource): string;
 }
