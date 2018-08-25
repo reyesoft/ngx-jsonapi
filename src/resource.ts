@@ -44,7 +44,7 @@ export class Resource implements ICacheable {
     }
 
     public toObject(params?: IParamsResource): IDataObject {
-        params = { ...{}, ...Base.Params, ...params };
+        params = { ...{}, ...Base.ParamsResource, ...params };
 
         let relationships = {};
         let included = [];
@@ -192,7 +192,7 @@ export class Resource implements ICacheable {
     }
 
     public save<T extends Resource>(params?: IParamsResource): Observable<object> {
-        params = { ...Base.Params, ...params };
+        params = { ...Base.ParamsResource, ...params };
         if (this.is_saving || this.is_loading) {
             return of({});
         }

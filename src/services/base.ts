@@ -2,11 +2,26 @@ import { ISchema, IParamsCollection, IParamsResource } from '../interfaces';
 import { Page } from './page';
 import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
+import { IParams } from '../interfaces/params';
 
 export class Base {
-    public static Params: IParamsResource = {
-        id: '',
-        include: []
+    public static ParamsResource: IParamsResource = {
+        beforepath: '',
+        ttl: 1,
+        include: [],
+        id: ''
+    };
+
+    public static ParamsCollection: IParamsCollection = {
+        beforepath: '',
+        ttl: 1,
+        include: [],
+        remotefilter: {},
+        smartfilter: {},
+        sort: [],
+        page: new Page(),
+        storage_ttl: 0,
+        cachehash: ''
     };
 
     public static Schema: ISchema = {

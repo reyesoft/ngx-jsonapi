@@ -66,7 +66,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     public get(id: string, params: IParamsResource = {}): Observable<R> {
-        params = { ...Base.Params, ...params };
+        params = { ...Base.ParamsResource, ...params };
 
         // http request
         let path = new PathBuilder();
@@ -167,7 +167,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     public delete(id: string, params?: Object): Observable<void> {
-        params = { ...{}, ...Base.Params, params };
+        params = { ...{}, ...Base.ParamsResource, params };
 
         // http request
         let path = new PathBuilder();
@@ -191,7 +191,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     public all(params: IParamsCollection = {}): Observable<DocumentCollection<R>> {
-        params = { ...{ remotefilter: {}, cachehash: '', include: [], ttl: null }, ...params };
+        params = { ...Base.ParamsCollection, ...params };
 
         let path = new PathCollectionBuilder();
         path.applyParams(this, params);

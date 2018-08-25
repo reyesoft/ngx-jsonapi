@@ -30,9 +30,6 @@ export class BooksComponent {
         };
 
         let books$ = this.booksService.all({
-            localfilter: {
-                // name: 'Some name'
-            },
             remotefilter: remotefilter,
             page: { number: 1 },
             include: ['author', 'photos']
