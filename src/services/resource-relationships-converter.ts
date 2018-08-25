@@ -61,9 +61,7 @@ export class ResourceRelationshipsConverter {
         relation_alias = relation_alias || relation_type;
         if (!this.getService(relation_type)) {
             console.warn(
-                'The relationship',
-                relation_alias,
-                '(type',
+                'The relationship ' + relation_alias + ' (type',
                 relation_type,
                 ') cant be generated because service for this type has not been injected.'
             );
