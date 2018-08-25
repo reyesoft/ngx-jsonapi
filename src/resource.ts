@@ -151,25 +151,11 @@ export class Resource implements ICacheable {
     }
 
     public addRelationships(resources: Array<Resource>, type_alias: string): void {
-        // let collection: DocumentCollection;
-
         if (!(type_alias in this.relationships)) {
             this.relationships[type_alias] = new DocumentCollection();
-        } else {
-            // collection = (<DocumentCollection>this.relationships[type_alias]);
-            // for (const key in (collection).data) {
-            //     let resource: Resource = collection.data[key];
-            //     if (!(resource.id in resources)) {
-            //         delete collection.data[resource.id];
-            //     }
-            // }
         }
 
         this.relationships[type_alias].data = resources;
-
-        // for (const resource of resources) {
-        //     collection.data.push(resource);
-        // }
     }
 
     public addRelationshipsArray<R extends Resource>(resources: Array<R>, type_alias?: string): void {
