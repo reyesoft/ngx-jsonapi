@@ -11,6 +11,7 @@ import { ICacheable } from './interfaces/cacheable';
 import { isArray } from 'util';
 import { IDataCollection } from './interfaces/data-collection';
 import { Observable, Subject, of } from 'rxjs';
+import { ResourceRelationshipsConverter } from './services/resource-relationships-converter';
 
 export class Resource implements ICacheable {
     public is_new = true;
@@ -129,7 +130,29 @@ export class Resource implements ICacheable {
     }
 
     public fill(data_object: IDataObject): void {
-        Converter.build(data_object, this);
+        let included_resources = Converter.buildIncluded(data_object);
+
+        this.id = data_object.data.id || '';
+        this.attributes = data_object.data.attributes || {};
+
+        this.is_new = false;
+        let service = Converter.getService(data_object.data.type);
+
+        // esto previene la creación indefinida de resources
+        // el servicio debe estar sino no tenemos el schema
+        if (!this.relationships || !service) {
+            return;
+        }
+
+        Converter.getService(this.type).parseFromServer(this.attributes);
+
+        new ResourceRelationshipsConverter(
+            Converter.getService,
+            data_object.data.relationships || {},
+            this.relationships,
+            included_resources,
+            service.schema
+        ).buildRelationships();
     }
 
     public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
@@ -221,7 +244,7 @@ export class Resource implements ICacheable {
                 // is a resource?
                 if ('id' in success.data) {
                     this.id = success.data.id;
-                    Converter.build(<IDataCollection>success, this);
+                    this.fill(<IDataObject>success);
                 } else if (isArray(success.data)) {
                     console.warn('Server return a collection when we save()', success.data);
                 }

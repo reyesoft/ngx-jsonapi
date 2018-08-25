@@ -14,7 +14,7 @@ export class CacheStore implements ICache {
             (resolve, reject): void => {
                 Core.injectedServices.JsonapiStoreService.getObjet(resource.type + '.' + resource.id)
                     .then(success => {
-                        Converter.build({ data: success, builded: false, content: '' }, resource);
+                        resource.fill({ data: success, builded: false, content: '' });
 
                         let promises: Array<Promise<object>> = [];
 

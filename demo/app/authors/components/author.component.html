@@ -34,7 +34,7 @@
     <tr *ngFor="let book of author.relationships.books.data">
         <td>{{ book.id }}</td>
         <td>
-            <a>{{ book.attributes.title }}</a>
+            <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
         </td>
         <td>{{ book.attributes.date_published | date }}</td>
     </tr>

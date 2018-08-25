@@ -11,6 +11,7 @@ import { isLive } from './common';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDataObject } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
+import { IDataCollection } from './interfaces/data-collection';
 
 export class Service<R extends Resource = Resource> {
     public schema: ISchema;
@@ -255,7 +256,7 @@ export class Service<R extends Resource = Resource> {
                     }
                 }
 
-                temporary_collection.fill(<IDataObject>success);
+                temporary_collection.fill(<IDataCollection>success);
                 temporary_collection.$cache_last_update = Date.now();
 
                 this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);

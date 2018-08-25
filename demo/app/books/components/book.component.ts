@@ -4,7 +4,7 @@ import { Resource } from 'ngx-jsonapi';
 
 import { forEach } from '../../../foreach';
 import { AuthorsService } from '../../authors/authors.service';
-import { BooksService } from './../books.service';
+import { BooksService, Book } from './../books.service';
 import { PhotosService } from '../../photos/photos.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { PhotosService } from '../../photos/photos.service';
     templateUrl: './book.component.html'
 })
 export class BookComponent {
-    public book: Resource;
+    public book: Book;
 
     public constructor(
         protected authorsService: AuthorsService,
@@ -21,25 +21,14 @@ export class BookComponent {
         private route: ActivatedRoute
     ) {
         route.params.subscribe(({ id }) => {
-            let book$ = booksService.get(
-                id,
-                { include: ['author', 'photos'] }
-            );
-            book$.subscribe(
+            let book$ = booksService.get(id, { include: ['author', 'photos'] }).subscribe(
                 book => {
                     this.book = book;
                     console.log('success book', this.book);
                 },
                 error => console.log('error books controll', error)
             );
-            book$.toPromise().then(
-                book => {
-                    console.log('PROMISE success book', this.book);
-                },
-                error => console.log('PROMISE error books controll', error)
-            );
         });
-
     }
 
     public getAuthorName(book: Resource): string {

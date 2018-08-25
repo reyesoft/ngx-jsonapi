@@ -24,7 +24,7 @@ export class PathCollectionBuilder extends PathBuilder {
                 this.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.size + '=' + params.page.size);
             }
         }
-        if (params.sort) {
+        if (params.sort.length) {
             this.addParam('sort=' + params.sort.join(','));
         }
     }

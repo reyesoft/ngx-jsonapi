@@ -55,21 +55,12 @@ export class Converter<R extends Resource> {
         return resource_service;
     }
 
-    /**
-     * @todo deprecated
-     */
-    public static build(document_from: IDataCollection | IDataObject, resource_dest: Resource | DocumentCollection) {
-        // instancio los include y los guardo en included arrary
-        let included_resources: IResourcesByType = {};
+    public static buildIncluded(document_from: IDataCollection | IDataObject): IResourcesByType {
         if ('included' in document_from) {
-            included_resources = Converter.json_array2resources_array_by_type(document_from.included);
+            return Converter.json_array2resources_array_by_type(document_from.included);
         }
 
-        if (Array.isArray(document_from.data)) {
-            Converter._buildCollection(<IDataCollection>document_from, <DocumentCollection>resource_dest, included_resources);
-        } else {
-            Converter._buildResource(document_from.data, <Resource>resource_dest, included_resources);
-        }
+        return {};
     }
 
     /* return a resource type(resoruce_service) with data(data) */
@@ -99,59 +90,5 @@ export class Converter<R extends Resource> {
             let resource = Converter.json2resource(data, false);
             destination_array[resource.type + '_' + resource.id] = resource;
         }
-    }
-
-    private static _buildCollection(
-        collection_data_from: IDataCollection,
-        collection_dest: DocumentCollection,
-        included_resources: IResourcesByType
-    ) {
-        // sometime get Cannot set property 'number' of undefined (page)
-        if (collection_dest.page && collection_data_from.meta) {
-            collection_dest.page.number = collection_data_from.meta.page || 1;
-            collection_dest.page.resources_per_page = collection_data_from.meta.resources_per_page || null;
-            collection_dest.page.total_resources = collection_data_from.meta.total_resources || null;
-        }
-
-        // convert and add new dataresoures to final collection
-        let new_ids = {};
-        collection_dest.data = [];
-        for (let dataresource of collection_data_from.data) {
-            let res = collection_dest.find(dataresource.id) || Converter.getService(dataresource.type).getOrCreateResource(dataresource.id);
-            Converter._buildResource(dataresource, res, included_resources);
-            new_ids[dataresource.id] = dataresource.id;
-            collection_dest.data.push(res);
-        }
-
-        // remove old members of collection (bug, for example, when request something like orders/10/details and has new ids)
-        Base.forEach(collection_dest, resource => {
-            if (!(resource.id in new_ids)) {
-                delete collection_dest[resource.id];
-            }
-        });
-    }
-
-    private static _buildResource(resource_data_from: IDataResource, resource_dest: Resource, included_resources: IResourcesByType) {
-        resource_dest.id = resource_data_from.id || '';
-        resource_dest.attributes = resource_data_from.attributes || {};
-
-        resource_dest.is_new = false;
-        let service = Converter.getService(resource_data_from.type);
-
-        // esto previene la creación indefinida de resources
-        // el servicio debe estar sino no tenemos el schema
-        if (!resource_dest.relationships || !service) {
-            return;
-        }
-
-        Converter.getService(resource_data_from.type).parseFromServer(resource_dest.attributes);
-
-        new ResourceRelationshipsConverter(
-            Converter.getService,
-            resource_data_from.relationships || {},
-            resource_dest.relationships,
-            included_resources,
-            service.schema
-        ).buildRelationships();
     }
 }
