@@ -52,10 +52,10 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         }
 
         // remove old members of collection (bug, for example, when request something like orders/10/details and has new ids)
-        Base.forEach(this, resource => {
-            if (!(resource.id in new_ids)) {
-                delete this[resource.id];
+        for (let i; i < this.data.length; i++) {
+            if (!(this.data[i].id in new_ids)) {
+                delete this.data[i];
             }
-        });
+        }
     }
 }

@@ -3,7 +3,6 @@ import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
 import { Core } from '../core';
 import { Base } from './base';
-import { IObject } from '../interfaces/object';
 import { Resource } from '../resource';
 import { Converter } from './converter';
 import { DocumentCollection } from '../document-collection';
@@ -48,6 +47,7 @@ export class CacheStore implements ICache {
     }
 
     public setResource(resource: Resource) {
+        console.log('voy a hacer setresource', resource);
         Core.injectedServices.JsonapiStoreService.saveObject(resource.type + '.' + resource.id, resource.toObject().data);
     }
 
@@ -68,7 +68,7 @@ export class CacheStore implements ICache {
     public setCollection(url: string, collection: DocumentCollection, include: Array<string>) {
         let tmp = { data: {}, page: {} };
         let resources_for_save: { [uniqkey: string]: Resource } = {};
-        Base.forEach(collection, (resource: Resource) => {
+        for (let resource of collection.data) {
             this.setResource(resource);
             tmp.data[resource.id] = { id: resource.id, type: resource.type };
 
@@ -85,7 +85,8 @@ export class CacheStore implements ICache {
                     });
                 }
             });
-        });
+        }
+
         tmp.page = collection.page;
         Core.injectedServices.JsonapiStoreService.saveObject('collection.' + url, tmp);
 
