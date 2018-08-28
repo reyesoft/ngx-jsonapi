@@ -3,10 +3,7 @@ import { Page } from './services/page';
 import { Document } from './document';
 import { ICacheable } from './interfaces/cacheable';
 import { Converter } from './services/converter';
-import { IDataObject } from './interfaces/data-object';
 import { IDataCollection } from './interfaces/data-collection';
-import { Base } from './services/base';
-import { IResourcesByType } from './interfaces';
 
 export class DocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
     public data: Array<R> = [];

@@ -14,7 +14,7 @@ import { IDocumentData } from './interfaces/document';
 export class Core {
     public static me: Core;
     public static injectedServices: {
-        JsonapiStoreService: any;
+        JsonapiStoreService: JsonapiStore;
         JsonapiHttp: JsonapiHttpImported;
         rsJsonapiConfig: JsonapiConfig;
     };

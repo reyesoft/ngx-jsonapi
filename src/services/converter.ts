@@ -2,7 +2,7 @@
 import { Core } from '../core';
 import { Resource } from '../resource';
 import { Service } from '../service';
-import { IResourcesById, IResourcesByType } from '../interfaces';
+import { IResourcesByType, IObjectsById } from '../interfaces';
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
@@ -15,12 +15,12 @@ export class Converter<R extends Resource> {
     Convert json arrays (like included) to an indexed Resources array by [type][id]
     */
     public static json_array2resources_array_by_type(json_array: Array<IDataResource>): IResourcesByType {
-        let all_resources: IResourcesById = {};
+        let all_resources: IObjectsById<Resource> = {};
         let resources_by_type: IResourcesByType = {};
 
         Converter.json_array2resources_array(json_array, all_resources);
         for (const key in all_resources) {
-            let resource: Resource = all_resources[key];
+            let resource = all_resources[key];
 
             if (!(resource.type in resources_by_type)) {
                 resources_by_type[resource.type] = {};
@@ -85,7 +85,7 @@ export class Converter<R extends Resource> {
     /*
     Convert json arrays (like included) to an Resources arrays without [keys]
     */
-    private static json_array2resources_array(json_array: Array<IDataResource>, destination_array: IResourcesById = {}): void {
+    private static json_array2resources_array(json_array: Array<IDataResource>, destination_array: IObjectsById<Resource> = {}): void {
         for (let data of json_array) {
             let resource = Converter.json2resource(data, false);
             destination_array[resource.type + '_' + resource.id] = resource;

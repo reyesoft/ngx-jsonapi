@@ -105,7 +105,7 @@
         "@angular/router": "^6.0.0",
         "@types/fs-extra": "^2.1.0",
         "@types/glob": "^5.0.33",
-        "@types/jasmine": "2.5.45",
+        "@types/jasmine": "^2.8.8",
         "@types/jasminewd2": "^2.0.2",
         "@types/jest": "^20.0.2",
         "@types/lodash": "^4.14.80",

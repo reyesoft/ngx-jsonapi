@@ -4,20 +4,20 @@ import { Base } from './services/base';
 import { PathBuilder } from './services/path-builder';
 import { Converter } from './services/converter';
 import { IDataObject } from './interfaces/data-object';
-import { IAttributes, IParamsResource, ILinks, IRelationships } from './interfaces';
+import { IAttributes, IParamsResource, ILinks } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { DocumentResource } from './document-resource';
 import { ICacheable } from './interfaces/cacheable';
 import { isArray } from 'util';
-import { IDataCollection } from './interfaces/data-collection';
 import { Observable, Subject, of } from 'rxjs';
 import { ResourceRelationshipsConverter } from './services/resource-relationships-converter';
+import { IRelationships } from './interfaces/relationship';
 
 export class Resource implements ICacheable {
     public id: string = '';
     public type: string = '';
     public attributes: IAttributes = {};
-    public relationships: IRelationships = {};
+    public relationships: IRelationships;
     public links: ILinks = {};
 
     public is_new = true;
@@ -201,7 +201,7 @@ export class Resource implements ICacheable {
             if (!(id in this.relationships[type_alias].data)) {
                 return false;
             }
-            delete this.relationships[type_alias].data[id];
+            // delete this.relationships[type_alias].data[id];  @todo
         } else {
             this.relationships[type_alias].data = [];
         }

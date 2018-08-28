@@ -7,15 +7,19 @@ export class ResourceFunctions {
 
         // remove relationships on destination resource
         for (let type_alias in destination.relationships) {
+            // problem with no declared services
+            if (destination.relationships[type_alias].data === undefined) {
+                continue;
+            }
+
             if (!(type_alias in source.relationships)) {
                 delete destination.relationships[type_alias];
             } else {
-                // this resource is a collection?
-                if (!('id' in destination.relationships[type_alias].data)) {
-                    for (let id in destination.relationships[type_alias].data) {
-                        if (!(id in source.relationships[type_alias].data)) {
-                            delete destination.relationships[type_alias];
-                        }
+                // relation is a collection
+                let collection = <DocumentCollection>destination.relationships[type_alias];
+                for (let resource of collection.data) {
+                    if (collection.find(resource.id) === null) {
+                        delete destination.relationships[type_alias];
                     }
                 }
             }
@@ -23,6 +27,11 @@ export class ResourceFunctions {
 
         // add source relationships to destination
         for (let type_alias in source.relationships) {
+            // problem with no declared services
+            if (source.relationships[type_alias].data === undefined) {
+                continue;
+            }
+
             if ('id' in source.relationships[type_alias].data) {
                 destination.addRelationship(<Resource>source.relationships[type_alias].data, type_alias);
             } else {

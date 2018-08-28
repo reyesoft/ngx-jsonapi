@@ -1,8 +1,11 @@
 import * as localForage from 'localforage';
+import 'localforage-getitems';
 import { Base } from '../services/base';
-import { IStoreObject } from '../interfaces';
-import { Deferred } from '../shared/deferred';
-import { noop } from 'rxjs';
+import { noop, Subject, Observable } from 'rxjs';
+import { IDataResource } from '../interfaces/data-resource';
+import { IDataCollection } from '../interfaces/data-collection';
+import { IObjectsById } from '../interfaces';
+import { Resource } from '../resource';
 
 interface IStoreElement {
     time: number;
@@ -12,7 +15,11 @@ interface IStoreElement2 {
     _lastupdate_time: number;
 }
 
-export class StoreService {
+interface IDataResourceStorage extends IDataResource {
+    _lastupdate_time: number;
+}
+
+export class StoreService /* implements IStoreService */ {
     private globalstore: LocalForage;
     private allstore: LocalForage;
 
@@ -21,31 +28,37 @@ export class StoreService {
             name: 'jsonapiglobal'
         });
         this.allstore = localForage.createInstance({ name: 'allstore' });
+        localForage.getItems([]);
         this.checkIfIsTimeToClean();
     }
 
-    public async getObjet(key: string): Promise<object> {
-        let deferred: Deferred<object> = new Deferred();
+    public getObjet(type: 'collection', url: string): Observable<IDataCollection>;
+    public getObjet(type: string, id: string): Observable<IDataResource>;
+    public getObjet(type: 'collection' | string, id_or_url: string): Observable<IDataCollection | IDataResource> {
+        let subject = new Subject<IDataResource | IDataCollection>();
 
         this.allstore
-            .getItem('jsonapi.' + key)
+            .getItem<IDataResource | IDataCollection>('jsonapi.' + type + '.' + id_or_url)
             .then(success => {
-                deferred.resolve(success);
+                if (success === null) {
+                    subject.error(null);
+                } else {
+                    subject.next(success);
+                }
+                subject.complete();
             })
-            .catch(error => {
-                deferred.reject(error);
-            });
+            .catch(error => subject.next(error));
 
-        return deferred.promise;
+        return subject.asObservable();
     }
 
-    public async getObjets(keys: Array<string>): Promise<object> {
-        return this.allstore.getItem('jsonapi.' + keys[0]);
+    public async getDataResources(keys: Array<string>): Promise<IObjectsById<IDataResourceStorage>> {
+        return this.allstore.getItems(keys.map(key => 'jsonapi.' + key));
     }
 
-    public saveObject(key: string, value: IStoreObject): void {
-        value._lastupdate_time = Date.now();
-        this.allstore.setItem('jsonapi.' + key, value);
+    public saveObject(type: 'collection' | string, url_or_id: string, value: IDataResource | IDataCollection): void {
+        // value._lastupdate_time = Date.now();
+        this.allstore.setItem('jsonapi.' + type + '.' + url_or_id, value);
     }
 
     public clearCache() {

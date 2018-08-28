@@ -12,6 +12,7 @@ import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDataObject } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection } from './interfaces/data-collection';
+import { timeout } from 'q';
 
 export class Service<R extends Resource = Resource> {
     public schema: ISchema;
@@ -205,30 +206,34 @@ export class Service<R extends Resource = Resource> {
         if (isLive(temporary_collection, params.ttl)) {
             temporary_collection.source = 'memory';
             subject.next(temporary_collection);
-            subject.complete();
+            setTimeout(() => subject.complete(), 0);
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // STORE
             temporary_collection.is_loading = true;
 
             this.getService()
-                .cachestore.getCollectionFromStorePromise(path.getForCache(), path.includes, temporary_collection)
-                .then(() => {
-                    temporary_collection.source = 'store';
+                .cachestore.getCollectionFromStore(path.getForCache(), path.includes, temporary_collection)
+                .subscribe(
+                    () => {
+                        temporary_collection.source = 'store';
+                        console.log('xxxxxxxxxxxxxxxxxx--->', temporary_collection.data);
 
-                    // when load collection from store, we save collection on memory
-                    this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
+                        // when load collection from store, we save collection on memory
+                        this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
 
-                    if (isLive(temporary_collection, params.ttl)) {
-                        temporary_collection.is_loading = false;
-                        subject.next(temporary_collection);
-                        subject.complete();
-                    } else {
+                        if (isLive(temporary_collection, params.ttl)) {
+                            temporary_collection.is_loading = false;
+                            subject.next(temporary_collection);
+                            subject.complete();
+                        } else {
+                            this.getAllFromServer(path, params, temporary_collection, subject);
+                        }
+                    },
+                    err => {
+                        console.log('no había nada en storage0', err);
                         this.getAllFromServer(path, params, temporary_collection, subject);
                     }
-                })
-                .catch(() => {
-                    this.getAllFromServer(path, params, temporary_collection, subject);
-                });
+                );
         } else {
             this.getAllFromServer(path, params, temporary_collection, subject);
         }
@@ -252,7 +257,6 @@ export class Service<R extends Resource = Resource> {
                         resource.id = resource.id + params.cachehash;
                     }
                 }
-
                 temporary_collection.fill(<IDataCollection>success);
                 temporary_collection.cache_last_update = Date.now();
 

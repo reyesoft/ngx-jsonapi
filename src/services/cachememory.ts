@@ -3,9 +3,10 @@ import { Resource } from '../resource';
 import { Converter } from './converter';
 import { ResourceFunctions } from './resource-functions';
 import { DocumentCollection } from '../document-collection';
+import { IObjectsById } from '../interfaces';
 
 export class CacheMemory<R extends Resource = Resource> {
-    public resources: { [id: string]: Resource } = {};
+    public resources: IObjectsById<Resource> = {};
     private collections: { [url: string]: DocumentCollection<R> } = {};
     private collections_lastupdate: { [url: string]: number } = {};
 

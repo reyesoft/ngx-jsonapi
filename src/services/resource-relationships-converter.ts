@@ -1,10 +1,10 @@
-import { IRelationships, ISchema, IResourcesByType } from '../interfaces';
+import { ISchema, IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataResource } from '../interfaces/data-resource';
 import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
-import { noop } from 'rxjs';
+import { IRelationships } from '../interfaces/relationship';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;
@@ -93,7 +93,7 @@ export class ResourceRelationshipsConverter {
             this.relationships_dest[relation_data_key].data == null ||
             relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_data_key].data).id
         ) {
-            this.relationships_dest[relation_data_key].data = [];
+            this.relationships_dest[relation_data_key].data = new Resource();
         }
 
         // trae datos o cambió resource? actualizamos!
@@ -103,11 +103,13 @@ export class ResourceRelationshipsConverter {
             (<Resource>this.relationships_dest[relation_data_key].data).id !== relation_data_from.data.id
         ) {
             let resource_data = this.__buildRelationship(relation_data_from.data, this.included_resources);
-            this.relationships_dest[relation_data_key].data = resource_data;
+            if (resource_data) {
+                this.relationships_dest[relation_data_key].data = resource_data;
+            }
         }
     }
 
-    private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): Resource | IDataResource {
+    private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): Resource {
         if (resource_data_from.type in included_array && resource_data_from.id in included_array[resource_data_from.type]) {
             // it's in included
             let data = included_array[resource_data_from.type][resource_data_from.id];
@@ -121,13 +123,14 @@ export class ResourceRelationshipsConverter {
             let service = this.getService(resource_data_from.type);
             if (service && resource_data_from.id in service.cachememory.resources) {
                 return service.cachememory.resources[resource_data_from.id];
-            } else {
-                // we dont have information on included or memory. try pass to store
-                if (service) {
-                    service.cachestore.getResource(resource_data_from).catch(noop);
-                }
+                // } else {
+                //      undelcared reservice
+                //     // we dont have information on included or memory. try pass to store
+                //     if (service) {
+                //         service.cachestore.getResource(resource_data_from).catch(noop);
+                //     }
 
-                return resource_data_from;
+                //     return ;
             }
         }
     }
