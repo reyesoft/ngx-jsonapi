@@ -11,11 +11,11 @@ interface IStoreElement {
     time: number;
 }
 
-interface IStoreElement2 {
+interface IDataResourceStorage extends IDataResource {
     _lastupdate_time: number;
 }
 
-interface IDataResourceStorage extends IDataResource {
+interface IDataCollectionStorage extends IDataCollection {
     _lastupdate_time: number;
 }
 
@@ -56,9 +56,14 @@ export class StoreService /* implements IStoreService */ {
         return this.allstore.getItems(keys.map(key => 'jsonapi.' + key));
     }
 
-    public saveObject(type: 'collection' | string, url_or_id: string, value: IDataResource | IDataCollection): void {
-        // value._lastupdate_time = Date.now();
-        this.allstore.setItem('jsonapi.' + type + '.' + url_or_id, value);
+    public saveResource(type: string, url_or_id: string, value: IDataResource): void {
+        let data_resource_storage: IDataResourceStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
+        this.allstore.setItem('jsonapi.' + type + '.' + url_or_id, data_resource_storage);
+    }
+
+    public saveCollection(url_or_id: string, value: IDataCollection): void {
+        let data_collection_storage: IDataCollectionStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
+        this.allstore.setItem('jsonapi.collection.' + url_or_id, data_collection_storage);
     }
 
     public clearCache() {
@@ -75,7 +80,7 @@ export class StoreService /* implements IStoreService */ {
                         // key of stored object starts with key_start_with
                         this.allstore
                             .getItem(key)
-                            .then((success2: IStoreElement2) => {
+                            .then((success2: IDataCollectionStorage | IDataResourceStorage) => {
                                 success2._lastupdate_time = 0;
                                 this.allstore.setItem(key, success2);
                             })
@@ -114,10 +119,8 @@ export class StoreService /* implements IStoreService */ {
                     // recorremos cada item y vemos si es tiempo de removerlo
                     this.allstore
                         .getItem(key)
-                        .then((success2: IStoreElement2) => {
-                            // es tiempo de removerlo?
+                        .then((success2: IDataCollectionStorage | IDataResourceStorage) => {
                             if (Date.now() >= success2._lastupdate_time + 24 * 3600 * 1000) {
-                                // removemos!!
                                 this.allstore.removeItem(key);
                             }
                         })

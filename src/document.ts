@@ -12,7 +12,4 @@ export class Document implements IDocumentData {
     public source: 'new' | 'memory' | 'store' | 'server' = 'new';
     public cache_last_update = 0;
     public schema: ISchema;
-
-    // for problem detection v1 @ todo remove next line
-    [key: string]: boolean | string | number | ISchema | Array<Resource> | Function | Page;
 }

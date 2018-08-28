@@ -49,7 +49,7 @@ export class CacheStore implements ICache {
     }
 
     public setResource(resource: Resource) {
-        Core.injectedServices.JsonapiStoreService.saveObject(resource.type, resource.id, resource.toObject().data);
+        Core.injectedServices.JsonapiStoreService.saveResource(resource.type, resource.id, resource.toObject().data);
     }
 
     public setCollection(url: string, collection: DocumentCollection, include: Array<string>) {
@@ -75,7 +75,7 @@ export class CacheStore implements ICache {
         }
 
         tmp.page = collection.page;
-        Core.injectedServices.JsonapiStoreService.saveObject('collection', url, <IDataCollection>tmp);
+        Core.injectedServices.JsonapiStoreService.saveCollection(url, <IDataCollection>tmp);
 
         Base.forEach(resources_for_save, resource_for_save => {
             if (!('is_new' in resource_for_save)) {
@@ -108,27 +108,24 @@ export class CacheStore implements ICache {
                 // build collection from store and resources from memory
                 // @todo success.data is a collection, not an array
                 if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
-                    collection.$source = 'store'; // collection from storeservice, resources from memory
-                    collection.$cache_last_update = data_collection._lastupdate_time;
+                    collection.source = 'store'; // collection from storeservice, resources from memory
+                    collection.cache_last_update = data_collection._lastupdate_time;
                     subject.next(collection);
                     subject.complete();
-                    console.log('--2-------->', url, data_collection.data);
 
                     return;
                 }
-                console.log('----3------>', url, data_collection.data);
 
                 let promise2 = this.fillCollectionWithArrrayAndResourcesOnStore(data_collection, include, collection);
                 promise2
                     .then(() => {
-                        console.log('----4------>', url, data_collection.data);
                         // just for precaution, we not rewrite server data
-                        if (collection.$source !== 'new') {
-                            console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#', collection.$source);
+                        if (collection.source !== 'new') {
+                            console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#', collection);
                             throw new Error('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
                         }
-                        collection.$source = 'store'; // collection and resources from storeservice
-                        collection.$cache_last_update = data_collection._lastupdate_time;
+                        collection.source = 'store'; // collection and resources from storeservice
+                        collection.cache_last_update = data_collection._lastupdate_time;
                         subject.next(collection);
                         setTimeout(() => subject.complete());
                     })

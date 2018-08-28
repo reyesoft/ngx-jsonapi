@@ -216,7 +216,6 @@ export class Service<R extends Resource = Resource> {
                 .subscribe(
                     () => {
                         temporary_collection.source = 'store';
-                        console.log('xxxxxxxxxxxxxxxxxx--->', temporary_collection.data);
 
                         // when load collection from store, we save collection on memory
                         this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
