@@ -1,4 +1,4 @@
-import { ICache, IObjectsById } from '../interfaces';
+import { IObjectsById } from '../interfaces';
 import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
 import { Core } from '../core';
@@ -9,7 +9,7 @@ import { DocumentCollection } from '../document-collection';
 import { Observable, Subject } from 'rxjs';
 import { Page } from './page';
 
-export class CacheStore implements ICache {
+export class CacheStore {
     public async getResource(resource: Resource, include: Array<string> = []): Promise<object> {
         let mypromise: Promise<object> = new Promise(
             (resolve, reject): void => {
@@ -53,7 +53,7 @@ export class CacheStore implements ICache {
         Core.injectedServices.JsonapiStoreService.saveResource(resource.type, resource.id, resource.toObject().data);
     }
 
-    public setCollection(url: string, collection: DocumentCollection, include: Array<string>) {
+    public setCollection(url: string, collection: DocumentCollection, include: Array<string>): void {
         let tmp: IDataCollection = { data: [], page: new Page() };
         let resources_for_save: IObjectsById<Resource> = {};
         for (let resource of collection.data) {
@@ -95,7 +95,7 @@ export class CacheStore implements ICache {
         });
     }
 
-    public deprecateCollections(path_start_with: string) {
+    public deprecateCollections(path_start_with: string): boolean {
         Core.injectedServices.JsonapiStoreService.deprecateObjectsWithKey('collection.' + path_start_with);
 
         return true;
