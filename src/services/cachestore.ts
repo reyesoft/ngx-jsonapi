@@ -7,12 +7,13 @@ import { Resource } from '../resource';
 import { Converter } from './converter';
 import { DocumentCollection } from '../document-collection';
 import { Observable, Subject } from 'rxjs';
+import { Page } from './page';
 
 export class CacheStore implements ICache {
     public async getResource(resource: Resource, include: Array<string> = []): Promise<object> {
         let mypromise: Promise<object> = new Promise(
             (resolve, reject): void => {
-                Core.injectedServices.JsonapiStoreService.getObjet(resource.type, resource.id).subscribe(
+                Core.injectedServices.JsonapiStoreService.getDataObject(resource.type, resource.id).subscribe(
                     success => {
                         resource.fill({ data: success });
 
@@ -53,8 +54,8 @@ export class CacheStore implements ICache {
     }
 
     public setCollection(url: string, collection: DocumentCollection, include: Array<string>) {
-        let tmp = { data: [], page: {} };
-        let resources_for_save: { [uniqkey: string]: Resource } = {};
+        let tmp: IDataCollection = { data: [], page: new Page() };
+        let resources_for_save: IObjectsById<Resource> = {};
         for (let resource of collection.data) {
             this.setResource(resource);
             tmp.data.push({ id: resource.id, type: resource.type });
@@ -100,13 +101,12 @@ export class CacheStore implements ICache {
         return true;
     }
 
-    public getCollectionFromStore(url: string, include: Array<string>, collection: DocumentCollection): Observable<DocumentCollection> {
+    public fillCollectionFromStore(url: string, include: Array<string>, collection: DocumentCollection): Observable<DocumentCollection> {
         let subject = new Subject<DocumentCollection>();
 
-        Core.injectedServices.JsonapiStoreService.getObjet('collection', url).subscribe(
+        Core.injectedServices.JsonapiStoreService.getDataObject('collection', url).subscribe(
             data_collection => {
                 // build collection from store and resources from memory
-                // @todo success.data is a collection, not an array
                 if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
                     collection.source = 'store'; // collection from storeservice, resources from memory
                     collection.cache_last_update = data_collection._lastupdate_time;
@@ -165,61 +165,62 @@ export class CacheStore implements ICache {
     ): Promise<void> {
         let promise = new Promise(
             (resolve: (value: void) => void, reject: (value: any) => void): void => {
-                // request resources from store
                 let temporalcollection: IObjectsById<Resource> = {};
-                let requested_ids: Array<string> = [];
-                for (let dataresource of datacollection.data) {
+
+                // get collection from store
+                let required_store_keys: Array<string> = datacollection.data.map(dataresource => {
                     let cachememory = Converter.getService(dataresource.type).cachememory;
                     temporalcollection[dataresource.id] = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
-                    requested_ids.push(temporalcollection[dataresource.id].type + '.' + dataresource.id);
-                }
 
-                // new method
-                Core.injectedServices.JsonapiStoreService.getDataResources(requested_ids)
+                    return temporalcollection[dataresource.id].type + '.' + dataresource.id;
+                });
+
+                // get resources for collection fill
+                Core.injectedServices.JsonapiStoreService.getDataResources(required_store_keys)
                     .then(store_data_resources => {
+                        let include_promises: Array<Promise<object>> = [];
                         for (let key in store_data_resources) {
                             let data_resource = store_data_resources[key];
                             temporalcollection[data_resource.id].fill({ data: data_resource });
 
                             // include some times is a collection :S
-                            let include_promises: Array<Promise<object>> = [];
                             Base.forEach(include, resource_alias => {
                                 this.fillRelationshipFromStore(temporalcollection[data_resource.id], resource_alias, include_promises);
                             });
 
                             temporalcollection[data_resource.id].lastupdate = data_resource._lastupdate_time;
+                        }
 
-                            // no debo esperar a que se resuelvan los include
-                            if (include_promises.length === 0) {
-                                if (datacollection.page) {
-                                    collection.page.number = datacollection.page.number;
-                                }
-
-                                for (let temporalkey in temporalcollection) {
-                                    let resource: Resource = temporalcollection[temporalkey];
-                                    collection.data.push(resource);
-                                }
-
-                                resolve(null);
-                            } else {
-                                // esperamos las promesas de los include antes de dar el resolve
-                                Promise.all(include_promises)
-                                    .then(success3 => {
-                                        if (datacollection.page) {
-                                            collection.page.number = datacollection.page.number;
-                                        }
-
-                                        for (let temporalkey in temporalcollection) {
-                                            let resource: Resource = temporalcollection[temporalkey];
-                                            collection.data.push(resource);
-                                        }
-
-                                        resolve(null);
-                                    })
-                                    .catch(error3 => {
-                                        reject(error3);
-                                    });
+                        // no debo esperar a que se resuelvan los include
+                        if (include_promises.length === 0) {
+                            if (datacollection.page) {
+                                collection.page.number = datacollection.page.number;
                             }
+
+                            for (let temporalkey in temporalcollection) {
+                                let resource: Resource = temporalcollection[temporalkey];
+                                collection.data.push(resource);
+                            }
+
+                            resolve(null);
+                        } else {
+                            // esperamos las promesas de los include antes de dar el resolve
+                            Promise.all(include_promises)
+                                .then(success3 => {
+                                    if (datacollection.page) {
+                                        collection.page.number = datacollection.page.number;
+                                    }
+
+                                    for (let temporalkey in temporalcollection) {
+                                        let resource: Resource = temporalcollection[temporalkey];
+                                        collection.data.push(resource);
+                                    }
+
+                                    resolve(null);
+                                })
+                                .catch(error3 => {
+                                    reject(error3);
+                                });
                         }
                     })
                     .catch(err => {

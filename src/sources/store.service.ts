@@ -32,9 +32,9 @@ export class StoreService /* implements IStoreService */ {
         this.checkIfIsTimeToClean();
     }
 
-    public getObjet(type: 'collection', url: string): Observable<IDataCollection>;
-    public getObjet(type: string, id: string): Observable<IDataResource>;
-    public getObjet(type: 'collection' | string, id_or_url: string): Observable<IDataCollection | IDataResource> {
+    public getDataObject(type: 'collection', url: string): Observable<IDataCollection>;
+    public getDataObject(type: string, id: string): Observable<IDataResource>;
+    public getDataObject(type: 'collection' | string, id_or_url: string): Observable<IDataCollection | IDataResource> {
         let subject = new Subject<IDataResource | IDataCollection>();
 
         this.allstore

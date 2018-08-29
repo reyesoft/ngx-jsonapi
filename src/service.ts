@@ -212,7 +212,7 @@ export class Service<R extends Resource = Resource> {
             temporary_collection.is_loading = true;
 
             this.getService()
-                .cachestore.getCollectionFromStore(path.getForCache(), path.includes, temporary_collection)
+                .cachestore.fillCollectionFromStore(path.getForCache(), path.includes, temporary_collection)
                 .subscribe(
                     () => {
                         temporary_collection.source = 'store';
