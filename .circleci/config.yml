@@ -23,7 +23,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:7.10
+      - image: circleci/node:8.11.4
     steps:
       - checkout
       - restore_cache:
@@ -45,7 +45,7 @@ jobs:
 
   build:
     docker:
-      - image: circleci/node:7.10
+      - image: circleci/node:8.11.4
     working_directory: ~/repo
     steps:
       - run: yarn
