@@ -17,7 +17,7 @@
         "demo:start:aot": "yarn run cli serve -prod",
         "demo:test": "jest --watch",
         "demo:test:nowatch": "jest",
-        "demo:build": "yarn build && yarn run copy:dist && yarn cli build -prod --base-href \"/\" --output-path \"./demo-dist\"",
+        "demo:build": "yarn build && yarn run copy:dist && yarn cli build --prod --base-href \"/\" --output-path \"./demo-dist\"",
         "demo:release": "yarn demo:build && ts-node ./build/demo-release.ts",
         "ci": "yarn run build && yarn run test && nyc report --reporter=text-lcov | coveralls",
         "watch:tests": "chokidar 'src/**/*.ts' --initial -c 'nyc --reporter=text --reporter=html yarn run test:unit'",
