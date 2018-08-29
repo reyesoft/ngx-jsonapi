@@ -1,7 +1,6 @@
 import { Base } from './base';
 import { Resource } from '../resource';
 import { Converter } from './converter';
-import { ResourceFunctions } from './resource-functions';
 import { DocumentCollection } from '../document-collection';
 import { IObjectsById } from '../interfaces';
 
@@ -61,7 +60,7 @@ export class CacheMemory<R extends Resource = Resource> {
 
     public setResource(resource: Resource, update_lastupdate = false): void {
         if (resource.id in this.resources) {
-            ResourceFunctions.resourceToResource(resource, this.resources[resource.id]);
+            this.addResourceOrFill(resource);
         } else {
             this.resources[resource.id] = resource;
         }
@@ -83,5 +82,45 @@ export class CacheMemory<R extends Resource = Resource> {
         this.resources[id].attributes = {}; // just for confirm deletion on view
         this.resources[id].relationships = {}; // just for confirm deletion on view
         delete this.resources[id];
+    }
+
+    private addResourceOrFill(source: Resource): void {
+        let destination = this.resources[source.id];
+
+        destination.attributes = source.attributes;
+
+        // remove relationships on destination resource
+        for (let type_alias in destination.relationships) {
+            // problem with no declared services
+            if (destination.relationships[type_alias].data === undefined) {
+                continue;
+            }
+
+            if (!(type_alias in source.relationships)) {
+                delete destination.relationships[type_alias];
+            } else {
+                // relation is a collection
+                let collection = <DocumentCollection>destination.relationships[type_alias];
+                for (let resource of collection.data) {
+                    if (collection.find(resource.id) === null) {
+                        delete destination.relationships[type_alias];
+                    }
+                }
+            }
+        }
+
+        // add source relationships to destination
+        for (let type_alias in source.relationships) {
+            // problem with no declared services
+            if (source.relationships[type_alias].data === undefined) {
+                continue;
+            }
+
+            if ('id' in source.relationships[type_alias].data) {
+                destination.addRelationship(<Resource>source.relationships[type_alias].data, type_alias);
+            } else {
+                destination.addRelationships(<Array<Resource>>source.relationships[type_alias].data, type_alias);
+            }
+        }
     }
 }
