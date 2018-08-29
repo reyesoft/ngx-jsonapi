@@ -23,10 +23,9 @@ export class AuthorComponent {
         private route: ActivatedRoute
     ) {
         route.params.subscribe(({ id }) => {
-            authorsService.get(id, { include: ['books', 'photos'] }).subscribe(
+            authorsService.get(id, { include: ['books', 'photos'], ttl: 100 }).subscribe(
                 author => {
                     this.author = author;
-                    console.info('success author controller', author);
                 },
                 error => console.error('Could not load author.', error)
             );

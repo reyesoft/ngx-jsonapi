@@ -6,9 +6,9 @@ var ghpages = require('gh-pages');
 var dir = path.resolve(path.join(__dirname, '../', 'demo-dist'));
 
 // CNAME FILE
-cmd('mkdir ', [`-p ${dir}/docs`]);
-fs.writeFile(`${dir}/docs/CNAME`, "ngx-jsonapi.reyesoft.com", function(err) {
-    if(err) {
+cmd('mkdir ', [`-p ${dir}`]);
+fs.writeFile(`${dir}/CNAME`, 'ngx-jsonapi.reyesoft.com', function(err) {
+    if (err) {
         return console.log(err);
     }
 });

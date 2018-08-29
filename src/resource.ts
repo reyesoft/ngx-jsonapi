@@ -18,7 +18,7 @@ import {
     IRelationships,
     IRelationshipCollection,
     IRelationshipNone,
-    IRelationshipResource
+    ILinks
 } from './interfaces';
 
 export class Resource extends ParentResourceService {
@@ -29,6 +29,7 @@ export class Resource extends ParentResourceService {
     public type: string = '';
     public attributes: IAttributes = {};
     public relationships: IRelationships = {};
+    public links: ILinks = {};
     public lastupdate: number;
 
     public reset(): void {
@@ -41,12 +42,12 @@ export class Resource extends ParentResourceService {
             if (relationships[key].hasMany) {
                 let relation: IRelationshipCollection = {
                     data: Base.newCollection(),
-                    hasid: false,
+                    builded: true,
                     content: 'collection'
                 };
                 this.relationships[key] = relation;
             } else {
-                let relation: IRelationshipNone = { data: {}, hasid: false, content: 'none' };
+                let relation: IRelationshipNone = { data: {}, builded: false, content: 'none' };
                 this.relationships[key] = relation;
             }
         }
@@ -127,7 +128,9 @@ export class Resource extends ParentResourceService {
                 id: this.id,
                 attributes: attributes,
                 relationships: relationships
-            }
+            },
+            builded: true,
+            content: 'resource'
         };
 
         if (included.length > 0) {
@@ -153,7 +156,7 @@ export class Resource extends ParentResourceService {
 
         type_alias = type_alias ? type_alias : resource.type;
         if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = { data: {}, hasid: false, content: 'none' };
+            this.relationships[type_alias] = { data: {}, builded: false, content: 'none' };
         }
 
         if (type_alias in this.getService().schema.relationships && this.getService().schema.relationships[type_alias].hasMany) {
@@ -165,7 +168,7 @@ export class Resource extends ParentResourceService {
 
     public addRelationships(resources: ICollection, type_alias: string) {
         if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = { data: {}, hasid: false, content: 'none' };
+            this.relationships[type_alias] = { data: {}, builded: false, content: 'none' };
         } else {
             // we receive a new collection of this relationship. We need remove old (if don't exist on new collection)
             for (const key in this.relationships[type_alias].data) {

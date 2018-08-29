@@ -13,17 +13,24 @@ export interface IDocument<R extends Resource = Resource> {
     // A document MAY contain any of these top-level members:
     jsonapi?: string;
     links?: ILinks;
+
+    // No Json Api specification attributes
+    builded: boolean;
+    content: 'ids' | 'collection' | 'id' | 'resource' | 'error' | '';
 }
 
 export interface IDocumentData<R extends Resource = Resource> extends IDocument {
     data: R | R[] | IDataResource | IDataResource[] | ICollection<R>; // @todo remover IDataResource[]
     included?: any;
+    content: 'collection' | 'resource' | 'id' | 'ids' | '';
 }
 
 export interface IDocumentErrors extends IDocument {
     errors: any;
+    content: 'error';
 }
 
 export interface IDocumentMeta extends IDocument {
     meta: { [key: string]: any };
+    content: '';
 }

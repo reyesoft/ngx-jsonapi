@@ -12,10 +12,15 @@
 </p>
 
 <h4>Photos</h4>
-<img *ngFor="let photo of getPhotos(author)"
-    [src]="photo.attributes?.uri" height="150" style="padding-right: 1em"
-    title="Book id #{{ photo.id }}"
+<span *ngIf="author.relationships.photos.data.data.length === 0">
+    This author don't have any photo :(
+</span>
+<span *ngIf="author.relationships.photos.builded">
+    <img *ngFor="let photo of author.relationships.photos.data.data"
+        [src]="photo.attributes.uri" height="150" style="padding-right: 1em"
+        title="Book id #{{ photo.id }}"
     />
+</span>
 
 <h4>Books</h4>
 <table class="table table-striped" *ngIf="author.relationships.books.content == 'collection'">
@@ -26,7 +31,7 @@
             <th>Date Published</th>
         </tr>
     </thead>
-    <tr *ngFor="let book of author.books().$toArray">
+    <tr *ngFor="let book of author.relationships.books.data.data">
         <td>{{ book.id }}</td>
         <td>
             <a>{{ book.attributes.title }}</a>
@@ -35,25 +40,6 @@
     </tr>
 </table>
 
-<!-- <h3>Related Books by URL</h3>
-<pre>BooksService.all( {{ '{' }} beforepath: 'authors/{{author.id}}' {{ '}' }} );</pre>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Date Published</th>
-        </tr>
-    </thead>
-    <tr *ngFor="let book of relatedbooks.$toArray">
-        <td>{{ book.id }}</td>
-        <td>
-            <a ui-sref="book({ bookId: book.id })">{{ book.attributes.title  }}</a>
-        </td>
-        <td>{{ book.attributes.date_published | date }}</td>
-    </tr>
-</table> -->
-
 <p>
-    <a ui-sref="authors">Volver</a>
+    <a routerLink="/authors">Volver</a>
 </p>

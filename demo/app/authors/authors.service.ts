@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Autoregister, Service, ISchema, Resource, ICollection } from 'ngx-jsonapi';
+import { Autoregister, Service, ISchema, Resource, ICollection, IRelationship, IRelationshipCollection } from 'ngx-jsonapi';
 import { Book } from '../books/books.service';
+import { Photo } from '../photos/photos.service';
 
 export class Author extends Resource {
     public attributes = {
@@ -11,17 +12,10 @@ export class Author extends Resource {
         updated_at: ''
     };
 
-    public getName() {
-        return this.attributes.name;
-    }
-
-    public books(): ICollection<Book> {
-        return <ICollection<Book>>this.relationships.books.data;
-    }
-
-    public photos() /*: ICollection<Photo>*/ {
-        return <ICollection>this.relationships.photos.data;
-    }
+    public relationships: {
+        books: IRelationshipCollection<Book>;
+        photos: IRelationshipCollection<Photo>;
+    };
 }
 
 @Injectable()
