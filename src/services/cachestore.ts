@@ -108,6 +108,7 @@ export class CacheStore {
             data_collection => {
                 // build collection from store and resources from memory
                 if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
+                    console.log('voy a llenar con esto xxxx2', collection.data);
                     collection.source = 'store'; // collection from storeservice, resources from memory
                     collection.cache_last_update = data_collection._lastupdate_time;
                     subject.next(collection);
@@ -116,9 +117,12 @@ export class CacheStore {
                     return;
                 }
 
+                console.log('voy a llenar con esto xxxx3', collection.data);
                 let promise2 = this.fillCollectionWithArrrayAndResourcesOnStore(data_collection, include, collection);
                 promise2
                     .then(() => {
+                        console.log('voy a llenar con esto xxxx4', collection.data[collection.data.length - 1]);
+
                         // just for precaution, we not rewrite server data
                         if (collection.source !== 'new') {
                             console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#', collection);
@@ -165,14 +169,14 @@ export class CacheStore {
     ): Promise<void> {
         let promise = new Promise(
             (resolve: (value: void) => void, reject: (value: any) => void): void => {
-                let temporalcollection: IObjectsById<Resource> = {};
+                let resources_by_id: IObjectsById<Resource> = {};
 
                 // get collection from store
                 let required_store_keys: Array<string> = datacollection.data.map(dataresource => {
                     let cachememory = Converter.getService(dataresource.type).cachememory;
-                    temporalcollection[dataresource.id] = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
+                    resources_by_id[dataresource.id] = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
 
-                    return temporalcollection[dataresource.id].type + '.' + dataresource.id;
+                    return resources_by_id[dataresource.id].type + '.' + dataresource.id;
                 });
 
                 // get resources for collection fill
@@ -181,14 +185,14 @@ export class CacheStore {
                         let include_promises: Array<Promise<object>> = [];
                         for (let key in store_data_resources) {
                             let data_resource = store_data_resources[key];
-                            temporalcollection[data_resource.id].fill({ data: data_resource });
+                            resources_by_id[data_resource.id].fill({ data: data_resource });
 
                             // include some times is a collection :S
                             Base.forEach(include, resource_alias => {
-                                this.fillRelationshipFromStore(temporalcollection[data_resource.id], resource_alias, include_promises);
+                                this.fillRelationshipFromStore(resources_by_id[data_resource.id], resource_alias, include_promises);
                             });
 
-                            temporalcollection[data_resource.id].lastupdate = data_resource._lastupdate_time;
+                            resources_by_id[data_resource.id].lastupdate = data_resource._lastupdate_time;
                         }
 
                         // no debo esperar a que se resuelvan los include
@@ -197,8 +201,8 @@ export class CacheStore {
                                 collection.page.number = datacollection.page.number;
                             }
 
-                            for (let temporalkey in temporalcollection) {
-                                let resource: Resource = temporalcollection[temporalkey];
+                            for (let dataresource of datacollection.data) {
+                                let resource: Resource = resources_by_id[dataresource.id];
                                 collection.data.push(resource);
                             }
 
@@ -211,8 +215,8 @@ export class CacheStore {
                                         collection.page.number = datacollection.page.number;
                                     }
 
-                                    for (let temporalkey in temporalcollection) {
-                                        let resource: Resource = temporalcollection[temporalkey];
+                                    for (let dataresource of datacollection.data) {
+                                        let resource: Resource = resources_by_id[dataresource.id];
                                         collection.data.push(resource);
                                     }
 
