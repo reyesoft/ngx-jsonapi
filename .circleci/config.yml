@@ -5,7 +5,7 @@ var_1: &cache_key yarn-cache-{{ checksum "yarn.lock" }}
 jobs:
   lint:
     docker:
-      - image: circleci/node:7.10
+      - image: circleci/node:8.9.0
     steps:
       - checkout
       - restore_cache:
