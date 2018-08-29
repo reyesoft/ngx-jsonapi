@@ -78,10 +78,7 @@ export class ResourceRelationshipsConverter {
         (<DocumentCollection>this.relationships_dest[relation_alias]).fill(relation_from_value);
     }
 
-    private __buildRelationshipHasOne(
-        relation_data_from: IDataObject,
-        relation_data_key: any // number to string?
-    ): void {
+    private __buildRelationshipHasOne(relation_data_from: IDataObject, relation_data_key: string): void {
         // new related resource <> cached related resource <> ? delete!
         if (!('type' in relation_data_from.data)) {
             this.relationships_dest[relation_data_key].data = [];
@@ -123,14 +120,6 @@ export class ResourceRelationshipsConverter {
             let service = this.getService(resource_data_from.type);
             if (service && resource_data_from.id in service.cachememory.resources) {
                 return service.cachememory.resources[resource_data_from.id];
-                // } else {
-                //      undelcared reservice
-                //     // we dont have information on included or memory. try pass to store
-                //     if (service) {
-                //         service.cachestore.getResource(resource_data_from).catch(noop);
-                //     }
-
-                //     return ;
             }
         }
     }
