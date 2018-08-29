@@ -12,7 +12,6 @@ import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDataObject } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection } from './interfaces/data-collection';
-import { timeout } from 'q';
 
 export class Service<R extends Resource = Resource> {
     public schema: ISchema;

@@ -145,7 +145,7 @@ export class CacheStore {
                 all_ok = false;
                 break;
             }
-            collection.data.push(resource);
+            collection.replaceOrAdd(resource);
         }
 
         return all_ok;

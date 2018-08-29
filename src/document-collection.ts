@@ -55,4 +55,13 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
             }
         }
     }
+
+    public replaceOrAdd(resource: R): void {
+        let res = this.find(resource.id);
+        if (res === null) {
+            this.data.push(resource);
+        } else {
+            res = resource;
+        }
+    }
 }
