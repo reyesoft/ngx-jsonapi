@@ -108,7 +108,6 @@ export class CacheStore {
             data_collection => {
                 // build collection from store and resources from memory
                 if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
-                    console.log('voy a llenar con esto xxxx2', collection.data);
                     collection.source = 'store'; // collection from storeservice, resources from memory
                     collection.cache_last_update = data_collection._lastupdate_time;
                     subject.next(collection);
@@ -117,12 +116,9 @@ export class CacheStore {
                     return;
                 }
 
-                console.log('voy a llenar con esto xxxx3', collection.data);
                 let promise2 = this.fillCollectionWithArrrayAndResourcesOnStore(data_collection, include, collection);
                 promise2
                     .then(() => {
-                        console.log('voy a llenar con esto xxxx4', collection.data[collection.data.length - 1]);
-
                         // just for precaution, we not rewrite server data
                         if (collection.source !== 'new') {
                             console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#', collection);

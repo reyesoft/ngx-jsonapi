@@ -28,4 +28,8 @@ export class PathCollectionBuilder extends PathBuilder {
             this.addParam('sort=' + params.sort.join(','));
         }
     }
+
+    protected addParam(param: string): void {
+        this.get_params.push(param);
+    }
 }
