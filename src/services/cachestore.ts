@@ -8,6 +8,7 @@ import { Converter } from './converter';
 import { DocumentCollection } from '../document-collection';
 import { Observable, Subject } from 'rxjs';
 import { Page } from './page';
+import { DocumentResource } from '../document-resource';
 
 export class CacheStore {
     public async getResource(resource: Resource, include: Array<string> = []): Promise<object> {
@@ -233,11 +234,9 @@ export class CacheStore {
     }
 
     private fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
-        let resource_type = Converter.getService(resource.type).schema.relationships[resource_alias].type || resource_alias;
-
-        if (resource_alias in resource.relationships && 'type' in resource.relationships[resource_type].data) {
+        if (resource.relationships[resource_alias].data instanceof DocumentResource) {
             // hasOne
-            let related_resource = <IDataResource>resource.relationships[resource_type].data;
+            let related_resource = <IDataResource>resource.relationships[resource_alias].data;
             if (!('attributes' in related_resource)) {
                 // no está cargado aún
                 let builded_resource = this.getResourceFromMemory(related_resource);

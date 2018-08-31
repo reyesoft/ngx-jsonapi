@@ -5,7 +5,7 @@ import { PathBuilder } from './services/path-builder';
 import { Converter } from './services/converter';
 import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
-import { ISchema, IParamsCollection, IParamsResource, IAttributes } from './interfaces';
+import { IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { isLive } from './common';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
@@ -14,16 +14,14 @@ import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection } from './interfaces/data-collection';
 
 export class Service<R extends Resource = Resource> {
-    public schema: ISchema;
     public cachememory: CacheMemory;
     public cachestore: CacheStore;
     public type: string;
     public resource = Resource;
-
     protected path: string; // without slashes
 
     /*
-    Register schema on Core
+    Register service on Core
     @return true if the resource don't exist and registered ok
     */
     public register(): Service<R> | false {
@@ -33,7 +31,6 @@ export class Service<R extends Resource = Resource> {
         // only when service is registered, not cloned object
         this.cachememory = new CacheMemory();
         this.cachestore = new CacheStore();
-        this.schema = { ...{}, ...Base.Schema, ...this.schema };
 
         return Core.me.registerService<R>(this);
     }
@@ -131,7 +128,6 @@ export class Service<R extends Resource = Resource> {
 
     public getOrCreateCollection(path: PathCollectionBuilder): DocumentCollection<R> {
         let collection = <DocumentCollection<R>>this.getService().cachememory.getOrCreateCollection(path.getForCache());
-        collection.schema = this.schema;
 
         return collection;
     }
@@ -228,7 +224,6 @@ export class Service<R extends Resource = Resource> {
                         }
                     },
                     err => {
-                        console.log('no había nada en storage0', err);
                         this.getAllFromServer(path, params, temporary_collection, subject);
                     }
                 );

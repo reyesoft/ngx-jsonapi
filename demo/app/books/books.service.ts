@@ -1,23 +1,28 @@
 import { Injectable } from '@angular/core';
-import { Autoregister, Service, ISchema, Resource, DocumentCollection, DocumentResource } from 'ngx-jsonapi';
+import { Autoregister, Service, Resource, DocumentCollection, DocumentResource } from 'ngx-jsonapi';
 import { Author } from '../authors/authors.service';
 import { Photo } from '../photos/photos.service';
+
+export class Book extends Resource {
+    public attributes = {
+        date_published: '',
+        title: '',
+        created_at: '',
+        updated_at: ''
+    };
+
+    public relationships = {
+        author: new DocumentResource<Author>(),
+        photos: new DocumentCollection<Photo>()
+    };
+}
 
 @Injectable()
 @Autoregister()
 export class BooksService extends Service<Book> {
+    public resource = Book;
     public type = 'books';
-    public schema: ISchema = {
-        relationships: {
-            author: {
-                hasMany: false
-            },
-            photos: {
-                hasMany: true
-            }
-        },
-        ttl: 1
-    };
+    public ttl = 1;
 
     // executed before get data from server
     public parseFromServer(attributes): void {
@@ -30,18 +35,4 @@ export class BooksService extends Service<Book> {
             attributes.title = attributes.title.replace('📖 ', '');
         }
     }
-}
-
-export class Book extends Resource {
-    public attributes = {
-        date_published: '',
-        title: '',
-        created_at: '',
-        updated_at: ''
-    };
-
-    public relationships: {
-        author: DocumentResource<Author>;
-        photos: DocumentCollection<Photo>;
-    };
 }

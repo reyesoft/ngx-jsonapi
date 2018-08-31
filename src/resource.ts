@@ -17,7 +17,7 @@ export class Resource implements ICacheable {
     public id: string = '';
     public type: string = '';
     public attributes: IAttributes = {};
-    public relationships: IRelationships;
+    public relationships: IRelationships = {};
     public links: ILinks = {};
 
     public is_new = true;
@@ -30,16 +30,11 @@ export class Resource implements ICacheable {
     public reset(): void {
         this.id = '';
         this.attributes = {};
-        this.relationships = {};
         this.is_new = true;
 
-        let relationships = this.getService().schema.relationships;
-        for (const key in relationships) {
-            if (relationships[key].hasMany) {
-                this.relationships[key] = new DocumentCollection();
-            } else {
-                this.relationships[key] = new DocumentResource();
-            }
+        for (const key in this.relationships) {
+            this.relationships[key] =
+                this.relationships[key] instanceof DocumentCollection ? new DocumentCollection() : new DocumentResource();
         }
     }
 
@@ -54,12 +49,10 @@ export class Resource implements ICacheable {
         for (const relation_alias in this.relationships) {
             let relationship = this.relationships[relation_alias];
 
-            if (this.getService().schema.relationships[relation_alias] && this.getService().schema.relationships[relation_alias].hasMany) {
-                // has many (hasMany:true)
+            if (relationship instanceof DocumentCollection) {
                 relationships[relation_alias] = { data: [] };
 
-                for (const key in relationship.data) {
-                    let resource: Resource = relationship.data[key];
+                for (const resource of relationship.data) {
                     let reational_object = {
                         id: resource.id,
                         type: resource.type
@@ -74,7 +67,9 @@ export class Resource implements ICacheable {
                     }
                 }
             } else {
-                // has one (hasMany:false)
+                if (!(relationship instanceof DocumentResource)) {
+                    console.warn(relationship, ' is not DocumentCollection or DocumentResource');
+                }
 
                 let relationship_data = <Resource>relationship.data;
                 if (!('id' in relationship.data) && Object.keys(relationship.data).length > 0) {
@@ -137,9 +132,8 @@ export class Resource implements ICacheable {
         this.is_new = false;
         let service = Converter.getService(data_object.data.type);
 
-        // esto previene la creación indefinida de resources
-        // el servicio debe estar sino no tenemos el schema
-        if (!this.relationships || !service) {
+        // wee need a registered service
+        if (!service) {
             return;
         }
 
@@ -152,8 +146,7 @@ export class Resource implements ICacheable {
             Converter.getService,
             data_object.data.relationships || {},
             this.relationships,
-            included_resources,
-            service.schema
+            included_resources
         ).buildRelationships();
     }
 
@@ -168,10 +161,11 @@ export class Resource implements ICacheable {
             this.relationships[type_alias] = new DocumentResource(); // @todo DocumentCollection
         }
 
-        if (type_alias in this.getService().schema.relationships && this.getService().schema.relationships[type_alias].hasMany) {
-            (<DocumentCollection>this.relationships[type_alias]).data.push(resource);
+        let relation = this.relationships[type_alias];
+        if (relation instanceof DocumentCollection) {
+            relation.data.push(resource);
         } else {
-            this.relationships[type_alias].data = resource;
+            relation.data = resource;
         }
     }
 
@@ -197,10 +191,8 @@ export class Resource implements ICacheable {
             return false;
         }
 
-        if (type_alias in this.getService().schema.relationships && this.getService().schema.relationships[type_alias].hasMany) {
-            if (!(id in this.relationships[type_alias].data)) {
-                return false;
-            }
+        if (this.relationships[type_alias] instanceof DocumentCollection) {
+            console.warn('@todo removeRelationship');
             // delete this.relationships[type_alias].data[id];  @todo
         } else {
             this.relationships[type_alias].data = [];

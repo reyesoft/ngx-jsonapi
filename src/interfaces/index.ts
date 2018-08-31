@@ -1,5 +1,4 @@
 export * from './attributes';
-export * from './schema';
 export * from './links';
 export * from './params-collection';
 export * from './params-resource';

@@ -3,7 +3,7 @@ import { DocumentResource } from './document-resource';
 import { DocumentCollection } from './document-collection';
 
 export function isLive(cacheable: ICacheable, ttl: number = null): boolean {
-    return Date.now() <= cacheable.cache_last_update + (ttl || cacheable.schema.ttl || 0) * 1000;
+    return Date.now() <= cacheable.cache_last_update + (ttl || cacheable.ttl || 0) * 1000;
 }
 
 export function isCollection(document: DocumentResource | DocumentCollection): document is DocumentCollection {

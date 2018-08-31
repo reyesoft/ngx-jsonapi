@@ -1,53 +1,45 @@
-import { ISchema, IResourcesByType } from '../interfaces';
+import { IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataResource } from '../interfaces/data-resource';
 import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
 import { IRelationships } from '../interfaces/relationship';
+import { DocumentResource } from '../document-resource';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;
     private relationships_from: object;
     private relationships_dest: IRelationships;
     private included_resources: IResourcesByType;
-    private schema: ISchema;
 
     public constructor(
         getService: Function,
         relationships_from: object,
         relationships_dest: IRelationships,
-        included_resources: IResourcesByType,
-        schema: ISchema
+        included_resources: IResourcesByType
     ) {
         this.getService = getService;
         this.relationships_from = relationships_from;
         this.relationships_dest = relationships_dest;
         this.included_resources = included_resources;
-        this.schema = schema;
     }
 
     public buildRelationships(): void {
         // recorro los relationships levanto el service correspondiente
-        for (const relation_key in this.relationships_from) {
-            let relation_from_value: IDataCollection & IDataObject = this.relationships_from[relation_key];
+        for (const relation_alias in this.relationships_from) {
+            let relation_from_value: IDataCollection & IDataObject = this.relationships_from[relation_alias];
 
-            // relation is in schema? have data or just links?
-            if (!(relation_key in this.relationships_dest) && 'data' in relation_from_value) {
-                this.relationships_dest[relation_key] = new DocumentCollection();
-            }
-
-            // sometime data=null or simple { }
             if (!relation_from_value.data) {
                 continue;
             }
 
-            if (this.schema.relationships[relation_key] && this.schema.relationships[relation_key].hasMany) {
-                // hasMany
-                this.__buildRelationshipHasMany(relation_from_value, relation_key);
+            if (this.relationships_dest[relation_alias] instanceof DocumentCollection) {
+                this.__buildRelationshipHasMany(relation_from_value, relation_alias);
+            } else if (this.relationships_dest[relation_alias] instanceof DocumentResource) {
+                this.__buildRelationshipHasOne(relation_from_value, relation_alias);
             } else {
-                // hasOne
-                this.__buildRelationshipHasOne(relation_from_value, relation_key);
+                // console.warn('Relation', relation_alias, 'dont exists');
             }
         }
     }
@@ -78,30 +70,22 @@ export class ResourceRelationshipsConverter {
         (<DocumentCollection>this.relationships_dest[relation_alias]).fill(relation_from_value);
     }
 
-    private __buildRelationshipHasOne(relation_data_from: IDataObject, relation_data_key: string): void {
+    private __buildRelationshipHasOne(relation_data_from: IDataObject, relation_alias: string): void {
         // new related resource <> cached related resource <> ? delete!
         if (!('type' in relation_data_from.data)) {
-            this.relationships_dest[relation_data_key].data = [];
+            this.relationships_dest[relation_alias].data = [];
 
             return;
         }
 
-        if (
-            this.relationships_dest[relation_data_key].data == null ||
-            relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_data_key].data).id
-        ) {
-            this.relationships_dest[relation_data_key].data = new Resource();
+        if (relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_alias].data).id) {
+            this.relationships_dest[relation_alias].data = new Resource();
         }
 
-        // trae datos o cambió resource? actualizamos!
-        if (
-            // 'attributes' in relation_data_from.data ||  // ???
-            !(<Resource>this.relationships_dest[relation_data_key].data).attributes || // we have only a  dataresource
-            (<Resource>this.relationships_dest[relation_data_key].data).id !== relation_data_from.data.id
-        ) {
+        if ((<Resource>this.relationships_dest[relation_alias].data).id !== relation_data_from.data.id) {
             let resource_data = this.__buildRelationship(relation_data_from.data, this.included_resources);
             if (resource_data) {
-                this.relationships_dest[relation_data_key].data = resource_data;
+                this.relationships_dest[relation_alias].data = resource_data;
             }
         }
     }
