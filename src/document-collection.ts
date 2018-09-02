@@ -64,4 +64,14 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
             res = resource;
         }
     }
+
+    public hasMorePages(): boolean | null {
+        if (this.page.resources_per_page < 1) {
+            return null;
+        }
+
+        let total_resources = this.page.resources_per_page * (this.page.number - 1) + this.data.length;
+
+        return total_resources < this.page.total_resources;
+    }
 }
