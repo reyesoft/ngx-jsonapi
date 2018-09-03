@@ -234,7 +234,12 @@ export class Service<R extends Resource = Resource> {
         return subject.asObservable();
     }
 
-    protected getAllFromServer(path, params, temporary_collection: DocumentCollection<R>, subject: BehaviorSubject<DocumentCollection<R>>) {
+    protected getAllFromServer(
+        path: PathBuilder,
+        params: IParamsCollection,
+        temporary_collection: DocumentCollection<R>,
+        subject: BehaviorSubject<DocumentCollection<R>>
+    ) {
         temporary_collection.is_loading = true;
         subject.next(temporary_collection);
         Core.get(path.get()).subscribe(

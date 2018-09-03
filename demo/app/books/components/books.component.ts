@@ -3,6 +3,7 @@ import { Resource, DocumentCollection } from 'ngx-jsonapi';
 import { BooksService, Book } from './../books.service';
 import { AuthorsService } from './../../authors/authors.service';
 import { PhotosService } from '../../photos/photos.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'demo-books',
@@ -12,19 +13,22 @@ export class BooksComponent {
     public books: DocumentCollection<Book>;
 
     public constructor(
+        private route: ActivatedRoute,
         protected authorsService: AuthorsService,
         protected booksService: BooksService,
         protected photosService: PhotosService
     ) {
-        booksService
-            .all({
-                page: { number: 2 },
-                include: ['author', 'photos']
-            })
-            .subscribe(books => {
-                this.books = books;
-                console.info('success books controll', this.books);
-            }, (error): void => console.info('error books controll', error));
+        route.queryParams.subscribe(({ page }) => {
+            booksService
+                .all({
+                    page: { number: page || 1 },
+                    include: ['author', 'photos']
+                })
+                .subscribe(books => {
+                    this.books = books;
+                    console.info('success books controll', this.books);
+                }, (error): void => console.info('error books controll', error));
+        });
     }
 
     public getAll(remotefilter) {

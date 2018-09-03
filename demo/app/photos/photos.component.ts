@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Service, DocumentResource } from 'ngx-jsonapi';
-
-import { forEach } from '../../foreach';
-import { PhotosService, Photo } from './photos.service';
+import { Photo } from './photos.service';
 
 @Component({
     selector: 'demo-photos',
