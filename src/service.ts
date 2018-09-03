@@ -195,6 +195,7 @@ export class Service<R extends Resource = Resource> {
 
         // make request
         let temporary_collection = this.getOrCreateCollection(path);
+        temporary_collection.page.number = params.page.number;
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
