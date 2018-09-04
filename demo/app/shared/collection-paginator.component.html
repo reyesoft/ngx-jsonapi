@@ -13,7 +13,7 @@
             </li>
             <li class="page-item"><a class="page-link" href="#">3</a></li>
         -->
-        <li class="page-item">
+        <li class="page-item {{ !collection.hasMorePages() ? 'disabled' : '' }}">
             <a class="page-link" [routerLink]="['./']" [queryParams]="{ page: (collection.page.number + 1) }">
                 Next
             </a>
