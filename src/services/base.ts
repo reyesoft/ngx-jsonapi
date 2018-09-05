@@ -1,67 +1,30 @@
-import { ISchema, ICollection, IParamsCollection, IParamsResource } from '../interfaces';
+import { IParamsCollection, IParamsResource } from '../interfaces';
 import { Page } from './page';
 import { Resource } from '../resource';
+import { DocumentCollection } from '../document-collection';
 
 export class Base {
-    public static Params: IParamsResource = {
-        id: '',
-        include: []
+    public static ParamsResource: IParamsResource = {
+        beforepath: '',
+        ttl: null,
+        include: [],
+        id: ''
     };
 
-    public static Schema: ISchema = {
-        relationships: {},
-        ttl: 0
+    public static ParamsCollection: IParamsCollection = {
+        beforepath: '',
+        ttl: null,
+        include: [],
+        remotefilter: {},
+        smartfilter: {},
+        sort: [],
+        page: new Page(),
+        storage_ttl: 0,
+        cachehash: ''
     };
 
-    public static newCollection<R extends Resource = Resource>(): ICollection<R> {
-        /** this way wil bee deprectaed since 2.0.0 */
-        let collection = Object.defineProperties(
-            {},
-            {
-                data: {
-                    writable: true,
-                    value: [],
-                    enumerable: false
-                },
-                trackBy: {
-                    writable: true,
-                    enumerable: false
-                },
-                $length: {
-                    get: function() {
-                        return this.data.length;
-                    },
-                    enumerable: false
-                },
-                $toArray: {
-                    get: function() {
-                        // return this.data;    // @todo add data to relationship.data
-                        return Object.keys(this).map(key => {
-                            return this[key];
-                        });
-                    },
-                    enumerable: false
-                },
-                $is_loading: {
-                    value: false,
-                    enumerable: false,
-                    writable: true
-                },
-                $source: { value: '', enumerable: false, writable: true },
-                $cache_last_update: {
-                    value: 0,
-                    enumerable: false,
-                    writable: true
-                },
-                page: { value: new Page(), enumerable: false, writable: true }
-            }
-        );
-
-        collection.trackBy = (index, item): string => {
-            return item.id;
-        };
-
-        return collection;
+    public static newCollection<R extends Resource = Resource>(): DocumentCollection<R> {
+        return new DocumentCollection();
     }
 
     public static isObjectLive(ttl: number, last_update: number) {

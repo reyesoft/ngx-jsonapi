@@ -1,0 +1,22 @@
+<nav aria-label="Pagination">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {{ collection.page.number < 2 ? 'disabled' : '' }}">
+            <a class="page-link" [routerLink]="['./']" [queryParams]="{ page: collection.page.number - 1 }" tabindex="-1">
+                Previous
+            </a>
+        </li>
+        <li class="page-item"><a class="page-link">{{ collection.page.number }}</a></li>
+        <!--
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item active">
+                <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+        -->
+        <li class="page-item {{ !collection.hasMorePages() ? 'disabled' : '' }}">
+            <a class="page-link" [routerLink]="['./']" [queryParams]="{ page: (collection.page.number + 1) }">
+                Next
+            </a>
+        </li>
+    </ul>
+</nav>

@@ -1,18 +1,25 @@
 import * as localForage from 'localforage';
+import 'localforage-getitems';
 import { Base } from '../services/base';
-import { IStoreObject } from '../interfaces';
-import { noop } from 'rxjs/util/noop';
-import { Deferred } from '../shared/deferred';
+import { noop, Subject, Observable } from 'rxjs';
+import { IDataResource } from '../interfaces/data-resource';
+import { IDataCollection } from '../interfaces/data-collection';
+import { IObjectsById } from '../interfaces';
+import { Resource } from '../resource';
 
 interface IStoreElement {
     time: number;
 }
 
-interface IStoreElement2 {
+interface IDataResourceStorage extends IDataResource {
     _lastupdate_time: number;
 }
 
-export class StoreService {
+interface IDataCollectionStorage extends IDataCollection {
+    _lastupdate_time: number;
+}
+
+export class StoreService /* implements IStoreService */ {
     private globalstore: LocalForage;
     private allstore: LocalForage;
 
@@ -21,31 +28,42 @@ export class StoreService {
             name: 'jsonapiglobal'
         });
         this.allstore = localForage.createInstance({ name: 'allstore' });
+        localForage.getItems([]);
         this.checkIfIsTimeToClean();
     }
 
-    public async getObjet(key: string): Promise<object> {
-        let deferred: Deferred<object> = new Deferred();
+    public getDataObject(type: 'collection', url: string): Observable<IDataCollection>;
+    public getDataObject(type: string, id: string): Observable<IDataResource>;
+    public getDataObject(type: 'collection' | string, id_or_url: string): Observable<IDataCollection | IDataResource> {
+        let subject = new Subject<IDataResource | IDataCollection>();
 
         this.allstore
-            .getItem('jsonapi.' + key)
+            .getItem<IDataResource | IDataCollection>('jsonapi.' + type + '.' + id_or_url)
             .then(success => {
-                deferred.resolve(success);
+                if (success === null) {
+                    subject.error(null);
+                } else {
+                    subject.next(success);
+                }
+                subject.complete();
             })
-            .catch(error => {
-                deferred.reject(error);
-            });
+            .catch(error => subject.next(error));
 
-        return deferred.promise;
+        return subject.asObservable();
     }
 
-    public async getObjets(keys: string[]): Promise<object> {
-        return this.allstore.getItem('jsonapi.' + keys[0]);
+    public async getDataResources(keys: Array<string>): Promise<IObjectsById<IDataResourceStorage>> {
+        return this.allstore.getItems(keys.map(key => 'jsonapi.' + key));
     }
 
-    public saveObject(key: string, value: IStoreObject): void {
-        value._lastupdate_time = Date.now();
-        this.allstore.setItem('jsonapi.' + key, value);
+    public saveResource(type: string, url_or_id: string, value: IDataResource): void {
+        let data_resource_storage: IDataResourceStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
+        this.allstore.setItem('jsonapi.' + type + '.' + url_or_id, data_resource_storage);
+    }
+
+    public saveCollection(url_or_id: string, value: IDataCollection): void {
+        let data_collection_storage: IDataCollectionStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
+        this.allstore.setItem('jsonapi.collection.' + url_or_id, data_collection_storage);
     }
 
     public clearCache() {
@@ -62,7 +80,7 @@ export class StoreService {
                         // key of stored object starts with key_start_with
                         this.allstore
                             .getItem(key)
-                            .then((success2: IStoreElement2) => {
+                            .then((success2: IDataCollectionStorage | IDataResourceStorage) => {
                                 success2._lastupdate_time = 0;
                                 this.allstore.setItem(key, success2);
                             })
@@ -101,10 +119,8 @@ export class StoreService {
                     // recorremos cada item y vemos si es tiempo de removerlo
                     this.allstore
                         .getItem(key)
-                        .then((success2: IStoreElement2) => {
-                            // es tiempo de removerlo?
+                        .then((success2: IDataCollectionStorage | IDataResourceStorage) => {
                             if (Date.now() >= success2._lastupdate_time + 24 * 3600 * 1000) {
-                                // removemos!!
                                 this.allstore.removeItem(key);
                             }
                         })

@@ -13,8 +13,8 @@
 
 <h4>Photos (many)</h4>
 <p><small>This a relationship with <i>hasMany:true</i></small></p>
-<ul *ngIf="book.relationships.photos.content === 'collection'">
-    <li *ngFor="let photo of book.relationships.photos.data.$toArray">
+<ul *ngIf="book.relationships.photos.builded">
+    <li *ngFor="let photo of book.relationships.photos.data">
         URI: <a href="{{ photo.attributes.uri }}">{{ photo.attributes.uri }}</a>
     </li>
 </ul>
