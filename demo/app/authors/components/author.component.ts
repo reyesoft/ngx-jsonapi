@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Resource } from 'ngx-jsonapi';
 import { PhotosService } from '../../photos/photos.service';
