@@ -7,7 +7,7 @@
 [![CircleCI](https://circleci.com/gh/reyesoft/ngx-jsonapi.svg?style=svg)](https://circleci.com/gh/reyesoft/ngx-jsonapi) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b097196f7f544412a79a99080a41bbc1)](https://www.codacy.com/app/Swimlane/ngx-charts?utm_source=github.com&utm_medium=referral&utm_content=swimlane/ngx-charts&utm_campaign=Badge_Grade) [![npm version](https://badge.fury.io/js/ngx-jsonapi.png)](https://badge.fury.io/js/ngx-jsonapi) [![Coverage Status](https://coveralls.io/repos/github/reyesoft/ngx-jsonapi/badge.svg?branch=master)](https://coveralls.io/github/reyesoft/ngx-jsonapi?branch=master)
 
 </div>
-This is a JSON API library for Angular 5+. Please use [ts-angular-jsonapi](https://github.com/reyesoft/ts-angular-jsonapi) for AngularJS.
+This is a JSON API library for Angular 6+. Please use [ts-angular-jsonapi](https://github.com/reyesoft/ts-angular-jsonapi) for AngularJS.
 
 ## Online demo
 
@@ -19,31 +19,28 @@ You can test library on this online example 👌 <http://ngx-jsonapi.reyesoft.co
 
 </div>
 
-Data is obtained from [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
+Data is obtained from [Json Api Playground](http://jsonapiplayground.reyesoft.com/) server.
 
 ## Supported features
 
--   Cache (on memory): Before a HTTP request objects are setted with cached data.
--   Cache (on memory): TTL for collections and resources
+-   Cache (on memory): TTL for collections and resources. Before a HTTP request objects are setted with cached data.
 -   Cache on localstorage
 -   Pagination
--   Filtering by attributes through a string or a regular expression
+-   Sorting
 -   [Include param support](http://jsonapi.org/format/#fetching-includes) (also, when you save)
--   Two+ equal resource request, only one HTTP call.
 -   Equal requests, return a same ResourceObject on memory
 -   Default values for a new resource (hydrator).
--   [Properties on collections](https://github.com/reyesoft/ngx-jsonapi/blob/master/src/interfaces/collection.ts) like `$length`, `$is_loading` or `$source` (_`empty`_ |`cache`|`server`)
 
 ## Usage
 
-More information on [examples section](#examples).
+Just [install](#installation), [configure](#dependecies-and-customization) and learn with [examples](#examples).
+
+First of all, it's advisable to read [Jsonapi specification](http://jsonapi.org/). Understanding JsonApi documents structure is recommended.
 
 ### Installation
 
-First of all, you need read, read and read [Jsonapi specification](http://jsonapi.org/).
-
 ```bash
-yarn add ngx-jsonapi --save
+yarn add ngx-jsonapi@2.0.0-rc.1 --save
 # or npm if you wish...
 ```
 
@@ -77,31 +74,27 @@ Like you know, the better way is with examples. Lets go! 🚀
 
 ```typescript
 import { Injectable } from '@angular/core';
-import { Service, ISchema, Resource } from 'ngx-jsonapi';
+import { Autoregister, Service, Resource, DocumentCollection, DocumentResource } from 'ngx-jsonapi';
+import { Book } from '../books/books.service';
+import { Photo } from '../photos/photos.service';
+
+export class Author extends Resource {
+    public attributes = {
+        name: 'default name',
+        date_of_birth: ''
+    };
+
+    public relationships = {
+        books: new DocumentCollection<Book>(),
+        photo: new DocumentResource<Photo>()
+    };
+}
 
 @Injectable()
+@Autoregister()
 export class AuthorsService extends Service<Author> {
     public resource = Author;
     public type = 'authors';
-    public schema: ISchema = {
-        relationships: {
-            books: {
-                hasMany: true
-            },
-            photos: {
-                hasMany: true
-            }
-        }
-    };
-}
-export class Author extends Resource {
-    public attributes: {
-        name: string;
-        date_of_birth: string;
-        date_of_death: string;
-        created_at: string;
-        updated_at: string;
-    };
 }
 ```
 
@@ -111,30 +104,23 @@ export class Author extends Resource {
 
 ```javascript
 import { Component } from '@angular/core';
-import { ICollection } from 'ngx-jsonapi';
-import { Author, AuthorsService } from './authors.service';
+import { DocumentCollection } from 'ngx-jsonapi';
+import { AuthorsService, Author } from './../authors.service';
 
 @Component({
-  selector: 'demo-authors',
-  templateUrl: './authors.component.html'
+    selector: 'demo-authors',
+    templateUrl: './authors.component.html'
 })
 export class AuthorsComponent {
-  public authors: ICollection<Author>;
+    public authors: DocumentCollection<Author>;
 
-  public constructor(
-    private authorsService: AuthorsService
-  ) {
-      authorsService.all(
-          // { include: ['books', 'photos'] }
-      )
-      .subscribe(
-          authors => {
-              this.authors = authors;
-              console.info('success authors controller', authors);
-          },
-          error => console.error('Could not load authors.')
-     );
-  }
+    public constructor(private authorsService: AuthorsService) {
+        authorsService
+            .all({
+                // include: ['books', 'photos'],
+            })
+            .subscribe(authors => this.authors = authors);
+    }
 }
 ```
 
@@ -153,7 +139,7 @@ export class AuthorsComponent {
 Ex: `name` is a authors attribute, and makes a query like `/authors?sort=name,job_title`
 
 ```javascript
-let authors$ = authorsService.all({
+let authors = authorsService.all({
     sort: ['name', 'job_title']
 });
 ```
@@ -163,9 +149,8 @@ let authors$ = authorsService.all({
 Filter resources with `attribute: value` values. Filters are used as 'exact match' (only resources with attribute value same as value are returned). `value` can also be an array, then only objects with same `attribute` value as one of `values` array elements are returned.
 
 ```javascript
-let authors$ = authorsService.all({
-    localfilter: { name: 'xx' }, // request all data and next filter locally
-    remotefilter: { country: 'Argentina' } // request data with filter url parameter
+authorsService.all({
+    remotefilter: { country: 'Argentina' }
 });
 ```
 
@@ -174,13 +159,13 @@ let authors$ = authorsService.all({
 From this point, you only see important code for this library. For a full example, clone and see demo directory.
 
 ```javascript
-let author$ = authorsService.get('some_author_id');
+authorsService.get('some_author_id');
 ```
 
 #### More options? Include resources when you fetch data (or save!)
 
 ```javascript
-let author$ = authorsService.get('some_author_id', { include: ['books', 'photos'] });
+authorsService.get('some_author_id', { include: ['books', 'photos'] });
 ```
 
 TIP: these parameters work with `all()` and `save()` methods too.
@@ -239,12 +224,10 @@ authorsService.get('some_author_id').suscribe(author => {
 ### Pagination
 
 ```javascript
-let authors$ = authorsService.all(
-  {
+authorsService.all({
   // get page 2 of authors collection, with a limit per page of 50
   page: { number: 2 ;  size: 50 }
-  }
-);
+});
 ```
 
 #### Collection page
