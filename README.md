@@ -31,6 +31,10 @@ Data is obtained from [Json Api Playground](http://jsonapiplayground.reyesoft.co
 -   Equal requests, return a same ResourceObject on memory
 -   Default values for a new resource (hydrator).
 
+## Migration
+
+-   [Migration v1 to v2 update guide](https://github.com/reyesoft/ngx-jsonapi/blob/initial-commit-v2/docs/migration.md)
+
 ## Usage
 
 Just [install](#installation), [configure](#dependecies-and-customization) and learn with [examples](#examples).
@@ -50,7 +54,7 @@ yarn add ngx-jsonapi@2.0.0-rc.1 --save
 2.  Configure your url and other paramemeters.
 3.  Inject JsonapiCore somewhere before you extend any class from `Jsonapi.Resource`.
 
-```javascript
+```typescript
 import { NgModule } from '@angular/core';
 import { NgxJsonapiModule } from 'ngx-jsonapi';
 
@@ -102,7 +106,7 @@ export class AuthorsService extends Service<Author> {
 
 #### Controller
 
-```javascript
+```typescript
 import { Component } from '@angular/core';
 import { DocumentCollection } from 'ngx-jsonapi';
 import { AuthorsService, Author } from './../authors.service';
@@ -119,7 +123,7 @@ export class AuthorsComponent {
             .all({
                 // include: ['books', 'photos'],
             })
-            .subscribe(authors => this.authors = authors);
+            .subscribe(authors => (this.authors = authors));
     }
 }
 ```
@@ -138,7 +142,7 @@ export class AuthorsComponent {
 
 Ex: `name` is a authors attribute, and makes a query like `/authors?sort=name,job_title`
 
-```javascript
+```typescript
 let authors = authorsService.all({
     sort: ['name', 'job_title']
 });
@@ -148,7 +152,7 @@ let authors = authorsService.all({
 
 Filter resources with `attribute: value` values. Filters are used as 'exact match' (only resources with attribute value same as value are returned). `value` can also be an array, then only objects with same `attribute` value as one of `values` array elements are returned.
 
-```javascript
+```typescript
 authorsService.all({
     remotefilter: { country: 'Argentina' }
 });
@@ -158,13 +162,13 @@ authorsService.all({
 
 From this point, you only see important code for this library. For a full example, clone and see demo directory.
 
-```javascript
+```typescript
 authorsService.get('some_author_id');
 ```
 
 #### More options? Include resources when you fetch data (or save!)
 
-```javascript
+```typescript
 authorsService.get('some_author_id', { include: ['books', 'photos'] });
 ```
 
@@ -172,7 +176,7 @@ TIP: these parameters work with `all()` and `save()` methods too.
 
 ### Add a new resource
 
-```javascript
+```typescript
 let author = this.authorsService.new();
 author.attributes.name = 'Pablo Reyes';
 author.attributes.date_of_birth = '2030-12-10';
@@ -181,7 +185,7 @@ author.save();
 
 #### Need you more control and options?
 
-```javascript
+```typescript
 let author = this.authorsService.new();
 author.attributes.name = 'Pablo Reyes';
 author.attributes.date_of_birth = '2030-12-10';
@@ -212,7 +216,7 @@ let author$ = authorsService.get(
 
 ### Update a resource
 
-```javascript
+```typescript
 authorsService.get('some_author_id').suscribe(author => {
     this.author.attributes.name += 'New Name';
     this.author.save(success => {
@@ -223,7 +227,7 @@ authorsService.get('some_author_id').suscribe(author => {
 
 ### Pagination
 
-```javascript
+```typescript
 authorsService.all({
   // get page 2 of authors collection, with a limit per page of 50
   page: { number: 2 ;  size: 50 }
