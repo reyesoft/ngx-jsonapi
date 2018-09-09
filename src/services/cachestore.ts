@@ -9,6 +9,7 @@ import { DocumentCollection } from '../document-collection';
 import { Observable, Subject } from 'rxjs';
 import { Page } from './page';
 import { DocumentResource } from '../document-resource';
+import { isDevMode } from '@angular/core';
 
 export class CacheStore {
     public async getResource(resource: Resource, include: Array<string> = []): Promise<object> {
@@ -243,7 +244,7 @@ export class CacheStore {
                 if (builded_resource.is_new) {
                     // no está en memoria, la pedimos a store
                     include_promises.push(this.getResource(builded_resource));
-                } else {
+                } else if (isDevMode()) {
                     console.warn('ts-angular-json: esto no debería pasar #isdjf2l1a');
                 }
                 resource.addRelationship(builded_resource, resource_alias);

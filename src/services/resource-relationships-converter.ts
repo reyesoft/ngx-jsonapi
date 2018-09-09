@@ -6,6 +6,7 @@ import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
 import { IRelationships } from '../interfaces/relationship';
 import { DocumentResource } from '../document-resource';
+import { isDevMode } from '@angular/core';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;
@@ -52,11 +53,13 @@ export class ResourceRelationshipsConverter {
 
         relation_alias = relation_alias || relation_type;
         if (!this.getService(relation_type)) {
-            console.warn(
-                'The relationship ' + relation_alias + ' (type',
-                relation_type,
-                ') cant be generated because service for this type has not been injected.'
-            );
+            if (isDevMode()) {
+                console.warn(
+                    'The relationship ' + relation_alias + ' (type',
+                    relation_type,
+                    ') cant be generated because service for this type has not been injected.'
+                );
+            }
 
             return;
         }
