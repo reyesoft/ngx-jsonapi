@@ -191,11 +191,16 @@ export class Resource implements ICacheable {
             return false;
         }
 
-        if (this.relationships[type_alias] instanceof DocumentCollection) {
-            console.warn('@todo removeRelationship');
-            // delete this.relationships[type_alias].data[id];  @todo
+        let relation = this.relationships[type_alias];
+        if (relation instanceof DocumentCollection) {
+            for (let i = 0; i < relation.data.length; i++) {
+                if (relation.data[i].id === id) {
+                    delete relation.data[i];
+                    break;
+                }
+            }
         } else {
-            this.relationships[type_alias].data = [];
+            relation.data.reset();
         }
 
         return true;

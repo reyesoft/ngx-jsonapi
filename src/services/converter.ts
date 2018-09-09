@@ -3,12 +3,10 @@ import { Core } from '../core';
 import { Resource } from '../resource';
 import { Service } from '../service';
 import { IResourcesByType, IObjectsById } from '../interfaces';
-import { ResourceRelationshipsConverter } from './resource-relationships-converter';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataResource } from '../interfaces/data-resource';
-import { Base } from '../services/base';
-import { DocumentCollection } from '../document-collection';
+import { isDevMode } from '@angular/core';
 
 export class Converter<R extends Resource> {
     /*
@@ -36,11 +34,13 @@ export class Converter<R extends Resource> {
         if (resource_service) {
             return Converter.procreate(json_resource);
         } else {
-            console.warn(
-                '`' + json_resource.type + '`',
-                'service not found on json2resource().',
-                'Use @Autoregister() on service and inject it on component.'
-            );
+            if (isDevMode()) {
+                console.warn(
+                    '`' + json_resource.type + '`',
+                    'service not found on json2resource().',
+                    'Use @Autoregister() on service and inject it on component.'
+                );
+            }
             let temp = new Resource();
             temp.id = json_resource.id;
             temp.type = json_resource.type;

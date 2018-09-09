@@ -1,4 +1,4 @@
-import { Injectable, Optional } from '@angular/core';
+import { Injectable, Optional, isDevMode } from '@angular/core';
 import { Service } from './service';
 import { Resource } from './resource';
 import { JsonapiConfig } from './jsonapi-config';
@@ -61,10 +61,10 @@ export class Core {
 
                 if (error.status <= 0) {
                     // offline?
-                    if (!Core.me.loadingsOffline(error)) {
+                    if (!Core.me.loadingsOffline(error) && isDevMode()) {
                         console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>', error);
                     }
-                } else if (call_loadings_error && !Core.me.loadingsError(error)) {
+                } else if (call_loadings_error && !Core.me.loadingsError(error) && isDevMode()) {
                     console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
                 }
 
