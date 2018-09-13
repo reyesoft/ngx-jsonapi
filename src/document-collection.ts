@@ -54,6 +54,8 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
                 delete this.data[i];
             }
         }
+
+        this.meta = data_collection.meta || {};
     }
 
     public replaceOrAdd(resource: R): void {
