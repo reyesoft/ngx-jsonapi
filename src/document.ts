@@ -9,4 +9,7 @@ export class Document implements IDocumentData {
     public is_loading = true;
     public source: 'new' | 'memory' | 'store' | 'server' = 'new';
     public cache_last_update = 0;
+    public meta: {
+        [key: string]: any;
+    } = {};
 }
