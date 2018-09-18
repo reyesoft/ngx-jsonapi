@@ -1,11 +1,13 @@
+// import 'localforage-getitems';
 import * as localForage from 'localforage';
-import 'localforage-getitems';
+import { extendPrototype as extendGetitems } from 'localforage-getitems';
 import { Base } from '../services/base';
 import { noop, Subject, Observable } from 'rxjs';
 import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IObjectsById } from '../interfaces';
-import { Resource } from '../resource';
+
+extendGetitems(localForage);
 
 interface IStoreElement {
     time: number;
@@ -28,7 +30,6 @@ export class StoreService /* implements IStoreService */ {
             name: 'jsonapiglobal'
         });
         this.allstore = localForage.createInstance({ name: 'allstore' });
-        localForage.getItems([]);
         this.checkIfIsTimeToClean();
     }
 
