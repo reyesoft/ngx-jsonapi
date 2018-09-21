@@ -128,6 +128,7 @@ export class CacheStore {
                         }
                         collection.source = 'store'; // collection and resources from storeservice
                         collection.cache_last_update = data_collection._lastupdate_time;
+                        collection.builded = true;
                         subject.next(collection);
                         setTimeout(() => subject.complete());
                     })
