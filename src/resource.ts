@@ -22,7 +22,7 @@ export class Resource implements ICacheable {
 
     public is_new = true;
     public is_saving = false;
-    public is_loading = true;
+    public is_loading = false;
     public source: 'new' | 'store' = 'new';
     public cache_last_update = 0;
     public lastupdate: number;
