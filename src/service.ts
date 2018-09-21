@@ -187,6 +187,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             })
             .catch(error => {
                 subject.error(error);
+                subject.complete();
             });
     }
 
@@ -256,6 +257,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                 tempororay_collection.$is_loading = false;
                 subject.next(tempororay_collection);
                 subject.error(error);
+                subject.complete();
             });
     }
 
@@ -275,6 +277,7 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
             })
             .catch(error => {
                 subject.error(error);
+                subject.complete();
             });
 
         return subject.asObservable();
