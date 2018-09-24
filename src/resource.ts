@@ -1,62 +1,45 @@
 import { Core } from './core';
 import { Service } from './service';
 import { Base } from './services/base';
-import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
-// import { UrlParamsBuilder } from './services/url-params-builder';
 import { Converter } from './services/converter';
 import { IDataObject } from './interfaces/data-object';
+import { IAttributes, IParamsResource, ILinks } from './interfaces';
+import { DocumentCollection } from './document-collection';
+import { DocumentResource } from './document-resource';
+import { ICacheable } from './interfaces/cacheable';
+import { isArray } from 'util';
+import { Observable, Subject, of } from 'rxjs';
+import { ResourceRelationshipsConverter } from './services/resource-relationships-converter';
+import { IRelationships } from './interfaces/relationship';
 
-import { isFunction } from 'rxjs/util/isFunction';
-import { isArray } from 'rxjs/util/isArray';
-
-import {
-    IAttributes,
-    ICollection,
-    IExecParams,
-    IParamsResource,
-    IRelationships,
-    IRelationshipCollection,
-    IRelationshipNone,
-    ILinks
-} from './interfaces';
-
-export class Resource extends ParentResourceService {
-    public is_new = true;
-    public is_loading = false;
-    public is_saving = false;
+export class Resource implements ICacheable {
     public id: string = '';
     public type: string = '';
     public attributes: IAttributes = {};
     public relationships: IRelationships = {};
     public links: ILinks = {};
+
+    public is_new = true;
+    public is_saving = false;
+    public is_loading = false;
+    public source: 'new' | 'store' = 'new';
+    public cache_last_update = 0;
     public lastupdate: number;
 
     public reset(): void {
         this.id = '';
         this.attributes = {};
-        this.relationships = {};
-
-        let relationships = this.getService().schema.relationships;
-        for (const key in relationships) {
-            if (relationships[key].hasMany) {
-                let relation: IRelationshipCollection = {
-                    data: Base.newCollection(),
-                    builded: true,
-                    content: 'collection'
-                };
-                this.relationships[key] = relation;
-            } else {
-                let relation: IRelationshipNone = { data: {}, builded: false, content: 'none' };
-                this.relationships[key] = relation;
-            }
-        }
-
         this.is_new = true;
+
+        for (const key in this.relationships) {
+            this.relationships[key] =
+                this.relationships[key] instanceof DocumentCollection ? new DocumentCollection() : new DocumentResource();
+        }
     }
 
     public toObject(params?: IParamsResource): IDataObject {
-        params = { ...{}, ...Base.Params, ...params };
+        params = { ...{}, ...Base.ParamsResource, ...params };
 
         let relationships = {};
         let included = [];
@@ -66,12 +49,10 @@ export class Resource extends ParentResourceService {
         for (const relation_alias in this.relationships) {
             let relationship = this.relationships[relation_alias];
 
-            if (this.getService().schema.relationships[relation_alias] && this.getService().schema.relationships[relation_alias].hasMany) {
-                // has many (hasMany:true)
+            if (relationship instanceof DocumentCollection) {
                 relationships[relation_alias] = { data: [] };
 
-                for (const key in relationship.data) {
-                    let resource: Resource = relationship.data[key];
+                for (const resource of relationship.data) {
                     let reational_object = {
                         id: resource.id,
                         type: resource.type
@@ -86,7 +67,9 @@ export class Resource extends ParentResourceService {
                     }
                 }
             } else {
-                // has one (hasMany:false)
+                if (!(relationship instanceof DocumentResource)) {
+                    console.warn(relationship, ' is not DocumentCollection or DocumentResource');
+                }
 
                 let relationship_data = <Resource>relationship.data;
                 if (!('id' in relationship.data) && Object.keys(relationship.data).length > 0) {
@@ -129,7 +112,7 @@ export class Resource extends ParentResourceService {
                 attributes: attributes,
                 relationships: relationships
             },
-            builded: true,
+            builded: false,
             content: 'resource'
         };
 
@@ -140,12 +123,31 @@ export class Resource extends ParentResourceService {
         return ret;
     }
 
-    public async save<T extends Resource>(params?: Object): Promise<object> {
-        return this.__exec({
-            id: null,
-            params: params,
-            exec_type: 'save'
-        });
+    public fill(data_object: IDataObject): void {
+        let included_resources = Converter.buildIncluded(data_object);
+
+        this.id = data_object.data.id || '';
+        this.attributes = data_object.data.attributes || this.attributes;
+
+        this.is_new = false;
+        let service = Converter.getService(data_object.data.type);
+
+        // wee need a registered service
+        if (!service) {
+            return;
+        }
+
+        // only ids?
+        if (Object.keys(this.attributes).length) {
+            Converter.getService(this.type).parseFromServer(this.attributes);
+        }
+
+        new ResourceRelationshipsConverter(
+            Converter.getService,
+            data_object.data.relationships || {},
+            this.relationships,
+            included_resources
+        ).buildRelationships();
     }
 
     public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
@@ -156,36 +158,26 @@ export class Resource extends ParentResourceService {
 
         type_alias = type_alias ? type_alias : resource.type;
         if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = { data: {}, builded: false, content: 'none' };
+            this.relationships[type_alias] = new DocumentResource(); // @todo DocumentCollection
         }
 
-        if (type_alias in this.getService().schema.relationships && this.getService().schema.relationships[type_alias].hasMany) {
-            this.relationships[type_alias].data[object_key] = resource;
+        let relation = this.relationships[type_alias];
+        if (relation instanceof DocumentCollection) {
+            relation.data.push(resource);
         } else {
-            this.relationships[type_alias].data = resource;
+            relation.data = resource;
         }
     }
 
-    public addRelationships(resources: ICollection, type_alias: string) {
+    public addRelationships(resources: Array<Resource>, type_alias: string): void {
         if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = { data: {}, builded: false, content: 'none' };
-        } else {
-            // we receive a new collection of this relationship. We need remove old (if don't exist on new collection)
-            for (const key in this.relationships[type_alias].data) {
-                let resource: Resource = this.relationships[type_alias].data[key];
-                if (!(resource.id in resources)) {
-                    delete this.relationships[type_alias].data[resource.id];
-                }
-            }
+            this.relationships[type_alias] = new DocumentCollection();
         }
 
-        for (const key in resources) {
-            let resource: Resource = resources[key];
-            this.relationships[type_alias].data[resource.id] = resource;
-        }
+        this.relationships[type_alias].data = resources;
     }
 
-    public addRelationshipsArray<R extends Resource>(resources: R[], type_alias?: string): void {
+    public addRelationshipsArray<R extends Resource>(resources: Array<R>, type_alias?: string): void {
         resources.forEach((item: Resource) => {
             this.addRelationship(item, type_alias || item.type);
         });
@@ -199,13 +191,16 @@ export class Resource extends ParentResourceService {
             return false;
         }
 
-        if (type_alias in this.getService().schema.relationships && this.getService().schema.relationships[type_alias].hasMany) {
-            if (!(id in this.relationships[type_alias].data)) {
-                return false;
+        let relation = this.relationships[type_alias];
+        if (relation instanceof DocumentCollection) {
+            for (let i = 0; i < relation.data.length; i++) {
+                if (relation.data[i].id === id) {
+                    delete relation.data[i];
+                    break;
+                }
             }
-            delete this.relationships[type_alias].data[id];
         } else {
-            this.relationships[type_alias].data = {};
+            relation.data.reset();
         }
 
         return true;
@@ -218,81 +213,50 @@ export class Resource extends ParentResourceService {
         return Converter.getService(this.type);
     }
 
-    protected async __exec<T extends Resource>(exec_params: IExecParams): Promise<object> {
-        let exec_pp = this.proccess_exec_params(exec_params);
-
-        switch (exec_params.exec_type) {
-            case 'save':
-                return this._save(exec_pp.params);
+    public save<T extends Resource>(params?: IParamsResource): Observable<object> {
+        params = { ...Base.ParamsResource, ...params };
+        if (this.is_saving || this.is_loading) {
+            return of({});
         }
-    }
+        this.is_saving = true;
 
-    private async _save<T extends Resource>(params: IParamsResource): Promise<object> {
-        let promisesave: Promise<object> = new Promise(
-            (resolve, reject): void => {
-                if (this.is_saving || this.is_loading) {
-                    return;
+        let subject = new Subject<object>();
+        let object = this.toObject(params);
+
+        // http request
+        let path = new PathBuilder();
+        path.applyParams(this.getService(), params);
+        if (this.id) {
+            path.appendPath(this.id);
+        }
+
+        Core.exec(path.get(), this.id ? 'PATCH' : 'POST', object, true).subscribe(
+            success => {
+                this.is_saving = false;
+
+                // foce reload cache (for example, we add a new element)
+                if (!this.id) {
+                    this.getService().cachememory.deprecateCollections(path.get());
+                    this.getService().cachestore.deprecateCollections(path.get());
                 }
-                this.is_saving = true;
 
-                let object = this.toObject(params);
-
-                // http request
-                let path = new PathBuilder();
-                path.applyParams(this.getService(), params);
-                if (this.id) {
-                    path.appendPath(this.id);
+                // is a resource?
+                if ('id' in success.data) {
+                    this.id = success.data.id;
+                    this.fill(<IDataObject>success);
+                } else if (isArray(success.data)) {
+                    console.warn('Server return a collection when we save()', success.data);
                 }
 
-                let promise = Core.exec(path.get(), this.id ? 'PATCH' : 'POST', object, true);
-
-                promise
-                    .then(success => {
-                        this.is_saving = false;
-
-                        // foce reload cache (for example, we add a new element)
-                        if (!this.id) {
-                            this.getService().cachememory.deprecateCollections(path.get());
-                            this.getService().cachestore.deprecateCollections(path.get());
-                        }
-
-                        // is a resource?
-                        if ('id' in success.data) {
-                            this.id = success.data.id;
-                            Converter.build(success, this);
-                            /*
-                        Si lo guardo en la caché, luego no queda bindeado con la vista
-                        Usar {{ $ctrl.service.getCachedResources() | json }}, agregar uno nuevo, editar
-                        */
-                            // this.getService().cachememory.setResource(this);
-                        } else if (isArray(success.data)) {
-                            console.warn('Server return a collection when we save()', success.data);
-
-                            /*
-                        we request the service again, because server maybe are giving
-                        us another type of resource (getService(resource.type))
-                        */
-                            let tempororay_collection = this.getService().cachememory.getOrCreateCollection('justAnUpdate');
-                            Converter.build(success, tempororay_collection);
-                            Base.forEach(tempororay_collection, (resource_value: Resource, key: string) => {
-                                let res = Converter.getService(resource_value.type).cachememory.resources[resource_value.id];
-                                Converter.getService(resource_value.type).cachememory.setResource(resource_value);
-                                Converter.getService(resource_value.type).cachestore.setResource(resource_value);
-                                res.id = res.id + 'x';
-                            });
-
-                            console.warn('Temporal collection for a resource_value update', tempororay_collection);
-                        }
-
-                        resolve(success);
-                    })
-                    .catch(error => {
-                        this.is_saving = false;
-                        reject('data' in error ? error.data : error);
-                    });
+                subject.next(success);
+                subject.complete();
+            },
+            error => {
+                this.is_saving = false;
+                subject.error('data' in error ? error.data : error);
             }
         );
 
-        return promisesave;
+        return subject;
     }
 }

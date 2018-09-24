@@ -3,9 +3,9 @@ import { Core } from '../core';
 import { Service } from '../service';
 
 export class PathBuilder {
-    public paths: string[] = [];
-    public includes: string[] = [];
-    private get_params: string[] = [];
+    public paths: Array<string> = [];
+    public includes: Array<string> = [];
+    protected get_params: Array<string> = [];
 
     public applyParams(service: Service, params: IParamsResource | IParamsCollection = {}) {
         this.appendPath(service.getPrePath());
@@ -24,10 +24,6 @@ export class PathBuilder {
         }
     }
 
-    public addParam(param: string): void {
-        this.get_params.push(param);
-    }
-
     public getForCache(): string {
         return this.paths.join('/') + this.get_params.join('/');
     }
@@ -42,7 +38,7 @@ export class PathBuilder {
         return this.paths.join('/') + (params.length > 0 ? Core.injectedServices.rsJsonapiConfig.params_separator + params.join('&') : '');
     }
 
-    private setInclude(strings_array: string[]) {
+    private setInclude(strings_array: Array<string>) {
         this.includes = strings_array;
     }
 }

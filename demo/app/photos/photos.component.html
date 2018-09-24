@@ -8,7 +8,7 @@
                 <th>URI</th>
             </tr>
         </thead>
-        <tr *ngFor="let photo of photos.$toArray">
+        <tr *ngFor="let photo of photos.data">
             <td>{{ photo.id }}</td>
             <td>{{ photo.attributes.title }}</td>
             <td>{{ photo.attributes.uri }}</td>

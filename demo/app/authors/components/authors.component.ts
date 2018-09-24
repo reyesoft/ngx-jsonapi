@@ -1,32 +1,31 @@
 import { Component } from '@angular/core';
-import { ICollection } from 'ngx-jsonapi';
-import 'rxjs/add/operator/finally';
+import { DocumentCollection } from 'ngx-jsonapi';
 import { AuthorsService, Author } from './../authors.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'demo-authors',
     templateUrl: './authors.component.html'
 })
 export class AuthorsComponent {
-    public authors: ICollection<Author>;
+    public authors: DocumentCollection<Author>;
 
-    public constructor(private authorsService: AuthorsService) {
-        authorsService
-            .all({
-                // include: ['books', 'photos'],
-                // localfilter: {
-                //     name: 'y',                  // authors with a `y` character on name
-                //     date_of_birth: /^2016\-.*/  // we can use regular expresions too :)
-                // },
-                sort: ['name'],
-                ttl: 3600
-            })
-            .subscribe(
-                authors => {
-                    this.authors = authors;
-                    console.info('success authors controller', authors);
-                },
-                error => console.error('Could not load authors.')
-            );
+    public constructor(private route: ActivatedRoute, private authorsService: AuthorsService) {
+        route.queryParams.subscribe(({ page }) => {
+            authorsService
+                .all({
+                    // include: ['books', 'photos'],
+                    sort: ['name'],
+                    page: { number: page || 1 },
+                    ttl: 3600
+                })
+                .subscribe(
+                    authors => {
+                        this.authors = authors;
+                        console.info('success authors controller', authors, 'page', page || 1, authors.page.number);
+                    },
+                    error => console.error('Could not load authors :(', error)
+                );
+        });
     }
 }

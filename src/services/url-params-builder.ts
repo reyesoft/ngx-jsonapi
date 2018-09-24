@@ -1,5 +1,5 @@
 import { Base } from './base';
-import { isObject } from 'rxjs/util/isObject';
+import { isObject } from 'util';
 
 export class UrlParamsBuilder {
     public toparams(params): string {

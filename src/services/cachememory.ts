@@ -1,17 +1,16 @@
-import { ICollection } from '../interfaces';
-import { ICacheMemory } from '../interfaces/cachememory';
 import { Base } from './base';
 import { Resource } from '../resource';
 import { Converter } from './converter';
-import { ResourceFunctions } from './resource-functions';
+import { DocumentCollection } from '../document-collection';
+import { IObjectsById } from '../interfaces';
 
-export class CacheMemory<R extends Resource = Resource> implements ICacheMemory {
-    public resources: { [id: string]: Resource } = {};
-    private collections: { [url: string]: ICollection<R> } = {};
+export class CacheMemory<R extends Resource = Resource> {
+    public resources: IObjectsById<Resource> = {};
+    private collections: { [url: string]: DocumentCollection<R> } = {};
     private collections_lastupdate: { [url: string]: number } = {};
 
     public isCollectionExist(url: string): boolean {
-        return url in this.collections && this.collections[url].$source !== 'new' ? true : false;
+        return url in this.collections && this.collections[url].source !== 'new' ? true : false;
     }
 
     public isCollectionLive(url: string, ttl: number): boolean {
@@ -22,21 +21,23 @@ export class CacheMemory<R extends Resource = Resource> implements ICacheMemory 
         return this.resources[id] && Date.now() <= this.resources[id].lastupdate + ttl * 1000;
     }
 
-    public getOrCreateCollection(url: string): ICollection<R> {
+    public getOrCreateCollection(url: string): DocumentCollection<R> {
         if (!(url in this.collections)) {
-            this.collections[url] = Base.newCollection();
-            this.collections[url].$source = 'new';
+            this.collections[url] = new DocumentCollection();
+            this.collections[url].source = 'new';
         }
 
         return this.collections[url];
     }
 
-    public setCollection(url: string, collection: ICollection<R>): void {
-        // clone collection, because after maybe delete items for localfilter o pagination
-        this.collections[url] = Base.newCollection();
-        for (const resource_id in collection) {
-            let resource: Resource = collection[resource_id];
-            this.collections[url][resource_id] = resource;
+    public setCollection(url: string, collection: DocumentCollection<R>): void {
+        // v1: clone collection, because after maybe delete items for localfilter o pagination
+        if (!(url in this.collections)) {
+            this.collections[url] = new DocumentCollection();
+        }
+        for (let i = 0; i < collection.data.length; i++) {
+            let resource = collection.data[i];
+            // this.collections[url].data.push(resource);
             this.setResource(resource);
         }
         this.collections[url].data = collection.data;
@@ -58,9 +59,8 @@ export class CacheMemory<R extends Resource = Resource> implements ICacheMemory 
     }
 
     public setResource(resource: Resource, update_lastupdate = false): void {
-        // we cannot redefine object, because view don't update.
         if (resource.id in this.resources) {
-            ResourceFunctions.resourceToResource(resource, this.resources[resource.id]);
+            this.addResourceOrFill(resource);
         } else {
             this.resources[resource.id] = resource;
         }
@@ -82,5 +82,45 @@ export class CacheMemory<R extends Resource = Resource> implements ICacheMemory 
         this.resources[id].attributes = {}; // just for confirm deletion on view
         this.resources[id].relationships = {}; // just for confirm deletion on view
         delete this.resources[id];
+    }
+
+    private addResourceOrFill(source: Resource): void {
+        let destination = this.resources[source.id];
+
+        destination.attributes = source.attributes;
+
+        // remove relationships on destination resource
+        for (let type_alias in destination.relationships) {
+            // problem with no declared services
+            if (destination.relationships[type_alias].data === undefined) {
+                continue;
+            }
+
+            if (!(type_alias in source.relationships)) {
+                delete destination.relationships[type_alias];
+            } else {
+                // relation is a collection
+                let collection = <DocumentCollection>destination.relationships[type_alias];
+                for (let resource of collection.data) {
+                    if (collection.find(resource.id) === null) {
+                        delete destination.relationships[type_alias];
+                    }
+                }
+            }
+        }
+
+        // add source relationships to destination
+        for (let type_alias in source.relationships) {
+            // problem with no declared services
+            if (source.relationships[type_alias].data === undefined) {
+                continue;
+            }
+
+            if ('id' in source.relationships[type_alias].data) {
+                destination.addRelationship(<Resource>source.relationships[type_alias].data, type_alias);
+            } else {
+                destination.addRelationships(<Array<Resource>>source.relationships[type_alias].data, type_alias);
+            }
+        }
     }
 }

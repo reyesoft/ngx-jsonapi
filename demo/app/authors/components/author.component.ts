@@ -1,11 +1,8 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Resource, IRelationship, ICollection } from 'ngx-jsonapi';
-
-import { forEach } from '../../../foreach';
+import { Resource } from 'ngx-jsonapi';
 import { PhotosService } from '../../photos/photos.service';
 import { AuthorsService, Author } from '../authors.service';
-import { Observable } from 'rxjs/Observable';
 import { BooksService } from '../../books/books.service';
 
 @Component({
@@ -14,7 +11,7 @@ import { BooksService } from '../../books/books.service';
 })
 export class AuthorComponent {
     public author: Author;
-    public relatedbooks: Resource[];
+    public relatedbooks: Array<Resource>;
 
     public constructor(
         protected authorsService: AuthorsService,
@@ -43,12 +40,13 @@ export class AuthorComponent {
         }
         author.attributes.date_of_birth = '2030-12-10';
         console.log('author data for save', author.toObject());
-        author.save(
+        author
+            .save
             /* { include: ['book'] } */
-            success => {
+            ()
+            .subscribe(success => {
                 console.log('author saved', author.toObject());
-            }
-        );
+            });
     }
 
     /*
@@ -58,16 +56,9 @@ export class AuthorComponent {
         this.author.attributes.name = prompt('Author name:', this.author.attributes.name);
         console.log('author data for save with book include', this.author.toObject({ include: ['books'] }));
         console.log('author data for save without any include', this.author.toObject());
-        this.author.save(
-            /* { include: ['book'] } */
-            success => {
-                console.log('author saved', this.author.toObject());
-            }
-        );
-    }
-
-    public getPhotos(author: Resource): Resource[] {
-        return (<ICollection>author.relationships.photos.data).$toArray;
+        this.author.save(/* { include: ['book'] } */).subscribe(success => {
+            console.log('author saved', this.author.toObject());
+        });
     }
 
     public removeRelationship() {

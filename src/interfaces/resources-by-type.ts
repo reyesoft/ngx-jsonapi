@@ -1,5 +1,6 @@
-import { IResourcesById } from './resources-by-id';
+import { Resource } from '../resource';
+import { IObjectsById } from './objects-by-id';
 
 export interface IResourcesByType {
-    [type: string]: IResourcesById;
+    [type: string]: IObjectsById<Resource>;
 }

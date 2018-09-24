@@ -1,5 +1,5 @@
 <h3>Author #{{ author.id }}, with books and photos</h3>
-<pre>authors.get('{{ author.id }}', {{ '{' }} include: ['books', 'photos'] {{ '}' }});</pre>
+<!-- <pre>authors.get('{{ author.id }}', {{ '{' }} include: ['books', 'photos'] {{ '}' }});</pre> -->
 <ul>
     <li>Name: <strong>{{ author.attributes.name }}</strong></li>
     <li>Date of birth: <strong>{{ author.attributes.date_of_birth | date }}</strong></li>
@@ -12,18 +12,18 @@
 </p>
 
 <h4>Photos</h4>
-<span *ngIf="author.relationships.photos.data.data.length === 0">
+<span *ngIf="author.relationships.photos.data.length === 0">
     This author don't have any photo :(
 </span>
 <span *ngIf="author.relationships.photos.builded">
-    <img *ngFor="let photo of author.relationships.photos.data.data"
+    <img *ngFor="let photo of author.relationships.photos.data"
         [src]="photo.attributes.uri" height="150" style="padding-right: 1em"
         title="Book id #{{ photo.id }}"
     />
 </span>
 
 <h4>Books</h4>
-<table class="table table-striped" *ngIf="author.relationships.books.content == 'collection'">
+<table class="table table-striped" *ngIf="author.relationships.books.builded">
     <thead>
         <tr>
             <th>ID</th>
@@ -31,10 +31,10 @@
             <th>Date Published</th>
         </tr>
     </thead>
-    <tr *ngFor="let book of author.relationships.books.data.data">
+    <tr *ngFor="let book of author.relationships.books.data">
         <td>{{ book.id }}</td>
         <td>
-            <a>{{ book.attributes.title }}</a>
+            <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
         </td>
         <td>{{ book.attributes.date_published | date }}</td>
     </tr>

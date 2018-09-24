@@ -1,34 +1,27 @@
-import { noop } from 'rxjs/util/noop';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { of } from 'rxjs/observable/of';
-
 import { Core } from './core';
 import { Base } from './services/base';
 import { Resource } from './resource';
-import { ParentResourceService } from './parent-resource-service';
 import { PathBuilder } from './services/path-builder';
-import { UrlParamsBuilder } from './services/url-params-builder';
 import { Converter } from './services/converter';
-import { LocalFilter } from './services/localfilter';
 import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
-import { ISchema, ICollection, IExecParams, ICacheMemory, IParamsCollection, IParamsResource, IAttributes } from './interfaces';
+import { IParamsCollection, IParamsResource, IAttributes } from './interfaces';
+import { DocumentCollection } from './document-collection';
+import { isLive } from './common';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
+import { IDataObject } from './interfaces/data-object';
+import { PathCollectionBuilder } from './services/path-collection-builder';
+import { IDataCollection } from './interfaces/data-collection';
 
-export class Service<R extends Resource = Resource> extends ParentResourceService {
-    public schema: ISchema;
-    public cachememory: ICacheMemory<R>;
+export class Service<R extends Resource = Resource> {
+    public cachememory: CacheMemory;
     public cachestore: CacheStore;
     public type: string;
     public resource = Resource;
-
     protected path: string; // without slashes
 
-    private smartfiltertype = 'undefined';
-
     /*
-    Register schema on Core
+    Register service on Core
     @return true if the resource don't exist and registered ok
     */
     public register(): Service<R> | false {
@@ -38,7 +31,6 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         // only when service is registered, not cloned object
         this.cachememory = new CacheMemory();
         this.cachestore = new CacheStore();
-        this.schema = { ...{}, ...Base.Schema, ...this.schema };
 
         return Core.me.registerService<R>(this);
     }
@@ -49,8 +41,8 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         return <R>resource;
     }
 
-    public newCollection(): ICollection<R> {
-        return Base.newCollection();
+    public newCollection(): DocumentCollection<R> {
+        return new DocumentCollection();
     }
 
     public new(): R {
@@ -66,78 +58,42 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
     public getPrePath(): string {
         return '';
     }
+
     public getPath(): string {
-        return this.path ? this.path : this.type;
+        return this.path || this.type;
     }
 
-    public get(id: string, params?: IParamsResource): Observable<R> {
-        return <Observable<R>>this.__exec({
-            id: id,
-            params: params,
-            exec_type: 'get'
-        });
-    }
+    public get(id: string, params: IParamsResource = {}): Observable<R> {
+        params = { ...Base.ParamsResource, ...params };
 
-    public delete(id: string, params?: Object): Observable<void> {
-        return <Observable<void>>this.__exec({
-            id: id,
-            params: params,
-            exec_type: 'delete'
-        });
-    }
-
-    public all(params?: IParamsCollection): Observable<ICollection<R>> {
-        return <Observable<ICollection<R>>>this.__exec({
-            id: null,
-            params: params,
-            exec_type: 'all'
-        });
-    }
-
-    public _get(id: string, params: IParamsResource): Observable<R> {
         // http request
         let path = new PathBuilder();
         path.applyParams(this, params);
         path.appendPath(id);
 
         // CACHEMEMORY
-        let resource = <R>this.getService().cachememory.getOrCreateResource(this.type, id);
+        let resource = this.getOrCreateResource(id);
         resource.is_loading = true;
 
         let subject = new BehaviorSubject<R>(resource);
 
-        // exit if ttl is not expired
-        let temporal_ttl = params.ttl || this.schema.ttl;
-        if (this.getService().cachememory.isResourceLive(id, temporal_ttl)) {
-            // we create a promise because we need return collection before
-            // run success client function
-            let promise: Promise<void> = new Promise(
-                (resolve, reject): void => {
-                    resource.is_loading = false;
-                }
-            );
-            promise
-                .then(fc_success2 => {
-                    subject.next(resource);
-                    subject.complete();
-                    this.runFc(fc_success2, 'cachememory');
-                })
-                .catch(noop);
-
-            return subject.asObservable();
+        if (isLive(resource, params.ttl)) {
+            subject.complete();
+            resource.is_loading = false;
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
             this.getService()
                 .cachestore.getResource(resource, params.include)
-                .then(success => {
-                    if (Base.isObjectLive(temporal_ttl, resource.lastupdate)) {
-                        resource.is_loading = false;
+                .then(() => {
+                    if (!isLive(resource, params.ttl)) {
                         subject.next(resource);
-                    } else {
-                        this.getGetFromServer(path, resource, subject);
+                        throw new Error('No está viva la caché de localstorage');
                     }
+                    resource.is_loading = false;
+                    subject.next(resource);
+                    subject.complete();
                 })
-                .catch(error => {
+                .catch(() => {
                     this.getGetFromServer(path, resource, subject);
                 });
         } else {
@@ -148,11 +104,45 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         return subject.asObservable();
     }
 
-    /*
-    @return This resource like a service
-    */
+    protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
+        Core.get(path.get()).subscribe(
+            success => {
+                resource.fill(<IDataObject>success);
+                resource.is_loading = false;
+                this.getService().cachememory.setResource(resource);
+                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+                    this.getService().cachestore.setResource(resource);
+                }
+                subject.next(resource);
+                subject.complete();
+            },
+            error => {
+                subject.error(error);
+            }
+        );
+    }
+
     public getService<T extends Service<R>>(): T {
         return <T>(Converter.getService(this.type) || this.register());
+    }
+
+    public getOrCreateCollection(path: PathCollectionBuilder): DocumentCollection<R> {
+        let collection = <DocumentCollection<R>>this.getService().cachememory.getOrCreateCollection(path.getForCache());
+
+        return collection;
+    }
+
+    public getOrCreateResource(id: string): R {
+        let service = Converter.getService(this.type);
+        if (service.cachememory && id in service.cachememory.resources) {
+            return <R>service.cachememory.resources[id];
+        } else {
+            let resource = service.new();
+            resource.id = id;
+            service.cachememory.setResource(resource, false);
+
+            return <R>resource;
+        }
     }
 
     public clearCacheMemory(): boolean {
@@ -173,49 +163,90 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
         /* */
     }
 
-    protected getGetFromServer(path, resource: R, subject: Subject<R>) {
-        Core.get(path.get())
-            .then(success => {
-                Converter.build(success /*.data*/, resource);
-                resource.is_loading = false;
-                this.getService().cachememory.setResource(resource);
-                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    this.getService().cachestore.setResource(resource);
-                }
-                subject.next(resource);
+    public delete(id: string, params?: Object): Observable<void> {
+        params = { ...{}, ...Base.ParamsResource, params };
+
+        // http request
+        let path = new PathBuilder();
+        path.applyParams(this, params);
+        path.appendPath(id);
+
+        let subject = new Subject<void>();
+
+        Core.delete(path.get()).subscribe(
+            success => {
+                this.getService().cachememory.removeResource(id);
+                subject.next();
                 subject.complete();
-            })
-            .catch(error => {
+            },
+            error => {
                 subject.error(error);
-            });
+            }
+        );
+
+        return subject.asObservable();
     }
 
-    protected __exec(exec_params: IExecParams): Observable<R | ICollection<R> | void> {
-        let exec_pp = super.proccess_exec_params(exec_params);
+    public all(params: IParamsCollection = {}): Observable<DocumentCollection<R>> {
+        params = { ...Base.ParamsCollection, ...params };
 
-        switch (exec_pp.exec_type) {
-            case 'get':
-                return this._get(exec_pp.id, exec_pp.params);
-            case 'delete':
-                return this._delete(exec_pp.id, exec_pp.params);
-            case 'all':
-                return this._all(exec_pp.params);
+        let path = new PathCollectionBuilder();
+        path.applyParams(this, params);
+
+        // make request
+        let temporary_collection = this.getOrCreateCollection(path);
+        temporary_collection.page.number = params.page.number * 1;
+
+        let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
+
+        if (isLive(temporary_collection, params.ttl)) {
+            temporary_collection.source = 'memory';
+            subject.next(temporary_collection);
+            setTimeout(() => subject.complete(), 0);
+        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+            // STORE
+            temporary_collection.is_loading = true;
+
+            this.getService()
+                .cachestore.fillCollectionFromStore(path.getForCache(), path.includes, temporary_collection)
+                .subscribe(
+                    () => {
+                        temporary_collection.source = 'store';
+
+                        // when load collection from store, we save collection on memory
+                        this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
+
+                        if (isLive(temporary_collection, params.ttl)) {
+                            temporary_collection.is_loading = false;
+                            subject.next(temporary_collection);
+                            subject.complete();
+                        } else {
+                            this.getAllFromServer(path, params, temporary_collection, subject);
+                        }
+                    },
+                    err => {
+                        this.getAllFromServer(path, params, temporary_collection, subject);
+                    }
+                );
+        } else {
+            this.getAllFromServer(path, params, temporary_collection, subject);
         }
+
+        return subject.asObservable();
     }
 
     protected getAllFromServer(
-        path,
-        params,
-        tempororay_collection: ICollection<R>,
-        cached_collection: ICollection<R>,
-        subject: BehaviorSubject<ICollection<R>>
+        path: PathBuilder,
+        params: IParamsCollection,
+        temporary_collection: DocumentCollection<R>,
+        subject: BehaviorSubject<DocumentCollection<R>>
     ) {
-        // SERVER REQUEST
-        tempororay_collection.$is_loading = true;
-        Core.get(path.get())
-            .then(success => {
-                tempororay_collection.$source = 'server';
-                tempororay_collection.$is_loading = false;
+        temporary_collection.is_loading = true;
+        subject.next(temporary_collection);
+        Core.get(path.get()).subscribe(
+            success => {
+                temporary_collection.source = 'server';
+                temporary_collection.is_loading = false;
 
                 // this create a new ID for every resource (for caching proposes)
                 // for example, two URL return same objects but with different attributes
@@ -225,163 +256,24 @@ export class Service<R extends Resource = Resource> extends ParentResourceServic
                         resource.id = resource.id + params.cachehash;
                     }
                 }
+                temporary_collection.fill(<IDataCollection>success);
+                temporary_collection.cache_last_update = Date.now();
 
-                Converter.build(success /*.data*/, tempororay_collection);
-
-                this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
+                this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    this.getService().cachestore.setCollection(path.getForCache(), tempororay_collection, params.include);
+                    this.getService().cachestore.setCollection(path.getForCache(), temporary_collection, params.include);
                 }
 
-                // localfilter getted data
-                let localfilter = new LocalFilter(params.localfilter);
-                localfilter.filterCollection(tempororay_collection, cached_collection);
-
-                // trying to define smartfiltertype
-                if (this.smartfiltertype === 'undefined') {
-                    let page = tempororay_collection.page;
-                    if (page.number === 1 && page.total_resources <= page.resources_per_page) {
-                        this.smartfiltertype = 'localfilter';
-                    } else if (page.number === 1 && page.total_resources > page.resources_per_page) {
-                        this.smartfiltertype = 'remotefilter';
-                    }
-                }
-
-                subject.next(cached_collection);
+                subject.next(temporary_collection);
                 subject.complete();
-            })
-            .catch(error => {
-                // do not replace $source, because localstorage don't write if = server
-                // tempororay_collection.$source = 'server';
-                tempororay_collection.$is_loading = false;
-                subject.next(tempororay_collection);
+            },
+            error => {
+                // do not replace source, because localstorage don't write if = server
+                // temporary_collection.source = 'server';
+                temporary_collection.is_loading = false;
+                subject.next(temporary_collection);
                 subject.error(error);
-            });
-    }
-
-    private _delete(id: string, params): Observable<void> {
-        // http request
-        let path = new PathBuilder();
-        path.applyParams(this, params);
-        path.appendPath(id);
-
-        let subject = new Subject<void>();
-
-        Core.delete(path.get())
-            .then(success => {
-                this.getService().cachememory.removeResource(id);
-                subject.next();
-                subject.complete();
-            })
-            .catch(error => {
-                subject.error(error);
-            });
-
-        return subject.asObservable();
-    }
-
-    private _all(params: IParamsCollection): Observable<ICollection<R>> {
-        // check smartfiltertype, and set on remotefilter
-        if (params.smartfilter && this.smartfiltertype !== 'localfilter') {
-            Object.assign(params.remotefilter, params.smartfilter);
-        }
-
-        params.cachehash = params.cachehash || '';
-
-        // http request
-        let path = new PathBuilder();
-        let paramsurl = new UrlParamsBuilder();
-        path.applyParams(this, params);
-        if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
-            if (this.getService().parseToServer) {
-                this.getService().parseToServer(params.remotefilter);
             }
-            path.addParam(paramsurl.toparams({ filter: params.remotefilter }));
-        }
-        if (params.page) {
-            if (params.page.number > 1) {
-                path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number);
-            }
-            if (params.page.size) {
-                path.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.size + '=' + params.page.size);
-            }
-        }
-        if (params.sort) {
-            path.addParam('sort=' + params.sort.join(','));
-        }
-
-        // make request
-        // if we remove this, dont work the same .all on same time (ej: <component /><component /><component />)
-        let tempororay_collection = this.getService().cachememory.getOrCreateCollection(path.getForCache());
-
-        // creamos otra colleción si luego será filtrada
-        let localfilter = new LocalFilter(params.localfilter);
-        let cached_collection: ICollection<R>;
-        if (params.localfilter && Object.keys(params.localfilter).length > 0) {
-            cached_collection = Base.newCollection();
-        } else {
-            cached_collection = tempororay_collection;
-        }
-
-        let subject = new BehaviorSubject<ICollection<R>>(cached_collection);
-
-        // MEMORY_CACHE
-        let temporal_ttl = params.ttl || this.schema.ttl;
-        if (temporal_ttl >= 0 && this.getService().cachememory.isCollectionExist(path.getForCache())) {
-            // get cached data and merge with temporal collection
-            tempororay_collection.$source = 'memory';
-
-            // check smartfiltertype, and set on localfilter
-            if (params.smartfilter && this.smartfiltertype === 'localfilter') {
-                Object.assign(params.localfilter, params.smartfilter);
-            }
-
-            // fill collection and localfilter
-            localfilter.filterCollection(tempororay_collection, cached_collection);
-
-            // exit if ttl is not expired
-            if (this.getService().cachememory.isCollectionLive(path.getForCache(), temporal_ttl)) {
-                // we create a promise because we need return collection before
-                // run success client function
-                setTimeout(() => {
-                    subject.next(tempororay_collection);
-                }, 0);
-            } else {
-                this.getAllFromServer(path, params, tempororay_collection, cached_collection, subject);
-            }
-        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            // STORE
-            tempororay_collection.$is_loading = true;
-
-            this.getService()
-                .cachestore.getCollectionFromStorePromise(path.getForCache(), path.includes, tempororay_collection)
-                .then(() => {
-                    tempororay_collection.$source = 'store';
-                    tempororay_collection.$is_loading = false;
-
-                    // when load collection from store, we save collection on memory
-                    this.getService().cachememory.setCollection(path.getForCache(), tempororay_collection);
-
-                    // localfilter getted data
-                    localfilter.filterCollection(tempororay_collection, cached_collection);
-
-                    if (Base.isObjectLive(temporal_ttl, tempororay_collection.$cache_last_update)) {
-                        subject.next(tempororay_collection);
-                    } else {
-                        this.getAllFromServer(path, params, tempororay_collection, cached_collection, subject);
-                    }
-                })
-                .catch(() => {
-                    this.getAllFromServer(path, params, tempororay_collection, cached_collection, subject);
-                });
-        } else {
-            // STORE
-            tempororay_collection.$is_loading = true;
-            this.getAllFromServer(path, params, tempororay_collection, cached_collection, subject);
-        }
-
-        subject.next(<ICollection<R>>cached_collection);
-
-        return subject.asObservable();
+        );
     }
 }
