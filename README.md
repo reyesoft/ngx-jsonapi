@@ -44,7 +44,7 @@ First of all, it's advisable to read [Jsonapi specification](http://jsonapi.org/
 ### Installation
 
 ```bash
-yarn add ngx-jsonapi@2.0.0-rc.1 --save
+yarn add ngx-jsonapi@2.0.0-rc.4 --save
 # or npm if you wish...
 ```
 
