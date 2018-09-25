@@ -9,7 +9,7 @@ export class PathCollectionBuilder extends PathBuilder {
         super.applyParams(service, params);
 
         let paramsurl = new UrlParamsBuilder();
-        if (Object.keys(params.remotefilter).length > 0) {
+        if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
             if (service.parseToServer) {
                 service.parseToServer(params.remotefilter);
             }
@@ -24,7 +24,7 @@ export class PathCollectionBuilder extends PathBuilder {
                 this.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.size + '=' + params.page.size);
             }
         }
-        if (params.sort.length) {
+        if (params.sort && params.sort.length) {
             this.addParam('sort=' + params.sort.join(','));
         }
     }
