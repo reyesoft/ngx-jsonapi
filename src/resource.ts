@@ -159,7 +159,7 @@ export class Resource implements ICacheable {
         }
     }
 
-    public addRelationships(resources: Array<Resource>, type_alias: string): void {
+    public addRelationships<R extends Resource>(resources: Array<R>, type_alias: string): void {
         let relation = this.relationships[type_alias];
         if (!(relation instanceof DocumentCollection)) {
             throw new Error('addRelationships require a DocumentCollection (hasMany) relation.');
@@ -173,7 +173,7 @@ export class Resource implements ICacheable {
     /**
      * @deprecated
      */
-    public addRelationshipsArray(resources: Array<Resource>, type_alias: string): void {
+    public addRelationshipsArray<R extends Resource>(resources: Array<R>, type_alias: string): void {
         this.addRelationships(resources, type_alias);
     }
 
