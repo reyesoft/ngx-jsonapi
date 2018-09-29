@@ -233,12 +233,20 @@ authorsService.all({
   page: { number: 2 ;  size: 50 }
 });
 ```
+#### Pagination strategies available
 
-#### Collection page
+- Page-based strategy
+    - **number**: number of the current page
+    - **size:** size of resources per page
+- Cursor-based strategy
+    - **cursor** : starting point of the next set of data
+    - **limit** : size of the subset returned in the response
 
--   number: number of the current page
--   size: size of resources per page ([it's sended to server by url](http://jsonapi.org/format/#fetching-pagination))
--   information returned from server (check if is avaible) **total_resources: total of avaible resources on server** resources_per_page: total of resources returned per page requested
+Additional informations returned from server (check if it's available) :
+- **total_resources**: total of available resources on server
+- **resources_per_page**: total of resources returned per page requested
+
+See http://jsonapi.org/format/#fetching-pagination for more details.
 
 ## Local Demo App
 

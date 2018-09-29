@@ -1,8 +1,10 @@
 export interface IPage {
-    number: number;
-
     // http://jsonapi.org/format/#fetching-pagination
+    number?: number;
     size?: number;
+
+    limit?: number;
+    cursor?: string | number;
 
     // multinexo
     total_resources?: number;
