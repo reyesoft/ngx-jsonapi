@@ -1,5 +1,5 @@
 export interface IParams {
     beforepath?: string;
-    include?: string[];
+    include?: Array<string>;
     ttl?: number;
 }

@@ -1,19 +1,15 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { Service, ICollection } from 'ngx-jsonapi';
-
-import { forEach } from '../../foreach';
-import { PhotosService } from './photos.service';
+import { Service, DocumentResource } from 'ngx-jsonapi';
+import { Photo } from './photos.service';
 
 @Component({
     selector: 'demo-photos',
     templateUrl: './photos.component.html'
 })
 export class PhotosComponent {
-    public photos: ICollection;
+    public photos: DocumentResource<Photo>;
 
-    public constructor(
-        protected photosService: Service
-    ) {
+    public constructor(protected photosService: Service) {
         // if you check your console, library make only one request
         this.makeRequest(1);
         this.makeRequest(2);
@@ -23,10 +19,8 @@ export class PhotosComponent {
     }
 
     public makeRequest(id) {
-        this.photosService.all(
-            succes => {
-                console.log('photos success', id, this.photos);
-            }
-        );
+        this.photosService.all().subscribe(succes => {
+            console.log('photos success', id, this.photos);
+        });
     }
 }
