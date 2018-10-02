@@ -236,6 +236,9 @@ export class Resource extends ParentResourceService {
                 this.is_saving = true;
 
                 let object = this.toObject(params);
+                if (this.id === '') {
+                    delete object.data.id;
+                }
 
                 // http request
                 let path = new PathBuilder();
