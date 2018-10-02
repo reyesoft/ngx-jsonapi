@@ -222,6 +222,9 @@ export class Resource implements ICacheable {
 
         let subject = new Subject<object>();
         let object = this.toObject(params);
+        if (this.id === '') {
+            delete object.data.id;
+        }
 
         // http request
         let path = new PathBuilder();
