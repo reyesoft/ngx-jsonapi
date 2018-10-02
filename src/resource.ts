@@ -151,36 +151,34 @@ export class Resource implements ICacheable {
     }
 
     public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
-        let object_key = resource.id;
-        if (!object_key) {
-            object_key = 'new_' + Math.floor(Math.random() * 100000);
-        }
-
-        type_alias = type_alias ? type_alias : resource.type;
-        if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = new DocumentResource(); // @todo DocumentCollection
-        }
-
-        let relation = this.relationships[type_alias];
+        let relation = this.relationships[type_alias || resource.type];
         if (relation instanceof DocumentCollection) {
-            relation.data.push(resource);
+            relation.replaceOrAdd(resource);
         } else {
             relation.data = resource;
         }
     }
 
-    public addRelationships(resources: Array<Resource>, type_alias: string): void {
-        if (!(type_alias in this.relationships)) {
-            this.relationships[type_alias] = new DocumentCollection();
+    public addRelationships<R extends Resource>(resources: Array<R>, type_alias: string): void {
+        if (resources.length === 0) {
+            return;
         }
 
-        this.relationships[type_alias].data = resources;
+        let relation = this.relationships[type_alias];
+        if (!(relation instanceof DocumentCollection)) {
+            throw new Error('addRelationships require a DocumentCollection (hasMany) relation.');
+        }
+
+        resources.forEach((resource: Resource) => {
+            this.addRelationship(resource, type_alias);
+        });
     }
 
-    public addRelationshipsArray<R extends Resource>(resources: Array<R>, type_alias?: string): void {
-        resources.forEach((item: Resource) => {
-            this.addRelationship(item, type_alias || item.type);
-        });
+    /**
+     * @deprecated
+     */
+    public addRelationshipsArray<R extends Resource>(resources: Array<R>, type_alias: string): void {
+        this.addRelationships(resources, type_alias);
     }
 
     public removeRelationship(type_alias: string, id: string): boolean {
@@ -193,12 +191,7 @@ export class Resource implements ICacheable {
 
         let relation = this.relationships[type_alias];
         if (relation instanceof DocumentCollection) {
-            for (let i = 0; i < relation.data.length; i++) {
-                if (relation.data[i].id === id) {
-                    delete relation.data[i];
-                    break;
-                }
-            }
+            relation.data = relation.data.filter(resource => resource.id !== id);
         } else {
             relation.data.reset();
         }
