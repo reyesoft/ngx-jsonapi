@@ -164,7 +164,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     public delete(id: string, params?: Object): Observable<void> {
-        params = { ...{}, ...Base.ParamsResource, params };
+        params = { ...{}, ...Base.ParamsResource, ...params };
 
         // http request
         let path = new PathBuilder();
