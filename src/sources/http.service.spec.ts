@@ -17,15 +17,12 @@ describe('Http service', () => {
             type: 'data',
             id: 'id'
         },
-        meta: {meta: 'meta'}
+        meta: { meta: 'meta' }
     };
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
-            providers: [
-                Http,
-                { provide: JsonapiConfig, useValue: JsonapiConfigMock }
-            ]
+            providers: [Http, { provide: JsonapiConfig, useValue: JsonapiConfigMock }]
         }).compileComponents();
     }));
     it('should create Http service', () => {
@@ -36,7 +33,7 @@ describe('Http service', () => {
         let response = of(data_object);
         spyOn((service as any).http, 'request').and.returnValue(response);
         let exec_observable = service.exec('/test', 'patch', data_object);
-        await exec_observable.subscribe((data) => expect(data).toEqual(data_object));
+        await exec_observable.subscribe(data => expect(data).toEqual(data_object));
     });
     // it('if exec is called with "get" method as argument, the returned observable should be shared', async () => {
     //     let response = 0;

@@ -3,8 +3,12 @@ import { Service } from '../service';
 import { PathBuilder } from './path-builder';
 
 const testService = new Service();
-testService.getPrePath = (): string => { return 'test/pre-path'; };
-testService.getPath = (): string => { return 'test/path'; };
+testService.getPrePath = (): string => {
+    return 'test/pre-path';
+};
+testService.getPath = (): string => {
+    return 'test/path';
+};
 
 describe('Path Builder', () => {
     let path_builder = new PathBuilder();
