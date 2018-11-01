@@ -68,7 +68,7 @@ export class Core {
                     console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
                 }
 
-                return throwError(error);
+                return throwError(new Error(error));
             })
         );
     }
