@@ -61,25 +61,15 @@ export class CacheStore {
         for (let resource of collection.data) {
             this.setResource(resource);
             tmp.data.push({ id: resource.id, type: resource.type });
-
             for (let resource_type_alias of include) {
-                if ('id' in resource.relationships[resource_type_alias].data) {
-                    // hasOne
-                    let ress = <Resource>resource.relationships[resource_type_alias].data;
-                    resources_for_save[resource_type_alias + ress.id] = ress;
-                } else {
-                    // hasMany
-                    let collection2 = <Array<Resource>>resource.relationships[resource_type_alias].data;
-                    for (let inc_resource of collection2) {
-                        resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
-                    }
-                }
+                resources_for_save = this.buildCollectionToSave(resource, resource_type_alias, resources_for_save);
             }
         }
 
         tmp.page = collection.page;
         Core.injectedServices.JsonapiStoreService.saveCollection(url, <IDataCollection>tmp);
 
+        console.log(resources_for_save);
         Base.forEach(resources_for_save, resource_for_save => {
             if (!('is_new' in resource_for_save)) {
                 // console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
@@ -95,6 +85,34 @@ export class CacheStore {
 
             this.setResource(resource_for_save);
         });
+    }
+
+    private buildCollectionToSave(resource: Resource, resource_type_alias: string, resources_for_save: IObjectsById<Resource>) {
+        let resource_type_alias_info = resource_type_alias.split('.');
+        let sub_includes = resource_type_alias.replace(resource_type_alias_info[0], '').replace(/./i, "")
+
+        console.log(resource, resource_type_alias);
+        // console.log(resource_type_alias, sub_includes, resource_type_alias_info);
+
+        if ('id' in resource.relationships[resource_type_alias_info[0]].data) {
+            // hasOne
+            let ress = <Resource>resource.relationships[resource_type_alias_info[0]].data;
+            console.log(1, ress);
+            resources_for_save[resource_type_alias_info[0] + ress.id] = ress;
+            if(resource_type_alias_info.length > 1){
+                resources_for_save = this.buildCollectionToSave(ress, sub_includes, resources_for_save);
+            }
+        } else {
+            // hasMany
+            let collection2 = <Array<Resource>>resource.relationships[resource_type_alias_info[0]].data;
+            for (let inc_resource of collection2) {
+                resources_for_save[resource_type_alias_info[0] + inc_resource.id] = inc_resource;
+                if(resource_type_alias_info.length > 1){
+                    resources_for_save = this.buildCollectionToSave(inc_resource, sub_includes, resources_for_save);
+                }
+            }
+        }
+        return resources_for_save;
     }
 
     public deprecateCollections(path_start_with: string): boolean {
