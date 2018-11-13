@@ -40,7 +40,7 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         this.builded = false;
         for (let dataresource of data_collection.data) {
             let res = this.find(dataresource.id) || Converter.getService(dataresource.type).getOrCreateResource(dataresource.id);
-            res.fill({ data: dataresource } /* , included_resources */); // @todo check with included resources?
+            res.fill({ data: dataresource, included: data_collection.included || [] } /* , included_resources */); // @todo check with included resources?
             new_ids[dataresource.id] = dataresource.id;
             this.data.push(<R>res);
             if (Object.keys(res.attributes).length > 0) {
