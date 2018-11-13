@@ -69,7 +69,6 @@ export class CacheStore {
         tmp.page = collection.page;
         Core.injectedServices.JsonapiStoreService.saveCollection(url, <IDataCollection>tmp);
 
-        console.log(resources_for_save);
         Base.forEach(resources_for_save, resource_for_save => {
             if (!('is_new' in resource_for_save)) {
                 // console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
@@ -91,13 +90,9 @@ export class CacheStore {
         let resource_type_alias_info = resource_type_alias.split('.');
         let sub_includes = resource_type_alias.replace(resource_type_alias_info[0], '').replace(/./i, "")
 
-        console.log(resource, resource_type_alias);
-        // console.log(resource_type_alias, sub_includes, resource_type_alias_info);
-
         if ('id' in resource.relationships[resource_type_alias_info[0]].data) {
             // hasOne
             let ress = <Resource>resource.relationships[resource_type_alias_info[0]].data;
-            console.log(1, ress);
             resources_for_save[resource_type_alias_info[0] + ress.id] = ress;
             if(resource_type_alias_info.length > 1){
                 resources_for_save = this.buildCollectionToSave(ress, sub_includes, resources_for_save);
