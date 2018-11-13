@@ -76,7 +76,7 @@ export class Converter<R extends Resource> {
             resource = Converter.getService(data.type).getOrCreateResource(data.id);
         }
 
-        resource.attributes = data.attributes || {};
+        resource.fill({data: data});
         resource.is_new = false;
 
         return resource;
