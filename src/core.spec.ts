@@ -8,11 +8,11 @@ import { Core } from './core';
 import { Observable, BehaviorSubject } from 'rxjs';
 
 class HttpHandlerMock implements HttpHandler {
-  public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-      let subject = new BehaviorSubject(new HttpResponse());
+    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+        let subject = new BehaviorSubject(new HttpResponse());
 
-      return subject.asObservable();
-  }
+        return subject.asObservable();
+    }
 }
 
 describe('core methods', () => {
@@ -31,20 +31,15 @@ describe('core methods', () => {
             type: 'data',
             id: '1'
         };
-        // spyOn(Core.injectedServices.JsonapiHttp, 'exec').and.returnValue(new BehaviorSubject({error: 'error!'}));
-        // spyOn(Core.injectedServices.JsonapiHttp, 'exec').and.returnValue({ hola: 'hola' });
         spyOn(Core.injectedServices.JsonapiHttp, 'exec').and.returnValue(Observable.create((observer) => {
-            console.log('in mocked exec');
             observer.next('data1');
             observer.next(observer.error({ errors: ['error'] }));
         }));
         Core.exec('path', 'method', { data: data_resource }).subscribe(
             (data) => {
-                console.log('recieved data', data);
                 expect(data).toBe('data1');
             },
             error => {
-                console.log('subscribed  to error ------------->', error);
                 expect(error.errors).toEqual(['error']);
             }
         );
