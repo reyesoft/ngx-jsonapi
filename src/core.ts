@@ -6,7 +6,7 @@ import { Http as JsonapiHttpImported } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { IDataObject } from './interfaces/data-object';
 import { noop } from 'rxjs/internal/util/noop';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { IDocumentData } from './interfaces/document';
 
@@ -52,27 +52,10 @@ export class Core {
     public static exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true): Observable<IDocumentData> {
         Core.me.refreshLoadings(1);
 
-        // console.log('in Core.exec Core.injectedServices.JsonapiHttp', Core.injectedServices.JsonapiHttp.exec('a', 'a'));
-        // console.log('in Core.exec Core.injectedServices.JsonapiHttp');
-        // Core.injectedServices.JsonapiHttp.exec('a', 'a')
-        //     .pipe(
-        //         tap(() => Core.me.refreshLoadings(-1)),
-        //         catchError(error => {
-        //             console.log(error);
-        //
-        //             return Observable.create(() => console.log('found error'));
-        //         })
-        //     )
-        //     .subscribe(
-        //         () => console.log('in Core.exec Core.injectedServices.JsonapiHttp'),
-        //         err => console.log(err)
-        //     );
-
         return Core.injectedServices.JsonapiHttp.exec(path, method, data).pipe(
             // map(data => { return data.body }),
             tap(() => Core.me.refreshLoadings(-1)),
             catchError(error => {
-                console.log('----in catch error----');
                 error = error.error || error;
                 Core.me.refreshLoadings(-1);
 
@@ -85,11 +68,7 @@ export class Core {
                     console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
                 }
 
-                // remove next 2 lines
-                let new_error = new Error(error);
-                console.log(new_error);
-
-                return throwError(new Error(error));
+                return throwError(error);
             })
         );
     }

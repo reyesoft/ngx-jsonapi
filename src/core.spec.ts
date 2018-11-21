@@ -36,11 +36,17 @@ describe('core methods', () => {
         spyOn(Core.injectedServices.JsonapiHttp, 'exec').and.returnValue(Observable.create((observer) => {
             console.log('in mocked exec');
             observer.next('data1');
-            observer.next(observer.error('error'));
+            observer.next(observer.error({ errors: ['error'] }));
         }));
         Core.exec('path', 'method', { data: data_resource }).subscribe(
-            (data) => console.log('recieved data', data),
-            err => console.log(err)
+            (data) => {
+                console.log('recieved data', data);
+                expect(data).toBe('data1');
+            },
+            error => {
+                console.log('subscribed  to error ------------->', error);
+                expect(error.errors).toEqual(['error']);
+            }
         );
     });
 });
