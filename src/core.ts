@@ -6,7 +6,7 @@ import { Http as JsonapiHttpImported } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { IDataObject } from './interfaces/data-object';
 import { noop } from 'rxjs/internal/util/noop';
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { IDocumentData } from './interfaces/document';
 
