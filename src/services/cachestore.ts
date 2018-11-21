@@ -248,9 +248,16 @@ export class CacheStore {
     }
 
     private fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
-        if (resource.relationships[resource_alias].data instanceof DocumentResource) {
+        let resource_type_alias_info = resource_alias.split('.');
+        let sub_includes = resource_alias.replace(resource_type_alias_info[0], '').replace(/./i, "")
+        // console.log(resource, resource_type_alias_info);
+
+        // console.log(resource_type_alias_info[0], typeof resource.relationships[resource_type_alias_info[0]]);
+        
+        if ('id' in  resource.relationships[resource_type_alias_info[0]].data) {
             // hasOne
-            let related_resource = <IDataResource>resource.relationships[resource_alias].data;
+            // console.log('if else 1: ' + resource_type_alias_info[0]);
+            let related_resource = <IDataResource>resource.relationships[resource_type_alias_info[0]].data;
             if (!('attributes' in related_resource)) {
                 // no está cargado aún
                 let builded_resource = this.getResourceFromMemory(related_resource);
@@ -260,7 +267,28 @@ export class CacheStore {
                 } else if (isDevMode()) {
                     console.warn('ts-angular-json: esto no debería pasar #isdjf2l1a');
                 }
-                resource.addRelationship(builded_resource, resource_alias);
+                resource.addRelationship(builded_resource, resource_type_alias_info[0]);
+                if(resource_type_alias_info.length > 1){
+                    this.fillRelationshipFromStore(resource, sub_includes, include_promises);
+                }
+            }
+        }else{
+            let collection2 = <Array<Resource>>resource.relationships[resource_type_alias_info[0]].data;
+            for (let related_resource of collection2) {
+                if (!('attributes' in related_resource) || Object.keys(related_resource.attributes).length === 0) {
+                    let builded_resource = this.getResourceFromMemory(related_resource);
+                    if (builded_resource.is_new) {
+                        // no está en memoria, la pedimos a store
+                        include_promises.push(this.getResource(builded_resource));
+                    } else if (isDevMode()) {
+                        console.warn('ts-angular-json: esto no debería pasar #isdjf2l1a');
+                    }
+                    resource.addRelationship(builded_resource, resource_type_alias_info[0]);
+                }
+                // resources_for_save[resource_type_alias_info[0] + inc_resource.id] = inc_resource;
+                // if(resource_type_alias_info.length > 1){
+                    // resources_for_save = this.buildCollectionToSave(inc_resource, sub_includes, resources_for_save);
+                // }
             }
         }
         // else hasMany??
