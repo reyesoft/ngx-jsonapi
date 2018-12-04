@@ -48,9 +48,13 @@ export class Resource implements ICacheable {
         // REALTIONSHIPS
         for (const relation_alias in this.relationships) {
             let relationship = this.relationships[relation_alias];
-
             if (relationship instanceof DocumentCollection) {
-                relationships[relation_alias] = { data: [] };
+                // @TODO PABLO: definir cuál va a ser la propiedd indispensable para guardar la relación
+                if (!relationship.builded && (!relationship.data || relationship.data.length === 0)) {
+                    delete relationships[relation_alias];
+                } else {
+                    relationships[relation_alias] = { data: [] };
+                }
 
                 for (const resource of relationship.data) {
                     let reational_object = {
@@ -67,6 +71,11 @@ export class Resource implements ICacheable {
                     }
                 }
             } else {
+                // @TODO PABLO: agregué el check de null porque sino fallan las demás condiciones, además es para eliminar la relacxión del back
+                if (relationship.data === null) {
+                    relationships[relation_alias] = { data: null };
+                    continue;
+                }
                 if (!(relationship instanceof DocumentResource)) {
                     console.warn(relationship, ' is not DocumentCollection or DocumentResource');
                 }
@@ -83,8 +92,10 @@ export class Resource implements ICacheable {
                             type: relationship_data.type
                         }
                     };
-                } else {
-                    relationships[relation_alias] = { data: {} };
+                // @TODO PABLO: definir cuál va a ser la propiedd indispensable para guardar la relación
+                // @WARNING: no borrar la verificación de que no sea null... sino no se van a poder borrar
+                } else if (!relationship.builded && !relationship_data.id && !relationship_data.type) {
+                    delete relationships[relation_alias];
                 }
 
                 // no se agregó aún a included && se ha pedido incluir con el parms.include
