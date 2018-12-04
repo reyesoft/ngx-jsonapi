@@ -33,7 +33,7 @@ Data is obtained from [Json Api Playground](http://jsonapiplayground.reyesoft.co
 
 ## Migration
 
--   [Migration v1 to v2 update guide](https://github.com/reyesoft/ngx-jsonapi/blob/initial-commit-v2/docs/migration.md)
+-   [Migration v1 to v2 update guide](https://github.com/reyesoft/ngx-jsonapi/blob/v2.0/docs/migration.md)
 
 ## Usage
 
