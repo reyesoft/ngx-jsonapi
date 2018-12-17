@@ -128,6 +128,9 @@ export class CacheStore {
                         }
                         collection.source = 'store'; // collection and resources from storeservice
                         collection.cache_last_update = data_collection._lastupdate_time;
+                        console.log('========================================================');
+                        console.log('collection after warning --->', collection.data);
+                        console.log('========================================================');
                         subject.next(collection);
                         setTimeout(() => subject.complete());
                     })
@@ -194,6 +197,7 @@ export class CacheStore {
                         }
 
                         // no debo esperar a que se resuelvan los include
+                        // TODO: acá está el error por el que se repiten los recursos
                         if (include_promises.length === 0) {
                             if (datacollection.page) {
                                 collection.page.number = datacollection.page.number;
@@ -201,6 +205,7 @@ export class CacheStore {
 
                             for (let dataresource of datacollection.data) {
                                 let resource: Resource = resources_by_id[dataresource.id];
+                                if (collection.data.indexOf(resource) !== -1) { continue; }
                                 collection.data.push(resource);
                             }
 
