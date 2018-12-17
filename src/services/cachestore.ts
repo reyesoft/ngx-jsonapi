@@ -201,6 +201,7 @@ export class CacheStore {
 
                             for (let dataresource of datacollection.data) {
                                 let resource: Resource = resources_by_id[dataresource.id];
+                                if (collection.data.indexOf(resource) !== -1) { continue; }
                                 collection.data.push(resource);
                             }
 
