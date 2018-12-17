@@ -5,8 +5,12 @@ import { PathCollectionBuilder } from './path-collection-builder';
 import { UrlParamsBuilder } from './url-params-builder';
 
 const testService = new Service();
-testService.getPrePath = (): string => { return 'test/pre-path'; };
-testService.getPath = (): string => { return 'test/path'; };
+testService.getPrePath = (): string => {
+    return 'test/pre-path';
+};
+testService.getPath = (): string => {
+    return 'test/path';
+};
 
 describe('Path Builder', () => {
     let path_collection_builder = new PathCollectionBuilder();
@@ -21,19 +25,19 @@ describe('Path Builder', () => {
     it('if remotefilters are provided and service has parseToServer method,\
      applyParams should call service s parseToServer method with them as parameter', () => {
         let parseToServer_spy = spyOn(testService, 'parseToServer');
-        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' }});
+        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' } });
         expect(parseToServer_spy).toHaveBeenCalledWith({ status: 'test_status' });
     });
     it('if service does not have parseToServer method, applyParams should not try to call this method', () => {
         let parseToServer_null_spy = spyOn(testService, 'parseToServer');
         testService.parseToServer = null;
-        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' }});
+        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' } });
         expect(parseToServer_null_spy).not.toHaveBeenCalled();
     });
     it('if remotefilters are provided, applyParams should call addParam with paramsurl.toparams result as parameter', () => {
         let addParam_parent_spy = spyOn(path_collection_builder, 'addParam');
         let toparams_parent_spy = spyOn(UrlParamsBuilder.prototype, 'toparams');
-        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' }});
+        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' } });
         let test_params = new UrlParamsBuilder().toparams({ status: 'test_status' });
         expect(toparams_parent_spy).toHaveBeenCalledWith({ status: 'test_status' });
         expect(addParam_parent_spy).toHaveBeenCalledWith(test_params);
@@ -42,10 +46,10 @@ describe('Path Builder', () => {
         Core.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
         Core.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
         let addParam_parent_spy = spyOn(path_collection_builder, 'addParam');
-        path_collection_builder.applyParams(testService, { page: { number: 2 }});
+        path_collection_builder.applyParams(testService, { page: { number: 2 } });
         expect(addParam_parent_spy).toHaveBeenCalledTimes(1);
         expect(addParam_parent_spy).toHaveBeenCalledWith('page_index=2');
-        path_collection_builder.applyParams(testService, { page: { number: 2, size: 10 }});
+        path_collection_builder.applyParams(testService, { page: { number: 2, size: 10 } });
         expect(addParam_parent_spy).toHaveBeenCalledTimes(3);
         expect(addParam_parent_spy).toHaveBeenCalledWith('page_index=2');
         expect(addParam_parent_spy).toHaveBeenCalledWith('page_size=10');
@@ -54,9 +58,9 @@ describe('Path Builder', () => {
         Core.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
         Core.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
         let addParam_parent_spy = spyOn(path_collection_builder, 'addParam');
-        path_collection_builder.applyParams(testService, { page: { number: 1 }});
+        path_collection_builder.applyParams(testService, { page: { number: 1 } });
         expect(addParam_parent_spy).not.toHaveBeenCalled();
-        path_collection_builder.applyParams(testService, { page: { number: 1, size: 10 }});
+        path_collection_builder.applyParams(testService, { page: { number: 1, size: 10 } });
         expect(addParam_parent_spy).toHaveBeenCalledTimes(1);
         expect(addParam_parent_spy).not.toHaveBeenCalledWith('page_number=1');
         expect(addParam_parent_spy).toHaveBeenCalledWith('page_size=10');
@@ -76,7 +80,7 @@ describe('Path Builder', () => {
         Core.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
         Core.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
         (path_collection_builder as any).get_params = [];
-        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' }, page: { number: 2, size: 10 }});
+        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' }, page: { number: 2, size: 10 } });
         expect((path_collection_builder as any).get_params.length).toBe(3);
         expect((path_collection_builder as any).get_params).toEqual(['filter[status]=test_status', 'page_index=2', 'page_size=10']);
     });

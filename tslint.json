@@ -23,7 +23,7 @@
         "rxjs-no-unsafe-first": true,
         "rxjs-no-unsafe-switchmap": true,
         "rxjs-no-unsafe-takeuntil": true,
-        "rxjs-throw-error": true,
+        /* "rxjs-throw-error": true, */
 
         "directive-selector": [true, "attribute", ["demo"], "camelCase"],
         "component-selector": [true, "element", ["demo"], "kebab-case"]

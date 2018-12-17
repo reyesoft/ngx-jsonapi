@@ -26,10 +26,10 @@ describe('document resource', () => {
                 type: 'data',
                 id: 'id'
             },
-            meta: {meta: 'meta'}
+            meta: { meta: 'meta' }
         });
         expect(Resource_fill_spy).toHaveBeenCalled();
-        expect(document_resource.meta).toEqual({meta: 'meta'});
+        expect(document_resource.meta).toEqual({ meta: 'meta' });
     });
     it('if passed IDataObject has no meta property, fill mehotd should should assign an empty Object', () => {
         document_resource.meta = null;
