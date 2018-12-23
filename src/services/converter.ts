@@ -56,7 +56,8 @@ export class Converter<R extends Resource> {
     }
 
     public static buildIncluded(document_from: IDataCollection | IDataObject): IResourcesByType {
-        if ('included' in document_from) {
+        if ('included' in document_from && document_from.included.length > 0) {
+            Converter.json_array2resources_array_by_type(document_from.included)
             return Converter.json_array2resources_array_by_type(document_from.included);
         }
 

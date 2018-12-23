@@ -51,15 +51,32 @@ export class CacheStore {
         return mypromise;
     }
 
-    public setResource(resource: Resource) {
+    public setResource(resource: Resource, include: Array<string> = []) {
         Core.injectedServices.JsonapiStoreService.saveResource(resource.type, resource.id, resource.toObject().data);
+        if(include.length > 0){
+            let resources_for_save: IObjectsById<Resource> = {};
+            for (let resource_type_alias of include) {
+                resources_for_save = this.buildCollectionToSave(resource, resource_type_alias, resources_for_save);
+            }
+
+            Base.forEach(resources_for_save, resource_for_save => {
+                if (!('is_new' in resource_for_save)) {
+                    return;
+                }
+                if (Object.keys(resource_for_save.attributes).length === 0) {
+                    console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no tener attributes.', resource_for_save);
+                    return;
+                }
+                this.setResource(resource_for_save);
+            });
+        }
     }
 
     public setCollection(url: string, collection: DocumentCollection, include: Array<string>): void {
         let tmp: IDataCollection = { data: [], page: new Page() };
         let resources_for_save: IObjectsById<Resource> = {};
         for (let resource of collection.data) {
-            this.setResource(resource);
+            // this.setResource(resource);
             tmp.data.push({ id: resource.id, type: resource.type });
             for (let resource_type_alias of include) {
                 resources_for_save = this.buildCollectionToSave(resource, resource_type_alias, resources_for_save);
@@ -67,23 +84,23 @@ export class CacheStore {
         }
 
         tmp.page = collection.page;
-        Core.injectedServices.JsonapiStoreService.saveCollection(url, <IDataCollection>tmp);
+        // Core.injectedServices.JsonapiStoreService.saveCollection(url, <IDataCollection>tmp);
 
-        Base.forEach(resources_for_save, resource_for_save => {
-            if (!('is_new' in resource_for_save)) {
-                // console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
+        // Base.forEach(resources_for_save, resource_for_save => {
+        //     if (!('is_new' in resource_for_save)) {
+        //         // console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
 
-                return;
-            }
+        //         return;
+        //     }
 
-            if (Object.keys(resource_for_save.attributes).length === 0) {
-                console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no tener attributes.', resource_for_save);
+        //     if (Object.keys(resource_for_save.attributes).length === 0) {
+        //         console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no tener attributes.', resource_for_save);
 
-                return;
-            }
+        //         return;
+        //     }
 
-            this.setResource(resource_for_save);
-        });
+        //     this.setResource(resource_for_save);
+        // });
     }
 
     private buildCollectionToSave(resource: Resource, resource_type_alias: string, resources_for_save: IObjectsById<Resource>) {
