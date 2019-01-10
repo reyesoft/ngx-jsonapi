@@ -17,7 +17,7 @@ export class PathCollectionBuilder extends PathBuilder {
         }
 
         if (params.page) {
-            if (params.page.number > 1) {
+            if (params.page.number) {
                 this.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number);
             }
             if (params.page.size) {
