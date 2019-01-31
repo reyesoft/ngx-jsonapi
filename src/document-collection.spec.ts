@@ -1,6 +1,7 @@
 import { DocumentCollection } from './document-collection';
 import { Resource } from './resource';
 import { IDataCollection } from './interfaces/data-collection';
+import { Converter } from './services/converter';
 
 describe('document-collection', () => {
     let collection = new DocumentCollection();
@@ -23,6 +24,13 @@ describe('document-collection', () => {
         collection.data.push(resource1);
         collection.data.push(resource2);
         expect(collection.find('2').id).toBe('2');
+    });
+
+    it('fill method should set collection s builded attribute to true if data_collection.data argument is en empty list', () => {
+        let data_collection = { data: [] };
+        let new_collection = new DocumentCollection();
+        new_collection.fill(data_collection);
+        expect(new_collection.builded).toBeTruthy();
     });
 
     //// @todo

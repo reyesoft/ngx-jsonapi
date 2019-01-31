@@ -37,7 +37,7 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         // convert and add new dataresoures to final collection
         let new_ids = {};
         this.data = [];
-        this.builded = false;
+        this.builded = data_collection.data && data_collection.data.length === 0;
         for (let dataresource of data_collection.data) {
             let res = this.find(dataresource.id) || Converter.getService(dataresource.type).getOrCreateResource(dataresource.id);
             res.fill({ data: dataresource } /* , included_resources */); // @todo check with included resources?
