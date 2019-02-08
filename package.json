@@ -6,9 +6,9 @@
         "postbuild": "rimraf **/dist/**/*.ngsummary.json",
         "deploy:builds": "ts-node ./build/deploy-build.ts",
         "lint": "ng lint ngx-jsonapi",
-        "test": "npm run test:lib && ng build && npm run test:app",
+        "test": "yarn test:lib && yarn build && yarn test:app",
         "test:lib": "jest --config ./jest.lib.config.js",
-        "test:app": "jest --config ./jest.app.config.js",
+        "test:demo": "jest --config ./jest.demo.config.js",
         "clean": "git clean -xdf && yarn && yarn run bootstrap",
         "cli": "ng",
         "coverage:html": "nyc report --reporter=html",
@@ -155,41 +155,5 @@
         "localforage": "^1.5.2",
         "localforage-getitems": "^1.4.2",
         "rxjs": "^6.2"
-    },
-    "jest": {
-        "setupTestFrameworkScriptFile": "<rootDir>/setup-jest.ts",
-        "globals": {
-            "ts-jest": {
-                "tsConfigFile": "demo/tsconfig.spec.json"
-            },
-            "__TRANSFORM_HTML__": true
-        },
-        "transform": {
-            "^.+\\.(ts|js|html)$": "<rootDir>/node_modules/jest-preset-angular/preprocessor.js"
-        },
-        "testMatch": [
-            "<rootDir>/demo/**/*.spec.ts"
-        ],
-        "moduleFileExtensions": [
-            "ts",
-            "js",
-            "html",
-            "json"
-        ],
-        "mapCoverage": true,
-        "coveragePathIgnorePatterns": [
-            "/node_modules/",
-            "/src/*.*/"
-        ],
-        "moduleNameMapper": {
-            "^ngx-jsonapi/(?!db)(.*)": "<rootDir>/src/$1"
-        },
-        "transformIgnorePatterns": [
-            "node_modules/(?!ngx-jsonapi)"
-        ],
-        "modulePathIgnorePatterns": [
-            "dist",
-            "node_modules/ngx-jsonapi"
-        ]
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "ngx-jsonapi",
-    "version": "2.0.2",
+    "version": "2.0.1",
     "description": "JSON API library for Angular",
     "module": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.es5.js",
     "es2015": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.js",
@@ -28,31 +28,5 @@
     },
     "peerDependencies": {
         "@angular/core": "^6.0.0"
-    },
-    "jest": {
-        "setupTestFrameworkScriptFile": "../setup-jest.ts",
-        "globals": {
-            "ts-jest": {
-                "tsConfigFile": "./tsconfig.spec.json"
-            },
-            "__TRANSFORM_HTML__": true
-        },
-        "transform": {
-            "^.+\\.(ts|js|html)$": "../node_modules/jest-preset-angular/preprocessor.js"
-        },
-        "testMatch": [
-            "<rootDir>/**/*.spec.ts"
-        ],
-        "moduleFileExtensions": [
-            "ts",
-            "js",
-            "html",
-            "json"
-        ],
-        "mapCoverage": true,
-        "coveragePathIgnorePatterns": [
-            "**/node_modules/**",
-            "**/demo/**"
-        ]
     }
 }
