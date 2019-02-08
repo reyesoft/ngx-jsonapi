@@ -1,7 +1,7 @@
 module.exports = {
   preset: 'jest-preset-angular',
   setupTestFrameworkScriptFile: '<rootDir>/setup-jest.ts',
-
+  setupFiles: ["jest-localstorage-mock"],
   transform: {
       '^.+\\.(ts|js|html)$': '<rootDir>/node_modules/jest-preset-angular/preprocessor.js'
   },
