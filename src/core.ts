@@ -56,6 +56,7 @@ export class Core {
             // map(data => { return data.body }),
             tap(() => Core.me.refreshLoadings(-1)),
             catchError(error => {
+                console.log('CORE EXEC catchError');
                 error = error.error || error;
                 Core.me.refreshLoadings(-1);
 
