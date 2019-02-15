@@ -8079,6 +8079,12 @@ ts-jest@^21.0.0:
     source-map-support "^0.5.0"
     yargs "^10.0.3"
 
+ts-mockito@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/ts-mockito/-/ts-mockito-2.3.1.tgz#4c3467a2ddeb207966000a740a0826c970125ed1"
+  dependencies:
+    lodash "^4.17.5"
+
 ts-node@^3.1.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-3.3.0.tgz#c13c6a3024e30be1180dd53038fc209289d4bf69"

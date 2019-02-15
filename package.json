@@ -130,6 +130,7 @@
         "jasmine-marbles": "^0.0.2",
         "jasmine-spec-reporter": "~3.2.0",
         "jest": "^21.0.2",
+        "jest-localstorage-mock": "^2.4.0",
         "jest-preset-angular": "^3.0.1",
         "jest-zone-patch": "^0.0.7",
         "lint-staged": "7.2.2",
@@ -145,11 +146,11 @@
         "rollup": "^0.50.0",
         "rxjs-tslint-rules": "4.7.2",
         "sorcery": "^0.10.0",
+        "ts-mockito": "^2.3.1",
         "ts-node": "^3.1.0",
         "tslib": "1.6.0",
         "typescript": "<2.10.0",
         "uglify-js": "^3.1.9",
-        "jest-localstorage-mock": "^2.4.0",
         "zone.js": "^0.8.12"
     },
     "dependencies": {
