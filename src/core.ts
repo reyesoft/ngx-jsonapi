@@ -54,9 +54,7 @@ export class Core {
 
         return Core.injectedServices.JsonapiHttp.exec(path, method, data).pipe(
             // map(data => { return data.body }),
-            tap(() => {
-                Core.me.refreshLoadings(-1);
-            }),
+            tap(() => Core.me.refreshLoadings(-1)),
             catchError(error => {
                 error = error.error || error;
                 Core.me.refreshLoadings(-1);
