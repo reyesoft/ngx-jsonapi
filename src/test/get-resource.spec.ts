@@ -1,13 +1,14 @@
 // WARNING: this test is not correctly isolated
 
-import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
+import { IDocumentData } from 'src/interfaces/document';
 import { DocumentResource } from '../document-resource';
 import { Resource } from '../resource';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { JsonapiConfig } from '../jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Core } from '../core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of as observableOf } from 'rxjs';
 import { take, skipWhile } from 'rxjs/operators';
 import { Service } from '../service';
 
@@ -15,6 +16,9 @@ let test_response_subject = new BehaviorSubject(new HttpResponse());
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+        // console.log('inside handler req', req);
+        // console.log('inside handler req', test_response_subject.getValue());
+
         return test_response_subject.asObservable();
     }
 }
@@ -57,36 +61,32 @@ describe('core methods', () => {
         expect(test_service_instance.type).toBe('test_resources');
         expect(test_service_instance).toEqual(test_service);
     });
-    it('should create core service instance', () => {
+    it(`service's get method should get the requested resource from the back end if it's not cached or the TTL has ended`, async () => {
         let test_resource = new TestResource();
         test_resource.type = 'test_resources';
         test_resource.id = '1';
         test_resource.attributes = { name: 'test_name' };
         let test_service = new TestService();
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        test_response_subject.next(new HttpResponse({ body: {data: test_resource} }));
 
-        console.log(test_resource);
-        spyOn(HttpClient.prototype, 'get').and.returnValue(test_resource);
-        test_response_subject.next(new HttpResponse({ body: test_resource }));
-        test_response_subject.complete();
-        test_service.get('1')
-            // .toPromise()
-            // .then(
-            //     (success) => { console.log(success); }
-            .pipe(
-                skipWhile(resource => resource.attributes.name === undefined)
-            )
-            .subscribe(
-                resource => {
-                    console.log('resource --->', resource);
-                    test_response_subject.complete();
-                    // expect(resource.type).toBe('test_resources');
-                    // expect(resource.id).toBe('1');
-                },
-                error => {
-                    console.log('ERROR!');
-                },
-                () => {
-                    console.log('observable is complete', this);
+        await test_service.get('1')
+            .toPromise()
+            .then(
+                (resource) => {
+                    expect(test_resource.type).toBe('test_resources');
+                    expect(test_resource.id).toBe('1');
+                    expect(resource.attributes.name).toBe('test_name');
+
+                    let headers = new HttpHeaders({
+                        'Content-Type': 'application/vnd.api+json',
+                        Accept: 'application/vnd.api+json'
+                    });
+                    let request = {
+                        body: null,
+                        headers: expect.any(Object)
+                    };
+                    expect(http_request_spy).toHaveBeenCalledWith('get', 'http://yourdomain/api/v1/test_resources/1', request);
                 }
             );
     });

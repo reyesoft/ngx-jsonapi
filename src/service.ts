@@ -86,9 +86,7 @@ export class Service<R extends Resource = Resource> {
                 .cachestore.getResource(resource, params.include)
                 .then(() => {
                     if (!isLive(resource, params.ttl)) {
-                        console.log('resource --->', resource);
                         subject.next(resource);
-                        console.log('resource --->', resource);
                         throw new Error('No está viva la caché de localstorage');
                     }
                     resource.is_loading = false;
@@ -96,7 +94,6 @@ export class Service<R extends Resource = Resource> {
                     subject.complete();
                 })
                 .catch(() => {
-                    console.log('resource InSIDE CATCH --->', resource);
                     this.getGetFromServer(path, resource, subject);
                 });
         } else {
@@ -108,13 +105,10 @@ export class Service<R extends Resource = Resource> {
     }
 
     protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
-        console.log('path in getGetFromServer', path.get());
         Core.get(path.get()).subscribe(
             success => {
-                console.log('resource in getGetFromServer before fill', resource);
                 resource.fill(<IDataObject>success);
                 resource.is_loading = false;
-                console.log('resource in getGetFromServer', resource);
                 this.getService().cachememory.setResource(resource);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
@@ -123,7 +117,6 @@ export class Service<R extends Resource = Resource> {
                 subject.complete();
             },
             error => {
-                console.log('resource in getGetFromServer error', error);
                 subject.error(error);
             }
         );
