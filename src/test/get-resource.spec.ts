@@ -1,6 +1,7 @@
 // WARNING: this test is not correctly isolated
 
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
+import { DocumentCollection } from 'src/document-collection';
 import { DocumentResource } from '../document-resource';
 import { Resource } from '../resource';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
@@ -22,7 +23,10 @@ class TestResource extends Resource {
     public type = 'test_resources';
     public id = '';
     public attributes = { name: '' };
-    public relationships = { test_resources: new DocumentResource<TestResource>() };
+    public relationships = {
+        test_resource: new DocumentResource<TestResource>(),
+        test_resources: new DocumentCollection<TestResource>()
+    };
 }
 
 class TestService extends Service {
