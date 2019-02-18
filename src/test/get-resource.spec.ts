@@ -1,7 +1,6 @@
 // WARNING: this test is not correctly isolated
 
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { IDocumentData } from 'src/interfaces/document';
 import { DocumentResource } from '../document-resource';
 import { Resource } from '../resource';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
@@ -9,16 +8,12 @@ import { JsonapiConfig } from '../jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Core } from '../core';
 import { Observable, BehaviorSubject, of as observableOf } from 'rxjs';
-import { take, skipWhile } from 'rxjs/operators';
 import { Service } from '../service';
 
 let test_response_subject = new BehaviorSubject(new HttpResponse());
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        // console.log('inside handler req', req);
-        // console.log('inside handler req', test_response_subject.getValue());
-
         return test_response_subject.asObservable();
     }
 }
@@ -52,6 +47,7 @@ describe('core methods', () => {
     });
     it('registered services should be stored in resourceServices object with their type as key', () => {
         let test_service = new TestService();
+        expect(test_service).toBeDefined();
         expect((core as any).resourceServices.test_resources).toBeTruthy();
     });
     it('getResourceService should be return the instantiated service from resourceServices related to the type passed as arument', async () => {
