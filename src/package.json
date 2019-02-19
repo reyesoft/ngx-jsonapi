@@ -28,31 +28,5 @@
     },
     "peerDependencies": {
         "@angular/core": "^6.0.0"
-    },
-    "jest": {
-        "setupTestFrameworkScriptFile": "../setup-jest.ts",
-        "globals": {
-            "ts-jest": {
-                "tsConfigFile": "./tsconfig.spec.json"
-            },
-            "__TRANSFORM_HTML__": true
-        },
-        "transform": {
-            "^.+\\.(ts|js|html)$": "../node_modules/jest-preset-angular/preprocessor.js"
-        },
-        "testMatch": [
-            "<rootDir>/**/*.spec.ts"
-        ],
-        "moduleFileExtensions": [
-            "ts",
-            "js",
-            "html",
-            "json"
-        ],
-        "mapCoverage": true,
-        "coveragePathIgnorePatterns": [
-            "**/node_modules/**",
-            "**/demo/**"
-        ]
     }
 }

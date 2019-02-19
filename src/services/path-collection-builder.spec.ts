@@ -3,6 +3,25 @@ import { Service } from '../service';
 import { PathBuilder } from './path-builder';
 import { PathCollectionBuilder } from './path-collection-builder';
 import { UrlParamsBuilder } from './url-params-builder';
+import { JsonapiConfig } from 'src/jsonapi-config';
+import { StoreService as JsonapiStore } from '../sources/store.service';
+import { Http as JsonapiHttpImported } from '../sources/http.service';
+import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+class HttpHandlerMock implements HttpHandler {
+    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+        let subject = new BehaviorSubject(new HttpResponse());
+
+        return subject.asObservable();
+    }
+}
+
+let core = new Core(
+    new JsonapiConfig(),
+    new JsonapiStore(),
+    new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+);
 
 const testService = new Service();
 testService.getPrePath = (): string => {
