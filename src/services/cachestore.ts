@@ -58,20 +58,33 @@ export class CacheStore {
     public setCollection(url: string, collection: DocumentCollection, include: Array<string>): void {
         let tmp: IDataCollection = { data: [], page: new Page() };
         let resources_for_save: IObjectsById<Resource> = {};
+        const isSameType: Function = (type_alias: string, typeRelationships: string): boolean => typeRelationships === type_alias;
+        
         for (let resource of collection.data) {
             this.setResource(resource);
             tmp.data.push({ id: resource.id, type: resource.type });
 
             for (let resource_type_alias of include) {
-                if ('id' in resource.relationships[resource_type_alias].data) {
-                    // hasOne
-                    let ress = <Resource>resource.relationships[resource_type_alias].data;
-                    resources_for_save[resource_type_alias + ress.id] = ress;
-                } else {
-                    // hasMany
-                    let collection2 = <Array<Resource>>resource.relationships[resource_type_alias].data;
-                    for (let inc_resource of collection2) {
-                        resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
+                // #issue-159 fix bug relationships and includes are different
+                // According to the standard json api
+                for (let key of Object.keys(resource.relationships)) {
+                    if (resource.relationships[key].data) {
+
+                        if (Array.isArray(resource.relationships[key].data)) {
+                            // hasMany
+                            let collection2 = (<Array<Resource>>resource.relationships[key].data).filter(
+                                (res: Resource) => isSameType(resource_type_alias, res.type)
+                            );
+                            for (let inc_resource of collection2) {
+                                resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
+                            }
+                        } else {
+                            // hasOne
+                            if (isSameType(resource_type_alias, (<Resource>resource.relationships[key].data).type)) {
+                                let ress = <Resource>resource.relationships[key].data;
+                                resources_for_save[resource_type_alias + ress.id] = ress;
+                            }
+                        }
                     }
                 }
             }
