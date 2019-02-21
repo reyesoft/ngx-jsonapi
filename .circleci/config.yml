@@ -10,7 +10,7 @@ jobs:
       - checkout
       - restore_cache:
           key: *cache_key
-      - run: yarn
+      - run: yarn d
       - run: yarn prettier-ts:show --list-different
       - run: yarn prettier-md:show --list-different
       - run: yarn prettier-scss:show --list-different
@@ -28,7 +28,7 @@ jobs:
       - checkout
       - restore_cache:
           key: *cache_key
-      - run: yarn
+      - run: yarn e
       - run: yarn run ci
     #   - run:
     #       name: Upload code coverage report to Coveralls
