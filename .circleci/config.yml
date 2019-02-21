@@ -28,6 +28,7 @@ jobs:
       - checkout
       - restore_cache:
           key: *cache_key
+      - run: yarn
       - run: yarn e
       - run: yarn run ci
     #   - run:
