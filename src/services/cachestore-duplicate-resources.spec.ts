@@ -19,8 +19,12 @@ class HttpHandlerMock implements HttpHandler {
 }
 
 export class StoreService {
-    public constructor() { /**/ }
-    public getDataResources(something) { return; }
+    public constructor() {
+        /**/
+    }
+    public getDataResources(something) {
+        return;
+    }
 }
 
 describe('Cachestore non-duplicate-resources test', () => {
@@ -51,7 +55,7 @@ describe('Cachestore non-duplicate-resources test', () => {
         let resource = new Resource();
         resource.id = 'id';
         resource.type = 'type';
-        resource .attributes = {
+        resource.attributes = {
             status: true,
             value: true
         };
@@ -61,15 +65,15 @@ describe('Cachestore non-duplicate-resources test', () => {
         collection.data = [resource];
 
         spyOn(Converter, 'getService').and.returnValue({
-            cachememory: { getOrCreateResource: (some_string, some_id): Resource => { return resource; }}
+            cachememory: {
+                getOrCreateResource: (some_string, some_id): Resource => {
+                    return resource;
+                }
+            }
         });
         spyOn(StoreService.prototype, 'getDataResources').and.returnValue(Promise.resolve([]));
 
-        await (cachestore as any).fillCollectionWithArrrayAndResourcesOnStore(
-            data_collection,
-            [],
-            collection
-        );
+        await (cachestore as any).fillCollectionWithArrrayAndResourcesOnStore(data_collection, [], collection);
 
         expect(collection.data.length).toBe(1);
     });
