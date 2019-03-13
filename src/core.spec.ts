@@ -31,12 +31,14 @@ describe('core methods', () => {
             type: 'data',
             id: '1'
         };
-        spyOn(Core.injectedServices.JsonapiHttp, 'exec').and.returnValue(Observable.create((observer) => {
-            observer.next('data1');
-            observer.next(observer.error({ errors: ['error'] }));
-        }));
+        spyOn(Core.injectedServices.JsonapiHttp, 'exec').and.returnValue(
+            Observable.create(observer => {
+                observer.next('data1');
+                observer.next(observer.error({ errors: ['error'] }));
+            })
+        );
         Core.exec('path', 'method', { data: data_resource }).subscribe(
-            (data) => {
+            data => {
                 expect(data).toBe('data1');
             },
             error => {
