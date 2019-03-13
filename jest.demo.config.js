@@ -7,6 +7,10 @@ module.exports = {
   moduleNameMapper: {
       'ngx-jsonapi': '<rootDir>/dist'
   },
+  coveragePathIgnorePatterns: [
+      '/node_modules/',
+      '/src/*.*/'
+  ],
 
   globals: {
       'ts-jest': {
