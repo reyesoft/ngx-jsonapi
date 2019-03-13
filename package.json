@@ -20,7 +20,7 @@
         "demo:test": "jest --config ./jest.demo.config.js",
         "demo:build": "yarn build && yarn run copy:dist && yarn cli build --prod --base-href \"/\" --output-path \"./demo-dist\"",
         "demo:release": "yarn demo:build && ts-node ./build/demo-release.ts",
-        "ci": "yarn run build && yarn run test && nyc report --reporter=text-lcov | coveralls",
+        "ci": "yarn run build && yarn run test --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
         "watch:tests": "chokidar 'src/**/*.ts' --initial -c 'nyc --reporter=text --reporter=html yarn test'",
         "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
         "release": "yarn run build && cd dist && yarn publish",
