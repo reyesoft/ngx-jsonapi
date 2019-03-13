@@ -80,7 +80,14 @@ export class CacheMemory<R extends Resource = Resource> {
             delete value[id];
         });
         this.resources[id].attributes = {}; // just for confirm deletion on view
-        this.resources[id].relationships = {}; // just for confirm deletion on view
+        // this.resources[id].relationships = {}; // just for confirm deletion on view
+        for (let relationship in this.resources[id].relationships) {
+            if (this.resources[id].relationships[relationship].data.constructor === Array) {
+                this.resources[id].relationships[relationship].data = []; // just in case that there is a for loop using it
+            } else if (this.resources[id].relationships[relationship].data.constructor === Object) {
+                delete this.resources[id].relationships[relationship].data;
+            }
+        }
         delete this.resources[id];
     }
 
@@ -101,6 +108,10 @@ export class CacheMemory<R extends Resource = Resource> {
             } else {
                 // relation is a collection
                 let collection = <DocumentCollection>destination.relationships[type_alias];
+                // TODO: talkto Pablo, this could be and Object... (following IF statement added by Maxi)
+                if (!Array.isArray(collection.data)) {
+                    continue;
+                }
                 for (let resource of collection.data) {
                     if (collection.find(resource.id) === null) {
                         delete destination.relationships[type_alias];

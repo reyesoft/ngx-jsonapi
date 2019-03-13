@@ -6,8 +6,10 @@
         "postbuild": "rimraf **/dist/**/*.ngsummary.json",
         "deploy:builds": "ts-node ./build/deploy-build.ts",
         "lint": "ng lint ngx-jsonapi",
-        "test:unit": "node ./tests.js",
-        "test": "nyc yarn run test:unit",
+        "test": "yarn test:lib",
+        "test:all": "yarn test:lib && yarn build && yarn test:demo",
+        "test:lib": "jest --config ./jest.lib.config.js",
+        "test:demo": "jest --config ./jest.demo.config.js",
         "clean": "git clean -xdf && yarn && yarn run bootstrap",
         "cli": "ng",
         "coverage:html": "nyc report --reporter=html",
@@ -15,12 +17,11 @@
         "start": "yarn run demo:start",
         "demo:start": "yarn run cli serve",
         "demo:start:aot": "yarn run cli serve -prod",
-        "demo:test": "jest --watch",
-        "demo:test:nowatch": "jest",
+        "demo:test": "jest --config ./jest.demo.config.js",
         "demo:build": "yarn build && yarn run copy:dist && yarn cli build --prod --base-href \"/\" --output-path \"./demo-dist\"",
         "demo:release": "yarn demo:build && ts-node ./build/demo-release.ts",
         "ci": "yarn run build && yarn run test && nyc report --reporter=text-lcov | coveralls",
-        "watch:tests": "chokidar 'src/**/*.ts' --initial -c 'nyc --reporter=text --reporter=html yarn run test:unit'",
+        "watch:tests": "chokidar 'src/**/*.ts' --initial -c 'nyc --reporter=text --reporter=html yarn test'",
         "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
         "release": "yarn run build && cd dist && yarn publish",
         "prettier": "yarn prettier-ts && yarn prettier-md && yarn prettier-scss",
@@ -129,6 +130,7 @@
         "jasmine-marbles": "^0.0.2",
         "jasmine-spec-reporter": "~3.2.0",
         "jest": "^21.0.2",
+        "jest-localstorage-mock": "^2.4.0",
         "jest-preset-angular": "^3.0.1",
         "jest-zone-patch": "^0.0.7",
         "lint-staged": "7.2.2",
@@ -144,51 +146,17 @@
         "rollup": "^0.50.0",
         "rxjs-tslint-rules": "4.7.2",
         "sorcery": "^0.10.0",
+        "ts-mockito": "^2.3.1",
         "ts-node": "^3.1.0",
         "tslib": "1.6.0",
         "typescript": "<2.10.0",
         "uglify-js": "^3.1.9",
+        "jest-localstorage-mock": "^2.4.0",
         "zone.js": "^0.8.12"
     },
     "dependencies": {
         "localforage": "^1.5.2",
         "localforage-getitems": "^1.4.2",
         "rxjs": "^6.2"
-    },
-    "jest": {
-        "setupTestFrameworkScriptFile": "<rootDir>/setup-jest.ts",
-        "globals": {
-            "ts-jest": {
-                "tsConfigFile": "demo/tsconfig.spec.json"
-            },
-            "__TRANSFORM_HTML__": true
-        },
-        "transform": {
-            "^.+\\.(ts|js|html)$": "<rootDir>/node_modules/jest-preset-angular/preprocessor.js"
-        },
-        "testMatch": [
-            "<rootDir>/demo/**/*.spec.ts"
-        ],
-        "moduleFileExtensions": [
-            "ts",
-            "js",
-            "html",
-            "json"
-        ],
-        "mapCoverage": true,
-        "coveragePathIgnorePatterns": [
-            "/node_modules/",
-            "/src/*.*/"
-        ],
-        "moduleNameMapper": {
-            "^ngx-jsonapi/(?!db)(.*)": "<rootDir>/src/$1"
-        },
-        "transformIgnorePatterns": [
-            "node_modules/(?!ngx-jsonapi)"
-        ],
-        "modulePathIgnorePatterns": [
-            "dist",
-            "node_modules/ngx-jsonapi"
-        ]
     }
 }
