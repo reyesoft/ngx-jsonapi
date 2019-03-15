@@ -211,19 +211,13 @@ export class Resource implements ICacheable {
     }
 
     public hasManyRelated(resource: string): boolean {
-        if (!this.relationships[resource]) {
-            return false;
-        }
-
-        return (<Array<Resource>>this.relationships[resource].data).length > 0;
+        return this.relationships[resource] && (<Array<Resource>>this.relationships[resource].data).length > 0;
     }
 
     public hasOneRelated(resource: string): boolean {
-        if (!this.relationships[resource]) {
-            return false;
-        }
-
-        return (<Resource>this.relationships[resource].data).type && (<Resource>this.relationships[resource].data).type !== '';
+        return this.relationships[resource]
+            && (<Resource>this.relationships[resource].data).type
+            && (<Resource>this.relationships[resource].data).type !== '';
     }
 
     /*
