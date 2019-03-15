@@ -51,7 +51,6 @@ function getService(type: string) {
 }
 
 describe('ResourceRelationshipsConverter', () => {
-
     let mock_relationship = new DocumentResource<MockResource>();
     mock_relationship.data.type = 'resource';
     mock_relationship.data.id = '1';
@@ -63,7 +62,7 @@ describe('ResourceRelationshipsConverter', () => {
         getService,
         mock_resource.relationships,
         new MockResource().relationships,
-        { resource: { '1': new MockResource() }}
+        { resource: { '1': new MockResource() } }
     );
 
     it('should be created', () => {
@@ -78,7 +77,6 @@ describe('ResourceRelationshipsConverter', () => {
 
     it(`buildRelationships method should add hasMany and hasOne relationships to relationships_dest as appropiapte
         using relationships_from data`, () => {
-
         // set up spy
         spyOn(Converter, 'getService').and.callFake(getService);
         let cachestoreSetResourceSpy = spyOn(CacheStore.prototype, 'setResource');
@@ -98,13 +96,16 @@ describe('ResourceRelationshipsConverter', () => {
         mock_resource_1.id = '1';
         let mock_resource_2 = new MockResource();
         mock_resource_2.id = '2';
-        mock_collection_from.data = [ mock_resource_1, mock_resource_2 ];
+        mock_collection_from.data = [mock_resource_1, mock_resource_2];
 
         // add fake included resources
         let mock_included_resource_has_one = clone(mock_resource_from);
         let mock_included_resource_1 = clone(mock_resource_1);
         let mock_included_resource_2 = clone(mock_resource_2);
-        mock_included_resource_has_one.data.attributes = { name: 'has_one relationship name', description: 'has_one relationship description' };
+        mock_included_resource_has_one.data.attributes = {
+            name: 'has_one relationship name',
+            description: 'has_one relationship description'
+        };
         mock_included_resource_1.attributes = { name: 'first', description: 'first in collection' };
         mock_included_resource_2.attributes = { name: 'second', description: 'second in collection' };
         let included_resources = {
@@ -130,15 +131,20 @@ describe('ResourceRelationshipsConverter', () => {
         // test has_one relationship
         expect((resource_relationships_converter as any).relationships_dest.resource.data instanceof Resource).toBeTruthy();
         expect((resource_relationships_converter as any).relationships_dest.resource.data.id).toBe('123');
-        expect((resource_relationships_converter as any).relationships_dest.resource.data.attributes.name).toBe('has_one relationship name');
-        expect((resource_relationships_converter as any).relationships_dest.resource.data.attributes.description)
-            .toBe('has_one relationship description');
+        expect((resource_relationships_converter as any).relationships_dest.resource.data.attributes.name).toBe(
+            'has_one relationship name'
+        );
+        expect((resource_relationships_converter as any).relationships_dest.resource.data.attributes.description).toBe(
+            'has_one relationship description'
+        );
 
         // test has_many relationship
-        let related_collection_first_resource = (resource_relationships_converter as any).relationships_dest.collection.data
-            .find(resource => resource.id === '1');
-        let related_collection_second_resource = (resource_relationships_converter as any).relationships_dest.collection.data
-            .find(resource => resource.id === '2');
+        let related_collection_first_resource = (resource_relationships_converter as any).relationships_dest.collection.data.find(
+            resource => resource.id === '1'
+        );
+        let related_collection_second_resource = (resource_relationships_converter as any).relationships_dest.collection.data.find(
+            resource => resource.id === '2'
+        );
         expect((resource_relationships_converter as any).relationships_dest.collection instanceof DocumentCollection).toBeTruthy();
         expect(related_collection_first_resource.id).toBeTruthy();
         expect(related_collection_second_resource).toBeTruthy();
@@ -150,5 +156,4 @@ describe('ResourceRelationshipsConverter', () => {
         // expect(related_collection_second_resource.attributes.description).toBe('second in collection');
         expect(cachestoreSetResourceSpy).toHaveBeenCalled(); // must save loaded resources in cachestore
     });
-
 });

@@ -16,7 +16,7 @@ describe('resource', () => {
     //     expect(resource.id).toBe('');
     // });
 
-    it ('should save the resource without relationships that dont refer to a resource or mean to remove the relationship', async () => {
+    it('should save the resource without relationships that dont refer to a resource or mean to remove the relationship', async () => {
         spyOn(resource, 'getService').and.returnValue(false);
         spyOn(PathBuilder.prototype, 'applyParams');
         resource.id = '1234';
@@ -33,7 +33,7 @@ describe('resource', () => {
         resource.source = 'store';
         resource.cache_last_update = 0;
         let response = Object.create(resource);
-        let exec_spy = spyOn(Core, 'exec').and.returnValue(of({data: response}));
+        let exec_spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
         await resource.save();
         resource.relationships = {};
         let expected_resource_in_save = {
@@ -41,7 +41,8 @@ describe('resource', () => {
                 type: 'tests',
                 id: '1234',
                 attributes: { name: 'test_name' },
-                relationships: {}},
+                relationships: {}
+            },
             builded: false,
             content: 'resource'
         };
