@@ -92,8 +92,8 @@ export class Resource implements ICacheable {
                             type: relationship_data.type
                         }
                     };
-                // @TODO PABLO: definir cuál va a ser la propiedd indispensable para guardar la relación
-                // @WARNING: no borrar la verificación de que no sea null... sino no se van a poder borrar
+                    // @TODO PABLO: definir cuál va a ser la propiedd indispensable para guardar la relación
+                    // @WARNING: no borrar la verificación de que no sea null... sino no se van a poder borrar
                 } else if (!relationship.builded && !relationship_data.id && !relationship_data.type) {
                     delete relationships[relation_alias];
                 }

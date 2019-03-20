@@ -12,10 +12,6 @@ module.exports = {
       'json'
   ],
   mapCoverage: true,
-  coveragePathIgnorePatterns: [
-      '/node_modules/',
-      '/src/*.*/'
-  ],
   moduleNameMapper: {
       '^ngx-jsonapi/(?!db)(.*)': '<rootDir>/src/$1'
   },
