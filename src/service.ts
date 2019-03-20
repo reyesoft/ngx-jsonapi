@@ -87,6 +87,7 @@ export class Service<R extends Resource = Resource> {
                 .then(() => {
                     if (!isLive(resource, params.ttl)) {
                         subject.next(resource);
+
                         throw new Error('No está viva la caché de localstorage');
                     }
                     resource.is_loading = false;
@@ -104,14 +105,16 @@ export class Service<R extends Resource = Resource> {
         return subject.asObservable();
     }
 
-    protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
+    protected getGetFromServer(path: PathBuilder, resource: R, subject: Subject<R>): void {
         Core.get(path.get()).subscribe(
             success => {
+                // success.included = path.includes
+                // console.log("fill resource", JSON.parse(JSON.stringify(<IDataObject>success)));
                 resource.fill(<IDataObject>success);
                 resource.is_loading = false;
                 this.getService().cachememory.setResource(resource);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    this.getService().cachestore.setResource(resource);
+                    this.getService().cachestore.setResource(resource, path.includes);
                 }
                 subject.next(resource);
                 subject.complete();
@@ -241,6 +244,7 @@ export class Service<R extends Resource = Resource> {
         temporary_collection: DocumentCollection<R>,
         subject: BehaviorSubject<DocumentCollection<R>>
     ) {
+        console.log("getAllFromServer");
         temporary_collection.is_loading = true;
         subject.next(temporary_collection);
         Core.get(path.get()).subscribe(

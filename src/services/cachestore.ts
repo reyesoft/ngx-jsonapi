@@ -51,50 +51,80 @@ export class CacheStore {
         return mypromise;
     }
 
-    public setResource(resource: Resource) {
+    public setResource(resource: Resource, include: Array<string> = []) {
         Core.injectedServices.JsonapiStoreService.saveResource(resource.type, resource.id, resource.toObject().data);
+        if(include.length > 0){
+            let resources_for_save: IObjectsById<Resource> = {};
+            for (let resource_type_alias of include) {
+                resources_for_save = this.buildCollectionToSave(resource, resource_type_alias, resources_for_save);
+            }
+
+            Base.forEach(resources_for_save, resource_for_save => {
+                if (!('is_new' in resource_for_save)) {
+                    return;
+                }
+                if (Object.keys(resource_for_save.attributes).length === 0) {
+                    console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no tener attributes.', resource_for_save);
+                    return;
+                }
+                this.setResource(resource_for_save);
+            });
+        }
     }
 
     public setCollection(url: string, collection: DocumentCollection, include: Array<string>): void {
         let tmp: IDataCollection = { data: [], page: new Page() };
         let resources_for_save: IObjectsById<Resource> = {};
         for (let resource of collection.data) {
-            this.setResource(resource);
+            // this.setResource(resource);
             tmp.data.push({ id: resource.id, type: resource.type });
-
             for (let resource_type_alias of include) {
-                if ('id' in resource.relationships[resource_type_alias].data) {
-                    // hasOne
-                    let ress = <Resource>resource.relationships[resource_type_alias].data;
-                    resources_for_save[resource_type_alias + ress.id] = ress;
-                } else {
-                    // hasMany
-                    let collection2 = <Array<Resource>>resource.relationships[resource_type_alias].data;
-                    for (let inc_resource of collection2) {
-                        resources_for_save[resource_type_alias + inc_resource.id] = inc_resource;
-                    }
-                }
+                resources_for_save = this.buildCollectionToSave(resource, resource_type_alias, resources_for_save);
             }
         }
 
         tmp.page = collection.page;
-        Core.injectedServices.JsonapiStoreService.saveCollection(url, <IDataCollection>tmp);
+        // Core.injectedServices.JsonapiStoreService.saveCollection(url, <IDataCollection>tmp);
 
-        Base.forEach(resources_for_save, resource_for_save => {
-            if (!('is_new' in resource_for_save)) {
-                // console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
+        // Base.forEach(resources_for_save, resource_for_save => {
+        //     if (!('is_new' in resource_for_save)) {
+        //         // console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no se ser Resource.', resource_for_save);
 
-                return;
+        //         return;
+        //     }
+
+        //     if (Object.keys(resource_for_save.attributes).length === 0) {
+        //         console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no tener attributes.', resource_for_save);
+
+        //         return;
+        //     }
+
+        //     this.setResource(resource_for_save);
+        // });
+    }
+
+    private buildCollectionToSave(resource: Resource, resource_type_alias: string, resources_for_save: IObjectsById<Resource>) {
+        let resource_type_alias_info = resource_type_alias.split('.');
+        let sub_includes = resource_type_alias.replace(resource_type_alias_info[0], '').replace(/./i, "")
+
+        if ('id' in resource.relationships[resource_type_alias_info[0]].data) {
+            // hasOne
+            let ress = <Resource>resource.relationships[resource_type_alias_info[0]].data;
+            resources_for_save[resource_type_alias_info[0] + ress.id] = ress;
+            if(resource_type_alias_info.length > 1){
+                resources_for_save = this.buildCollectionToSave(ress, sub_includes, resources_for_save);
             }
-
-            if (Object.keys(resource_for_save.attributes).length === 0) {
-                console.warn('No se pudo guardar en la cache', resource_for_save.type, 'por no tener attributes.', resource_for_save);
-
-                return;
+        } else {
+            // hasMany
+            let collection2 = <Array<Resource>>resource.relationships[resource_type_alias_info[0]].data;
+            for (let inc_resource of collection2) {
+                resources_for_save[resource_type_alias_info[0] + inc_resource.id] = inc_resource;
+                if(resource_type_alias_info.length > 1){
+                    resources_for_save = this.buildCollectionToSave(inc_resource, sub_includes, resources_for_save);
+                }
             }
-
-            this.setResource(resource_for_save);
-        });
+        }
+        return resources_for_save;
     }
 
     public deprecateCollections(path_start_with: string): boolean {
@@ -238,9 +268,16 @@ export class CacheStore {
     }
 
     private fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
-        if (resource.relationships[resource_alias].data instanceof DocumentResource) {
+        let resource_type_alias_info = resource_alias.split('.');
+        let sub_includes = resource_alias.replace(resource_type_alias_info[0], '').replace(/./i, "")
+        // console.log(resource, resource_type_alias_info);
+
+        // console.log(resource_type_alias_info[0], typeof resource.relationships[resource_type_alias_info[0]]);
+        
+        if ('id' in  resource.relationships[resource_type_alias_info[0]].data) {
             // hasOne
-            let related_resource = <IDataResource>resource.relationships[resource_alias].data;
+            // console.log('if else 1: ' + resource_type_alias_info[0]);
+            let related_resource = <IDataResource>resource.relationships[resource_type_alias_info[0]].data;
             if (!('attributes' in related_resource)) {
                 // no está cargado aún
                 let builded_resource = this.getResourceFromMemory(related_resource);
@@ -250,7 +287,28 @@ export class CacheStore {
                 } else if (isDevMode()) {
                     console.warn('ts-angular-json: esto no debería pasar #isdjf2l1a');
                 }
-                resource.addRelationship(builded_resource, resource_alias);
+                resource.addRelationship(builded_resource, resource_type_alias_info[0]);
+                if(resource_type_alias_info.length > 1){
+                    this.fillRelationshipFromStore(resource, sub_includes, include_promises);
+                }
+            }
+        }else{
+            let collection2 = <Array<Resource>>resource.relationships[resource_type_alias_info[0]].data;
+            for (let related_resource of collection2) {
+                if (!('attributes' in related_resource) || Object.keys(related_resource.attributes).length === 0) {
+                    let builded_resource = this.getResourceFromMemory(related_resource);
+                    if (builded_resource.is_new) {
+                        // no está en memoria, la pedimos a store
+                        include_promises.push(this.getResource(builded_resource));
+                    } else if (isDevMode()) {
+                        console.warn('ts-angular-json: esto no debería pasar #isdjf2l1a');
+                    }
+                    resource.addRelationship(builded_resource, resource_type_alias_info[0]);
+                }
+                // resources_for_save[resource_type_alias_info[0] + inc_resource.id] = inc_resource;
+                // if(resource_type_alias_info.length > 1){
+                    // resources_for_save = this.buildCollectionToSave(inc_resource, sub_includes, resources_for_save);
+                // }
             }
         }
         // else hasMany??
