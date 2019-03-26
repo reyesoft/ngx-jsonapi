@@ -210,6 +210,16 @@ export class Resource implements ICacheable {
         return true;
     }
 
+    public hasManyRelated(resource: string): boolean {
+        return this.relationships[resource] && (<Array<Resource>>this.relationships[resource].data).length > 0;
+    }
+
+    public hasOneRelated(resource: string): boolean {
+        return this.relationships[resource]
+            && (<Resource>this.relationships[resource].data).type
+            && (<Resource>this.relationships[resource].data).type !== '';
+    }
+
     /*
     @return This resource like a service
     */
