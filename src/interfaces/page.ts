@@ -6,5 +6,5 @@ export interface IPage {
 
     // multinexo
     total_resources?: number;
-    resources_per_page?: number;
+    resources_per_page?: number; // @deprecated: 2.0.1 (use size instead)
 }
