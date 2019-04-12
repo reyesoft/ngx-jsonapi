@@ -215,9 +215,11 @@ export class Resource implements ICacheable {
     }
 
     public hasOneRelated(resource: string): boolean {
-        return this.relationships[resource]
-            && (<Resource>this.relationships[resource].data).type
-            && (<Resource>this.relationships[resource].data).type !== '';
+        return (
+            this.relationships[resource] &&
+            (<Resource>this.relationships[resource].data).type &&
+            (<Resource>this.relationships[resource].data).type !== ''
+        );
     }
 
     /*
