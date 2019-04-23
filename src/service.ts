@@ -74,10 +74,12 @@ export class Service<R extends Resource = Resource> {
         // CACHEMEMORY
         let resource = this.getOrCreateResource(id);
         resource.is_loading = true;
+        console.log('resource in service.ts get -------->');
 
         let subject = new BehaviorSubject<R>(resource);
 
         if (isLive(resource, params.ttl)) {
+            console.log('WILL COMPLETE OBSERVABLE');
             subject.complete();
             resource.is_loading = false;
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -85,11 +87,14 @@ export class Service<R extends Resource = Resource> {
             this.getService()
                 .cachestore.getResource(resource, params.include)
                 .then(() => {
+                    console.log('service cachestore.getResource then');
                     if (!isLive(resource, params.ttl)) {
+                        console.log('TTL DEAD will update resource');
                         subject.next(resource);
                         throw new Error('No está viva la caché de localstorage');
                     }
                     resource.is_loading = false;
+                    console.log('service cachestore.getResource then will update resource');
                     subject.next(resource);
                     subject.complete();
                 })
@@ -97,8 +102,10 @@ export class Service<R extends Resource = Resource> {
                     this.getGetFromServer(path, resource, subject);
                 });
         } else {
+            console.log('service GET will get from server');
             this.getGetFromServer(path, resource, subject);
         }
+        console.log('get last update to resource subject');
         subject.next(resource);
 
         return subject.asObservable();
@@ -107,12 +114,16 @@ export class Service<R extends Resource = Resource> {
     protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
         Core.get(path.get()).subscribe(
             success => {
+                console.log('service getGetFromServer subscription resource relatioship');
                 resource.fill(<IDataObject>success);
                 resource.is_loading = false;
                 this.getService().cachememory.setResource(resource);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
                 }
+                console.log('service getGetFromServer subscription success');
+                // console.log('service getGetFromServer subscription resource relatioship',
+                //     (<Resource>resource.relationships.test_resource.data).relationships.test_resource);
                 subject.next(resource);
                 subject.complete();
             },
@@ -135,8 +146,11 @@ export class Service<R extends Resource = Resource> {
     public getOrCreateResource(id: string): R {
         let service = Converter.getService(this.type);
         if (service.cachememory && id in service.cachememory.resources) {
+            console.log('getOrCreateResource IF');
+
             return <R>service.cachememory.resources[id];
         } else {
+            console.log('getOrCreateResource ELSE');
             let resource = service.new();
             resource.id = id;
             service.cachememory.setResource(resource, false);

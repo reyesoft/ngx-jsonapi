@@ -17,6 +17,7 @@ export class CacheStore {
             (resolve, reject): void => {
                 Core.injectedServices.JsonapiStoreService.getDataObject(resource.type, resource.id).subscribe(
                     success => {
+                        console.log('getDataObject ----------->', (<{[key: string]: any}>success.relationships).test_resource);
                         resource.fill({ data: success });
 
                         // include some times is a collection :S
@@ -239,12 +240,21 @@ export class CacheStore {
 
     private fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
         if (resource_alias.includes('.')) {
-            let parts = resource_alias.split('.');
-            let datadocument = resource.relationships[parts[0]].data;
+            console.log('--------------- inside fillRelationshipFromStore ------------', resource, resource_alias);
+            let included_resource_alias_parts = resource_alias.split('.');
+            console.log('--------------- included_resource_alias_parts ------------', included_resource_alias_parts);
+            let datadocument = resource.relationships[included_resource_alias_parts[0]].data;
+            console.log('--------------- datadocument ------------', datadocument);
             if (datadocument instanceof DocumentResource) {
-                return this.fillRelationshipFromStore(datadocument.data, parts[1], include_promises);
+                return this.fillRelationshipFromStore(datadocument.data, included_resource_alias_parts[1], include_promises);
+            } else if (datadocument instanceof DocumentCollection) {
+                // else @TODO hasMany??
+                for (let related_resource of datadocument.data) {
+                    this.fillRelationshipFromStore(related_resource, included_resource_alias_parts[1], include_promises);
+                }
+
+                return;
             }
-            // else @todo hasMany??
         }
 
         if (resource.relationships[resource_alias] instanceof DocumentResource) {

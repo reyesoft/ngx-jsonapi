@@ -86,6 +86,7 @@ export class ResourceRelationshipsConverter {
         }
 
         if ((<Resource>this.relationships_dest[relation_alias].data).id !== relation_data_from.data.id) {
+            console.log('(<Resource>this.relationships_dest[relation_alias].data).id !== relation_data_from.data.id');
             let resource_data = this.__buildRelationship(relation_data_from.data, this.included_resources);
             if (resource_data) {
                 this.relationships_dest[relation_alias].data = resource_data;
