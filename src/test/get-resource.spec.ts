@@ -54,7 +54,7 @@ describe('core methods', () => {
         expect(test_service).toBeDefined();
         expect((core as any).resourceServices.test_resources).toBeTruthy();
     });
-    it('getResourceService should be return the instantiated service from resourceServices related to the type passed as arument', async () => {
+    it('getResourceService should return the instantiated service from resourceServices related to the type passed as arument', async () => {
         let test_service = new TestService();
         let test_service_instance = core.getResourceService('test_resources');
         expect(test_service_instance).toBeTruthy();
@@ -74,8 +74,8 @@ describe('core methods', () => {
             .get('1')
             .toPromise()
             .then(resource => {
-                expect(test_resource.type).toBe('test_resources');
-                expect(test_resource.id).toBe('1');
+                expect(resource.type).toBe('test_resources');
+                expect(resource.id).toBe('1');
                 expect(resource.attributes.name).toBe('test_name');
 
                 let headers = new HttpHeaders({
@@ -144,6 +144,68 @@ describe('core methods', () => {
                     (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '4')
                         .attributes.name
                 ).toBe('test_name_4');
+            });
+    });
+
+    it(`the resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources`, async () => {
+        let test_resource = new TestResource();
+        test_resource.type = 'test_resources';
+        test_resource.id = '1';
+        test_resource.attributes = { name: 'test_name' };
+        test_resource.relationships.test_resource.data = { id: '2', type: 'test_resources' };
+        test_resource.relationships.test_resources.data = [{ id: '3', type: 'test_resources' }, { id: '4', type: 'test_resources' }];
+
+        // nested relationship
+        let test_resource_nested_relationship = new TestResource();
+        test_resource_nested_relationship.type = 'test_resources';
+        test_resource_nested_relationship.id = '4';
+        test_resource_nested_relationship.attributes = { name: 'test_name_4' };
+
+        // format has_one relationship to include
+        let test_resource_has_one_relationship = new TestResource();
+        test_resource_has_one_relationship.type = 'test_resources';
+        test_resource_has_one_relationship.id = '2';
+        test_resource_has_one_relationship.attributes = { name: 'test_name_2' };
+        test_resource_has_one_relationship.relationships.test_resource.data = { id: '4', type: 'test_resources' };
+
+        // format has_many relationship to include
+        let test_resource_has_many_relationship_1 = new TestResource();
+        test_resource_has_many_relationship_1.type = 'test_resources';
+        test_resource_has_many_relationship_1.id = '3';
+        test_resource_has_many_relationship_1.attributes = { name: 'test_name_3' };
+        test_resource_has_many_relationship_1.relationships.test_resources.data.push({ id: '4', type: 'test_resources' });
+
+        let included = [test_resource_has_one_relationship, test_resource_has_many_relationship_1, test_resource_nested_relationship];
+
+        let test_service = new TestService();
+        test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));
+
+        await test_service
+            .get('1', {include: ['test_resource.test_resource']})
+            .toPromise()
+            .then(resource => {
+                console.log('resource --->', (<TestResource>resource.relationships.test_resource.data).relationships);
+                expect(test_resource.type).toBe('test_resources');
+                expect(test_resource.id).toBe('1');
+                expect(resource.attributes.name).toBe('test_name');
+                expect(resource.relationships.test_resource instanceof DocumentResource).toBeTruthy();
+                expect(resource.relationships.test_resources instanceof DocumentCollection).toBeTruthy();
+                expect((<DocumentResource>resource.relationships.test_resource).data.id).toBe('2');
+                expect((<DocumentResource>resource.relationships.test_resource).data.attributes.name).toBe('test_name_2');
+                expect(
+                    (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '3')
+                ).toBeTruthy();
+                expect(
+                    (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '3')
+                        .attributes.name
+                ).toBe('test_name_3');
+                let has_one_relationship = (<DocumentResource>resource.relationships.test_resource).data;
+                console.log('has_one_relationship --->', has_one_relationship);
+                expect((<TestResource>has_one_relationship.relationships.test_resource.data).id).toBe('4');
+                // expect(
+                //     (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '4')
+                //         .attributes.name
+                // ).toBe('test_name_4');
             });
     });
 });
