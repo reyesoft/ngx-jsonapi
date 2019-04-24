@@ -181,10 +181,10 @@ describe('core methods', () => {
 
         let test_service = new TestService();
         test_service.clearCacheMemory();
-        test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included }}));
+        test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));
 
         await test_service
-            .get('1', {include: ['test_resource.test_resource']})
+            .get('1', { include: ['test_resource.test_resource'] })
             .toPromise()
             .then(resource => {
                 expect(test_resource.type).toBe('test_resources');
