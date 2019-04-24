@@ -17,6 +17,7 @@ export class Converter<R extends Resource> {
         let resources_by_type: IResourcesByType = {};
 
         Converter.json_array2resources_array(json_array, all_resources);
+        // console.log('all_resources after json_array2resources_array --->', all_resources.test_resources_2.relationships);
         for (const key in all_resources) {
             let resource = all_resources[key];
 
@@ -32,6 +33,8 @@ export class Converter<R extends Resource> {
     public static json2resource(json_resource: IDataResource, instance_relationships): Resource {
         let resource_service = Converter.getService(json_resource.type);
         if (resource_service) {
+            console.log('--------------ACÁ ESTÁ EL ERROR--------------');
+
             return Converter.procreate(json_resource);
         } else {
             if (isDevMode()) {
@@ -77,6 +80,9 @@ export class Converter<R extends Resource> {
         }
 
         resource.attributes = data.attributes || {};
+        // TODO; CHECK THIS: ADED BY MAXI TO NESTED RELATIONSHIPS
+        resource.relationships = <{[key: string]: any}>data.relationships;
+        // UNTIL HERE
         resource.is_new = false;
 
         return resource;
@@ -86,6 +92,7 @@ export class Converter<R extends Resource> {
     Convert json arrays (like included) to an Resources arrays without [keys]
     */
     private static json_array2resources_array(json_array: Array<IDataResource>, destination_array: IObjectsById<Resource> = {}): void {
+        // console.log('json_array in json_array2resources_array --->', json_array[0].relationships);
         for (let data of json_array) {
             let resource = Converter.json2resource(data, false);
             destination_array[resource.type + '_' + resource.id] = resource;
