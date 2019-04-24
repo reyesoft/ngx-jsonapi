@@ -33,8 +33,6 @@ export class Converter<R extends Resource> {
     public static json2resource(json_resource: IDataResource, instance_relationships): Resource {
         let resource_service = Converter.getService(json_resource.type);
         if (resource_service) {
-            console.log('--------------ACÁ ESTÁ EL ERROR--------------');
-
             return Converter.procreate(json_resource);
         } else {
             if (isDevMode()) {
