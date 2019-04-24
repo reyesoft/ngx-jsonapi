@@ -244,7 +244,6 @@ export class CacheStore {
             if (datadocument instanceof DocumentResource) {
                 return this.fillRelationshipFromStore(datadocument.data, included_resource_alias_parts[1], include_promises);
             } else if (datadocument instanceof DocumentCollection) {
-                // else @TODO hasMany??
                 for (let related_resource of datadocument.data) {
                     this.fillRelationshipFromStore(related_resource, included_resource_alias_parts[1], include_promises);
                 }

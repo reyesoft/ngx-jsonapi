@@ -113,8 +113,6 @@ export class Service<R extends Resource = Resource> {
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
                 }
-                // console.log('service getGetFromServer subscription resource relatioship',
-                //     (<Resource>resource.relationships.test_resource.data).relationships.test_resource);
                 subject.next(resource);
                 subject.complete();
             },
