@@ -238,7 +238,21 @@ export class CacheStore {
     }
 
     private fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
-        if (resource.relationships[resource_alias].data instanceof DocumentResource) {
+        if (resource_alias.includes('.')) {
+            let included_resource_alias_parts = resource_alias.split('.');
+            let datadocument = resource.relationships[included_resource_alias_parts[0]].data;
+            if (datadocument instanceof DocumentResource) {
+                return this.fillRelationshipFromStore(datadocument.data, included_resource_alias_parts[1], include_promises);
+            } else if (datadocument instanceof DocumentCollection) {
+                for (let related_resource of datadocument.data) {
+                    this.fillRelationshipFromStore(related_resource, included_resource_alias_parts[1], include_promises);
+                }
+
+                return;
+            }
+        }
+
+        if (resource.relationships[resource_alias] instanceof DocumentResource) {
             // hasOne
             let related_resource = <IDataResource>resource.relationships[resource_alias].data;
             if (!('attributes' in related_resource)) {
@@ -253,6 +267,6 @@ export class CacheStore {
                 resource.addRelationship(builded_resource, resource_alias);
             }
         }
-        // else hasMany??
+        // else @todo hasMany??
     }
 }
