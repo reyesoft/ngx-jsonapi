@@ -30,7 +30,8 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         // sometimes get Cannot set property 'number' of undefined (page)
         if (this.page && data_collection.meta) {
             this.page.number = data_collection.meta.page || 1;
-            this.page.resources_per_page = data_collection.meta.resources_per_page || null;
+            this.page.resources_per_page = data_collection.meta.resources_per_page || null; // @deprecated (v2.0.2)
+            this.page.size = data_collection.meta.resources_per_page || null;
             this.page.total_resources = data_collection.meta.total_resources || null;
         }
 
@@ -69,11 +70,11 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
     }
 
     public hasMorePages(): boolean | null {
-        if (this.page.resources_per_page < 1) {
+        if (this.page.size < 1) {
             return null;
         }
 
-        let total_resources = this.page.resources_per_page * (this.page.number - 1) + this.data.length;
+        let total_resources = this.page.size * (this.page.number - 1) + this.data.length;
 
         return total_resources < this.page.total_resources;
     }
