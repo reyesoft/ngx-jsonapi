@@ -14,18 +14,10 @@ import { Service } from '../service';
 
 let test_response_subject = new BehaviorSubject(new HttpResponse());
 
-class HttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        console.log('REQUEST --------------->', req);
-
-        return test_response_subject.asObservable();
-    }
-}
-
 class TestResource extends Resource {
     public type = 'test_resources';
     public id = '';
-    public attributes = { name: '' };
+    public attributes: { name?: string; optional?: string } = { name: '' };
     public relationships = {
         test_resource: new DocumentResource<TestResource>(),
         test_resources: new DocumentCollection<TestResource>()
@@ -39,7 +31,36 @@ class TestService extends Service {
     }
     public type = 'test_resources';
     public resource = TestResource;
-    public ttl = 0;
+    public ttl = 10000;
+}
+
+class HttpHandlerMock implements HttpHandler {
+    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+        let splitted_request_url = req.urlWithParams.split('?');
+        let splitted_params: Array<string> = [];
+        if (splitted_request_url.length > 1) {
+            let params = splitted_request_url[1];
+            splitted_params = params.split('&');
+        }
+
+        if (splitted_params.indexOf('fields[test_resources]=optional') > -1) {
+            let optional_attributes_only_resource = new TestResource();
+            optional_attributes_only_resource.id = '1';
+            optional_attributes_only_resource.attributes = { optional: 'optional attribute value' };
+            test_response_subject.next(new HttpResponse({ body: { data: optional_attributes_only_resource } }));
+
+            return test_response_subject.asObservable();
+        } else {
+            let test_resource = new TestResource();
+            test_resource.type = 'test_resources';
+            test_resource.id = '1';
+            test_resource.attributes = { name: 'test_name' };
+            test_response_subject.next(new HttpResponse({ body: { data: test_resource } }));
+
+            return test_response_subject.asObservable();
+        }
+
+    }
 }
 
 describe('core methods', () => {
@@ -52,26 +73,9 @@ describe('core methods', () => {
         );
         expect(core).toBeTruthy();
     });
-    // it('registered services should be stored in resourceServices object with their type as key', () => {
-    //     let test_service = new TestService();
-    //     expect(test_service).toBeDefined();
-    //     expect((core as any).resourceServices.test_resources).toBeTruthy();
-    // });
-    // it('getResourceService should return the instantiated service from resourceServices related to the type passed as arument', async () => {
-    //     let test_service = new TestService();
-    //     let test_service_instance = core.getResourceService('test_resources');
-    //     expect(test_service_instance).toBeTruthy();
-    //     expect(test_service_instance.type).toBe('test_resources');
-    //     expect(test_service_instance).toEqual(test_service);
-    // });
-    it(`service's get method should get the requested resource from the back end if it's not cached or the TTL has ended`, async () => {
-        let test_resource = new TestResource();
-        test_resource.type = 'test_resources';
-        test_resource.id = '1';
-        test_resource.attributes = { name: 'test_name' };
+    it(`service's get method should return a stream with the requested resource including the requested attributes (fields)`, async () => {
         let test_service = new TestService();
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: { data: test_resource } }));
 
         await test_service
             .get('1', { fields: { test_resources: ['optional'] }})
@@ -79,17 +83,58 @@ describe('core methods', () => {
             .then(resource => {
                 expect(resource.type).toBe('test_resources');
                 expect(resource.id).toBe('1');
-                expect(resource.attributes.name).toBe('test_name');
+                expect(resource.attributes.name).toBeFalsy();
+                expect(resource.attributes.optional).toBe('optional attribute value');
 
-                let headers = new HttpHeaders({
-                    'Content-Type': 'application/vnd.api+json',
-                    Accept: 'application/vnd.api+json'
-                });
                 let request = {
                     body: null,
                     headers: expect.any(Object)
                 };
-                expect(http_request_spy).toHaveBeenCalledWith('get', 'http://yourdomain/api/v1/test_resources/1', request);
+                expect(http_request_spy).toHaveBeenCalledWith(
+                    'get',
+                    'http://yourdomain/api/v1/test_resources/1?fields[test_resources]=optional',
+                    request
+                );
+            });
+    });
+
+    it(`when requesting a resource with optional attributes, the incoming attributes should be merged with cached ones`, async () => {
+        let test_service = new TestService();
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+
+        await test_service
+            .get('1', { fields: { test_resources: ['optional'] }})
+            .toPromise()
+            .then(async resource => {
+                expect(resource.type).toBe('test_resources');
+                expect(resource.id).toBe('1');
+                expect(resource.attributes.name).toBe('test_name');
+                expect(resource.attributes.optional).toBeFalsy();
+
+                let request = {
+                    body: null,
+                    headers: expect.any(Object)
+                };
+                expect(http_request_spy).toHaveBeenCalledWith(
+                    'get',
+                    'http://yourdomain/api/v1/test_resources/1',
+                    request
+                );
+                await test_service
+                    .get('1', { fields: { test_resources: ['optional'] }})
+                    .toPromise()
+                    .then(resource_with_optional_attribute => {
+                        expect(resource_with_optional_attribute.type).toBe('test_resources');
+                        expect(resource_with_optional_attribute.id).toBe('1');
+                        expect(resource_with_optional_attribute.attributes.name).toBe('test_name');
+                        expect(resource_with_optional_attribute.attributes.optional).toBe('optional attribute value');
+
+                        expect(http_request_spy).toHaveBeenCalledWith(
+                            'get',
+                            'http://yourdomain/api/v1/test_resources/1?fields[test_resources]=optional',
+                            request
+                        );
+                    });
             });
     });
 });
