@@ -138,7 +138,10 @@ export class Resource implements ICacheable {
         let included_resources = Converter.buildIncluded(data_object);
 
         this.id = data_object.data.id || '';
-        this.attributes = data_object.data.attributes || this.attributes;
+
+        // WARNING: leaving previous line for a tiem because this can produce undesired behavior
+        // this.attributes = data_object.data.attributes || this.attributes;
+        this.attributes = { ...this.attributes || {}, ...data_object.data.attributes };
 
         this.is_new = false;
         let service = Converter.getService(data_object.data.type);

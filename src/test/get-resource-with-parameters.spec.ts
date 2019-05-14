@@ -11,8 +11,7 @@ import { Core } from '../core';
 import { Observable, BehaviorSubject, of as observableOf } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { Service } from '../service';
-
-let test_response_subject = new BehaviorSubject(new HttpResponse());
+import * as localForage from 'localforage';
 
 class TestResource extends Resource {
     public type = 'test_resources';
@@ -44,6 +43,7 @@ class HttpHandlerMock implements HttpHandler {
         }
 
         if (splitted_params.indexOf('fields[test_resources]=optional') > -1) {
+            let test_response_subject = new BehaviorSubject(new HttpResponse());
             let optional_attributes_only_resource = new TestResource();
             optional_attributes_only_resource.id = '1';
             optional_attributes_only_resource.attributes = { optional: 'optional attribute value' };
@@ -51,6 +51,7 @@ class HttpHandlerMock implements HttpHandler {
 
             return test_response_subject.asObservable();
         } else {
+            let test_response_subject = new BehaviorSubject(new HttpResponse());
             let test_resource = new TestResource();
             test_resource.type = 'test_resources';
             test_resource.id = '1';
@@ -99,11 +100,18 @@ describe('core methods', () => {
     });
 
     it(`when requesting a resource with optional attributes, the incoming attributes should be merged with cached ones`, async () => {
+        // TODO: fix library error: cleacCache and clearCacheMemory are not droping localForage allstore instance correctly while testing
+        core = new Core(
+            new JsonapiConfig(),
+            new JsonapiStore(),
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+        );
+        Core.injectedServices.JsonapiStoreService.clearCache();
         let test_service = new TestService();
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
 
         await test_service
-            .get('1', { fields: { test_resources: ['optional'] }})
+            .get('1')
             .toPromise()
             .then(async resource => {
                 expect(resource.type).toBe('test_resources');
