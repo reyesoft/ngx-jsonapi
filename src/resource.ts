@@ -4,6 +4,7 @@ import { Base } from './services/base';
 import { PathBuilder } from './services/path-builder';
 import { Converter } from './services/converter';
 import { IDataObject } from './interfaces/data-object';
+import { IResourcesByType } from './interfaces/resources-by-type';
 import { IAttributes, IParamsResource, ILinks } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { DocumentResource } from './document-resource';
@@ -18,6 +19,7 @@ export class Resource implements ICacheable {
     public type: string = '';
     public attributes: IAttributes = {};
     public relationships: IRelationships = {};
+    public relationships_definitions: IRelationships = undefined;
     public links: ILinks = {};
 
     public is_new = true;
@@ -134,8 +136,9 @@ export class Resource implements ICacheable {
         return ret;
     }
 
-    public fill(data_object: IDataObject): void {
-        let included_resources = Converter.buildIncluded(data_object);
+    public fill(data_object: IDataObject, included_resources?: IResourcesByType): void {
+        
+        included_resources = included_resources || Converter.buildIncluded(data_object);
 
         this.id = data_object.data.id || '';
         this.attributes = data_object.data.attributes || this.attributes;
@@ -151,6 +154,11 @@ export class Resource implements ICacheable {
         // only ids?
         if (Object.keys(this.attributes).length) {
             Converter.getService(this.type).parseFromServer(this.attributes);
+        }
+
+        if (this.relationships_definitions) {
+          data_object.data.relationships = this.relationships;
+          this.relationships = this.relationships_definitions;
         }
 
         new ResourceRelationshipsConverter(

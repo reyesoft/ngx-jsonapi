@@ -46,6 +46,7 @@ export class ResourceRelationshipsConverter {
     }
 
     private __buildRelationshipHasMany(relation_from_value: IDataCollection, relation_alias: string) {
+        
         let relation_type = relation_from_value.data[0] ? relation_from_value.data[0].type : '';
         if (relation_type === '') {
             return;
@@ -70,7 +71,7 @@ export class ResourceRelationshipsConverter {
             return;
         }
 
-        (<DocumentCollection>this.relationships_dest[relation_alias]).fill(relation_from_value);
+        (<DocumentCollection>this.relationships_dest[relation_alias]).fill(relation_from_value, this.included_resources);
     }
 
     private __buildRelationshipHasOne(relation_data_from: IDataObject, relation_alias: string): void {
