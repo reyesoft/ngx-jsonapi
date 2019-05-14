@@ -16,6 +16,7 @@ export class Base {
         ttl: null,
         include: [],
         remotefilter: {},
+        fields: {},
         smartfilter: {},
         sort: [],
         page: new Page(),

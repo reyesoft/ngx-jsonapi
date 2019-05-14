@@ -61,6 +61,13 @@ describe('Path Builder', () => {
         expect(toparams_parent_spy).toHaveBeenCalledWith({ status: 'test_status' });
         expect(addParam_parent_spy).toHaveBeenCalledWith(test_params);
     });
+
+    it('if fields are provided, applyParams should format the requestes attributes arrays and call addParam with the corresponding string', () => {
+        let addParam_parent_spy = spyOn(path_collection_builder, 'addParam').and.callThrough();
+        path_collection_builder.applyParams(testService, { fields: { test: ['test_attribute', 'other_test_attribute'] } });
+        expect(addParam_parent_spy).toHaveBeenCalledWith('fields[test]=test_attribute,other_test_attribute');
+    });
+
     it('if page params are provided, applyParams should call addParam one or two times with the page number and size', () => {
         Core.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
         Core.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
