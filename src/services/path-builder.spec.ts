@@ -53,6 +53,10 @@ describe('Path Builder', () => {
         expect(setInclude_spy).toHaveBeenCalledWith(['include']);
         expect(path_builder.includes).toEqual(['include']);
     });
+    it('applyParams method should add fields to get_params if they are included in the request', () => {
+        path_builder.applyParams(testService, { fields: { test: ['test_attribute'] }});
+        expect((path_builder as any).get_params.indexOf('fields[test]=test_attribute')).toBeGreaterThan(-1);
+    });
     it('appendPath method should add passed value to paths array (only if value is not an empty string)', () => {
         path_builder.paths = [];
         path_builder.appendPath('');

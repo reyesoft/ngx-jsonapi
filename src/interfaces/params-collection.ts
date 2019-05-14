@@ -3,7 +3,6 @@ import { IPage } from './page';
 
 export interface IParamsCollection extends IParams {
     remotefilter?: object;
-    fields?: object;
     smartfilter?: object;
     sort?: Array<string>;
     page?: IPage;

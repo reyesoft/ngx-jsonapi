@@ -15,15 +15,6 @@ export class PathCollectionBuilder extends PathBuilder {
             }
             this.addParam(paramsurl.toparams({ filter: params.remotefilter }));
         }
-
-        if (params.fields) {
-            let fields_param: string = '';
-            for (let resource_type in params.fields) {
-                fields_param += `fields[${resource_type}]=${params.fields[resource_type].join(',')}`;
-            }
-            this.addParam(fields_param);
-        }
-
         if (params.page) {
             if (params.page.number > 1) {
                 this.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number);
