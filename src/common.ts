@@ -36,7 +36,7 @@ export function serviceIsRegistered(target: Object, key: string | symbol, descri
 
         const service_is_registered = Core.me.getResourceService(type);
         if (!service_is_registered) {
-            console.warn(`ERROR: ${type} service has not been injected.`);
+            console.warn(`ERROR: ${type} service has not been registered.`);
 
             return null;
         }
