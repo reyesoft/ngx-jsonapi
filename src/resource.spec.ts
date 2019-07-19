@@ -84,7 +84,7 @@ describe('resource', () => {
         resource.source = 'store';
         resource.cache_last_update = 0;
         resource.relationships = {};
-        resource.meta = { some_data: 'some_data'};
+        resource.meta = { some_data: 'some_data' };
         let response = Object.create(resource);
         let exec_spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
         await resource.save();
@@ -122,7 +122,7 @@ describe('resource', () => {
         resource.relationships = {};
         let response = Object.create(resource);
         let exec_spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
-        await resource.save({meta: {restore: true}});
+        await resource.save({ meta: { restore: true } });
         let expected_resource_in_save = {
             data: {
                 type: 'tests',

@@ -19,7 +19,7 @@ export class Resource implements ICacheable {
     public attributes: IAttributes = {};
     public relationships: IRelationships = {};
     public links: ILinks = {};
-    public meta: {[key: string]: any};
+    public meta: { [key: string]: any };
 
     public is_new = true;
     public is_saving = false;
@@ -128,11 +128,13 @@ export class Resource implements ICacheable {
             content: 'resource'
         };
 
-        if (this.meta) { // resource's meta
+        // resource's meta
+        if (this.meta) {
             ret.data.meta = this.meta;
         }
 
-        if (params.meta) { // top level meta
+        // top level meta
+        if (params.meta) {
             ret.meta = params.meta;
         }
 
@@ -232,7 +234,7 @@ export class Resource implements ICacheable {
     }
 
     public restore<T extends Resource>(params: IParamsResource = {}): Observable<object> {
-        params.meta = {...params.meta, ...{ restore: true }};
+        params.meta = { ...params.meta, ...{ restore: true } };
 
         return this.save(params);
     }
