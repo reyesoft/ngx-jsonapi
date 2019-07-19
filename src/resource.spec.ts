@@ -70,19 +70,19 @@ describe('resource', () => {
     });
 
     it('toObject method should parse the resouce in a new IDataObject', () => {
-        let mocked_service_data: {[key: string]: any} = {parseToServer: false};
+        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
-        new_resource.attributes = {main_attribute: '123456789'};
+        new_resource.attributes = { main_attribute: '123456789' };
         new_resource.relationships = {
             resource_relationship: new DocumentResource()
         };
         let resource_relationship: Resource = new Resource();
         resource_relationship.type = 'resource_relationship';
         resource_relationship.id = '123';
-        resource_relationship.attributes = {first: '1'};
+        resource_relationship.attributes = { first: '1' };
         new_resource.addRelationship(resource_relationship);
         let params: IParamsResource = {
             beforepath: '',
@@ -104,7 +104,7 @@ describe('resource', () => {
     });
     it('(toObject) If the service has a parseToServer method, ir should be applied in toObject method', () => {
         let mocked_service_data = {
-            parseToServer: (attr: {[key: string]: any}): {[key: string]: any} => {
+            parseToServer: (attr: { [key: string]: any }): { [key: string]: any } => {
                 attr.main_attribute = parseInt(attr.main_attribute, 10);
 
                 return attr;
@@ -114,14 +114,14 @@ describe('resource', () => {
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
-        new_resource.attributes = {main_attribute: '123456789'};
+        new_resource.attributes = { main_attribute: '123456789' };
         new_resource.relationships = {
             resource_relationship: new DocumentResource()
         };
         let resource_relationship: Resource = new Resource();
         resource_relationship.type = 'resource_relationship';
         resource_relationship.id = '123';
-        resource_relationship.attributes = {first: '1'};
+        resource_relationship.attributes = { first: '1' };
         new_resource.addRelationship(resource_relationship);
         let params: IParamsResource = {
             beforepath: '',
@@ -134,19 +134,19 @@ describe('resource', () => {
     });
     it('(toObject) If a relationship is not a document resource or document collection instance, a warn should be reaised', () => {
         let console_warn_spy = spyOn(console, 'warn');
-        let mocked_service_data: {[key: string]: any} = {parseToServer: false};
+        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
-        new_resource.attributes = {main_attribute: '123456789'};
+        new_resource.attributes = { main_attribute: '123456789' };
         (new_resource.relationships as any) = {
             resource_relationship: {}
         };
         let resource_relationship: Resource = new Resource();
         resource_relationship.type = 'resource_relationship';
         resource_relationship.id = '123';
-        resource_relationship.attributes = {first: '1'};
+        resource_relationship.attributes = { first: '1' };
         new_resource.addRelationship(resource_relationship);
         let params: IParamsResource = {
             beforepath: '',
@@ -160,19 +160,19 @@ describe('resource', () => {
     });
     it('(toObject) If a relationship is not in the include param, it should not be included in the resulting include field', () => {
         let console_warn_spy = spyOn(console, 'warn');
-        let mocked_service_data: {[key: string]: any} = {parseToServer: false};
+        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
-        new_resource.attributes = {main_attribute: '123456789'};
+        new_resource.attributes = { main_attribute: '123456789' };
         new_resource.relationships = {
             resource_relationship: new DocumentResource()
         };
         let resource_relationship: Resource = new Resource();
         resource_relationship.type = 'resource_relationship';
         resource_relationship.id = '123';
-        resource_relationship.attributes = {first: '1'};
+        resource_relationship.attributes = { first: '1' };
         new_resource.addRelationship(resource_relationship);
         let params: IParamsResource = {
             beforepath: '',
@@ -186,12 +186,12 @@ describe('resource', () => {
     });
     it('(toObject) If a relationship is empty, it should not be included in the resulting resource realtionships', () => {
         let console_warn_spy = spyOn(console, 'warn');
-        let mocked_service_data: {[key: string]: any} = {parseToServer: false};
+        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
-        new_resource.attributes = {main_attribute: '123456789'};
+        new_resource.attributes = { main_attribute: '123456789' };
         new_resource.relationships = {
             resource_relationship: new DocumentResource()
         };
@@ -207,12 +207,12 @@ describe('resource', () => {
     });
 
     it('(toObject) If a hasMany relationship is empty, it should be removed from the resulting relationships', () => {
-        let mocked_service_data: {[key: string]: any} = {parseToServer: false};
+        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
-        new_resource.attributes = {main_attribute: '123456789'};
+        new_resource.attributes = { main_attribute: '123456789' };
         new_resource.relationships = {
             resource_relationships: new DocumentCollection()
         };
@@ -230,12 +230,12 @@ describe('resource', () => {
     });
 
     it('(toObject) hasMany relationships that are OK should be included in  the resulting relationships', () => {
-        let mocked_service_data: {[key: string]: any} = {parseToServer: false};
+        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
-        new_resource.attributes = {main_attribute: '123456789'};
+        new_resource.attributes = { main_attribute: '123456789' };
         new_resource.relationships = {
             resource_relationships: new DocumentCollection()
         };
@@ -243,7 +243,7 @@ describe('resource', () => {
         let resource_relationship: Resource = new Resource();
         resource_relationship.type = 'resource_relationship';
         resource_relationship.id = '123';
-        resource_relationship.attributes = {first: '1'};
+        resource_relationship.attributes = { first: '1' };
         resource_relationships.data.push(resource_relationship);
         new_resource.relationships.resource_relationships = resource_relationships;
         let params: IParamsResource = {
@@ -277,7 +277,7 @@ describe('resource', () => {
         resource.source = 'store';
         resource.cache_last_update = 0;
         resource.relationships = {};
-        resource.meta = { some_data: 'some_data'};
+        resource.meta = { some_data: 'some_data' };
         let response = Object.create(resource);
         let exec_spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
         await resource.save();
@@ -315,7 +315,7 @@ describe('resource', () => {
         resource.relationships = {};
         let response = Object.create(resource);
         let exec_spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
-        await resource.save({meta: {restore: true}});
+        await resource.save({ meta: { restore: true } });
         let expected_resource_in_save = {
             data: {
                 type: 'tests',
