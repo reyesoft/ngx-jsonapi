@@ -21,6 +21,12 @@ export class CacheStore {
 
                         // include some times is a collection :S
                         let include_promises: Array<Promise<object>> = [];
+
+                        // NOTE: fix to resources stored without relationships
+                        if (include.length > 0 && !resource.relationships) {
+                            resource.relationships = new (resource.getService()).resource().relationships;
+                        }
+
                         for (let resource_alias of include) {
                             this.fillRelationshipFromStore(resource, resource_alias, include_promises);
                         }
