@@ -79,9 +79,7 @@ export class CacheMemory<R extends Resource = Resource> {
 
     public removeResource(id: string): void {
         Base.forEach(this.collections, (value, url) => {
-            value.data.splice(
-                value.data.findIndex(resource => resource.id === id), 1
-            );
+            value.data.splice(value.data.findIndex(resource => resource.id === id), 1);
         });
         this.resources[id].attributes = {}; // just for confirm deletion on view
         // this.resources[id].relationships = {}; // just for confirm deletion on view

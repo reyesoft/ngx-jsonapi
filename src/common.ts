@@ -16,7 +16,7 @@ export function isResource(document: DocumentResource | DocumentCollection): doc
 }
 
 // NOTE: Checks that the service passed to the method is registered (method needs to have service's type or a resource as first arg)
-export function serviceIsRegistered(target: Object, key: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor|null {
+export function serviceIsRegistered(target: Object, key: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor | null {
     const original = descriptor.value;
 
     descriptor.value = function() {

@@ -154,7 +154,7 @@ export class Resource implements ICacheable {
 
         // NOTE: fix if stored resource has no relationships property
         if (!this.relationships) {
-            this.relationships = new (Converter.getService(data_object.data.type).resource)().relationships;
+            this.relationships = new (Converter.getService(data_object.data.type)).resource().relationships;
         }
 
         this.is_new = false;
