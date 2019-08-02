@@ -1,4 +1,5 @@
 import { Core } from './core';
+import { IResourcesByType } from './interfaces/resources-by-type';
 import { Service } from './service';
 import { Base } from './services/base';
 import { PathBuilder } from './services/path-builder';
@@ -128,13 +129,13 @@ export class Resource implements ICacheable {
             content: 'resource'
         };
 
+        // resource's meta
         if (this.meta) {
-            // resource's meta
             ret.data.meta = this.meta;
         }
 
+        // top level meta
         if (params.meta) {
-            // top level meta
             ret.meta = params.meta;
         }
 
@@ -145,11 +146,19 @@ export class Resource implements ICacheable {
         return ret;
     }
 
-    public fill(data_object: IDataObject): void {
-        let included_resources = Converter.buildIncluded(data_object);
+    public fill(data_object: IDataObject, included_resources?: IResourcesByType): void {
+        included_resources = included_resources || Converter.buildIncluded(data_object);
 
         this.id = data_object.data.id || '';
-        this.attributes = data_object.data.attributes || this.attributes;
+
+        // WARNING: leaving previous line for a tiem because this can produce undesired behavior
+        // this.attributes = data_object.data.attributes || this.attributes;
+        this.attributes = { ...this.attributes || {}, ...data_object.data.attributes };
+
+        // NOTE: fix if stored resource has no relationships property
+        if (!this.relationships) {
+            this.relationships = new (Converter.getService(data_object.data.type)).resource().relationships;
+        }
 
         this.is_new = false;
         let service = Converter.getService(data_object.data.type);

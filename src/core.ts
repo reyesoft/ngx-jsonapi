@@ -1,4 +1,6 @@
 import { Injectable, Optional, isDevMode } from '@angular/core';
+import { serviceIsRegistered } from './common';
+import { PathBuilder } from './services/path-builder';
 import { Service } from './service';
 import { Resource } from './resource';
 import { JsonapiConfig } from './jsonapi-config';
@@ -84,6 +86,24 @@ export class Core {
 
     public getResourceService(type: string): Service {
         return this.resourceServices[type];
+    }
+
+    @serviceIsRegistered
+    public static removeCachedResource(resource_type: string, resource_id: string): void {
+        Core.me.getResourceService(resource_type).cachememory.removeResource(resource_id);
+    }
+
+    @serviceIsRegistered
+    public static setCachedResource(resource: Resource): void {
+        Core.me.getResourceService(resource.type).cachememory.setResource(resource);
+    }
+
+    @serviceIsRegistered
+    public static deprecateCachedCollections(type: string): void {
+        let service = Core.me.getResourceService(type);
+        let path = new PathBuilder();
+        path.applyParams(service);
+        service.cachememory.deprecateCollections(path.getForCache());
     }
 
     public refreshLoadings(factor: number): void {

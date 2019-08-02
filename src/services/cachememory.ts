@@ -67,17 +67,19 @@ export class CacheMemory<R extends Resource = Resource> {
         this.resources[resource.id].lastupdate = update_lastupdate ? Date.now() : 0;
     }
 
-    public deprecateCollections(path_start_with: string): boolean {
-        Base.forEach(this.collections_lastupdate, (lastupdate: number, key: string) => {
-            this.collections_lastupdate[key] = 0;
-        });
+    public deprecateCollections(path_includes: string = ''): boolean {
+        for (let collection_key in this.collections_lastupdate) {
+            if (collection_key.includes(path_includes)) {
+                this.collections_lastupdate[collection_key] = 0;
+            }
+        }
 
         return true;
     }
 
     public removeResource(id: string): void {
         Base.forEach(this.collections, (value, url) => {
-            delete value[id];
+            value.data.splice(value.data.findIndex(resource => resource.id === id), 1);
         });
         this.resources[id].attributes = {}; // just for confirm deletion on view
         // this.resources[id].relationships = {}; // just for confirm deletion on view

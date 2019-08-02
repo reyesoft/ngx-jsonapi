@@ -16,6 +16,13 @@ export class PathBuilder {
         if (params.include) {
             this.setInclude(params.include);
         }
+        if (params.fields) {
+            let fields_param: string = '';
+            for (let resource_type in params.fields) {
+                fields_param += `fields[${resource_type}]=${params.fields[resource_type].join(',')}`;
+            }
+            this.get_params.push(fields_param);
+        }
     }
 
     public appendPath(value: string) {
