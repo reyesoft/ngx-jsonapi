@@ -60,7 +60,6 @@ class HttpHandlerMock implements HttpHandler {
 
             return test_response_subject.asObservable();
         }
-
     }
 }
 
@@ -79,7 +78,7 @@ describe('core methods', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
 
         await test_service
-            .get('1', { fields: { test_resources: ['optional'] }})
+            .get('1', { fields: { test_resources: ['optional'] } })
             .toPromise()
             .then(resource => {
                 expect(resource.type).toBe('test_resources');
@@ -123,13 +122,9 @@ describe('core methods', () => {
                     body: null,
                     headers: expect.any(Object)
                 };
-                expect(http_request_spy).toHaveBeenCalledWith(
-                    'get',
-                    'http://yourdomain/api/v1/test_resources/1',
-                    request
-                );
+                expect(http_request_spy).toHaveBeenCalledWith('get', 'http://yourdomain/api/v1/test_resources/1', request);
                 await test_service
-                    .get('1', { fields: { test_resources: ['optional'] }})
+                    .get('1', { fields: { test_resources: ['optional'] } })
                     .toPromise()
                     .then(resource_with_optional_attribute => {
                         expect(resource_with_optional_attribute.type).toBe('test_resources');

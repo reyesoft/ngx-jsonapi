@@ -153,7 +153,7 @@ export class Resource implements ICacheable {
 
         // WARNING: leaving previous line for a tiem because this can produce undesired behavior
         // this.attributes = data_object.data.attributes || this.attributes;
-        this.attributes = { ...this.attributes || {}, ...data_object.data.attributes };
+        this.attributes = { ...(this.attributes || {}), ...data_object.data.attributes };
 
         // NOTE: fix if stored resource has no relationships property
         if (!this.relationships) {
