@@ -59,6 +59,7 @@ export class CacheStore {
 
     public setResource(resource: Resource) {
         Core.injectedServices.JsonapiStoreService.saveResource(resource.type, resource.id, resource.toObject().data);
+        resource.cache_last_update = Date.now();
     }
 
     public setCollection(url: string, collection: DocumentCollection, include: Array<string>): void {
@@ -85,6 +86,9 @@ export class CacheStore {
 
         tmp.page = collection.page;
         Core.injectedServices.JsonapiStoreService.saveCollection(url, <IDataCollection>tmp);
+
+        // TODO: WORKING new collections don't have cache last update, so it's set here
+        collection.cache_last_update = collection.cache_last_update || Date.now();
 
         Base.forEach(resources_for_save, resource_for_save => {
             if (!('is_new' in resource_for_save)) {

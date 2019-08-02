@@ -18,6 +18,7 @@ export class Service<R extends Resource = Resource> {
     public cachestore: CacheStore;
     public type: string;
     public resource = Resource;
+    public collections_ttl: number;
     protected path: string; // without slashes
 
     /*
@@ -111,7 +112,7 @@ export class Service<R extends Resource = Resource> {
             success => {
                 resource.fill(<IDataObject>success);
                 resource.is_loading = false;
-                this.getService().cachememory.setResource(resource);
+                this.getService().cachememory.setResource(resource, true);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
                 }
@@ -204,8 +205,11 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
+        // if ttl is not defined inthe colleciton, use the service ttl
+        temporary_collection.ttl = temporary_collection.ttl || this.getService().collections_ttl;
+
         // when fields is set, get resource form server
-        if (isLive(temporary_collection, params.ttl) && !params.fields) {
+        if (temporary_collection.ttl > 0 && isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
             temporary_collection.source = 'memory';
             subject.next(temporary_collection);
             setTimeout(() => subject.complete(), 0);
@@ -223,7 +227,7 @@ export class Service<R extends Resource = Resource> {
                         this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
 
                         // when fields is set, get resource form server
-                        if (isLive(temporary_collection, params.ttl) && !params.fields) {
+                        if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
                             temporary_collection.is_loading = false;
                             subject.next(temporary_collection);
                             subject.complete();

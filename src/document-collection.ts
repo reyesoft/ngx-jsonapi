@@ -8,6 +8,7 @@ import { IDataCollection } from './interfaces/data-collection';
 export class DocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
     public data: Array<R> = [];
     public page = new Page();
+    public ttl = 0;
 
     public trackBy(iterated_resource: Resource): string {
         return iterated_resource.id;
