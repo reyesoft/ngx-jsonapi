@@ -28,7 +28,7 @@ export class Resource implements ICacheable {
     public source: 'new' | 'store' = 'new';
     public cache_last_update = 0;
     public lastupdate: number;
-    public ttl: 0;
+    public ttl = 0;
 
     public reset(): void {
         this.id = '';
