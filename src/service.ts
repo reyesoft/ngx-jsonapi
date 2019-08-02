@@ -77,7 +77,8 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<R>(resource);
 
-        if (isLive(resource, params.ttl)) {
+        // when fields is set, get resource form server
+        if (isLive(resource, params.ttl) && !params.fields) {
             subject.complete();
             resource.is_loading = false;
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -85,7 +86,8 @@ export class Service<R extends Resource = Resource> {
             this.getService()
                 .cachestore.getResource(resource, params.include)
                 .then(() => {
-                    if (!isLive(resource, params.ttl)) {
+                    // when fields is set, get resource form server
+                    if (!isLive(resource, params.ttl) || params.fields) {
                         subject.next(resource);
                         throw new Error('No está viva la caché de localstorage');
                     }
@@ -135,9 +137,12 @@ export class Service<R extends Resource = Resource> {
     public getOrCreateResource(id: string): R {
         let service = Converter.getService(this.type);
         if (service.cachememory && id in service.cachememory.resources) {
+            console.log('id in service.cachememory.resources', service.cachememory.resources);
+
             return <R>service.cachememory.resources[id];
         } else {
             let resource = service.new();
+            console.log('created new resource', resource);
             resource.id = id;
             service.cachememory.setResource(resource, false);
 
@@ -199,7 +204,8 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
-        if (isLive(temporary_collection, params.ttl)) {
+        // when fields is set, get resource form server
+        if (isLive(temporary_collection, params.ttl) && !params.fields) {
             temporary_collection.source = 'memory';
             subject.next(temporary_collection);
             setTimeout(() => subject.complete(), 0);
@@ -216,7 +222,8 @@ export class Service<R extends Resource = Resource> {
                         // when load collection from store, we save collection on memory
                         this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
 
-                        if (isLive(temporary_collection, params.ttl)) {
+                        // when fields is set, get resource form server
+                        if (isLive(temporary_collection, params.ttl) && !params.fields) {
                             temporary_collection.is_loading = false;
                             subject.next(temporary_collection);
                             subject.complete();

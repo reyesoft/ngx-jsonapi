@@ -15,7 +15,6 @@ export class PathCollectionBuilder extends PathBuilder {
             }
             this.addParam(paramsurl.toparams({ filter: params.remotefilter }));
         }
-
         if (params.page) {
             if (params.page.number > 1) {
                 this.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number);

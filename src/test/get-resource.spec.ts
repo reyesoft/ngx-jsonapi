@@ -1,4 +1,4 @@
-// WARNING: this test is not correctly isolated
+// WARNING: this test is not isolated
 
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
 import { DocumentCollection } from 'src/document-collection';
