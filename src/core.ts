@@ -90,12 +90,14 @@ export class Core {
 
     @serviceIsRegistered
     public static removeCachedResource(resource_type: string, resource_id: string): void {
+        // TODO: FE-85 ---> agregar removeResource en cacheStorage
         Core.me.getResourceService(resource_type).cachememory.removeResource(resource_id);
     }
 
     @serviceIsRegistered
     public static setCachedResource(resource: Resource): void {
-        Core.me.getResourceService(resource.type).cachememory.setResource(resource);
+        Core.me.getResourceService(resource.type).cachememory.setResource(resource, true);
+        Core.me.getResourceService(resource.type).cachestore.setResource(resource);
     }
 
     @serviceIsRegistered
