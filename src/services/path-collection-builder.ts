@@ -26,7 +26,7 @@ export class PathCollectionBuilder extends PathBuilder {
         if (params.sort && params.sort.length) {
             this.addParam('sort=' + params.sort.join(','));
         }
-        if (Object.keys(params.fields).length > 0) {
+        if (params.fields && Object.keys(params.fields).length > 0) {
             let fields_param: string = '';
             for (let resource_type in params.fields) {
                 fields_param += `fields[${resource_type}]=${params.fields[resource_type].join(',')}`;
