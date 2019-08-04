@@ -138,7 +138,6 @@ export class Service<R extends Resource = Resource> {
     public getOrCreateResource(id: string): R {
         let service = Converter.getService(this.type);
         if (service.cachememory && id in service.cachememory.resources) {
-
             return <R>service.cachememory.resources[id];
         } else {
             let resource = service.new();

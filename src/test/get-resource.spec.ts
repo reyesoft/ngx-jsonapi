@@ -154,8 +154,7 @@ describe('core methods', () => {
             });
     });
 
-    it(`the resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources`,
-    async () => {
+    it(`the resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources`, async () => {
         let test_resource = new TestResource();
         test_resource.type = 'test_resources';
         test_resource.id = '1';
@@ -212,5 +211,4 @@ describe('core methods', () => {
                 ).toBe('test_name_4');
             });
     });
-
 });
