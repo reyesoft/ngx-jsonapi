@@ -96,6 +96,7 @@ export class ResourceRelationshipsConverter {
 
     private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): Resource {
         if (resource_data_from.type in included_array && resource_data_from.id in included_array[resource_data_from.type]) {
+            console.log('should fill included rels', included_array);
             // it's in included
             let data = included_array[resource_data_from.type][resource_data_from.id];
 

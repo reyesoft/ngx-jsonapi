@@ -17,6 +17,7 @@ export class CacheStore {
             (resolve, reject): void => {
                 Core.injectedServices.JsonapiStoreService.getDataObject(resource.type, resource.id).subscribe(
                     success => {
+                        console.log('will fill resource', success);
                         resource.fill({ data: success });
 
                         // include some times is a collection :S
@@ -248,10 +249,15 @@ export class CacheStore {
     }
 
     private fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
+        console.log('resource_alias --->', resource_alias);
         if (resource_alias.includes('.')) {
             let included_resource_alias_parts = resource_alias.split('.');
             let datadocument = resource.relationships[included_resource_alias_parts[0]].data;
+            console.log('should add nested relationship?', resource_alias);
+            console.log('should add nested relationship?', datadocument);
             if (datadocument instanceof DocumentResource) {
+                console.log('should add nested relationship', resource_alias);
+
                 return this.fillRelationshipFromStore(datadocument.data, included_resource_alias_parts[1], include_promises);
             } else if (datadocument instanceof DocumentCollection) {
                 for (let related_resource of datadocument.data) {
@@ -277,6 +283,7 @@ export class CacheStore {
                 resource.addRelationship(builded_resource, resource_alias);
             }
         }
+        console.log('resource relationships filled', resource);
         // else @todo hasMany??
     }
 }

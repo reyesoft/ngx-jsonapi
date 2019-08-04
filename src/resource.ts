@@ -180,6 +180,9 @@ export class Resource implements ICacheable {
             this.relationships,
             included_resources
         ).buildRelationships();
+        if (this.relationships.test_resource.data && (<Resource>this.relationships.test_resource.data).relationships) {
+            console.log('relationships', (<Resource>this.relationships.test_resource.data).relationships);
+        }
     }
 
     public addRelationship<T extends Resource>(resource: T, type_alias?: string) {

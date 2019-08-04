@@ -4,6 +4,9 @@ import { DocumentResource } from './document-resource';
 import { DocumentCollection } from './document-collection';
 
 export function isLive(cacheable: ICacheable, ttl: number = null): boolean {
+    console.log('is live ?', Date.now() <= cacheable.cache_last_update + ((ttl || cacheable.ttl || 0) * 1000));
+    console.log('is live ?', cacheable.cache_last_update + ((ttl || cacheable.ttl || 0) * 1000) - Date.now());
+
     return Date.now() <= cacheable.cache_last_update + ((ttl || cacheable.ttl || 0) * 1000);
 }
 
