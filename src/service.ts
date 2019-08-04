@@ -79,7 +79,7 @@ export class Service<R extends Resource = Resource> {
         let subject = new BehaviorSubject<R>(resource);
 
         // when fields is set, get resource form server
-        if (isLive(resource, params.ttl) && !params.fields) {
+        if (isLive(resource, params.ttl) && Object.keys(params.fields).length === 0) {
             subject.complete();
             resource.is_loading = false;
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -88,7 +88,7 @@ export class Service<R extends Resource = Resource> {
                 .cachestore.getResource(resource, params.include)
                 .then(() => {
                     // when fields is set, get resource form server
-                    if (!isLive(resource, params.ttl) || params.fields) {
+                    if (!isLive(resource, params.ttl) || Object.keys(params.fields).length > 0) {
                         subject.next(resource);
                         throw new Error('No está viva la caché de localstorage');
                     }

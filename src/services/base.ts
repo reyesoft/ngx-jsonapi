@@ -8,6 +8,7 @@ export class Base {
         beforepath: '',
         ttl: null,
         include: [],
+        fields: {},
         id: ''
     };
 
