@@ -73,7 +73,13 @@ export class Service<R extends Resource = Resource> {
         path.appendPath(id);
 
         // CACHEMEMORY
-        let resource = this.getOrCreateResource(id);
+        // NOTE: this if is a fix to resources with included requests
+        let resource: R;
+        if (path.includes.length === 0) {
+            resource = this.getOrCreateResource(id);
+        } else {
+            resource = this.createResource(id);
+        }
         resource.is_loading = true;
 
         let subject = new BehaviorSubject<R>(resource);
@@ -146,6 +152,15 @@ export class Service<R extends Resource = Resource> {
 
             return <R>resource;
         }
+    }
+
+    public createResource(id: string): R {
+        let service = Converter.getService(this.type);
+        let resource = new service.resource();
+        resource.id = id;
+        service.cachememory.setResource(resource, false);
+
+        return <R>resource;
     }
 
     public clearCacheMemory(): boolean {

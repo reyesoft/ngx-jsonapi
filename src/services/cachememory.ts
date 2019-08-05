@@ -99,6 +99,8 @@ export class CacheMemory<R extends Resource = Resource> {
 
         destination.attributes = source.attributes;
 
+        destination.relationships = destination.relationships || source.relationships;
+
         // remove relationships on destination resource
         for (let type_alias in destination.relationships) {
             // problem with no declared services
