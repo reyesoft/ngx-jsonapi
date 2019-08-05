@@ -86,8 +86,10 @@ export class Service<R extends Resource = Resource> {
 
         // when fields is set, get resource form server
         if (isLive(resource, params.ttl) && Object.keys(params.fields).length === 0) {
-            subject.complete();
-            resource.is_loading = false;
+            setTimeout(() => {
+                resource.is_loading = false;
+                subject.complete();
+            });
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
             this.getService()
