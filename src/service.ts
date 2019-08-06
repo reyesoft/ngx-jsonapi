@@ -77,9 +77,11 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<R>(resource);
 
+        subject.next(resource);
+
         if (isLive(resource, params.ttl)) {
-            subject.complete();
             resource.is_loading = false;
+            subject.complete();
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // CACHESTORE
             this.getService()
@@ -99,8 +101,6 @@ export class Service<R extends Resource = Resource> {
         } else {
             this.getGetFromServer(path, resource, subject);
         }
-        subject.next(resource);
-
         return subject.asObservable();
     }
 
