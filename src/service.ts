@@ -223,7 +223,7 @@ export class Service<R extends Resource = Resource> {
         temporary_collection.ttl = temporary_collection.ttl || this.getService().collections_ttl;
 
         // when fields is set, get resource form server
-        if (temporary_collection.ttl > 0 && isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
+        if ((params.ttl || temporary_collection.ttl) > 0 && isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
             temporary_collection.source = 'memory';
             subject.next(temporary_collection);
             setTimeout(() => subject.complete(), 0);

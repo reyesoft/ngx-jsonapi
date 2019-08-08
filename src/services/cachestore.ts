@@ -121,9 +121,11 @@ export class CacheStore {
                 // build collection from store and resources from memory
                 if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
                     collection.source = 'store'; // collection from storeservice, resources from memory
+                    collection.builded = true;
+                    collection.is_loading = false;
                     collection.cache_last_update = data_collection._lastupdate_time;
                     subject.next(collection);
-                    subject.complete();
+                    setTimeout(() => subject.complete());
 
                     return;
                 }
@@ -138,6 +140,8 @@ export class CacheStore {
                         }
                         collection.source = 'store'; // collection and resources from storeservice
                         collection.cache_last_update = data_collection._lastupdate_time;
+                        collection.builded = true;
+                        collection.is_loading = false;
                         subject.next(collection);
                         setTimeout(() => subject.complete());
                     })
@@ -154,6 +158,7 @@ export class CacheStore {
         for (let dataresource of dataresources) {
             let resource = this.getResourceFromMemory(dataresource);
             if (resource.is_new) {
+                console.log('here???');
                 all_ok = false;
                 break;
             }
@@ -276,7 +281,10 @@ export class CacheStore {
                 }
                 resource.addRelationship(builded_resource, resource_alias);
             }
+        } else {
+            for (let related_resource of (<DocumentCollection>resource.relationships[resource_alias]).data) {
+                this.fillRelationshipFromStore(related_resource, resource_alias, include_promises);
+            }
         }
-        // else @todo hasMany??
     }
 }
