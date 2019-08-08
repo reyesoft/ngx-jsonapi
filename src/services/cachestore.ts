@@ -158,7 +158,6 @@ export class CacheStore {
         for (let dataresource of dataresources) {
             let resource = this.getResourceFromMemory(dataresource);
             if (resource.is_new) {
-                console.log('here???');
                 all_ok = false;
                 break;
             }
