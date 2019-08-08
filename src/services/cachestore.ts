@@ -59,6 +59,7 @@ export class CacheStore {
 
     public setResource(resource: Resource) {
         Core.injectedServices.JsonapiStoreService.saveResource(resource.type, resource.id, resource.toObject().data);
+        resource.cache_last_update = Date.now();
     }
 
     public setCollection(url: string, collection: DocumentCollection, include: Array<string>): void {
@@ -85,6 +86,9 @@ export class CacheStore {
 
         tmp.page = collection.page;
         Core.injectedServices.JsonapiStoreService.saveCollection(url, <IDataCollection>tmp);
+
+        // TODO: WORKING new collections don't have cache last update, so it's set here
+        collection.cache_last_update = collection.cache_last_update || Date.now();
 
         Base.forEach(resources_for_save, resource_for_save => {
             if (!('is_new' in resource_for_save)) {
@@ -117,9 +121,11 @@ export class CacheStore {
                 // build collection from store and resources from memory
                 if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
                     collection.source = 'store'; // collection from storeservice, resources from memory
+                    collection.builded = true;
+                    collection.is_loading = false;
                     collection.cache_last_update = data_collection._lastupdate_time;
                     subject.next(collection);
-                    subject.complete();
+                    setTimeout(() => subject.complete());
 
                     return;
                 }
@@ -134,6 +140,8 @@ export class CacheStore {
                         }
                         collection.source = 'store'; // collection and resources from storeservice
                         collection.cache_last_update = data_collection._lastupdate_time;
+                        collection.builded = true;
+                        collection.is_loading = false;
                         subject.next(collection);
                         setTimeout(() => subject.complete());
                     })
@@ -272,7 +280,10 @@ export class CacheStore {
                 }
                 resource.addRelationship(builded_resource, resource_alias);
             }
+        } else {
+            for (let related_resource of (<DocumentCollection>resource.relationships[resource_alias]).data) {
+                this.fillRelationshipFromStore(related_resource, resource_alias, include_promises);
+            }
         }
-        // else @todo hasMany??
     }
 }

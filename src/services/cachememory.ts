@@ -38,11 +38,12 @@ export class CacheMemory<R extends Resource = Resource> {
         for (let i = 0; i < collection.data.length; i++) {
             let resource = collection.data[i];
             // this.collections[url].data.push(resource);
-            this.setResource(resource);
+            this.setResource(resource, true);
         }
         this.collections[url].data = collection.data;
         this.collections[url].page = collection.page;
-        this.collections_lastupdate[url] = Date.now();
+        // this.collections_lastupdate[url] = Date.now();
+        this.collections_lastupdate[url] = collection.cache_last_update;
     }
 
     public getOrCreateResource(type: string, id: string): Resource {
@@ -97,6 +98,8 @@ export class CacheMemory<R extends Resource = Resource> {
         let destination = this.resources[source.id];
 
         destination.attributes = source.attributes;
+
+        destination.relationships = destination.relationships || source.relationships;
 
         // remove relationships on destination resource
         for (let type_alias in destination.relationships) {
