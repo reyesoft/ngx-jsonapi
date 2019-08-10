@@ -91,11 +91,17 @@ export class Core {
     @serviceIsRegistered
     public static removeCachedResource(resource_type: string, resource_id: string): void {
         Core.me.getResourceService(resource_type).cachememory.removeResource(resource_id);
+        if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+            // TODO: FE-85 ---> agregar removeResource en cacheStorage
+        }
     }
 
     @serviceIsRegistered
     public static setCachedResource(resource: Resource): void {
-        Core.me.getResourceService(resource.type).cachememory.setResource(resource);
+        Core.me.getResourceService(resource.type).cachememory.setResource(resource, true);
+        if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+            Core.me.getResourceService(resource.type).cachestore.setResource(resource);
+        }
     }
 
     @serviceIsRegistered
@@ -104,6 +110,9 @@ export class Core {
         let path = new PathBuilder();
         path.applyParams(service);
         service.cachememory.deprecateCollections(path.getForCache());
+        if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+            service.cachestore.deprecateCollections(path.getForCache());
+        }
     }
 
     public refreshLoadings(factor: number): void {

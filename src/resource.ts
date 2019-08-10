@@ -28,6 +28,7 @@ export class Resource implements ICacheable {
     public source: 'new' | 'store' = 'new';
     public cache_last_update = 0;
     public lastupdate: number;
+    public ttl = 0;
 
     public reset(): void {
         this.id = '';
@@ -153,7 +154,7 @@ export class Resource implements ICacheable {
 
         // WARNING: leaving previous line for a tiem because this can produce undesired behavior
         // this.attributes = data_object.data.attributes || this.attributes;
-        this.attributes = { ...this.attributes || {}, ...data_object.data.attributes };
+        this.attributes = { ...(this.attributes || {}), ...data_object.data.attributes };
 
         // NOTE: fix if stored resource has no relationships property
         if (!this.relationships) {
