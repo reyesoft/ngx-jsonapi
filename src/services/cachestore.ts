@@ -70,6 +70,10 @@ export class CacheStore {
             tmp.data.push({ id: resource.id, type: resource.type });
 
             for (let resource_type_alias of include) {
+                // TODO: FE-92 ---> improve null has-one relatioships checks
+                if (resource.relationships[resource_type_alias].data === null) {
+                    continue;
+                }
                 if ('id' in resource.relationships[resource_type_alias].data) {
                     // hasOne
                     let ress = <Resource>resource.relationships[resource_type_alias].data;
@@ -264,6 +268,11 @@ export class CacheStore {
 
                 return;
             }
+        }
+
+        // TODO: FE-92 ---> improve null has-one relatioships checks
+        if (resource.relationships[resource_alias].data == null) {
+            return;
         }
 
         if (resource.relationships[resource_alias] instanceof DocumentResource) {

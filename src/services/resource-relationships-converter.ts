@@ -31,6 +31,13 @@ export class ResourceRelationshipsConverter {
         for (const relation_alias in this.relationships_from) {
             let relation_from_value: IDataCollection & IDataObject = this.relationships_from[relation_alias];
 
+            if (relation_from_value.data === null) {
+                // TODO: FE-92 --- check and improve conditions when building has-one relationships
+                this.relationships_dest[relation_alias].data = null;
+                this.relationships_dest[relation_alias].builded = true;
+                this.relationships_dest[relation_alias].is_loading = false;
+            }
+
             if (!relation_from_value.data) {
                 continue;
             }
@@ -79,6 +86,11 @@ export class ResourceRelationshipsConverter {
             this.relationships_dest[relation_alias].data = [];
 
             return;
+        }
+
+        // TODO: FE-92 --- this.is a hotfix... check and improve conditions when building has-one relationships
+        if (!this.relationships_dest[relation_alias].data) {
+            this.relationships_dest[relation_alias].data = new Resource();
         }
 
         if (relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_alias].data).id) {

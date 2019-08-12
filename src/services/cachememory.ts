@@ -132,6 +132,15 @@ export class CacheMemory<R extends Resource = Resource> {
                 continue;
             }
 
+            if (source.relationships[type_alias].data === null) {
+                // TODO: FE-92 --- check and improve conditions when building has-one relationships
+                destination.relationships[type_alias].data = null;
+                destination.relationships[type_alias].builded = true;
+                destination.relationships[type_alias].is_loading = false;
+
+                continue;
+            }
+
             if ('id' in source.relationships[type_alias].data) {
                 destination.addRelationship(<Resource>source.relationships[type_alias].data, type_alias);
             } else {
