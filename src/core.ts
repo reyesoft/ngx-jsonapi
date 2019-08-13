@@ -93,6 +93,7 @@ export class Core {
         Core.me.getResourceService(resource_type).cachememory.removeResource(resource_id);
         if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // TODO: FE-85 ---> agregar removeResource en cacheStorage
+            Core.me.getResourceService(resource_type).cachestore.removeResource(resource_id);
         }
     }
 
