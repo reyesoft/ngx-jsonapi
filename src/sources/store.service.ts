@@ -73,38 +73,33 @@ export class StoreService /* implements IStoreService */ {
     }
 
     public deprecateObjectsWithKey(key_start_with: string) {
-        this.allstore.getItems().then(
-            result => {
-                for (let saved_resource_key in result) {
-                    if (saved_resource_key.startsWith(key_start_with)) {
-                        // key of stored object starts with key_start_with
-                        result[saved_resource_key]._lastupdate_time = 0;
-                        this.allstore.setItem(saved_resource_key, result[saved_resource_key]);
-                    }
+        this.allstore.getItems().then(result => {
+            for (let saved_resource_key in result) {
+                if (saved_resource_key.startsWith(key_start_with)) {
+                    // key of stored object starts with key_start_with
+                    result[saved_resource_key]._lastupdate_time = 0;
+                    this.allstore.setItem(saved_resource_key, result[saved_resource_key]);
                 }
             }
-        );
+        });
     }
 
     public removeObjectsWithKey(key_start_with: string) {
         this.allstore.removeItem(key_start_with);
-        this.allstore.getItems().then(
-            result => {
-                for (let saved_resource_key in result) {
-                    let resource_id = saved_resource_key.split('.')[-1];
-                    if (
-                        Array.isArray(result[saved_resource_key].data)
-                        && result[saved_resource_key].data.find(resource => resource.id === resource_id)
-                    ) {
-                        result[saved_resource_key].data
-                            .splice(
-                                result[saved_resource_key].data.findIndex(resource => resource.id === resource_id),
-                                1
-                            );
-                    }
+        this.allstore.getItems().then(result => {
+            for (let saved_resource_key in result) {
+                let resource_id = saved_resource_key.split('.')[-1];
+                if (
+                    Array.isArray(result[saved_resource_key].data) &&
+                    result[saved_resource_key].data.find(resource => resource.id === resource_id)
+                ) {
+                    result[saved_resource_key].data.splice(
+                        result[saved_resource_key].data.findIndex(resource => resource.id === resource_id),
+                        1
+                    );
                 }
             }
-        );
+        });
     }
 
     private checkIfIsTimeToClean() {

@@ -23,30 +23,22 @@ describe('Store service', () => {
     });
 
     it('deprecateObjectsWithKey should set saved resources lastupdate time to 0', async () => {
-        await (store_service as any).allstore.setItem('0', {_lastupdate_time: 123456}).then(
-            item => {
-                expect(item._lastupdate_time).toBe(123456);
-            }
-        );
+        await (store_service as any).allstore.setItem('0', { _lastupdate_time: 123456 }).then(item => {
+            expect(item._lastupdate_time).toBe(123456);
+        });
         await store_service.deprecateObjectsWithKey('0');
-        await (store_service as any).allstore.getItems('0').then(
-            item => {
-                expect(item._lastupdate_time).toBeFalsy();
-            }
-        );
+        await (store_service as any).allstore.getItems('0').then(item => {
+            expect(item._lastupdate_time).toBeFalsy();
+        });
     });
 
     it('removeObjectsWithKey should remove resources with the passed id from indexeddb', async () => {
-        await (store_service as any).allstore.setItem('0', {_lastupdate_time: 123456}).then(
-            item => {
-                expect(item).toBeTruthy();
-            }
-        );
+        await (store_service as any).allstore.setItem('0', { _lastupdate_time: 123456 }).then(item => {
+            expect(item).toBeTruthy();
+        });
         await store_service.removeObjectsWithKey('0');
-        await (store_service as any).allstore.getItems('0').then(
-            item => {
-                expect(item[0]).toBeFalsy();
-            }
-        );
+        await (store_service as any).allstore.getItems('0').then(item => {
+            expect(item[0]).toBeFalsy();
+        });
     });
 });
