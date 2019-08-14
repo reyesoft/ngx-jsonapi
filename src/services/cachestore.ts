@@ -111,8 +111,8 @@ export class CacheStore {
         });
     }
 
-    public removeResource(id: string): void {
-        Core.injectedServices.JsonapiStoreService.removeObjectsWithKey(id);
+    public removeResource(id: string, type: string): void {
+        Core.injectedServices.JsonapiStoreService.removeObjectsWithKey(`jsonapi.${type}.${id}`);
     }
 
     public deprecateCollections(path_start_with: string): boolean {
