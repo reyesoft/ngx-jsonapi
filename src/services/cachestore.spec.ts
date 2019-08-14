@@ -29,21 +29,34 @@ export class StoreService {
     public removeObjectsWithKey(some_key) {
         return;
     }
+
+    public deprecateObjectsWithKey(some_key) {
+        return;
+    }
 }
 
 describe('Cachestore test', () => {
-    it('removeResource should call cache store removeObjectsWithKey method with the correct formatted string', async () => {
+    let cachestore: CacheStore;
+    beforeEach(() => {
         (Core.injectedServices as any) = {
             JsonapiStoreService: new StoreService(),
             JsonapiHttp: new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
             rsJsonapiConfig: new JsonapiConfig()
         };
 
-        let cachestore = new CacheStore();
+        cachestore = new CacheStore();
+    });
+    it('removeResource should call cache store removeObjectsWithKey method with the correct formatted string', async () => {
         let removeObjectsWithKey_spy = spyOn(Core.injectedServices.JsonapiStoreService, 'removeObjectsWithKey');
 
         cachestore.removeResource('1', 'resources');
 
         expect(removeObjectsWithKey_spy).toHaveBeenCalledWith('jsonapi.resources.1');
+    });
+
+    it('deprecateCollections should call JsonapiStoreService deprecateObjectsWithKey with the corresponding string', () => {
+        let deprecateObjectsWithKey_spy = spyOn(Core.injectedServices.JsonapiStoreService, 'deprecateObjectsWithKey');
+        cachestore.deprecateCollections('some_string');
+        expect(deprecateObjectsWithKey_spy).toHaveBeenCalledWith('collection.some_string');
     });
 });
