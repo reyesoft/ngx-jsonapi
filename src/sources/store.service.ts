@@ -84,11 +84,12 @@ export class StoreService /* implements IStoreService */ {
         });
     }
 
-    public removeObjectsWithKey(key_start_with: string) {
-        this.allstore.removeItem(key_start_with);
-        this.allstore.getItems().then(result => {
+    public async removeObjectsWithKey(key: string) {
+        this.allstore.removeItem(key);
+        await this.allstore.getItems().then(async result => {
             for (let saved_resource_key in result) {
-                let resource_id = saved_resource_key.split('.')[-1];
+                let resource_id_split = key.split('.');
+                let resource_id = resource_id_split[resource_id_split.length - 1];
                 if (
                     Array.isArray(result[saved_resource_key].data) &&
                     result[saved_resource_key].data.find(resource => resource.id === resource_id)
@@ -97,6 +98,8 @@ export class StoreService /* implements IStoreService */ {
                         result[saved_resource_key].data.findIndex(resource => resource.id === resource_id),
                         1
                     );
+                    await this.allstore.setItem(saved_resource_key, result[saved_resource_key]);
+                    this.allstore.getItems([saved_resource_key]).then(items => { console.log(items); });
                 }
             }
         });
