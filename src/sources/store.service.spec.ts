@@ -15,11 +15,13 @@ describe('Store service', () => {
         TestBed.configureTestingModule({
             providers: [StoreService]
         }).compileComponents();
-    }));
-    it('should create Store service', () => {
         store_service = TestBed.get(StoreService);
+    }));
+
+    it('should create Store service', () => {
         expect(store_service).toBeTruthy();
     });
+
     it('deprecateObjectsWithKey should set saved resources lastupdate time to 0', async () => {
         await (store_service as any).allstore.setItem('0', {_lastupdate_time: 123456}).then(
             item => {
@@ -29,7 +31,7 @@ describe('Store service', () => {
         await store_service.deprecateObjectsWithKey('0');
         await (store_service as any).allstore.getItems('0').then(
             item => {
-                expect(item._lastupdate_time).toBe(0);
+                expect(item._lastupdate_time).toBeFalsy();
             }
         );
     });
@@ -43,15 +45,8 @@ describe('Store service', () => {
         await store_service.removeObjectsWithKey('0');
         await (store_service as any).allstore.getItems('0').then(
             item => {
-                expect(item).toBeFalsy();
+                expect(item[0]).toBeFalsy();
             }
         );
     });
-
-    // it('exec should return an observable with the http request', async () => {
-    //     let response = of(data_object);
-    //     spyOn((service as any).http, 'request').and.returnValue(response);
-    //     let exec_observable = service.exec('/test', 'patch', data_object);
-    //     await exec_observable.subscribe(data => expect(data).toEqual(data_object));
-    // });
 });
