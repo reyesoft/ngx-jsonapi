@@ -112,7 +112,7 @@ export class CacheStore {
     }
 
     public removeResource(id: string): void {
-        Core.injectedServices.JsonapiStoreService.deprecateObjectsWithKey(id);
+        Core.injectedServices.JsonapiStoreService.removeObjectsWithKey(id);
     }
 
     public deprecateCollections(path_start_with: string): boolean {
