@@ -43,7 +43,7 @@ describe('Store service', () => {
     });
 
     it('removeObjectsWithKey should remove elements from collections', async () => {
-        await (store_service as any).allstore.setItem('1', {data: [{id: '0',  _lastupdate_time: 123456 }]}).then(item => {
+        await (store_service as any).allstore.setItem('1', { data: [{ id: '0', _lastupdate_time: 123456 }] }).then(item => {
             expect(item).toBeTruthy();
         });
         await store_service.removeObjectsWithKey('0');

@@ -99,7 +99,9 @@ export class StoreService /* implements IStoreService */ {
                         1
                     );
                     await this.allstore.setItem(saved_resource_key, result[saved_resource_key]);
-                    this.allstore.getItems([saved_resource_key]).then(items => { console.log(items); });
+                    this.allstore.getItems([saved_resource_key]).then(items => {
+                        console.log(items);
+                    });
                 }
             }
         });
