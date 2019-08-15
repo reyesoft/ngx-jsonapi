@@ -28,6 +28,7 @@ export class CacheStore {
                         }
 
                         for (let resource_alias of include) {
+                            console.log('will calll fillRelationshipFromStore');
                             this.fillRelationshipFromStore(resource, resource_alias, include_promises);
                         }
 
@@ -70,6 +71,7 @@ export class CacheStore {
             tmp.data.push({ id: resource.id, type: resource.type });
 
             for (let resource_type_alias of include) {
+                console.log('resource_type_alias --->', resource_type_alias);
                 // TODO: FE-92 ---> improve null has-one relatioships checks
                 if (resource.relationships[resource_type_alias].data === null) {
                     continue;
@@ -275,7 +277,7 @@ export class CacheStore {
         }
 
         // TODO: FE-92 ---> improve null has-one relatioships checks
-        if (resource.relationships[resource_alias].data == null) {
+        if (resource.relationships[resource_alias] === undefined || resource.relationships[resource_alias].data === null) {
             return;
         }
 
