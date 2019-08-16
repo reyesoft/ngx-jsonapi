@@ -259,7 +259,7 @@ export class CacheStore {
         return promise;
     }
 
-    private fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
+    private async fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
         if (resource_alias.includes('.')) {
             let included_resource_alias_parts = resource_alias.split('.');
             let datadocument = resource.relationships[included_resource_alias_parts[0]].data;
@@ -275,7 +275,7 @@ export class CacheStore {
         }
 
         // TODO: FE-92 ---> improve null has-one relatioships checks
-        if (resource.relationships[resource_alias].data == null) {
+        if (resource.relationships[resource_alias].data === null) {
             return;
         }
 
@@ -294,9 +294,11 @@ export class CacheStore {
                 resource.addRelationship(builded_resource, resource_alias);
             }
         } else {
+            let builded_resources: Array<Resource> = [];
             for (let related_resource of (<DocumentCollection>resource.relationships[resource_alias]).data) {
-                this.fillRelationshipFromStore(related_resource, resource_alias, include_promises);
+                await this.getResource(related_resource).then(builded_resource => builded_resources.push(<Resource>builded_resource));
             }
+            resource.addRelationships(builded_resources, resource_alias);
         }
     }
 }
