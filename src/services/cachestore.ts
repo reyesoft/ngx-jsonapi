@@ -111,6 +111,10 @@ export class CacheStore {
         });
     }
 
+    public removeResource(id: string, type: string): void {
+        Core.injectedServices.JsonapiStoreService.removeObjectsWithKey(`jsonapi.${type}.${id}`);
+    }
+
     public deprecateCollections(path_start_with: string): boolean {
         Core.injectedServices.JsonapiStoreService.deprecateObjectsWithKey('collection.' + path_start_with);
 
@@ -271,7 +275,7 @@ export class CacheStore {
         }
 
         // TODO: FE-92 ---> improve null has-one relatioships checks
-        if (resource.relationships[resource_alias].data == null) {
+        if (resource.relationships[resource_alias] === undefined || resource.relationships[resource_alias].data === null) {
             return;
         }
 
