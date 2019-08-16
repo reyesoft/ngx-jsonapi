@@ -1,17 +1,15 @@
 // WARNING: this test is not isolated
 
-import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { DocumentCollection } from 'src/document-collection';
+import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
+import { DocumentCollection } from '../document-collection';
 import { DocumentResource } from '../document-resource';
 import { Resource } from '../resource';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { JsonapiConfig } from '../jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Core } from '../core';
-import { Observable, BehaviorSubject, of as observableOf } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { Service } from '../service';
-import * as localForage from 'localforage';
 
 class TestResource extends Resource {
     public type = 'test_resources';
@@ -65,12 +63,14 @@ class HttpHandlerMock implements HttpHandler {
 
 describe('core methods', () => {
     let core: Core;
-    it('should create core service instance', () => {
+    beforeEach(() => {
+        // TODO: fix library error: cleacCache and clearCacheMemory are not droping localForage allstore instance correctly while testing
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),
             new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
         );
+        Core.injectedServices.JsonapiStoreService.clearCache();
         expect(core).toBeTruthy();
     });
     it(`service's get method should return a stream with the requested resource including the requested attributes (fields)`, async () => {
@@ -99,13 +99,6 @@ describe('core methods', () => {
     });
 
     it(`when requesting a resource with optional attributes, the incoming attributes should be merged with cached ones`, async () => {
-        // TODO: fix library error: cleacCache and clearCacheMemory are not droping localForage allstore instance correctly while testing
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
-        Core.injectedServices.JsonapiStoreService.clearCache();
         let test_service = new TestService();
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
 

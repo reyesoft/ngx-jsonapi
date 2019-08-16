@@ -70,7 +70,7 @@ export class ResourceRelationshipsConverter {
             return;
         }
 
-        (<DocumentCollection>this.relationships_dest[relation_alias]).fill(relation_from_value);
+        (<DocumentCollection>this.relationships_dest[relation_alias]).fill(relation_from_value, this.included_resources);
     }
 
     private __buildRelationshipHasOne(relation_data_from: IDataObject, relation_alias: string): void {
@@ -81,7 +81,8 @@ export class ResourceRelationshipsConverter {
             return;
         }
 
-        if (relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_alias].data).id) {
+        if (!this.relationships_dest[relation_alias].data
+            || relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_alias].data).id) {
             this.relationships_dest[relation_alias].data = new Resource();
         }
 

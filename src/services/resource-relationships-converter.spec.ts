@@ -1,12 +1,11 @@
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
-import { DocumentCollection } from 'src/document-collection';
+import { DocumentCollection } from '../document-collection';
 import { CacheStore } from '../services/cachestore';
 import { CacheMemory } from '../services/cachememory';
 import { Converter } from './converter';
 import { Service } from '../service';
 import { DocumentResource } from '../document-resource';
 import { Resource } from '../resource';
-import { IResourcesByType } from '../interfaces';
 import { IRelationships } from '../interfaces/relationship';
 
 function clone(obj) {
@@ -71,11 +70,12 @@ describe('ResourceRelationshipsConverter', () => {
 
     it('should set builded to true when a hasOne relationsihp is builded', () => {
         spyOn(CacheStore.prototype, 'setResource');
+        spyOn(Converter, 'getService').and.callFake(getService);
         resource_relationships_converter.buildRelationships();
         expect((resource_relationships_converter as any).relationships_dest.resource.builded).toBeTruthy();
     });
 
-    it(`buildRelationships method should add hasMany and hasOne relationships to relationships_dest as appropiapte
+    it(`buildRelationships method should add hasMany and hasOne relationships to relationships_dest as appropriate
         using relationships_from data`, () => {
         // set up spy
         spyOn(Converter, 'getService').and.callFake(getService);

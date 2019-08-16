@@ -1,5 +1,6 @@
 import { Core } from './core';
-import { IResourcesByType } from './interfaces/resources-by-type';
+import { IDataResource } from './interfaces/data-resource';
+import { IResourcesByType } from './interfaces';
 import { Service } from './service';
 import { Base } from './services/base';
 import { PathBuilder } from './services/path-builder';
@@ -67,10 +68,19 @@ export class Resource implements ICacheable {
                     relationships[relation_alias].data.push(reational_object);
 
                     // no se agregó aún a included && se ha pedido incluir con el parms.include
-                    let temporal_id = resource.type + '_' + resource.id;
+                    let temporal_id = `${resource.type}_${resource.id}`;
                     if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relation_alias) !== -1) {
-                        included_ids.push(temporal_id);
-                        included.push(resource.toObject({}).data);
+                        const {
+                            data: data,
+                            included: included_resources
+                        }: { data: IDataResource; included?: Array<any> } = resource.toObject(params);
+
+                        included_ids = [
+                            ...included_ids,
+                            temporal_id,
+                            ...(included_resources || []).map((result: IDataResource) => `${result.type}_${result.id}`)
+                        ];
+                        included = [...included, data, ...(included_resources || [])];
                     }
                 }
             } else {
@@ -102,10 +112,19 @@ export class Resource implements ICacheable {
                 }
 
                 // no se agregó aún a included && se ha pedido incluir con el parms.include
-                let temporal_id = relationship_data.type + '_' + relationship_data.id;
+                let temporal_id = `${relationship_data.type}_${relationship_data.id}`;
                 if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relation_alias) !== -1) {
-                    included_ids.push(temporal_id);
-                    included.push(relationship_data.toObject({}).data);
+                    const {
+                        data: data,
+                        included: included_resources
+                    }: { data: IDataResource; included?: Array<any> } = relationship_data.toObject(params);
+
+                    included_ids = [
+                        ...included_ids,
+                        temporal_id,
+                        ...(included_resources || []).map((result: IDataResource) => `${result.type}_${result.id}`)
+                    ];
+                    included = [...included, data, ...(included_resources || [])];
                 }
             }
         }

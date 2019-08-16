@@ -2,23 +2,28 @@
 import { Core } from '../core';
 import { Resource } from '../resource';
 import { Service } from '../service';
-import { IResourcesByType, IObjectsById } from '../interfaces';
+import { IObjectsById, IResourcesByType } from '../interfaces';
 import { IDataObject } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataResource } from '../interfaces/data-resource';
 import { isDevMode } from '@angular/core';
+import { DocumentResource } from '../document-resource';
+import { DocumentCollection } from '../document-collection';
 
 export class Converter<R extends Resource> {
     /*
     Convert json arrays (like included) to an indexed Resources array by [type][id]
     */
     public static json_array2resources_array_by_type(json_array: Array<IDataResource>): IResourcesByType {
-        let all_resources: IObjectsById<Resource> = {};
-        let resources_by_type: IResourcesByType = {};
+        const all_resources = Converter.json_array2resources_array(json_array, true);
 
-        Converter.json_array2resources_array(json_array, all_resources);
-        for (const key in all_resources) {
-            let resource = all_resources[key];
+        return Converter.resources_by_type(Object.values(all_resources));
+    }
+
+    protected static resources_by_type(resources: Array<Resource>): IResourcesByType {
+        let resources_by_type: IResourcesByType = {};
+        for (const key in resources) {
+            let resource = resources[key];
 
             if (!(resource.type in resources_by_type)) {
                 resources_by_type[resource.type] = {};
@@ -29,10 +34,33 @@ export class Converter<R extends Resource> {
         return resources_by_type;
     }
 
-    public static json2resource(json_resource: IDataResource, instance_relationships): Resource {
+    public static json2resource(json_resource: IDataResource, instance_relationships: boolean): Resource {
         let resource_service = Converter.getService(json_resource.type);
         if (resource_service) {
-            return Converter.procreate(json_resource);
+            const resource = Converter.procreate(json_resource);
+            if (instance_relationships) {
+                for (const relationshipName in resource.relationships) {
+                    if (Array.isArray(resource.relationships[relationshipName].data)) {
+                        const resourceData = (resource.relationships[relationshipName].data as Array<Resource>)
+                            .map(singleResourceData => Converter.procreate(singleResourceData));
+                        const documentCollection = new DocumentCollection();
+                        documentCollection.fill({data: resourceData});
+                        resource.relationships[relationshipName] = documentCollection;
+                    } else {
+                        const resourceData = resource.relationships[relationshipName].data as IDataResource;
+                        if (!resourceData || !resourceData.id || !resourceData.type) {
+                            continue;
+                        }
+
+                        const relationshipResource = Converter.procreate(resourceData);
+                        const documentResource = new DocumentResource();
+                        documentResource.fill({data: relationshipResource});
+                        resource.relationships[relationshipName] = documentResource;
+                    }
+                }
+            }
+
+            return resource;
         } else {
             if (isDevMode()) {
                 console.warn(
@@ -76,8 +104,8 @@ export class Converter<R extends Resource> {
             resource = Converter.getService(data.type).getOrCreateResource(data.id);
         }
 
-        resource.attributes = data.attributes || {};
-        resource.relationships = <{ [key: string]: any }>data.relationships;
+        resource.attributes = { ...(resource.attributes || {}), ...data.attributes };
+        resource.relationships = ({ ...(resource.relationships || {}), ...data.relationships });
         resource.is_new = false;
 
         return resource;
@@ -86,10 +114,17 @@ export class Converter<R extends Resource> {
     /*
     Convert json arrays (like included) to an Resources arrays without [keys]
     */
-    private static json_array2resources_array(json_array: Array<IDataResource>, destination_array: IObjectsById<Resource> = {}): void {
+    private static json_array2resources_array(
+        json_array: Array<IDataResource>,
+        instance_relationships: boolean = false
+    ): IObjectsById<Resource> {
+        let destination_array: IObjectsById<Resource> = {};
+
         for (let data of json_array) {
-            let resource = Converter.json2resource(data, false);
+            let resource = Converter.json2resource(data, instance_relationships);
             destination_array[resource.type + '_' + resource.id] = resource;
         }
+
+        return destination_array;
     }
 }
