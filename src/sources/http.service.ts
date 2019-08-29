@@ -8,9 +8,8 @@ import { IDocumentData } from '../interfaces/document';
 
 @Injectable()
 export class Http {
-
     // NOTE: GET requests are stored in a this object to prevent duplicate requests
-    public get_requests: {[key: string]: Observable<IDocumentData>} = {};
+    public get_requests: { [key: string]: Observable<IDocumentData> } = {};
 
     public constructor(private http: HttpClient, private rsJsonapiConfig: JsonapiConfig) {}
 
@@ -27,14 +26,12 @@ export class Http {
         if (method === 'get') {
             if (!this.get_requests[path]) {
                 console.log('will add reuest to path');
-                let obs = this.http
-                    .request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req)
-                    .pipe(
-                        tap(() => {
-                            this.get_requests[path] = undefined;
-                        }),
-                        share()
-                    );
+                let obs = this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
+                    tap(() => {
+                        this.get_requests[path] = undefined;
+                    }),
+                    share()
+                );
                 this.get_requests[path] = obs;
 
                 return obs;
@@ -43,13 +40,11 @@ export class Http {
             return this.get_requests[path];
         }
 
-        return this.http
-            .request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req)
-            .pipe(
-                tap(() => {
-                    this.get_requests[path] = undefined;
-                }),
-                share()
-            );
+        return this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
+            tap(() => {
+                this.get_requests[path] = undefined;
+            }),
+            share()
+        );
     }
 }
