@@ -25,7 +25,6 @@ export class Http {
         // NOTE: prevent duplicate GET requests
         if (method === 'get') {
             if (!this.get_requests[path]) {
-                console.log('will add reuest to path');
                 let obs = this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
                     tap(() => {
                         this.get_requests[path] = undefined;
