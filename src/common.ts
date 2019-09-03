@@ -4,7 +4,7 @@ import { DocumentResource } from './document-resource';
 import { DocumentCollection } from './document-collection';
 
 export function isLive(cacheable: ICacheable, ttl: number = null): boolean {
-    let ttl_in_seconds = typeof ttl === 'number' ? ttl : (cacheable.ttl || 0);
+    let ttl_in_seconds = typeof ttl === 'number' ? ttl : cacheable.ttl || 0;
 
     return Date.now() <= cacheable.cache_last_update + ttl_in_seconds * 1000;
 }
