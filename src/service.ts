@@ -224,7 +224,7 @@ export class Service<R extends Resource = Resource> {
 
         // when fields is set, get resource form server
         if (
-            (params.ttl || temporary_collection.ttl) > 0 &&
+            (typeof params.ttl === 'number' ? params.ttl : temporary_collection.ttl) > 0 &&
             isLive(temporary_collection, params.ttl) &&
             Object.keys(params.fields).length === 0
         ) {
