@@ -224,10 +224,11 @@ export class Service<R extends Resource = Resource> {
 
         // when fields is set, get resource form server
         if (
-            (params.ttl || temporary_collection.ttl) > 0 &&
+            (typeof params.ttl === 'number' ? params.ttl : temporary_collection.ttl) > 0 &&
             isLive(temporary_collection, params.ttl) &&
             Object.keys(params.fields).length === 0
         ) {
+            console.log('will return from memory', params.ttl);
             temporary_collection.source = 'memory';
             subject.next(temporary_collection);
             setTimeout(() => subject.complete(), 0);
@@ -246,18 +247,22 @@ export class Service<R extends Resource = Resource> {
 
                         // when fields is set, get resource form server
                         if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
+                            console.log('will return from store');
                             temporary_collection.is_loading = false;
                             subject.next(temporary_collection);
                             subject.complete();
                         } else {
+                            console.log('will get from server');
                             this.getAllFromServer(path, params, temporary_collection, subject);
                         }
                     },
                     err => {
+                        console.log('will get from server');
                         this.getAllFromServer(path, params, temporary_collection, subject);
                     }
                 );
         } else {
+            console.log('will get from server');
             this.getAllFromServer(path, params, temporary_collection, subject);
         }
 
