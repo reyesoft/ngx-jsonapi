@@ -31,7 +31,7 @@ export class ResourceRelationshipsConverter {
         for (const relation_alias in this.relationships_from) {
             let relation_from_value: IDataCollection & IDataObject = this.relationships_from[relation_alias];
 
-            if (relation_from_value.data === null) {
+            if (this.relationships_dest[relation_alias] && relation_from_value.data === null) {
                 // TODO: FE-92 --- check and improve conditions when building has-one relationships
                 this.relationships_dest[relation_alias].data = null;
                 this.relationships_dest[relation_alias].builded = true;
@@ -47,7 +47,7 @@ export class ResourceRelationshipsConverter {
             } else if (this.relationships_dest[relation_alias] instanceof DocumentResource) {
                 this.__buildRelationshipHasOne(relation_from_value, relation_alias);
             } else {
-                // console.warn('Relation', relation_alias, 'dont exists');
+                console.warn(`Relation ${relation_alias} doesn't exist`);
             }
         }
     }
