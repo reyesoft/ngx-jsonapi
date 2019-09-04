@@ -275,7 +275,7 @@ export class CacheStore {
         }
 
         // TODO: FE-92 ---> improve null has-one relatioships checks
-        if (resource.relationships[resource_alias].data === null) {
+        if (!resource.relationships[resource_alias] || resource.relationships[resource_alias].data === null) {
             return;
         }
 
