@@ -47,7 +47,7 @@ export class ResourceRelationshipsConverter {
             } else if (this.relationships_dest[relation_alias] instanceof DocumentResource) {
                 this.__buildRelationshipHasOne(relation_from_value, relation_alias);
             } else {
-                console.warn(`Relation ${relation_alias} in doesn't exist`);
+                console.warn(`Relation ${relation_alias} doesn't exist`);
             }
         }
     }
