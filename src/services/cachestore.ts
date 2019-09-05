@@ -282,7 +282,10 @@ export class CacheStore {
         if (resource.relationships[resource_alias] instanceof DocumentResource) {
             // hasOne
             let related_resource = <IDataResource>resource.relationships[resource_alias].data;
-            if (!('attributes' in related_resource)) {
+            if (
+                !('attributes' in related_resource)
+                || (Object.keys(related_resource.attributes).length === 0 && related_resource.attributes.constructor === Object)
+            ) {
                 // no está cargado aún
                 let builded_resource = this.getResourceFromMemory(related_resource);
                 if (builded_resource.is_new) {
