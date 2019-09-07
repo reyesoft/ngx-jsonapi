@@ -24,9 +24,6 @@ export class StoreService /* implements IStoreService */ {
 
     public constructor() {
         this.db = new Dexie('jsonapi_db');
-
-        this.checkIfIsTimeToClean();
-
         this.db.version(1).stores({
             collections: '&key,data',
             elements: '&key,data'
@@ -35,7 +32,24 @@ export class StoreService /* implements IStoreService */ {
             elements: '[type+id],data'
             */
         });
+        this.checkIfIsTimeToClean();
     }
+
+    /**
+     * Maybe is not required. Disabled for now.
+     */
+    /*
+    private async getOpenedDb(): Dexie.Promise<Dexie> {
+        if (this.db.isOpen()) {
+            // return a fake promise, then we dont do a new db.open()
+            return new Promise<Dexie>((resolve): void => {
+                resolve(this.db);
+            });
+        } else {
+            return this.db.open();
+        }
+    }
+    */
 
     public getDataObject(type: 'collection', url: string): Observable<IDataCollection>;
     public getDataObject(type: string, id: string): Observable<IDataResource>;
@@ -52,7 +66,6 @@ export class StoreService /* implements IStoreService */ {
                     .first();
             })
             .then(element => {
-                console.log('then', type + '.' + id_or_url, element);
                 if (element === undefined) {
                     subject.error(null);
                 } else {
