@@ -9,9 +9,7 @@ import { JsonapiConfig } from '../jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Core } from '../core';
 import { Observable, BehaviorSubject, of as observableOf } from 'rxjs';
-import { delay } from 'rxjs/operators';
 import { Service } from '../service';
-import * as localForage from 'localforage';
 
 class TestResource extends Resource {
     public type = 'test_resources';
