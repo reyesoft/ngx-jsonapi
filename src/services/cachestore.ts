@@ -124,6 +124,7 @@ export class CacheStore implements ICache {
         resolve: (value: ICollection) => void,
         reject: () => void
     ) {
+        console.log('request1', url);
         let promise = Core.injectedServices.JsonapiStoreService.getObjet('collection.' + url);
         promise
             .then((success: IDataCollection) => {
@@ -136,10 +137,12 @@ export class CacheStore implements ICache {
 
                     return;
                 }
+                console.log('  request2', url);
 
                 let promise2 = this.fillCollectionWithArrrayAndResourcesOnStore(success, include, collection);
                 promise2
                     .then(() => {
+                        console.log('  request3', url);
                         // just for precaution, we not rewrite server data
                         if (collection.$source !== 'new') {
                             console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#', collection.$source);
