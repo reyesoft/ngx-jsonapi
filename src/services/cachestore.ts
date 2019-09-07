@@ -17,6 +17,7 @@ export class CacheStore {
             (resolve, reject): void => {
                 Core.injectedServices.JsonapiStoreService.getDataObject(resource.type, resource.id).subscribe(
                     success => {
+                        console.log('---> esto viene del stoe: ', success);
                         resource.fill({ data: success });
 
                         // include some times is a collection :S
@@ -31,7 +32,7 @@ export class CacheStore {
                             this.fillRelationshipFromStore(resource, resource_alias, include_promises);
                         }
 
-                        // resource.lastupdate = success._lastupdate_time;
+                        resource.cache_last_update = success._lastupdate_time;
 
                         // no debo esperar a que se resuelvan los include
                         if (include_promises.length === 0) {
@@ -59,7 +60,6 @@ export class CacheStore {
 
     public setResource(resource: Resource) {
         Core.injectedServices.JsonapiStoreService.saveResource(resource.type, resource.id, resource.toObject().data);
-        resource.cache_last_update = Date.now();
     }
 
     public setCollection(url: string, collection: DocumentCollection, include: Array<string>): void {

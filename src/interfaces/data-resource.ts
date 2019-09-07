@@ -8,4 +8,5 @@ export interface IDataResource {
     relationships?: object;
     links?: ILinks;
     meta?: object;
+    _lastupdate_time?: number; // used when come from Store
 }

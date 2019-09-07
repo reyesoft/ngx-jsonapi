@@ -12,6 +12,7 @@ import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDataObject } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection } from './interfaces/data-collection';
+import { debug } from 'util';
 
 export class Service<R extends Resource = Resource> {
     public cachememory: CacheMemory;
@@ -72,14 +73,7 @@ export class Service<R extends Resource = Resource> {
         path.applyParams(this, params);
         path.appendPath(id);
 
-        // CACHEMEMORY
-        // NOTE: this if is a fix to resources with included requests
-        let resource: R;
-        if (path.includes.length === 0) {
-            resource = this.getOrCreateResource(id);
-        } else {
-            resource = this.createResource(id);
-        }
+        let resource: R = this.getOrCreateResource(id);
         resource.is_loading = true;
 
         let subject = new BehaviorSubject<R>(resource);
@@ -96,7 +90,7 @@ export class Service<R extends Resource = Resource> {
                 .cachestore.getResource(resource, params.include)
                 .then(() => {
                     // when fields is set, get resource form server
-                    if (!isLive(resource, params.ttl) || Object.keys(params.fields).length > 0) {
+                    if (!isLive(resource, params.ttl)) {
                         subject.next(resource);
                         throw new Error('No está viva la caché de localstorage');
                     }

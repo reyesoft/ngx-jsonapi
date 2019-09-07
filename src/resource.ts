@@ -26,6 +26,7 @@ export class Resource implements ICacheable {
     public is_saving = false;
     public is_loading = false;
     public source: 'new' | 'store' = 'new';
+    // @todo remove one? or specify a better name of variables
     public cache_last_update = 0;
     public lastupdate: number;
     public ttl = 0;
@@ -171,7 +172,11 @@ export class Resource implements ICacheable {
 
         // only ids?
         if (Object.keys(this.attributes).length) {
-            Converter.getService(this.type).parseFromServer(this.attributes);
+            // @todo remove this when getResourceService ToDo is fixed
+            let srvc = Converter.getService(this.type);
+            if (srvc) {
+                srvc.parseFromServer(this.attributes);
+            }
         }
 
         new ResourceRelationshipsConverter(
