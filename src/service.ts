@@ -85,7 +85,7 @@ export class Service<R extends Resource = Resource> {
         let subject = new BehaviorSubject<R>(resource);
 
         // when fields is set, get resource form server
-        if (isLive(resource, params.ttl) && Object.keys(params.fields).length === 0) {
+        if (isLive(resource, params.ttl)) {
             setTimeout(() => {
                 resource.is_loading = false;
                 subject.complete();
@@ -219,11 +219,9 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
-        // if ttl is not defined inthe colleciton, use the service ttl
-        temporary_collection.ttl = temporary_collection.ttl || this.getService().collections_ttl;
-
         // when fields is set, get resource form server
-        if (temporary_collection.ttl > 0 && isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
+        if (isLive(temporary_collection, params.ttl)) {
+            console.log('memory', params);
             temporary_collection.source = 'memory';
             subject.next(temporary_collection);
             setTimeout(() => subject.complete(), 0);
@@ -241,11 +239,12 @@ export class Service<R extends Resource = Resource> {
                         this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
 
                         // when fields is set, get resource form server
-                        if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
+                        if (isLive(temporary_collection, params.ttl)) {
                             temporary_collection.is_loading = false;
                             subject.next(temporary_collection);
                             subject.complete();
                         } else {
+                            console.log('funciono pero no está viva.', temporary_collection.cache_last_update, params.ttl);
                             this.getAllFromServer(path, params, temporary_collection, subject);
                         }
                     },
