@@ -1,4 +1,4 @@
-import * as localForage from 'localforage';
+import Dexie from 'dexie'; // use example https://jsfiddle.net/pablorsk/vw2efgLc/1/
 import { Base } from '../services/base';
 import { IStoreObject } from '../interfaces';
 import { noop } from 'rxjs/util/noop';
@@ -13,47 +13,51 @@ interface IStoreElement2 {
 }
 
 export class StoreService {
-    private globalstore: LocalForage;
-    private allstore: LocalForage;
+    private db: Dexie;
 
     public constructor() {
-        this.globalstore = localForage.createInstance({
-            name: 'jsonapiglobal'
-        });
-        this.allstore = localForage.createInstance({ name: 'allstore' });
+        this.db = new Dexie('jsonapi_db');
+
         this.checkIfIsTimeToClean();
+
+        this.db.version(1).stores({
+            collections: '&key,data',
+            elements: '&key,data'
+            /*
+            collections: '[type+id],data',
+            elements: '[type+id],data'
+            */
+        });
     }
 
     public async getObjet(key: string): Promise<object> {
-        let deferred: Deferred<object> = new Deferred();
-
-        this.allstore
-            .getItem('jsonapi.' + key)
-            .then(success => {
-                deferred.resolve(success);
+        return this.db
+            .open()
+            .then(async () => {
+                return this.db
+                    .table('elements')
+                    .where({ key: key })
+                    .first();
             })
-            .catch(error => {
-                deferred.reject(error);
+            .then(element => {
+                return element.data;
             });
-
-        return deferred.promise;
-    }
-
-    public async getObjets(keys: string[]): Promise<object> {
-        return this.allstore.getItem('jsonapi.' + keys[0]);
     }
 
     public saveObject(key: string, value: IStoreObject): void {
         value._lastupdate_time = Date.now();
-        this.allstore.setItem('jsonapi.' + key, value);
+
+        this.db.open().then(async () => {
+            return this.db.table('elements').put({ key: key, data: value });
+        });
     }
 
     public clearCache() {
-        this.allstore.clear();
-        this.globalstore.clear();
+        this.db.delete();
     }
 
     public deprecateObjectsWithKey(key_start_with: string) {
+        /*
         this.allstore
             .keys()
             .then(success => {
@@ -71,10 +75,12 @@ export class StoreService {
                 });
             })
             .catch(noop);
+        */
     }
 
     private checkIfIsTimeToClean() {
         // check if is time to check cachestore
+        /*
         this.globalstore
             .getItem('_lastclean_time')
             .then((success: IStoreElement) => {
@@ -91,9 +97,11 @@ export class StoreService {
                     time: Date.now()
                 });
             });
+        */
     }
 
     private checkAndDeleteOldElements() {
+        /*
         this.allstore
             .keys()
             .then(success => {
@@ -112,5 +120,6 @@ export class StoreService {
                 });
             })
             .catch(noop);
+        */
     }
 }

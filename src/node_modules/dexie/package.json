@@ -1,0 +1,108 @@
+{
+  "name": "dexie",
+  "version": "2.0.4",
+  "description": "A Minimalistic Wrapper for IndexedDB",
+  "main": "dist/dexie.js",
+  "module": "dist/dexie.es.js",
+  "jsnext:main": "dist/dexie.es.js",
+  "typings": "dist/dexie.d.ts",
+  "jspm": {
+    "format": "cjs",
+    "ignore": [
+      "src/"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dfahlander/Dexie.js.git"
+  },
+  "keywords": [
+    "indexeddb",
+    "browser",
+    "database"
+  ],
+  "author": "David Fahlander <https://github.com/dfahlander>",
+  "contributors": [
+    "Christopher Hunt <https://github.com/chrahunt>",
+    "Nikolas Poniros <https://github.com/nponiros>",
+    "Anders Ekdahl <https://github.com/andersekdahl>",
+    "Yury Solovyov <https://github.com/YurySolovyov>",
+    "Martin Diphoorn <https://github.com/martindiphoorn>"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/dfahlander/Dexie.js/issues"
+  },
+  "scripts": {
+    "build": "just-build",
+    "watch": "just-build --watch",
+    "test": "npm run build && npm run test:typings && npm run test:unit",
+    "test:unit": "karma start test/karma.conf.js --single-run",
+    "test:typings": "tsc -p test/typings-test/",
+    "test:debug": "karma start test/karma.conf.js --log-level debug"
+  },
+  "just-build": {
+    "default": [
+      "# Build all targets (es5, es6 and test) and minify the default es5 UMD module",
+      "just-build release test"
+    ],
+    "dexie": [
+      "# Build es5 output",
+      "tsc --allowJs -t es5 -m es2015 --outDir tools/tmp/es5/src/ --sourceMap src/Dexie.js [--watch 'Compilation complete.']",
+      "rollup -c tools/build-configs/rollup.config.js",
+      "node tools/replaceVersionAndDate.js dist/dexie.js",
+      "eslint src"
+    ],
+    "release": [
+      "# Build ES5 umd module as well as the es6 module.",
+      "just-build dexie",
+      "# Copy Dexie.d.ts to dist and replace version in it",
+      "node -e \"fs.writeFileSync('dist/dexie.d.ts', fs.readFileSync('src/Dexie.d.ts'))\"",
+      "node tools/replaceVersionAndDate.js dist/dexie.d.ts",
+      "# Minify the default ES5 UMD module",
+      "cd dist",
+      "uglifyjs dexie.js -m -c -o dexie.min.js --source-map dexie.min.js.map  --in-source-map dexie.js.map"
+    ],
+    "dev": [
+      "# Build ES5 module and the tests",
+      "just-build dexie test"
+    ],
+    "gzip": [
+      "# Optionally gzip to find the size of the minified & gzipped version",
+      "gzip dist/dexie.min.js -k -f -9"
+    ],
+    "test": [
+      "# Build the test suite. Typescript transpiles all but not generators...",
+      "tsc --allowJs -t es5 -m es2015 --outDir tools/tmp/es5/test/ --rootDir . --sourceMap test/tests-all.js [--watch 'Compilation complete.']",
+      "rollup -c tools/build-configs/rollup.tests.config.js",
+      "# As a last step, let babel transpile the generators....",
+      "babel tools/tmp/es5/test/bundle.js -o test/bundle.js --plugins transform-regenerator --source-maps"
+    ]
+  },
+  "engines": {
+    "node": ">=6.0"
+  },
+  "homepage": "http://dexie.org",
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-plugin-transform-regenerator": "^6.21.0",
+    "eslint": "^3.7.1",
+    "just-build": "^0.9.16",
+    "karma": "^1.4.0",
+    "karma-browserstack-launcher": "^1.1.1",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-mocha-reporter": "^2.2.2",
+    "karma-qunit": "^1.2.1",
+    "qunit": "^0.7.7",
+    "qunitjs": "^1.23.1",
+    "rollup": "^0.41.4",
+    "rollup-plugin-commonjs": "^7.0.0",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-sourcemaps": "^0.4.1",
+    "serve-static": "^1.11.1",
+    "typescript": "^2.1.4",
+    "uglify-js": "^2.7.5"
+  },
+  "dependencies": {}
+}

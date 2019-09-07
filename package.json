@@ -150,7 +150,7 @@
         "zone.js": "^0.8.12"
     },
     "dependencies": {
-        "localforage": "^1.5.2"
+        "dexie": "^2.0.4"
     },
     "jest": {
         "setupTestFrameworkScriptFile": "<rootDir>/setup-jest.ts",
