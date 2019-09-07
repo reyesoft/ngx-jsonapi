@@ -1,4 +1,3 @@
-import { mapTo } from 'rxjs/operators';
 // import 'localforage-getitems';
 import Dexie from 'dexie';
 import { Base } from '../services/base';
@@ -55,6 +54,7 @@ export class StoreService /* implements IStoreService */ {
     public getDataObject(type: string, id: string): Observable<IDataResource>;
     public getDataObject(type: 'collection' | string, id_or_url: string): Observable<IDataCollection | IDataResource> {
         let subject = new Subject<IDataResource | IDataCollection>();
+        // we use different tables for resources and collections
         const table_name = type === 'collection' ? 'collections' : 'elements';
 
         this.db
@@ -120,7 +120,7 @@ export class StoreService /* implements IStoreService */ {
                         // key of stored object starts with key_start_with
                         this.allstore
                             .getItem(key)
-                            .then((success2: IStoreElement2) => {
+                            .then((success2: IDataCollectionStorage | IDataResourceStorage) => {
                                 success2._lastupdate_time = 0;
                                 this.allstore.setItem(key, success2);
                             })
@@ -163,10 +163,8 @@ export class StoreService /* implements IStoreService */ {
                     // recorremos cada item y vemos si es tiempo de removerlo
                     this.allstore
                         .getItem(key)
-                        .then((success2: IStoreElement2) => {
-                            // es tiempo de removerlo?
+                        .then((success2: IDataCollectionStorage | IDataResourceStorage) => {
                             if (Date.now() >= success2._lastupdate_time + 24 * 3600 * 1000) {
-                                // removemos!!
                                 this.allstore.removeItem(key);
                             }
                         })

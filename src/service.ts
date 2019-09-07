@@ -12,7 +12,6 @@ import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDataObject } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection } from './interfaces/data-collection';
-import { debug } from 'util';
 
 export class Service<R extends Resource = Resource> {
     public cachememory: CacheMemory;
@@ -73,6 +72,7 @@ export class Service<R extends Resource = Resource> {
         path.applyParams(this, params);
         path.appendPath(id);
 
+        // CACHEMEMORY
         let resource: R = this.getOrCreateResource(id);
         resource.is_loading = true;
 

@@ -22,7 +22,7 @@ export class BookComponent {
             let book$ = booksService.get(id, { include: ['author', 'photos'] }).subscribe(
                 book => {
                     this.book = book;
-                    // console.log('success book', this.book);
+                    console.log('success book', this.book);
                 },
                 error => console.log('error books controll', error)
             );
