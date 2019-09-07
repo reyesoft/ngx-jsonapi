@@ -41,12 +41,13 @@ export class StoreService /* implements IStoreService */ {
     public getDataObject(type: string, id: string): Observable<IDataResource>;
     public getDataObject(type: 'collection' | string, id_or_url: string): Observable<IDataCollection | IDataResource> {
         let subject = new Subject<IDataResource | IDataCollection>();
+        const table_name = type === 'collection' ? 'collections' : 'elements';
 
         this.db
             .open()
             .then(async () => {
                 return this.db
-                    .table('elements')
+                    .table(table_name)
                     .where({ key: type + '.' + id_or_url })
                     .first();
             })
@@ -88,7 +89,7 @@ export class StoreService /* implements IStoreService */ {
     public saveCollection(url_or_id: string, value: IDataCollection): void {
         let data_collection_storage: IDataCollectionStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
         this.db.open().then(async () => {
-            return this.db.table('elements').put({ key: 'collection.' + url_or_id, data: data_collection_storage });
+            return this.db.table('collections').put({ key: 'collection.' + url_or_id, data: data_collection_storage });
         });
     }
 

@@ -115,14 +115,11 @@ export class CacheStore {
 
     public fillCollectionFromStore(url: string, include: Array<string>, collection: DocumentCollection): Observable<DocumentCollection> {
         let subject = new Subject<DocumentCollection>();
-        console.warn('fillCollectionWithArrrayAndResourcesOnMemory0');
 
         Core.injectedServices.JsonapiStoreService.getDataObject('collection', url).subscribe(
             (data_collection: IDataCollection) => {
                 // build collection from store and resources from memory
-                console.warn('fillCollectionWithArrrayAndResourcesOnMemory1');
                 if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
-                    console.warn('fillCollectionWithArrrayAndResourcesOnMemory1 BBBBB', data_collection);
                     collection.source = 'store'; // collection from storeservice, resources from memory
                     collection.cache_last_update = data_collection._lastupdate_time;
                     subject.next(collection);
@@ -130,11 +127,9 @@ export class CacheStore {
 
                     return;
                 }
-                console.warn('fillCollectionWithArrrayAndResourcesOnMemory2', data_collection);
 
                 this.fillCollectionWithArrrayAndResourcesOnStore(data_collection, include, collection)
                     .then(() => {
-                        console.warn('fillCollectionWithArrrayAndResourcesOnMemory3');
                         // just for precaution, we not rewrite server data
                         if (collection.source !== 'new') {
                             console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#', collection);
