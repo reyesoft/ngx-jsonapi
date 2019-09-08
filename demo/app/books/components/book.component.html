@@ -1,5 +1,5 @@
-<h3>Book</h3>
 <h3>Book #{{ book.id }}</h3>
+<demo-resource-info [resource]="book"></demo-resource-info>
 <ul>
     <li>Title: <strong>{{ book.attributes.title }}</strong></li>
     <li>Date Published: <strong>{{ book.attributes.date_published | date }}</strong></li>

@@ -36,10 +36,11 @@ export class Service<R extends Resource = Resource> {
         return Core.me.registerService<R>(this);
     }
 
+    /**
+     * @deprecated since 1.2.0
+     */
     public newResource(): R {
-        let resource = new this.resource();
-
-        return <R>resource;
+        return this.new();
     }
 
     public newCollection(): DocumentCollection<R> {
@@ -47,13 +48,13 @@ export class Service<R extends Resource = Resource> {
     }
 
     public new(): R {
-        let resource = this.newResource();
+        let resource = new this.resource();
         resource.type = this.type;
         // issue #36: just if service is not registered yet.
         this.getService();
         resource.reset();
 
-        return resource;
+        return <R>resource;
     }
 
     public getPrePath(): string {
@@ -82,6 +83,7 @@ export class Service<R extends Resource = Resource> {
         if (isLive(resource, params.ttl)) {
             setTimeout(() => {
                 resource.is_loading = false;
+                resource.source = 'memory';
                 subject.complete();
             });
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -95,6 +97,7 @@ export class Service<R extends Resource = Resource> {
                         throw new Error('No está viva la caché de localstorage');
                     }
                     resource.is_loading = false;
+                    resource.source = 'store';
                     subject.next(resource);
                     subject.complete();
                 })
@@ -114,6 +117,7 @@ export class Service<R extends Resource = Resource> {
             success => {
                 resource.fill(<IDataObject>success);
                 resource.is_loading = false;
+                resource.source = 'server';
                 this.getService().cachememory.setResource(resource, true);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
@@ -235,10 +239,10 @@ export class Service<R extends Resource = Resource> {
                         // when fields is set, get resource form server
                         if (isLive(temporary_collection, params.ttl)) {
                             temporary_collection.is_loading = false;
+                            temporary_collection.builded = true;
                             subject.next(temporary_collection);
                             subject.complete();
                         } else {
-                            console.log('funciono pero no está viva.', temporary_collection.cache_last_update, params.ttl);
                             this.getAllFromServer(path, params, temporary_collection, subject);
                         }
                     },

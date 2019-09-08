@@ -17,7 +17,6 @@ export class CacheStore {
             (resolve, reject): void => {
                 Core.injectedServices.JsonapiStoreService.getDataObject(resource.type, resource.id).subscribe(
                     success => {
-                        console.log('---> esto viene del stoe: ', success);
                         resource.fill({ data: success });
 
                         // include some times is a collection :S

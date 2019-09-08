@@ -25,7 +25,7 @@ export class Resource implements ICacheable {
     public is_new = true;
     public is_saving = false;
     public is_loading = false;
-    public source: 'new' | 'store' = 'new';
+    public source: 'new' | 'memory' | 'store' | 'server' = 'new';
     // @todo remove one? or specify a better name of variables
     public cache_last_update = 0;
     public lastupdate: number;
