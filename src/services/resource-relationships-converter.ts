@@ -83,6 +83,9 @@ export class ResourceRelationshipsConverter {
 
         if (relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_alias].data).id) {
             this.relationships_dest[relation_alias].data = new Resource();
+            // with this, fromServer dont fill relationship
+            // (<Resource>this.relationships_dest[relation_alias].data).id = relation_data_from.data.id;
+            (<Resource>this.relationships_dest[relation_alias].data).type = relation_data_from.data.type;
         }
 
         if ((<Resource>this.relationships_dest[relation_alias].data).id !== relation_data_from.data.id) {

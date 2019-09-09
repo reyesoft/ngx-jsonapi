@@ -156,7 +156,7 @@ export class Service<R extends Resource = Resource> {
 
     public createResource(id: string): R {
         let service = Converter.getService(this.type);
-        let resource = new service.resource();
+        let resource = service.new();
         resource.id = id;
         service.cachememory.setResource(resource, false);
 
@@ -219,7 +219,6 @@ export class Service<R extends Resource = Resource> {
 
         // when fields is set, get resource form server
         if (isLive(temporary_collection, params.ttl)) {
-            console.log('memory', params);
             temporary_collection.source = 'memory';
             subject.next(temporary_collection);
             setTimeout(() => subject.complete(), 0);

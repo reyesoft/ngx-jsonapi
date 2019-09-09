@@ -182,7 +182,7 @@ export class CacheStore {
                     let cachememory = Converter.getService(dataresource.type).cachememory;
                     resources_by_id[dataresource.id] = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
 
-                    return resources_by_id[dataresource.id].type + '.' + dataresource.id;
+                    return dataresource.type + '.' + dataresource.id;
                 });
 
                 // get resources for collection fill
@@ -259,22 +259,37 @@ export class CacheStore {
                 return;
             }
         }
-
         if (resource.relationships[resource_alias] instanceof DocumentResource) {
             // hasOne
             let related_resource = <IDataResource>resource.relationships[resource_alias].data;
-            if (!('attributes' in related_resource)) {
-                // no está cargado aún
-                let builded_resource = this.getResourceFromMemory(related_resource);
-                if (builded_resource.is_new) {
-                    // no está en memoria, la pedimos a store
-                    include_promises.push(this.getResource(builded_resource));
-                } else if (isDevMode()) {
-                    console.warn('ts-angular-json: esto no debería pasar #isdjf2l1a');
-                }
-                resource.addRelationship(builded_resource, resource_alias);
+
+            // @todo related with #209
+            // this fix problem with a relationships without child or without data (books.author)
+            if (related_resource.type !== '') {
+                resource.addRelationship(this.getResourceAndPushPromise(include_promises, related_resource), resource_alias);
             }
+        } else if (resource.relationships[resource_alias] instanceof DocumentCollection) {
+            // hayMany
+            let related_collection = <IDataCollection>resource.relationships[resource_alias];
+            /*
+            if (related_collection.builded) {
+                console.warn('ts-angular-json: esto no debería pasar. buscar gggggggZ#', related_collection);
+                throw new Error('ts-angular-json: esto no debería pasar. buscar gggggggZ#');
+            }
+            */
+            related_collection.data.forEach(related_resource => {
+                resource.addRelationship(this.getResourceAndPushPromise(include_promises, related_resource), resource_alias);
+            });
+        } else {
+            console.warn('Related resource cant be processed.');
+            throw new Error('Related resource cant be processed.');
         }
-        // else @todo hasMany??
+    }
+
+    private getResourceAndPushPromise(include_promises: Array<any>, related_resource: IDataResource): Resource {
+        let builded_resource = this.getResourceFromMemory(related_resource);
+        include_promises.push(this.getResource(builded_resource));
+
+        return builded_resource;
     }
 }
