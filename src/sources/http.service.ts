@@ -2,12 +2,15 @@ import { Injectable } from '@angular/core';
 import { IDataObject } from '../interfaces/data-object';
 import { HttpClient, HttpHeaders, HttpEvent } from '@angular/common/http';
 import { JsonapiConfig } from '../jsonapi-config';
-import { share } from 'rxjs/operators';
+import { share, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { IDocumentData } from '../interfaces/document';
 
 @Injectable()
 export class Http {
+    // NOTE: GET requests are stored in a this object to prevent duplicate requests
+    public get_requests: { [key: string]: Observable<IDocumentData> } = {};
+
     public constructor(private http: HttpClient, private rsJsonapiConfig: JsonapiConfig) {}
 
     public exec(path: string, method: string, data?: IDataObject): Observable<IDocumentData> {
@@ -19,11 +22,28 @@ export class Http {
             })
         };
 
-        let obs = this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req);
+        // NOTE: prevent duplicate GET requests
         if (method === 'get') {
-            obs.pipe(share());
+            if (!this.get_requests[path]) {
+                let obs = this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
+                    tap(() => {
+                        this.get_requests[path] = undefined;
+                    }),
+                    share()
+                );
+                this.get_requests[path] = obs;
+
+                return obs;
+            }
+
+            return this.get_requests[path];
         }
 
-        return obs;
+        return this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
+            tap(() => {
+                this.get_requests[path] = undefined;
+            }),
+            share()
+        );
     }
 }

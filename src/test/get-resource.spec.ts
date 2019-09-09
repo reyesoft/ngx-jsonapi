@@ -211,4 +211,25 @@ describe('core methods', () => {
                 ).toBe('test_name_4');
             });
     });
+
+    it(`if the back end sends a hasOne relatiohsip with a null data property, it should be set as null in the resulting resource`, async () => {
+        let test_resource = new TestResource();
+        test_resource.type = 'test_resources';
+        test_resource.id = '1';
+        test_resource.attributes = { name: 'test_name' };
+        test_resource.relationships.test_resource.data = null;
+
+        let test_service = new TestService();
+        test_response_subject.next(new HttpResponse({ body: { data: test_resource } }));
+
+        await test_service
+            .get('1')
+            .toPromise()
+            .then(resource => {
+                expect(resource.type).toBe('test_resources');
+                expect(resource.id).toBe('1');
+                expect(resource.attributes.name).toBe('test_name');
+                expect(resource.relationships.test_resource.data).toEqual(null);
+            });
+    });
 });
