@@ -85,6 +85,9 @@ export class CacheMemory<R extends Resource = Resource> {
         this.resources[id].attributes = {}; // just for confirm deletion on view
         // this.resources[id].relationships = {}; // just for confirm deletion on view
         for (let relationship in this.resources[id].relationships) {
+            if (this.resources[id].relationships[relationship].data === null) {
+                continue;
+            }
             if (this.resources[id].relationships[relationship].data.constructor === Array) {
                 this.resources[id].relationships[relationship].data = []; // just in case that there is a for loop using it
             } else if (this.resources[id].relationships[relationship].data.constructor === Object) {
@@ -129,6 +132,15 @@ export class CacheMemory<R extends Resource = Resource> {
         for (let type_alias in source.relationships) {
             // problem with no declared services
             if (source.relationships[type_alias].data === undefined) {
+                continue;
+            }
+
+            if (source.relationships[type_alias].data === null) {
+                // TODO: FE-92 --- check and improve conditions when building has-one relationships
+                destination.relationships[type_alias].data = null;
+                destination.relationships[type_alias].builded = true;
+                destination.relationships[type_alias].is_loading = false;
+
                 continue;
             }
 

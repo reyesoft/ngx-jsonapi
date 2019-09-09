@@ -70,6 +70,10 @@ export class CacheStore {
             tmp.data.push({ id: resource.id, type: resource.type });
 
             for (let resource_type_alias of include) {
+                // TODO: FE-92 ---> improve null has-one relatioships checks
+                if (resource.relationships[resource_type_alias].data === null) {
+                    continue;
+                }
                 if ('id' in resource.relationships[resource_type_alias].data) {
                     // hasOne
                     let ress = <Resource>resource.relationships[resource_type_alias].data;
@@ -107,6 +111,10 @@ export class CacheStore {
         });
     }
 
+    public removeResource(id: string, type: string): void {
+        Core.injectedServices.JsonapiStoreService.removeObjectsWithKey(`jsonapi.${type}.${id}`);
+    }
+
     public deprecateCollections(path_start_with: string): boolean {
         Core.injectedServices.JsonapiStoreService.deprecateObjectsWithKey('collection.' + path_start_with);
 
@@ -121,9 +129,11 @@ export class CacheStore {
                 // build collection from store and resources from memory
                 if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
                     collection.source = 'store'; // collection from storeservice, resources from memory
+                    collection.builded = true;
+                    collection.is_loading = false;
                     collection.cache_last_update = data_collection._lastupdate_time;
                     subject.next(collection);
-                    subject.complete();
+                    setTimeout(() => subject.complete());
 
                     return;
                 }
@@ -138,6 +148,8 @@ export class CacheStore {
                         }
                         collection.source = 'store'; // collection and resources from storeservice
                         collection.cache_last_update = data_collection._lastupdate_time;
+                        collection.builded = true;
+                        collection.is_loading = false;
                         subject.next(collection);
                         setTimeout(() => subject.complete());
                     })
@@ -247,7 +259,7 @@ export class CacheStore {
         return promise;
     }
 
-    private fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
+    private async fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
         if (resource_alias.includes('.')) {
             let included_resource_alias_parts = resource_alias.split('.');
             let datadocument = resource.relationships[included_resource_alias_parts[0]].data;
@@ -262,10 +274,18 @@ export class CacheStore {
             }
         }
 
+        // TODO: FE-92 ---> improve null has-one relatioships checks
+        if (!resource.relationships[resource_alias] || resource.relationships[resource_alias].data === null) {
+            return;
+        }
+
         if (resource.relationships[resource_alias] instanceof DocumentResource) {
             // hasOne
             let related_resource = <IDataResource>resource.relationships[resource_alias].data;
-            if (!('attributes' in related_resource)) {
+            if (
+                !('attributes' in related_resource) ||
+                (Object.keys(related_resource.attributes).length === 0 && related_resource.attributes.constructor === Object)
+            ) {
                 // no está cargado aún
                 let builded_resource = this.getResourceFromMemory(related_resource);
                 if (builded_resource.is_new) {
@@ -276,7 +296,12 @@ export class CacheStore {
                 }
                 resource.addRelationship(builded_resource, resource_alias);
             }
+        } else {
+            let builded_resources: Array<Resource> = [];
+            for (let related_resource of (<DocumentCollection>resource.relationships[resource_alias]).data) {
+                await this.getResource(related_resource).then(builded_resource => builded_resources.push(<Resource>builded_resource));
+            }
+            resource.addRelationships(builded_resources, resource_alias);
         }
-        // else @todo hasMany??
     }
 }

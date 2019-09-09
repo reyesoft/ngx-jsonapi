@@ -2,7 +2,7 @@ import { async, TestBed } from '@angular/core/testing';
 import { JsonapiConfig } from '../jsonapi-config';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { tap, mapTo, share } from 'rxjs/operators';
-import { Observable, of, timer } from 'rxjs';
+import { Observable, of, timer, Subject } from 'rxjs';
 
 import { Http } from './http.service';
 
@@ -34,6 +34,19 @@ describe('Http service', () => {
         spyOn((service as any).http, 'request').and.returnValue(response);
         let exec_observable = service.exec('/test', 'patch', data_object);
         await exec_observable.subscribe(data => expect(data).toEqual(data_object));
+    });
+    it(`when two requests to the same URL, and the second is made before the first has finished,
+        exec should return the same observable with the http request without duplicating`, async () => {
+        let subject = new Subject();
+        let request_spy = spyOn((service as any).http, 'request').and.returnValue(subject);
+        let exec_observable = service.exec('/test', 'patch', data_object);
+        let second_exec_observable = service.exec('/test', 'patch', data_object);
+        subject.next(data_object);
+        await exec_observable.subscribe(data => expect(data).toEqual(data_object));
+        await exec_observable.subscribe(data => {
+            expect(data).toEqual(data_object);
+            expect(request_spy).toHaveBeenCalledTimes(1);
+        });
     });
     // it('if exec is called with "get" method as argument, the returned observable should be shared', async () => {
     //     let response = 0;
