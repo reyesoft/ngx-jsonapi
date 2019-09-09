@@ -157,6 +157,5 @@
     "dependencies": {
         "dexie": "^2.0.4",
         "rxjs": "^6.2"
-    },
-    "version": "2.0.22-rc.2"
+    }
 }
