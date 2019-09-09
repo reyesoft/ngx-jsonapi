@@ -80,7 +80,7 @@ export class Service<R extends Resource = Resource> {
         let subject = new BehaviorSubject<R>(resource);
 
         // when fields is set, get resource form server
-        if (isLive(resource, params.ttl)) {
+        if (isLive(resource, params.ttl) && Object.keys(params.fields).length === 0) {
             setTimeout(() => {
                 resource.is_loading = false;
                 resource.source = 'memory';
@@ -92,7 +92,7 @@ export class Service<R extends Resource = Resource> {
                 .cachestore.getResource(resource, params.include)
                 .then(() => {
                     // when fields is set, get resource form server
-                    if (!isLive(resource, params.ttl)) {
+                    if (!isLive(resource, params.ttl) || Object.keys(params.fields).length > 0) {
                         subject.next(resource);
                         throw new Error('No está viva la caché de localstorage');
                     }
@@ -217,8 +217,11 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
+        // if ttl is not defined inthe colleciton, use the service ttl
+        temporary_collection.ttl = temporary_collection.ttl || this.getService().collections_ttl;
+
         // when fields is set, get resource form server
-        if (isLive(temporary_collection, params.ttl)) {
+        if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
             temporary_collection.source = 'memory';
             subject.next(temporary_collection);
             setTimeout(() => subject.complete(), 0);
@@ -236,7 +239,7 @@ export class Service<R extends Resource = Resource> {
                         this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
 
                         // when fields is set, get resource form server
-                        if (isLive(temporary_collection, params.ttl)) {
+                        if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
                             temporary_collection.is_loading = false;
                             temporary_collection.builded = true;
                             subject.next(temporary_collection);
