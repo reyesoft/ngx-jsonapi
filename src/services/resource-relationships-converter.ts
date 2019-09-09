@@ -102,6 +102,10 @@ export class ResourceRelationshipsConverter {
             if (resource_data) {
                 this.relationships_dest[relation_alias].data = resource_data;
                 this.relationships_dest[relation_alias].builded = true;
+            } else {
+                // NOTE: HOTFIX para cachestore, no es el lugar correcto pero no había otra forma... me parece que hay que refactorizar...
+                (<Resource>this.relationships_dest[relation_alias].data).id = relation_data_from.data.id;
+                (<Resource>this.relationships_dest[relation_alias].data).type = relation_data_from.data.type;
             }
         }
     }
