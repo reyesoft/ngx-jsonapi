@@ -107,28 +107,59 @@ export class StoreService /* implements IStoreService */ {
     }
 
     public clearCache() {
-        this.db.delete();
+        this.db.open().then(async () => {
+            return this.db
+                .table('elements')
+                .toCollection()
+                .delete();
+        });
+        this.db.open().then(async () => {
+            return this.db
+                .table('collections')
+                .toCollection()
+                .delete();
+        });
     }
 
-    public deprecateObjectsWithKey(key_start_with: string) {
+    public deprecateResource(type: string, id: string) {
+        this.db.open().then(async () => {
+            return this.db
+                .table('elements')
+                .where('key')
+                .startsWith(type + '.' + id)
+                .modify({ _lastupdate_time: 0 });
+        });
+    }
+
+    public deprecateCollection(key_start_with: string) {
+        this.db.open().then(async () => {
+            return this.db
+                .table('collections')
+                .where('key')
+                .startsWith(key_start_with)
+                .modify({ _lastupdate_time: 0 });
+        });
+    }
+
+    public async removeObjectsWithKey(key: string) {
         /*
-        this.allstore
-            .keys()
-            .then(success => {
-                Base.forEach(success, (key: string) => {
-                    if (key.startsWith(key_start_with)) {
-                        // key of stored object starts with key_start_with
-                        this.allstore
-                            .getItem(key)
-                            .then((success2: IDataCollectionStorage | IDataResourceStorage) => {
-                                success2._lastupdate_time = 0;
-                                this.allstore.setItem(key, success2);
-                            })
-                            .catch(noop);
-                    }
-                });
-            })
-            .catch(noop);
+        this.allstore.removeItem(key);
+        await this.allstore.getItems().then(async result => {
+            for (let saved_resource_key in result) {
+                let resource_id_split = key.split('.');
+                let resource_id = resource_id_split[resource_id_split.length - 1];
+                if (
+                    Array.isArray(result[saved_resource_key].data) &&
+                    result[saved_resource_key].data.find(resource => resource.id === resource_id)
+                ) {
+                    result[saved_resource_key].data.splice(
+                        result[saved_resource_key].data.findIndex(resource => resource.id === resource_id),
+                        1
+                    );
+                    await this.allstore.setItem(saved_resource_key, result[saved_resource_key]);
+                }
+            }
+        });
         */
     }
 

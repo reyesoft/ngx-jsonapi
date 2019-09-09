@@ -136,7 +136,9 @@ export class Service<R extends Resource = Resource> {
     }
 
     public getOrCreateCollection(path: PathCollectionBuilder): DocumentCollection<R> {
-        let collection = <DocumentCollection<R>>this.getService().cachememory.getOrCreateCollection(path.getForCache());
+        const service = this.getService();
+        const collection = <DocumentCollection<R>>service.cachememory.getOrCreateCollection(path.getForCache());
+        collection.ttl = service.collections_ttl;
 
         return collection;
     }
@@ -216,9 +218,6 @@ export class Service<R extends Resource = Resource> {
         temporary_collection.page.number = params.page.number * 1;
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
-
-        // if ttl is not defined inthe colleciton, use the service ttl
-        temporary_collection.ttl = temporary_collection.ttl || this.getService().collections_ttl;
 
         // when fields is set, get resource form server
         if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {

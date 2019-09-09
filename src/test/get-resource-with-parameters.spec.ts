@@ -97,7 +97,7 @@ describe('core methods', () => {
     });
 
     it(`when requesting a resource with optional attributes, the incoming attributes should be merged with cached ones`, async () => {
-        // TODO: fix library error: cleacCache and clearCacheMemory are not droping localForage allstore instance correctly while testing
+        // TODO: fix library error: clearCache and clearCacheMemory are not droping localForage allstore instance correctly while testing
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),
