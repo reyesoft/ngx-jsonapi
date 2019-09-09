@@ -1,3 +1,4 @@
+import { BooksService } from './../../books/books.service';
 import { Component } from '@angular/core';
 import { DocumentCollection } from 'ngx-jsonapi';
 import { AuthorsService, Author } from './../authors.service';
@@ -10,11 +11,11 @@ import { ActivatedRoute } from '@angular/router';
 export class AuthorsComponent {
     public authors: DocumentCollection<Author>;
 
-    public constructor(private route: ActivatedRoute, private authorsService: AuthorsService) {
+    public constructor(private route: ActivatedRoute, private authorsService: AuthorsService, booksService: BooksService) {
         route.queryParams.subscribe(({ page }) => {
             authorsService
                 .all({
-                    // include: ['books', 'photos'],
+                    include: ['books'],
                     sort: ['name'],
                     page: { number: page || 1 },
                     ttl: 3600

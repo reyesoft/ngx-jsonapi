@@ -7,6 +7,7 @@
             <th>Name</th>
             <th>Date of birth</th>
             <th>Date of dead</th>
+            <th>Books</th>
         </tr>
     </thead>
     <tr *ngFor="let author of authors.data; trackBy: authors.trackBy">
@@ -16,6 +17,13 @@
         </td>
         <td>{{ author.attributes.date_of_birth | date }}</td>
         <td>{{ author.attributes.date_of_death | date }}</td>
+        <td *ngIf="author.relationships.books.data.length < 1" class="text-muted">-no books-</td>
+        <td *ngIf="author.relationships.books.data.length > 0">
+            <a [routerLink]="['/books', author.relationships.books.data[0].id]">{{ author.relationships.books.data[0].attributes.title }}</a>
+            <span *ngIf="author.relationships.books.data.length > 1">
+                and {{ author.relationships.books.data.length}} more...
+            </span>
+        </td>
         <!-- <td><button (click)="delete(author)">Delete</button></td> -->
     </tr>
 </table>
