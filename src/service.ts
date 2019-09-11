@@ -170,8 +170,6 @@ export class Service<R extends Resource = Resource> {
         let path = new PathBuilder();
         path.applyParams(this);
 
-        console.warn('cache clear all collections for ' + path.getForCache());
-
         return (
             this.getService().cachememory.deprecateCollections(path.getForCache()) &&
             this.getService().cachestore.deprecateCollections(path.getForCache())
@@ -266,15 +264,12 @@ export class Service<R extends Resource = Resource> {
                     temporary_collection.cache_last_update = success._lastupdate_time;
 
                     // when fields is set, get resource form server
-                    console.warn('islive?islive?islive?islive?', temporary_collection.cache_last_update, temporary_collection);
                     if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
-                        console.warn('   está viva!');
                         temporary_collection.is_loading = false;
                         temporary_collection.builded = true;
                         subject.next(temporary_collection);
                         subject.complete();
                     } else {
-                        console.warn('   no está viva!');
                         this.getAllFromServer(path, params, temporary_collection, subject);
                     }
                 },
