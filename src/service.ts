@@ -12,7 +12,6 @@ import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDataObject } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection } from './interfaces/data-collection';
-import { IDocumentData } from './interfaces/document';
 
 export class Service<R extends Resource = Resource> {
     public cachememory: CacheMemory;
@@ -256,9 +255,8 @@ export class Service<R extends Resource = Resource> {
             // STORE (compact)
             temporary_collection.is_loading = true;
 
-            Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache()).subscribe(
+            Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact').subscribe(
                 success => {
-                    temporary_collection.is_loading = false;
                     temporary_collection.source = 'store';
                     temporary_collection.fill(success);
                     temporary_collection.cache_last_update = success._lastupdate_time;
@@ -312,10 +310,11 @@ export class Service<R extends Resource = Resource> {
 
                 this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    if (params.store_cache_method === 'individual') {
-                        this.getService().cachestore.setCollection(path.getForCache(), temporary_collection, params.include);
-                    } else {
-                        Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache(), <IDataCollection>success);
+                    // if (params.store_cache_method === 'individual') {
+                    this.getService().cachestore.setCollection(path.getForCache(), temporary_collection, params.include);
+                    // } else {
+                    if (params.store_cache_method === 'compact') {
+                        Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <IDataCollection>success);
                     }
                 }
 
