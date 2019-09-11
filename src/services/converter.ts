@@ -77,7 +77,7 @@ export class Converter<R extends Resource> {
         }
 
         resource.attributes = data.attributes || {};
-        resource.relationships = resource.relationships || <{ [key: string]: any }>data.relationships;
+        resource.relationships = <{ [key: string]: any }>data.relationships || resource.relationships;
         resource.is_new = false;
 
         return resource;

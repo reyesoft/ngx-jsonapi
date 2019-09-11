@@ -24,7 +24,7 @@ Data is obtained from [Json Api Playground](https://jsonapiplayground.reyesoft.c
 ## Supported features
 
 -   Cache (on memory): TTL for collections and resources. Before a HTTP request objects are setted with cached data.
--   Cache on localstorage
+-   Cache on IndexedDB
 -   Pagination
 -   Sorting
 -   [Include param support](http://jsonapi.org/format/#fetching-includes) (also, when you save)

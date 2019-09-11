@@ -50,7 +50,6 @@ export class StoreService /* implements IStoreService */ {
     }
 
     public async getDataResources(keys: Array<string>): Promise<IObjectsById<IDataResourceStorage>> {
-        // return this.db.transaction('r', this.db.table('elements'), async () => {
         const collection = this.db
             .table('elements')
             .where(':id')
@@ -97,7 +96,7 @@ export class StoreService /* implements IStoreService */ {
         this.db.open().then(async () => {
             return this.db
                 .table('elements')
-                .where('key')
+                .where(':id')
                 .startsWith(type + '.' + id)
                 .modify({ _lastupdate_time: 0 });
         });
@@ -107,7 +106,7 @@ export class StoreService /* implements IStoreService */ {
         this.db.open().then(async () => {
             return this.db
                 .table('collections')
-                .where('key')
+                .where(':id')
                 .startsWith(key_start_with)
                 .modify({ _lastupdate_time: 0 });
         });

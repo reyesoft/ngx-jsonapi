@@ -95,7 +95,7 @@ export class Service<R extends Resource = Resource> {
                     // when fields is set, get resource form server
                     if (!isLive(resource, params.ttl) || Object.keys(params.fields).length > 0) {
                         subject.next(resource);
-                        throw new Error('No está viva la caché de localstorage');
+                        throw new Error('No está viva la caché de IndexedDB');
                     }
                     resource.is_loading = false;
                     resource.source = 'store';
