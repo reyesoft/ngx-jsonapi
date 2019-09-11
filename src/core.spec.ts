@@ -71,7 +71,7 @@ describe('core methods', () => {
         );
     });
 
-    it ('duplicateResource method should duplicate a resource and add the requested relationships (if present in the original reource)', () => {
+    it('duplicateResource method should duplicate a resource and add the requested relationships (if present in the original reource)', () => {
         let original_resource_service = new CustomResourceService();
         let original_resource = new CustomResource();
         original_resource.id = '1';
@@ -103,12 +103,16 @@ describe('core methods', () => {
         expect(resource_copy_with_duplicated_relationships.id.includes('new_')).toBeTruthy();
         expect(resource_copy_with_duplicated_relationships.attributes.data).toBe('this is a resource');
         expect((<DocumentResource>resource_copy_with_duplicated_relationships.relationships.has_one).data.id.includes('new_')).toBeTruthy();
-        expect(
-            (<DocumentResource>resource_copy_with_duplicated_relationships.relationships.has_one).data.attributes.data
-        ).toBe('this is a has ONE relationship');
+        expect((<DocumentResource>resource_copy_with_duplicated_relationships.relationships.has_one).data.attributes.data).toBe(
+            'this is a has ONE relationship'
+        );
         expect(resource_copy_with_duplicated_relationships.relationships.has_many.data[0].id.includes('new_')).toBeTruthy();
-        expect(resource_copy_with_duplicated_relationships.relationships.has_many.data[0].attributes.data).toBe('this is a has MANY relationship');
+        expect(resource_copy_with_duplicated_relationships.relationships.has_many.data[0].attributes.data).toBe(
+            'this is a has MANY relationship'
+        );
         expect(resource_copy_with_duplicated_relationships.relationships.has_many.data[1].id.includes('new_')).toBeTruthy();
-        expect(resource_copy_with_duplicated_relationships.relationships.has_many.data[1].attributes.data).toBe('this is a has MANY relationship');
+        expect(resource_copy_with_duplicated_relationships.relationships.has_many.data[1].attributes.data).toBe(
+            'this is a has MANY relationship'
+        );
     });
 });

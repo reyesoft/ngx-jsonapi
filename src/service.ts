@@ -37,7 +37,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     /**
-     * @deprecated since 2.2.0
+     * @deprecated since 2.2.0. Use new() method.
      */
     public newResource(): R {
         return this.new();
@@ -310,9 +310,8 @@ export class Service<R extends Resource = Resource> {
 
                 this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    // if (params.store_cache_method === 'individual') {
+                    // setCollection takes 1 ms per item
                     this.getService().cachestore.setCollection(path.getForCache(), temporary_collection, params.include);
-                    // } else {
                     if (params.store_cache_method === 'compact') {
                         Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <IDataCollection>success);
                     }
