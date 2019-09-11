@@ -1,7 +1,5 @@
-// import 'localforage-getitems';
 import Dexie from 'dexie';
-import { Base } from '../services/base';
-import { noop, Subject, Observable } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IObjectsById } from '../interfaces';
@@ -24,31 +22,11 @@ export class StoreService /* implements IStoreService */ {
     public constructor() {
         this.db = new Dexie('jsonapi_db');
         this.db.version(1).stores({
-            collections: '&key,data',
-            elements: '&key,data'
-            /*
-            collections: '[type+id],data',
-            elements: '[type+id],data'
-            */
+            collections: '',
+            elements: ''
         });
         this.checkIfIsTimeToClean();
     }
-
-    /**
-     * Maybe is not required. Disabled for now.
-     */
-    /*
-    private async getOpenedDb(): Dexie.Promise<Dexie> {
-        if (this.db.isOpen()) {
-            // return a fake promise, then we dont do a new db.open()
-            return new Promise<Dexie>((resolve): void => {
-                resolve(this.db);
-            });
-        } else {
-            return this.db.open();
-        }
-    }
-    */
 
     public getDataObject(type: 'collection', url: string): Observable<IDataCollection>;
     public getDataObject(type: string, id: string): Observable<IDataResource>;
@@ -57,52 +35,46 @@ export class StoreService /* implements IStoreService */ {
         // we use different tables for resources and collections
         const table_name = type === 'collection' ? 'collections' : 'elements';
 
-        this.db
-            .open()
-            .then(async () => {
-                return this.db
-                    .table(table_name)
-                    .where({ key: type + '.' + id_or_url })
-                    .first();
-            })
-            .then(element => {
-                if (element === undefined) {
-                    subject.error(null);
-                } else {
-                    subject.next(element.data);
-                }
-                subject.complete();
-            });
+        this.db.open().then(async () => {
+            let item = await this.db.table(table_name).get(type + '.' + id_or_url);
+            if (item === undefined) {
+                subject.error(null);
+            } else {
+                subject.next(item);
+            }
+
+            subject.complete();
+        });
 
         return subject.asObservable();
     }
 
     public async getDataResources(keys: Array<string>): Promise<IObjectsById<IDataResourceStorage>> {
-        return this.db
-            .open()
-            .then(async () => {
-                return this.db
-                    .table('elements')
-                    .where('key')
-                    .anyOf(keys)
-                    .toArray();
-            })
-            .then(elements => {
-                return Object.assign({}, ...elements.map(item => ({ [item.data.id]: item.data })));
-            });
+        // return this.db.transaction('r', this.db.table('elements'), async () => {
+        const collection = this.db
+            .table('elements')
+            .where(':id')
+            .anyOf(keys);
+
+        let resources_by_id = {};
+        await collection.each(item => {
+            resources_by_id[item.id] = item;
+        });
+
+        return resources_by_id;
     }
 
     public saveResource(type: string, url_or_id: string, value: IDataResource): void {
         let data_resource_storage: IDataResourceStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
         this.db.open().then(async () => {
-            return this.db.table('elements').put({ key: type + '.' + url_or_id, data: data_resource_storage });
+            return this.db.table('elements').put(data_resource_storage, type + '.' + url_or_id);
         });
     }
 
     public saveCollection(url_or_id: string, value: IDataCollection): void {
         let data_collection_storage: IDataCollectionStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
         this.db.open().then(async () => {
-            return this.db.table('collections').put({ key: 'collection.' + url_or_id, data: data_collection_storage });
+            return this.db.table('collections').put(data_collection_storage, 'collection.' + url_or_id);
         });
     }
 

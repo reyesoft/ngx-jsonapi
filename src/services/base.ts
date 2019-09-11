@@ -21,6 +21,7 @@ export class Base {
         smartfilter: {},
         sort: [],
         page: new Page(),
+        store_cache_method: 'individual',
         storage_ttl: 0,
         cachehash: ''
     };

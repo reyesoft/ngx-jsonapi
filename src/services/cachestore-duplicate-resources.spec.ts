@@ -27,8 +27,8 @@ export class StoreService {
     }
 }
 
-describe('Cachestore non-duplicate-resources test', () => {
-    it('fillCollectionWithArrrayAndResourcesOnStore method should not duplicate resources in the requested collection', async () => {
+describe('Cachestore filler', () => {
+    it('fillCollectionWithArrrayAndResourcesOnStore should fill resources data on collection', async () => {
         // spyOn(StoreService.prototype, 'constructor');
         (Core.injectedServices as any) = {
             JsonapiStoreService: new StoreService(),
@@ -41,27 +41,23 @@ describe('Cachestore non-duplicate-resources test', () => {
         let data_collection: IDataCollection = {
             data: [
                 {
-                    type: 'type',
-                    id: 'id',
+                    id: '1',
+                    type: 'authors',
                     attributes: {
-                        status: true,
-                        value: true
+                        name: 'Ugly name'
                     },
                     relationships: {}
                 }
             ]
         };
-
         let resource = new Resource();
-        resource.id = 'id';
-        resource.type = 'type';
+        resource.id = '1';
+        resource.type = 'authors';
         resource.attributes = {
-            status: true,
-            value: true
+            name: 'Cool name'
         };
-        resource.relationships = {};
 
-        let collection: DocumentCollection = new DocumentCollection();
+        let collection = new DocumentCollection();
         collection.data = [resource];
 
         spyOn(Converter, 'getService').and.returnValue({
@@ -71,10 +67,15 @@ describe('Cachestore non-duplicate-resources test', () => {
                 }
             }
         });
-        spyOn(StoreService.prototype, 'getDataResources').and.returnValue(Promise.resolve([]));
+        spyOn(StoreService.prototype, 'getDataResources').and.returnValue(
+            Promise.resolve({
+                '1': { id: '1', type: 'authors' }
+            })
+        );
 
         await (cachestore as any).fillCollectionWithArrrayAndResourcesOnStore(data_collection, [], collection);
 
         expect(collection.data.length).toBe(1);
+        expect(collection.data[0].attributes.name).toBe('Cool name');
     });
 });

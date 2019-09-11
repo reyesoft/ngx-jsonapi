@@ -101,7 +101,7 @@ export class ResourceRelationshipsConverter {
         }
 
         if ((<Resource>this.relationships_dest[relation_alias].data).id !== relation_data_from.data.id) {
-            let resource_data = this.__buildRelationship(relation_data_from.data, this.included_resources);
+            let resource_data = this.__buildRelationship(relation_data_from.data);
             if (resource_data) {
                 this.relationships_dest[relation_alias].data = resource_data;
                 this.relationships_dest[relation_alias].builded = true;
@@ -113,10 +113,13 @@ export class ResourceRelationshipsConverter {
         }
     }
 
-    private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): Resource {
-        if (resource_data_from.type in included_array && resource_data_from.id in included_array[resource_data_from.type]) {
+    private __buildRelationship(resource_data_from: IDataResource): Resource {
+        if (
+            resource_data_from.type in this.included_resources &&
+            resource_data_from.id in this.included_resources[resource_data_from.type]
+        ) {
             // it's in included
-            let data = included_array[resource_data_from.type][resource_data_from.id];
+            let data = this.included_resources[resource_data_from.type][resource_data_from.id];
 
             // Store the include in cache
             this.getService(resource_data_from.type).cachememory.setResource(data, true);

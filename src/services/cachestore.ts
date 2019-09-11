@@ -9,7 +9,6 @@ import { DocumentCollection } from '../document-collection';
 import { Observable, Subject } from 'rxjs';
 import { Page } from './page';
 import { DocumentResource } from '../document-resource';
-import { isDevMode } from '@angular/core';
 
 export class CacheStore {
     public async getResource(resource: Resource, include: Array<string> = []): Promise<object> {
@@ -181,6 +180,20 @@ export class CacheStore {
         return resource;
     }
 
+    private getStoreKeysFromDataCollection(datacollection: IDataCollection): Array<string> {
+        return datacollection.data.map(dataresource => {
+            return dataresource.type + '.' + dataresource.id;
+        });
+    }
+
+    /*
+    private async getDataResourcesFromDataCollection(datacollection: IDataCollection): Promise<IObjectsById<IDataResourcesSto>> {
+        return Core.injectedServices.JsonapiStoreService.getDataResources(
+            this.getStoreKeysFromDataCollection(datacollection)
+        );
+    }
+    */
+
     private async fillCollectionWithArrrayAndResourcesOnStore(
         datacollection: IDataCollection,
         include: Array<string>,
@@ -189,33 +202,41 @@ export class CacheStore {
         let promise = new Promise(
             (resolve: (value: void) => void, reject: (value: any) => void): void => {
                 let resources_by_id: IObjectsById<Resource> = {};
-
-                // get collection from store
-                let required_store_keys: Array<string> = datacollection.data.map(dataresource => {
-                    let cachememory = Converter.getService(dataresource.type).cachememory;
-                    resources_by_id[dataresource.id] = cachememory.getOrCreateResource(dataresource.type, dataresource.id);
-
-                    return dataresource.type + '.' + dataresource.id;
-                });
+                let store_keys = this.getStoreKeysFromDataCollection(datacollection);
 
                 // get resources for collection fill
-                Core.injectedServices.JsonapiStoreService.getDataResources(required_store_keys)
+                Core.injectedServices.JsonapiStoreService.getDataResources(store_keys)
                     .then(store_data_resources => {
                         let include_promises: Array<Promise<object>> = [];
+                        let included_related_keys: Array<string> = [];
+
                         for (let key in store_data_resources) {
                             let data_resource = store_data_resources[key];
+
+                            resources_by_id[data_resource.id] = this.getResourceFromMemory(data_resource);
                             resources_by_id[data_resource.id].fill({ data: data_resource });
+                            resources_by_id[data_resource.id].lastupdate = data_resource._lastupdate_time;
+
+                            // collect related store_keys
+                            Base.forEach(include, resource_alias => {
+                                let relationship = resources_by_id[data_resource.id].relationships[resource_alias];
+                                if (relationship instanceof DocumentResource) {
+                                    included_related_keys.push(relationship.data.type + '.' + relationship.data.id);
+                                } else if (relationship instanceof DocumentCollection) {
+                                    included_related_keys.push(...this.getStoreKeysFromDataCollection(relationship));
+                                }
+                            });
 
                             // include some times is a collection :S
+                            /*
                             Base.forEach(include, resource_alias => {
                                 this.fillRelationshipFromStore(resources_by_id[data_resource.id], resource_alias, include_promises);
                             });
-
-                            resources_by_id[data_resource.id].lastupdate = data_resource._lastupdate_time;
+                            */
                         }
 
                         // no debo esperar a que se resuelvan los include
-                        if (include_promises.length === 0) {
+                        if (include_promises.length === 0 && included_related_keys.length === 0) {
                             if (datacollection.page) {
                                 collection.page.number = datacollection.page.number;
                             }
@@ -230,8 +251,31 @@ export class CacheStore {
 
                             resolve(null);
                         } else {
-                            // esperamos las promesas de los include antes de dar el resolve
-                            Promise.all(include_promises)
+                            // request from store all related resources requested on include
+                            let related_promises = [];
+                            Core.injectedServices.JsonapiStoreService.getDataResources(included_related_keys)
+                                .then(store_include_data_resources => {
+                                    // move data to memory
+                                    for (let key in store_include_data_resources) {
+                                        let data_resource = store_include_data_resources[key];
+
+                                        let resource = this.getResourceFromMemory(data_resource);
+                                        resource.fill({ data: data_resource });
+                                        resource.lastupdate = data_resource._lastupdate_time;
+                                    }
+                                    // all related included resources are on cacheMemory
+                                    for (let key in resources_by_id) {
+                                        let resource = resources_by_id[key];
+
+                                        Base.forEach(include, resource_alias => {
+                                            this.fillRelationshipFromStore(resource, resource_alias, related_promises);
+                                        });
+                                    }
+                                })
+                                .then(async () => {
+                                    // we wait to resolution of eath included type
+                                    return Promise.all(related_promises);
+                                })
                                 .then(success3 => {
                                     if (datacollection.page) {
                                         collection.page.number = datacollection.page.number;
@@ -278,9 +322,11 @@ export class CacheStore {
             return;
         }
 
-        if (resource.relationships[resource_alias] instanceof DocumentResource) {
+        let relationship = resource.relationships[resource_alias];
+
+        if (relationship instanceof DocumentResource) {
             // hasOne
-            let related_resource = <IDataResource>resource.relationships[resource_alias].data;
+            let related_resource = relationship.data;
 
             // @todo related with #209
             // this fix problem with a relationships without child or without data (books.author)
@@ -305,10 +351,8 @@ export class CacheStore {
                 resource.addRelationship(builded_resource, resource_alias);
             }
             */
-        } else if (resource.relationships[resource_alias] instanceof DocumentCollection) {
+        } else if (relationship instanceof DocumentCollection) {
             // hayMany
-            let related_collection = <IDataCollection>resource.relationships[resource_alias];
-
             /*
             // code by maxi
             let builded_resources: Array<Resource> = [];
@@ -318,9 +362,46 @@ export class CacheStore {
             resource.addRelationships(builded_resources, resource_alias);
             */
 
+            relationship.data.forEach(data_resource => {
+                resource = this.getResourceFromMemory(data_resource);
+
+                return;
+            });
+
+            // ToDo we have same before
+            // let resources_by_id: IObjectsById<Resource> = {};
+            // let required_store_keys: Array<string> = (<DocumentCollection>resource.relationships[resource_alias]).data.map(dataresource => {
+            //     resources_by_id[dataresource.id] = this.getResourceFromMemory(dataresource);
+
+            //     return dataresource.type + '.' + dataresource.id;
+            // });
+
+            /*
+            if ((<DocumentCollection>resource.relationships[resource_alias]).data.length > 0) {
+                console.log(resource_alias, required_store_keys);
+                debugger;
+            }
+            */
+
+            // fill directly from store
+            /*
+            include_promises.push(this.fillCollectionWithArrrayAndResourcesOnStore(
+                relationship,
+                [],
+                relationship
+            ));
+            */
+            // END fill directly from store
+
+            // if (related_collection.data.length > 0) {
+            //     resource.addRelationship(this.getResourceAndPushPromise(include_promises, related_collection.data[1]), resource_alias);
+            // }
+
+            /*
             related_collection.data.forEach(related_resource => {
                 resource.addRelationship(this.getResourceAndPushPromise(include_promises, related_resource), resource_alias);
             });
+            */
         } else {
             console.warn('Related resource cant be processed.');
             throw new Error('Related resource cant be processed.');

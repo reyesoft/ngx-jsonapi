@@ -1,3 +1,4 @@
+import { Author } from './../../authors/authors.service';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Resource } from 'ngx-jsonapi';
@@ -22,7 +23,7 @@ export class BookComponent {
             let book$ = booksService.get(id, { include: ['author', 'photos'] }).subscribe(
                 book => {
                     this.book = book;
-                    console.log('success book', this.book);
+                    console.log('success book', this.book.relationships.author.data);
                 },
                 error => console.log('error books controll', error)
             );

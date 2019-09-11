@@ -174,7 +174,7 @@ export class Resource implements ICacheable {
         if (Object.keys(this.attributes).length) {
             // @todo remove this when getResourceService ToDo is fixed
             let srvc = Converter.getService(this.type);
-            if (srvc) {
+            if (srvc && 'parseFromServer' in srvc) {
                 srvc.parseFromServer(this.attributes);
             }
         }
