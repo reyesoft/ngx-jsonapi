@@ -38,7 +38,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     /**
-     * @deprecated since 1.2.0
+     * @deprecated since 2.2.0
      */
     public newResource(): R {
         return this.new();

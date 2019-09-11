@@ -84,7 +84,7 @@ export class Core {
         return <Service<R>>clase;
     }
 
-    // @todo this function can be return an empty value, fix required
+    // @todo this function could return an empty value, fix required
     public getResourceService(type: string): Service {
         return this.resourceServices[type];
     }

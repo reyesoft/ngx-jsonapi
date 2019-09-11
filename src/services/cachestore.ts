@@ -215,7 +215,6 @@ export class CacheStore {
 
                             resources_by_id[data_resource.id] = this.getResourceFromMemory(data_resource);
                             resources_by_id[data_resource.id].fill({ data: data_resource });
-                            resources_by_id[data_resource.id].lastupdate = data_resource._lastupdate_time;
 
                             // collect related store_keys
                             Base.forEach(include, resource_alias => {
@@ -261,7 +260,6 @@ export class CacheStore {
 
                                         let resource = this.getResourceFromMemory(data_resource);
                                         resource.fill({ data: data_resource });
-                                        resource.lastupdate = data_resource._lastupdate_time;
                                     }
                                     // all related included resources are on cacheMemory
                                     for (let key in resources_by_id) {
