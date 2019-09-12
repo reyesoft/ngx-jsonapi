@@ -132,9 +132,9 @@ export class AuthorsComponent {
 
 ```html
 <p *ngFor="let author of authors.data; trackBy: authors.trackBy">
-  id: {{ author.id }} <br />
-  name: {{ author.attributes.name }} <br />
-  birth date: {{ author.attributes.date_of_birth | date }}
+    id: {{ author.id }} <br />
+    name: {{ author.attributes.name }} <br />
+    birth date: {{ author.attributes.date_of_birth | date }}
 </p>
 ```
 

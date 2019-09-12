@@ -111,9 +111,7 @@ public authors: DocumentCollection<Author>;
 
 ```html
 <span *ngIf="author.relationships.photos.content === 'collection'">
-    <img *ngFor="let photo of book.relationships.photos.data.$toArray"
-        title="Book id #{{ photo.id }}"
-    />
+    <img *ngFor="let photo of book.relationships.photos.data.$toArray" title="Book id #{{ photo.id }}" />
 </span>
 ```
 
@@ -121,9 +119,7 @@ public authors: DocumentCollection<Author>;
 
 ```html
 <span *ngIf="author.relationships.photos.builded">
-    <img *ngFor="let photo of author.relationships.photos.data"
-        title="Book id #{{ photo.id }}"
-    />
+    <img *ngFor="let photo of author.relationships.photos.data" title="Book id #{{ photo.id }}" />
 </span>
 ```
 

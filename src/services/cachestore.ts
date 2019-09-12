@@ -12,46 +12,44 @@ import { DocumentResource } from '../document-resource';
 
 export class CacheStore {
     public async getResource(resource: Resource, include: Array<string> = []): Promise<object> {
-        let mypromise: Promise<object> = new Promise(
-            (resolve, reject): void => {
-                Core.injectedServices.JsonapiStoreService.getDataObject(resource.type, resource.id).subscribe(
-                    success => {
-                        resource.fill({ data: success });
+        let mypromise: Promise<object> = new Promise((resolve, reject): void => {
+            Core.injectedServices.JsonapiStoreService.getDataObject(resource.type, resource.id).subscribe(
+                success => {
+                    resource.fill({ data: success });
 
-                        // include some times is a collection :S
-                        let include_promises: Array<Promise<object>> = [];
+                    // include some times is a collection :S
+                    let include_promises: Array<Promise<object>> = [];
 
-                        // NOTE: fix to resources stored without relationships
-                        if (include.length > 0 && !resource.relationships) {
-                            resource.relationships = new (resource.getService()).resource().relationships;
-                        }
-
-                        for (let resource_alias of include) {
-                            this.fillRelationshipFromStore(resource, resource_alias, include_promises);
-                        }
-
-                        resource.cache_last_update = success._lastupdate_time;
-
-                        // no debo esperar a que se resuelvan los include
-                        if (include_promises.length === 0) {
-                            resolve(success);
-                        } else {
-                            // esperamos las promesas de los include antes de dar el resolve
-                            Promise.all(include_promises)
-                                .then(success3 => {
-                                    resolve(success3);
-                                })
-                                .catch(error3 => {
-                                    reject(error3);
-                                });
-                        }
-                    },
-                    () => {
-                        reject();
+                    // NOTE: fix to resources stored without relationships
+                    if (include.length > 0 && !resource.relationships) {
+                        resource.relationships = new (resource.getService()).resource().relationships;
                     }
-                );
-            }
-        );
+
+                    for (let resource_alias of include) {
+                        this.fillRelationshipFromStore(resource, resource_alias, include_promises);
+                    }
+
+                    resource.cache_last_update = success._lastupdate_time;
+
+                    // no debo esperar a que se resuelvan los include
+                    if (include_promises.length === 0) {
+                        resolve(success);
+                    } else {
+                        // esperamos las promesas de los include antes de dar el resolve
+                        Promise.all(include_promises)
+                            .then(success3 => {
+                                resolve(success3);
+                            })
+                            .catch(error3 => {
+                                reject(error3);
+                            });
+                    }
+                },
+                () => {
+                    reject();
+                }
+            );
+        });
 
         return mypromise;
     }
@@ -199,103 +197,101 @@ export class CacheStore {
         include: Array<string>,
         collection: DocumentCollection
     ): Promise<void> {
-        let promise = new Promise(
-            (resolve: (value: void) => void, reject: (value: any) => void): void => {
-                let resources_by_id: IObjectsById<Resource> = {};
-                let store_keys = this.getStoreKeysFromDataCollection(datacollection);
+        let promise = new Promise((resolve: (value: void) => void, reject: (value: any) => void): void => {
+            let resources_by_id: IObjectsById<Resource> = {};
+            let store_keys = this.getStoreKeysFromDataCollection(datacollection);
 
-                // get resources for collection fill
-                Core.injectedServices.JsonapiStoreService.getDataResources(store_keys)
-                    .then(store_data_resources => {
-                        let include_promises: Array<Promise<object>> = [];
-                        let included_related_keys: Array<string> = [];
+            // get resources for collection fill
+            Core.injectedServices.JsonapiStoreService.getDataResources(store_keys)
+                .then(store_data_resources => {
+                    let include_promises: Array<Promise<object>> = [];
+                    let included_related_keys: Array<string> = [];
 
-                        for (let key in store_data_resources) {
-                            let data_resource = store_data_resources[key];
+                    for (let key in store_data_resources) {
+                        let data_resource = store_data_resources[key];
 
-                            resources_by_id[data_resource.id] = this.getResourceFromMemory(data_resource);
-                            resources_by_id[data_resource.id].fill({ data: data_resource });
+                        resources_by_id[data_resource.id] = this.getResourceFromMemory(data_resource);
+                        resources_by_id[data_resource.id].fill({ data: data_resource });
 
-                            // collect related store_keys
-                            Base.forEach(include, resource_alias => {
-                                let relationship = resources_by_id[data_resource.id].relationships[resource_alias];
-                                if (relationship instanceof DocumentResource) {
-                                    included_related_keys.push(relationship.data.type + '.' + relationship.data.id);
-                                } else if (relationship instanceof DocumentCollection) {
-                                    included_related_keys.push(...this.getStoreKeysFromDataCollection(relationship));
-                                }
-                            });
+                        // collect related store_keys
+                        Base.forEach(include, resource_alias => {
+                            let relationship = resources_by_id[data_resource.id].relationships[resource_alias];
+                            if (relationship instanceof DocumentResource) {
+                                included_related_keys.push(relationship.data.type + '.' + relationship.data.id);
+                            } else if (relationship instanceof DocumentCollection) {
+                                included_related_keys.push(...this.getStoreKeysFromDataCollection(relationship));
+                            }
+                        });
 
-                            // include some times is a collection :S
-                            /*
+                        // include some times is a collection :S
+                        /*
                             Base.forEach(include, resource_alias => {
                                 this.fillRelationshipFromStore(resources_by_id[data_resource.id], resource_alias, include_promises);
                             });
                             */
+                    }
+
+                    // no debo esperar a que se resuelvan los include
+                    if (include_promises.length === 0 && included_related_keys.length === 0) {
+                        if (datacollection.page) {
+                            collection.page.number = datacollection.page.number;
                         }
 
-                        // no debo esperar a que se resuelvan los include
-                        if (include_promises.length === 0 && included_related_keys.length === 0) {
-                            if (datacollection.page) {
-                                collection.page.number = datacollection.page.number;
+                        for (let dataresource of datacollection.data) {
+                            let resource: Resource = resources_by_id[dataresource.id];
+                            if (collection.data.indexOf(resource) !== -1) {
+                                continue;
                             }
+                            collection.data.push(resource);
+                        }
 
-                            for (let dataresource of datacollection.data) {
-                                let resource: Resource = resources_by_id[dataresource.id];
-                                if (collection.data.indexOf(resource) !== -1) {
-                                    continue;
+                        resolve(null);
+                    } else {
+                        // request from store all related resources requested on include
+                        let related_promises = [];
+                        Core.injectedServices.JsonapiStoreService.getDataResources(included_related_keys)
+                            .then(store_include_data_resources => {
+                                // move data to memory
+                                for (let key in store_include_data_resources) {
+                                    let data_resource = store_include_data_resources[key];
+
+                                    let resource = this.getResourceFromMemory(data_resource);
+                                    resource.fill({ data: data_resource });
                                 }
-                                collection.data.push(resource);
-                            }
+                                // all related included resources are on cacheMemory
+                                for (let key in resources_by_id) {
+                                    let resource = resources_by_id[key];
 
-                            resolve(null);
-                        } else {
-                            // request from store all related resources requested on include
-                            let related_promises = [];
-                            Core.injectedServices.JsonapiStoreService.getDataResources(included_related_keys)
-                                .then(store_include_data_resources => {
-                                    // move data to memory
-                                    for (let key in store_include_data_resources) {
-                                        let data_resource = store_include_data_resources[key];
+                                    Base.forEach(include, resource_alias => {
+                                        this.fillRelationshipFromStore(resource, resource_alias, related_promises);
+                                    });
+                                }
+                            })
+                            .then(async () => {
+                                // we wait to resolution of eath included type
+                                return Promise.all(related_promises);
+                            })
+                            .then(success3 => {
+                                if (datacollection.page) {
+                                    collection.page.number = datacollection.page.number;
+                                }
 
-                                        let resource = this.getResourceFromMemory(data_resource);
-                                        resource.fill({ data: data_resource });
-                                    }
-                                    // all related included resources are on cacheMemory
-                                    for (let key in resources_by_id) {
-                                        let resource = resources_by_id[key];
+                                for (let dataresource of datacollection.data) {
+                                    let resource: Resource = resources_by_id[dataresource.id];
+                                    collection.data.push(resource);
+                                }
 
-                                        Base.forEach(include, resource_alias => {
-                                            this.fillRelationshipFromStore(resource, resource_alias, related_promises);
-                                        });
-                                    }
-                                })
-                                .then(async () => {
-                                    // we wait to resolution of eath included type
-                                    return Promise.all(related_promises);
-                                })
-                                .then(success3 => {
-                                    if (datacollection.page) {
-                                        collection.page.number = datacollection.page.number;
-                                    }
-
-                                    for (let dataresource of datacollection.data) {
-                                        let resource: Resource = resources_by_id[dataresource.id];
-                                        collection.data.push(resource);
-                                    }
-
-                                    resolve(null);
-                                })
-                                .catch(error3 => {
-                                    reject(error3);
-                                });
-                        }
-                    })
-                    .catch(err => {
-                        reject(err);
-                    });
-            }
-        );
+                                resolve(null);
+                            })
+                            .catch(error3 => {
+                                reject(error3);
+                            });
+                    }
+                })
+                .catch(err => {
+                    reject(err);
+                });
+        });
 
         return promise;
     }
