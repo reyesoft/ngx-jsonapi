@@ -9,9 +9,7 @@ import { JsonapiConfig } from '../jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Core } from '../core';
 import { Observable, BehaviorSubject, of as observableOf } from 'rxjs';
-import { delay } from 'rxjs/operators';
 import { Service } from '../service';
-import * as localForage from 'localforage';
 
 class TestResource extends Resource {
     public type = 'test_resources';
@@ -99,7 +97,7 @@ describe('core methods', () => {
     });
 
     it(`when requesting a resource with optional attributes, the incoming attributes should be merged with cached ones`, async () => {
-        // TODO: fix library error: cleacCache and clearCacheMemory are not droping localForage allstore instance correctly while testing
+        // TODO: fix library error: clearCache and clearCacheMemory are not droping localForage allstore instance correctly while testing
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),

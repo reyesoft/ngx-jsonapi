@@ -36,10 +36,11 @@ export class Service<R extends Resource = Resource> {
         return Core.me.registerService<R>(this);
     }
 
+    /**
+     * @deprecated since 2.2.0. Use new() method.
+     */
     public newResource(): R {
-        let resource = new this.resource();
-
-        return <R>resource;
+        return this.new();
     }
 
     public newCollection(): DocumentCollection<R> {
@@ -47,13 +48,13 @@ export class Service<R extends Resource = Resource> {
     }
 
     public new(): R {
-        let resource = this.newResource();
+        let resource = new this.resource();
         resource.type = this.type;
         // issue #36: just if service is not registered yet.
         this.getService();
         resource.reset();
 
-        return resource;
+        return <R>resource;
     }
 
     public getPrePath(): string {
@@ -73,13 +74,7 @@ export class Service<R extends Resource = Resource> {
         path.appendPath(id);
 
         // CACHEMEMORY
-        // NOTE: this if is a fix to resources with included requests
-        let resource: R;
-        if (path.includes.length === 0) {
-            resource = this.getOrCreateResource(id);
-        } else {
-            resource = this.createResource(id);
-        }
+        let resource: R = this.getOrCreateResource(id);
         resource.is_loading = true;
 
         let subject = new BehaviorSubject<R>(resource);
@@ -88,6 +83,7 @@ export class Service<R extends Resource = Resource> {
         if (isLive(resource, params.ttl) && Object.keys(params.fields).length === 0) {
             setTimeout(() => {
                 resource.is_loading = false;
+                resource.source = 'memory';
                 subject.complete();
             });
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -98,9 +94,10 @@ export class Service<R extends Resource = Resource> {
                     // when fields is set, get resource form server
                     if (!isLive(resource, params.ttl) || Object.keys(params.fields).length > 0) {
                         subject.next(resource);
-                        throw new Error('No está viva la caché de localstorage');
+                        throw new Error('No está viva la caché de IndexedDB');
                     }
                     resource.is_loading = false;
+                    resource.source = 'store';
                     subject.next(resource);
                     subject.complete();
                 })
@@ -120,6 +117,7 @@ export class Service<R extends Resource = Resource> {
             success => {
                 resource.fill(<IDataObject>success);
                 resource.is_loading = false;
+                resource.source = 'server';
                 this.getService().cachememory.setResource(resource, true);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
@@ -138,7 +136,9 @@ export class Service<R extends Resource = Resource> {
     }
 
     public getOrCreateCollection(path: PathCollectionBuilder): DocumentCollection<R> {
-        let collection = <DocumentCollection<R>>this.getService().cachememory.getOrCreateCollection(path.getForCache());
+        const service = this.getService();
+        const collection = <DocumentCollection<R>>service.cachememory.getOrCreateCollection(path.getForCache());
+        collection.ttl = service.collections_ttl;
 
         return collection;
     }
@@ -219,20 +219,13 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
-        // if ttl is not defined inthe colleciton, use the service ttl
-        temporary_collection.ttl = temporary_collection.ttl || this.getService().collections_ttl;
-
         // when fields is set, get resource form server
-        if (
-            (typeof params.ttl === 'number' ? params.ttl : temporary_collection.ttl) > 0 &&
-            isLive(temporary_collection, params.ttl) &&
-            Object.keys(params.fields).length === 0
-        ) {
+        if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
             temporary_collection.source = 'memory';
             subject.next(temporary_collection);
             setTimeout(() => subject.complete(), 0);
-        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            // STORE
+        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'individual') {
+            // STORE (individual)
             temporary_collection.is_loading = true;
 
             this.getService()
@@ -247,6 +240,7 @@ export class Service<R extends Resource = Resource> {
                         // when fields is set, get resource form server
                         if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
                             temporary_collection.is_loading = false;
+                            temporary_collection.builded = true;
                             subject.next(temporary_collection);
                             subject.complete();
                         } else {
@@ -257,6 +251,30 @@ export class Service<R extends Resource = Resource> {
                         this.getAllFromServer(path, params, temporary_collection, subject);
                     }
                 );
+        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'compact') {
+            // STORE (compact)
+            temporary_collection.is_loading = true;
+
+            Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact').subscribe(
+                success => {
+                    temporary_collection.source = 'store';
+                    temporary_collection.fill(success);
+                    temporary_collection.cache_last_update = success._lastupdate_time;
+
+                    // when fields is set, get resource form server
+                    if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
+                        temporary_collection.is_loading = false;
+                        temporary_collection.builded = true;
+                        subject.next(temporary_collection);
+                        subject.complete();
+                    } else {
+                        this.getAllFromServer(path, params, temporary_collection, subject);
+                    }
+                },
+                err => {
+                    this.getAllFromServer(path, params, temporary_collection, subject);
+                }
+            );
         } else {
             this.getAllFromServer(path, params, temporary_collection, subject);
         }
@@ -279,9 +297,11 @@ export class Service<R extends Resource = Resource> {
 
                 // this create a new ID for every resource (for caching proposes)
                 // for example, two URL return same objects but with different attributes
+                // tslint:disable-next-line:deprecation
                 if (params.cachehash) {
                     for (const key in success.data) {
                         let resource = success.data[key];
+                        // tslint:disable-next-line:deprecation
                         resource.id = resource.id + params.cachehash;
                     }
                 }
@@ -290,15 +310,17 @@ export class Service<R extends Resource = Resource> {
 
                 this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+                    // setCollection takes 1 ms per item
                     this.getService().cachestore.setCollection(path.getForCache(), temporary_collection, params.include);
+                    if (params.store_cache_method === 'compact') {
+                        Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <IDataCollection>success);
+                    }
                 }
 
                 subject.next(temporary_collection);
                 subject.complete();
             },
             error => {
-                // do not replace source, because localstorage don't write if = server
-                // temporary_collection.source = 'server';
                 temporary_collection.is_loading = false;
                 subject.next(temporary_collection);
                 subject.error(error);

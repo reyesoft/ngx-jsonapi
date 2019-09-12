@@ -185,7 +185,7 @@ describe('core methods', () => {
         test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));
 
         await test_service
-            .get('1')
+            .get('1', { include: ['test_resource', 'test_resources'] })
             .toPromise()
             .then(resource => {
                 expect(resource.type).toBe('test_resources');

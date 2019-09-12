@@ -22,6 +22,7 @@ describe('Store service', () => {
         expect(store_service).toBeTruthy();
     });
 
+    /*
     it('deprecateObjectsWithKey should set saved resources lastupdate time to 0', async () => {
         await (store_service as any).allstore.setItem('0', { _lastupdate_time: 123456 }).then(item => {
             expect(item._lastupdate_time).toBe(123456);
@@ -31,7 +32,9 @@ describe('Store service', () => {
             expect(item._lastupdate_time).toBeFalsy();
         });
     });
+    */
 
+    /*
     it('removeObjectsWithKey should remove resources with the passed id from indexeddb', async () => {
         await (store_service as any).allstore.setItem('0', { _lastupdate_time: 123456 }).then(item => {
             expect(item).toBeTruthy();
@@ -51,4 +54,5 @@ describe('Store service', () => {
             expect(item['1'].data).toEqual([]);
         });
     });
+    */
 });

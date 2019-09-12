@@ -1,8 +1,5 @@
 import { Converter } from './converter';
 import { Core } from '../core';
-import { IDataResource } from '../interfaces/data-resource';
-import { IResourcesByType } from 'ngx-jsonapi';
-
 import { JsonapiConfig } from 'src/jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
