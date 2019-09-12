@@ -24,6 +24,7 @@
 </span>
 
 <h4>Books</h4>
+<demo-collection-info [collection]="author.relationships.books"></demo-collection-info>
 <table class="table table-striped" *ngIf="author.relationships.books.builded">
     <thead>
         <tr>

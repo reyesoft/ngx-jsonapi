@@ -15,34 +15,38 @@ export class CacheStore {
         let mypromise: Promise<object> = new Promise((resolve, reject): void => {
             Core.injectedServices.JsonapiStoreService.getDataObject(resource.type, resource.id).subscribe(
                 success => {
-                    resource.fill({ data: success });
+                    try {
+                        resource.fill({ data: success });
 
-                    // include some times is a collection :S
-                    let include_promises: Array<Promise<object>> = [];
+                        // include some times is a collection :S
+                        let include_promises: Array<Promise<object>> = [];
 
-                    // NOTE: fix to resources stored without relationships
-                    if (include.length > 0 && !resource.relationships) {
-                        resource.relationships = new (resource.getService()).resource().relationships;
-                    }
+                        // NOTE: fix to resources stored without relationships
+                        if (include.length > 0 && !resource.relationships) {
+                            resource.relationships = new (resource.getService()).resource().relationships;
+                        }
 
-                    for (let resource_alias of include) {
-                        this.fillRelationshipFromStore(resource, resource_alias, include_promises);
-                    }
+                        for (let resource_alias of include) {
+                            this.fillRelationshipFromStore(resource, resource_alias, include_promises);
+                        }
 
-                    resource.cache_last_update = success._lastupdate_time;
+                        resource.cache_last_update = success._lastupdate_time;
 
-                    // no debo esperar a que se resuelvan los include
-                    if (include_promises.length === 0) {
-                        resolve(success);
-                    } else {
-                        // esperamos las promesas de los include antes de dar el resolve
-                        Promise.all(include_promises)
-                            .then(success3 => {
-                                resolve(success3);
-                            })
-                            .catch(error3 => {
-                                reject(error3);
-                            });
+                        // no debo esperar a que se resuelvan los include
+                        if (include_promises.length === 0) {
+                            resolve(success);
+                        } else {
+                            // esperamos las promesas de los include antes de dar el resolve
+                            Promise.all(include_promises)
+                                .then(success3 => {
+                                    resolve(success3);
+                                })
+                                .catch(error3 => {
+                                    reject(error3);
+                                });
+                        }
+                    } catch (e) {
+                        reject();
                     }
                 },
                 () => {
@@ -296,7 +300,7 @@ export class CacheStore {
         return promise;
     }
 
-    private async fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
+    private fillRelationshipFromStore(resource: Resource, resource_alias: string, include_promises: Array<any>) {
         if (resource_alias.includes('.')) {
             let included_resource_alias_parts = resource_alias.split('.');
             let datadocument = resource.relationships[included_resource_alias_parts[0]].data;
@@ -357,9 +361,12 @@ export class CacheStore {
             */
 
             relationship.data.forEach(data_resource => {
-                resource = this.getResourceFromMemory(data_resource);
+                if (Object.keys(data_resource.attributes).length === 0) {
+                    // @todo problem when you get /#/authors/22
+                    throw new Error('Resource is required by include, but I dont have info of this resource. Store broken?');
+                }
 
-                return;
+                this.getResourceFromMemory(data_resource);
             });
 
             // ToDo we have same before
