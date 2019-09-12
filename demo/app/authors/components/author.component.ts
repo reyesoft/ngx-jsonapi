@@ -23,7 +23,6 @@ export class AuthorComponent {
             authorsService.get(id, { include: ['books', 'photos'], ttl: 100 }).subscribe(
                 author => {
                     this.author = author;
-                    console.log(author.is_loading);
                 },
                 error => console.error('Could not load author.', error)
             );
