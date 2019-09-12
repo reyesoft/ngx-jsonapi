@@ -84,6 +84,7 @@ export class Service<R extends Resource = Resource> {
             setTimeout(() => {
                 resource.is_loading = false;
                 resource.source = 'memory';
+                subject.next(resource);
                 subject.complete();
             });
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
