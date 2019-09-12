@@ -309,4 +309,35 @@ export class Resource implements ICacheable {
 
         return subject;
     }
+
+    public setLoaded(value: boolean): void {
+        // tslint:disable-next-line:deprecation
+        this.is_loading = !value;
+        this.loaded = value;
+    }
+
+    public setLoadedAndPropagate(value: boolean): void {
+        this.setLoaded(value);
+        for (let relationship_alias in this.relationships) {
+            let relationship = this.relationships[relationship_alias];
+            if (relationship instanceof DocumentCollection) {
+                relationship.setLoaded(value);
+            }
+        }
+    }
+
+    /** @todo generate interface */
+    public setSource(value: 'new' | 'memory' | 'store' | 'server'): void {
+        this.source = value;
+    }
+
+    public setSourceAndPropagate(value: 'new' | 'memory' | 'store' | 'server'): void {
+        this.setSource(value);
+        for (let relationship_alias in this.relationships) {
+            let relationship = this.relationships[relationship_alias];
+            if (relationship instanceof DocumentCollection) {
+                relationship.setSource(value);
+            }
+        }
+    }
 }

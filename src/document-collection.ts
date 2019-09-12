@@ -105,12 +105,12 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
     public setBuildedAndPropagate(value: boolean): void {
         this.setBuilded(value);
         this.data.forEach(resource => {
-            for (let relationship_alias in resource.relationships) {
-                let relationship = resource.relationships[relationship_alias];
-                if (relationship instanceof DocumentCollection) {
-                    relationship.setBuilded(value);
-                }
-            }
+            resource.setLoaded(value);
         });
+    }
+
+    /** @todo generate interface */
+    public setSource(value: 'new' | 'memory' | 'store' | 'server'): void {
+        this.source = value;
     }
 }

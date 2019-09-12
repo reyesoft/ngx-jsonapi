@@ -82,8 +82,7 @@ export class Service<R extends Resource = Resource> {
 
         // when fields is set, get resource form server
         if (isLive(resource, params.ttl) && Object.keys(params.fields).length === 0) {
-            resource.is_loading = false;
-            resource.loaded = true;
+            resource.setLoaded(true);
             resource.source = 'memory';
             setTimeout(() => {
                 subject.complete();
@@ -98,8 +97,7 @@ export class Service<R extends Resource = Resource> {
                         subject.next(resource);
                         throw new Error('No está viva la caché de IndexedDB');
                     }
-                    resource.is_loading = false;
-                    resource.loaded = true;
+                    resource.setLoadedAndPropagate(true);
                     resource.source = 'store';
                     subject.next(resource);
                     subject.complete();
@@ -119,9 +117,8 @@ export class Service<R extends Resource = Resource> {
         Core.get(path.get()).subscribe(
             success => {
                 resource.fill(<IDataObject>success);
-                resource.is_loading = false;
-                resource.loaded = true;
-                resource.source = 'server';
+                resource.setLoadedAndPropagate(true);
+                resource.setSourceAndPropagate('server');
                 this.getService().cachememory.setResource(resource, true);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
