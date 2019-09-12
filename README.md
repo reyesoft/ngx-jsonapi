@@ -24,7 +24,7 @@ Data is obtained from [Json Api Playground](https://jsonapiplayground.reyesoft.c
 ## Supported features
 
 -   Cache (on memory): TTL for collections and resources. Before a HTTP request objects are setted with cached data.
--   Cache on localstorage
+-   Cache on IndexedDB
 -   Pagination
 -   Sorting
 -   [Include param support](http://jsonapi.org/format/#fetching-includes) (also, when you save)
@@ -132,9 +132,9 @@ export class AuthorsComponent {
 
 ```html
 <p *ngFor="let author of authors.data; trackBy: authors.trackBy">
-  id: {{ author.id }} <br />
-  name: {{ author.attributes.name }} <br />
-  birth date: {{ author.attributes.date_of_birth | date }}
+    id: {{ author.id }} <br />
+    name: {{ author.attributes.name }} <br />
+    birth date: {{ author.attributes.date_of_birth | date }}
 </p>
 ```
 

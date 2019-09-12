@@ -84,6 +84,7 @@ export class Core {
         return <Service<R>>clase;
     }
 
+    // @todo this function could return an empty value, fix required
     public getResourceService(type: string): Service {
         return this.resourceServices[type];
     }
@@ -134,6 +135,7 @@ export class Core {
     // just an helper
     public duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: Array<string>): R {
         let newresource = <R>this.getResourceService(resource.type).new();
+        newresource.id = 'new_' + Math.floor(Math.random() * 10000).toString();
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };
 
         for (const alias in resource.relationships) {
@@ -149,7 +151,7 @@ export class Core {
             } else {
                 // relation hasMany
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
-                    Object.values(relationship.data).forEach(relationresource => {
+                    relationship.data.forEach(relationresource => {
                         newresource.addRelationship(this.duplicateResource(<R>relationresource), alias);
                     });
                 } else {

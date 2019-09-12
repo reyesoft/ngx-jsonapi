@@ -46,8 +46,8 @@ export class ResourceRelationshipsConverter {
                 this.__buildRelationshipHasMany(relation_from_value, relation_alias);
             } else if (this.relationships_dest[relation_alias] instanceof DocumentResource) {
                 this.__buildRelationshipHasOne(relation_from_value, relation_alias);
-            } else {
-                console.warn(`Relation ${relation_alias} doesn't exist`);
+                // } else if (isDevMode()) {
+                //    console.warn(`Relation ${relation_alias} received, but doesn't exist on schema.`);
             }
         }
     }
@@ -95,10 +95,13 @@ export class ResourceRelationshipsConverter {
 
         if (relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_alias].data).id) {
             this.relationships_dest[relation_alias].data = new Resource();
+            // with this, fromServer dont fill relationship
+            // (<Resource>this.relationships_dest[relation_alias].data).id = relation_data_from.data.id;
+            (<Resource>this.relationships_dest[relation_alias].data).type = relation_data_from.data.type;
         }
 
         if ((<Resource>this.relationships_dest[relation_alias].data).id !== relation_data_from.data.id) {
-            let resource_data = this.__buildRelationship(relation_data_from.data, this.included_resources);
+            let resource_data = this.__buildRelationship(relation_data_from.data);
             if (resource_data) {
                 this.relationships_dest[relation_alias].data = resource_data;
                 this.relationships_dest[relation_alias].builded = true;
@@ -110,10 +113,13 @@ export class ResourceRelationshipsConverter {
         }
     }
 
-    private __buildRelationship(resource_data_from: IDataResource, included_array: IResourcesByType): Resource {
-        if (resource_data_from.type in included_array && resource_data_from.id in included_array[resource_data_from.type]) {
+    private __buildRelationship(resource_data_from: IDataResource): Resource {
+        if (
+            resource_data_from.type in this.included_resources &&
+            resource_data_from.id in this.included_resources[resource_data_from.type]
+        ) {
             // it's in included
-            let data = included_array[resource_data_from.type][resource_data_from.id];
+            let data = this.included_resources[resource_data_from.type][resource_data_from.id];
 
             // Store the include in cache
             this.getService(resource_data_from.type).cachememory.setResource(data, true);
