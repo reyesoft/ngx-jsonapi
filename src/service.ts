@@ -76,12 +76,14 @@ export class Service<R extends Resource = Resource> {
         // CACHEMEMORY
         let resource: R = this.getOrCreateResource(id);
         resource.is_loading = true;
+        resource.loaded = false;
 
         let subject = new BehaviorSubject<R>(resource);
 
         // when fields is set, get resource form server
         if (isLive(resource, params.ttl) && Object.keys(params.fields).length === 0) {
             resource.is_loading = false;
+            resource.loaded = true;
             resource.source = 'memory';
             setTimeout(() => {
                 subject.complete();
@@ -97,6 +99,7 @@ export class Service<R extends Resource = Resource> {
                         throw new Error('No está viva la caché de IndexedDB');
                     }
                     resource.is_loading = false;
+                    resource.loaded = true;
                     resource.source = 'store';
                     subject.next(resource);
                     subject.complete();
@@ -117,6 +120,7 @@ export class Service<R extends Resource = Resource> {
             success => {
                 resource.fill(<IDataObject>success);
                 resource.is_loading = false;
+                resource.loaded = true;
                 resource.source = 'server';
                 this.getService().cachememory.setResource(resource, true);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -226,7 +230,7 @@ export class Service<R extends Resource = Resource> {
             setTimeout(() => subject.complete(), 0);
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'individual') {
             // STORE (individual)
-            temporary_collection.is_loading = true;
+            temporary_collection.setLoaded(false);
 
             this.getService()
                 .cachestore.fillCollectionFromStore(path.getForCache(), path.includes, temporary_collection)
@@ -239,8 +243,8 @@ export class Service<R extends Resource = Resource> {
 
                         // when fields is set, get resource form server
                         if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
-                            temporary_collection.is_loading = false;
-                            temporary_collection.builded = true;
+                            temporary_collection.setLoadedAndPropagate(true);
+                            temporary_collection.setBuildedAndPropagate(true);
                             subject.next(temporary_collection);
                             subject.complete();
                         } else {
@@ -253,7 +257,7 @@ export class Service<R extends Resource = Resource> {
                 );
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'compact') {
             // STORE (compact)
-            temporary_collection.is_loading = true;
+            temporary_collection.setLoaded(false);
 
             Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact').subscribe(
                 success => {
@@ -263,8 +267,8 @@ export class Service<R extends Resource = Resource> {
 
                     // when fields is set, get resource form server
                     if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
-                        temporary_collection.is_loading = false;
-                        temporary_collection.builded = true;
+                        temporary_collection.setLoadedAndPropagate(true);
+                        temporary_collection.setBuildedAndPropagate(true);
                         subject.next(temporary_collection);
                         subject.complete();
                     } else {
@@ -288,13 +292,10 @@ export class Service<R extends Resource = Resource> {
         temporary_collection: DocumentCollection<R>,
         subject: BehaviorSubject<DocumentCollection<R>>
     ) {
-        temporary_collection.is_loading = true;
+        temporary_collection.setLoaded(false);
         subject.next(temporary_collection);
         Core.get(path.get()).subscribe(
             success => {
-                temporary_collection.source = 'server';
-                temporary_collection.is_loading = false;
-
                 // this create a new ID for every resource (for caching proposes)
                 // for example, two URL return same objects but with different attributes
                 // tslint:disable-next-line:deprecation
@@ -307,6 +308,8 @@ export class Service<R extends Resource = Resource> {
                 }
                 temporary_collection.fill(<IDataCollection>success);
                 temporary_collection.cache_last_update = Date.now();
+                temporary_collection.source = 'server';
+                temporary_collection.setLoadedAndPropagate(true);
 
                 this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -321,7 +324,7 @@ export class Service<R extends Resource = Resource> {
                 subject.complete();
             },
             error => {
-                temporary_collection.is_loading = false;
+                temporary_collection.setLoadedAndPropagate(true);
                 subject.next(temporary_collection);
                 subject.error(error);
             }

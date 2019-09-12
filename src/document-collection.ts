@@ -79,4 +79,38 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
 
         return total_resources < this.page.total_resources;
     }
+
+    public setLoaded(value: boolean): void {
+        // tslint:disable-next-line:deprecation
+        this.is_loading = !value;
+        this.loaded = value;
+    }
+
+    public setLoadedAndPropagate(value: boolean): void {
+        this.setLoaded(value);
+        this.data.forEach(resource => {
+            for (let relationship_alias in resource.relationships) {
+                let relationship = resource.relationships[relationship_alias];
+                if (relationship instanceof DocumentCollection) {
+                    relationship.setLoaded(value);
+                }
+            }
+        });
+    }
+
+    public setBuilded(value: boolean): void {
+        this.builded = value;
+    }
+
+    public setBuildedAndPropagate(value: boolean): void {
+        this.setBuilded(value);
+        this.data.forEach(resource => {
+            for (let relationship_alias in resource.relationships) {
+                let relationship = resource.relationships[relationship_alias];
+                if (relationship instanceof DocumentCollection) {
+                    relationship.setBuilded(value);
+                }
+            }
+        });
+    }
 }

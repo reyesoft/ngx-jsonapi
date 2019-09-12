@@ -8,6 +8,7 @@ describe('common funcions', () => {
     it('should be isLive return a correct boolean value', () => {
         let cacheable: ICacheable = {
             is_loading: false,
+            loaded: true,
             source: 'server',
             cache_last_update: Date.now() - 1000 * 1000
         };

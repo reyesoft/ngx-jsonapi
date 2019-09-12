@@ -127,7 +127,7 @@ export class CacheStore {
                 if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
                     collection.source = 'store'; // collection from storeservice, resources from memory
                     collection.builded = true;
-                    collection.is_loading = false;
+                    collection.setLoaded(true);
                     collection.cache_last_update = data_collection._lastupdate_time;
                     subject.next(collection);
                     setTimeout(() => subject.complete());
@@ -145,7 +145,7 @@ export class CacheStore {
                         collection.source = 'store'; // collection and resources from storeservice
                         collection.cache_last_update = data_collection._lastupdate_time;
                         collection.builded = true;
-                        collection.is_loading = false;
+                        collection.setLoaded(true);
                         subject.next(collection);
                         setTimeout(() => subject.complete());
                     })

@@ -25,6 +25,7 @@ export class Resource implements ICacheable {
     public is_new = true;
     public is_saving = false;
     public is_loading = false;
+    public loaded = true;
     public source: 'new' | 'memory' | 'store' | 'server' = 'new';
     public cache_last_update = 0;
     public ttl = 0;
@@ -261,7 +262,7 @@ export class Resource implements ICacheable {
 
     public save<T extends Resource>(params?: IParamsResource): Observable<object> {
         params = { ...Base.ParamsResource, ...params };
-        if (this.is_saving || this.is_loading) {
+        if (this.is_saving || !this.loaded) {
             return of({});
         }
         this.is_saving = true;
