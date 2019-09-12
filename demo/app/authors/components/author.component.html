@@ -13,6 +13,7 @@
 </p>
 
 <h4>Photos</h4>
+<demo-collection-info [collection]="author.relationships.photos"></demo-collection-info>
 <span *ngIf="author.relationships.photos.data.length === 0">
     This author don't have any photo :(
 </span>
@@ -24,6 +25,7 @@
 </span>
 
 <h4>Books</h4>
+<demo-collection-info [collection]="author.relationships.books"></demo-collection-info>
 <table class="table table-striped" *ngIf="author.relationships.books.builded">
     <thead>
         <tr>

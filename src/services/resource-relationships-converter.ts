@@ -35,7 +35,9 @@ export class ResourceRelationshipsConverter {
                 // TODO: FE-92 --- check and improve conditions when building has-one relationships
                 this.relationships_dest[relation_alias].data = null;
                 this.relationships_dest[relation_alias].builded = true;
+                // tslint:disable-next-line:deprecation
                 this.relationships_dest[relation_alias].is_loading = false;
+                this.relationships_dest[relation_alias].loaded = true;
             }
 
             if (!relation_from_value.data) {
