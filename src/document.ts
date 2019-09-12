@@ -6,7 +6,7 @@ export class Document implements IDocumentData {
     public builded = false;
     public content: 'ids' | 'collection' | 'id' | 'resource';
 
-    /** @deprecated since 2.2.0 */
+    // deprecated since 2.2.0. Use loaded.
     public is_loading = true;
     public loaded = false;
     public source: 'new' | 'memory' | 'store' | 'server' = 'new';
