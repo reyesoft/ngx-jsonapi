@@ -118,7 +118,7 @@
         "codelyzer": "4.2.1",
         "conventional-changelog": "^1.1.4",
         "core-js": "^2.4.1",
-        "coveralls": "^2.13.0",
+        "coveralls": "^3.0.6",
         "cpy-cli": "^1.0.1",
         "deep-freeze": "^0.0.1",
         "fake-indexeddb": "^2.1.1",
