@@ -44,9 +44,7 @@ describe('resource', () => {
                 id: '1234',
                 attributes: { name: 'test_name' },
                 relationships: {}
-            },
-            builded: false,
-            content: 'resource'
+            }
         };
         expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', expected_resource_in_save, true);
         resource.relationships.has_many_relationship = new DocumentCollection();
