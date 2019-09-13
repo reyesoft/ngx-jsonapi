@@ -45,9 +45,7 @@ describe('resource', () => {
                 id: '1234',
                 attributes: { name: 'test_name' },
                 relationships: {}
-            },
-            builded: false,
-            content: 'resource'
+            }
         };
         expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', expected_resource_in_save, true);
         resource.relationships.has_many_relationship = new DocumentCollection();
@@ -63,9 +61,7 @@ describe('resource', () => {
                     has_many_relationship: { data: [] },
                     has_one_relationship: { data: null }
                 }
-            },
-            builded: false,
-            content: 'resource'
+            }
         };
         expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', second_expected_resource_in_save, true);
     });
@@ -92,8 +88,6 @@ describe('resource', () => {
             // id: '',
         };
         let to_object_resource: IDataObject = new_resource.toObject(params);
-        expect(to_object_resource.builded).toBeFalsy();
-        expect(to_object_resource.content).toBe('resource');
         expect(to_object_resource.data.id).toBe('1');
         expect(to_object_resource.data.type).toBe('main');
         expect(to_object_resource.data.attributes.main_attribute).toBe('123456789');
@@ -290,9 +284,7 @@ describe('resource', () => {
                 attributes: { name: 'test_name' },
                 relationships: {},
                 meta: { some_data: 'some_data' }
-            },
-            builded: false,
-            content: 'resource'
+            }
         };
         expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', expected_resource_in_save, true);
     });
@@ -326,9 +318,7 @@ describe('resource', () => {
                 attributes: { name: 'test_name' },
                 relationships: {}
             },
-            builded: false,
-            meta: { restore: true },
-            content: 'resource'
+            meta: { restore: true }
         };
         expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', expected_resource_in_save, true);
     });
@@ -362,9 +352,7 @@ describe('resource', () => {
                 attributes: { name: 'test_name' },
                 relationships: {}
             },
-            builded: false,
-            meta: { restore: true },
-            content: 'resource'
+            meta: { restore: true }
         };
         expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', expected_resource_in_save, true);
     });
