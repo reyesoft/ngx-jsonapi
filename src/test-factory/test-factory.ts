@@ -30,8 +30,8 @@ export class TestFactory {
         return document_data;
     }
 
-    public static getCollectionDocumentData(document_class: typeof Resource, include: Array<string> = []): IDocumentData {
-        let main_collection: DocumentCollection = this.getCollection(document_class);
+    public static getCollectionDocumentData(document_class: typeof Resource, size=2, include: Array<string> = []): IDocumentData {
+        let main_collection: DocumentCollection = this.getCollection(document_class, size, include);
 
         let document_data: IDocumentData = {
             data: main_collection.data
@@ -125,7 +125,7 @@ export class TestFactory {
 
     public static getCollection(resources_class: typeof Resource, size: number = 2, include: Array<string> = []): DocumentCollection {
         let collection: DocumentCollection<Resource> = new DocumentCollection();
-        for (let index; index < size; index++) {
+        for (let index = 0; index < size; index++) {
             let factory_name = `get${resources_class.name}`;
             let author = this[factory_name](undefined, include);
             collection.data.push(author);
