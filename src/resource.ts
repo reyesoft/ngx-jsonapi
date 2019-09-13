@@ -124,9 +124,7 @@ export class Resource implements ICacheable {
                 id: this.id,
                 attributes: attributes,
                 relationships: relationships
-            },
-            builded: false,
-            content: 'resource'
+            }
         };
 
         // resource's meta
@@ -228,7 +226,7 @@ export class Resource implements ICacheable {
         if (relation instanceof DocumentCollection) {
             relation.data = relation.data.filter(resource => resource.id !== id);
         } else {
-            relation.data.reset();
+            relation.data = null;
         }
 
         return true;
