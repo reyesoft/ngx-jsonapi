@@ -18,19 +18,6 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 
-// class MockResource extends Resource {
-//     public attributes = {
-//         name: '',
-//         description: ''
-//     };
-//     public type = 'resource';
-// }
-//
-// class MockResourcesService extends Service<MockResource> {
-//     public type = 'resource';
-//     public resource = MockResource;
-// }
-
 describe('service methods', () => {
     let core;
     let service;

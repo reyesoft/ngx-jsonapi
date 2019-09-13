@@ -3,15 +3,24 @@ import { DocumentCollection } from 'src/document-collection';
 import { DocumentResource } from '../document-resource';
 import { Service } from '../service';
 import { Book } from './books.service';
+import { Photo } from './photos.service';
 
 export class Author extends Resource {
-    public type = 'authors';
-    public id = '';
-    public attributes = { name: '' };
-    public relationships = {
-        favourite_book: new DocumentResource<Book>(),
-        books: new DocumentCollection<Book>()
+    public attributes = {
+        name: '',
+        date_of_birth: new Date(),
+        date_of_death: new Date(),
+        created_at: new Date(),
+        updated_at: new Date()
     };
+    public relationships: {
+        books: DocumentCollection<Book>;
+        photos: DocumentCollection<Photo>;
+    } = {
+        books: new DocumentCollection<Book>(),
+        photos: new DocumentCollection<Photo>()
+    };
+    public type = 'authors';
     public ttl = 0;
 }
 
@@ -20,7 +29,7 @@ export class AuthorsService extends Service<Author> {
         super();
         this.register();
     }
-    public type = 'authors';
     public resource = Author;
-    public ttl = 0;
+    public type = 'authors';
+    public collections_ttl = 0;
 }
