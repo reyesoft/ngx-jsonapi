@@ -9,6 +9,7 @@ import { JsonapiConfig } from './jsonapi-config';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TestFactory } from './test-factory/test-factory';
 import { Author, AuthorsService } from './test-factory/authors.service';
+import { delay, filter } from 'rxjs/operators';
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
@@ -43,5 +44,41 @@ describe('service methods', () => {
         expect(resource instanceof Author).toBeTruthy();
         expect(resource.id).toEqual('31');
         expect(resource.type).toEqual('authors');
+    });
+});
+
+let test_response_subject = new BehaviorSubject(new HttpResponse());
+
+class DynamicHttpHandlerMock implements HttpHandler {
+    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+        return test_response_subject.asObservable().pipe(delay(100));
+    }
+}
+
+describe('not cached collections', () => {
+    let core: Core;
+    let authorsService: AuthorsService;
+
+    beforeAll(() => {
+        core = new Core(
+            new JsonapiConfig(),
+            new JsonapiStore(),
+            new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
+        );
+        authorsService = new AuthorsService();
+        authorsService.register();
+    });
+
+    it(`when a requested collection is not cached, all() should request it to the server and emit before it's loaded or builded`, () => {
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
+
+        authorsService.all().subscribe(
+            authors => {
+                expect(authors.is_loading).toBe(true);
+                expect(authors.loaded).toBe(false);
+                expect(authors.builded).toBe(false);
+            }
+        );
     });
 });

@@ -26,29 +26,6 @@ export class TestFactory {
         };
 
         this.fillDocumentDataIncludedRelatioships(document_data, include);
-        // for (let included_alias of include) {
-        //     if (!document_data.included) {
-        //         document_data.included = [];
-        //     }
-        //
-        //     if (!(<Resource>document_data.data).relationships[included_alias].data) {
-        //         continue;
-        //     }
-        //
-        //     let relatioship_content = (<Resource>document_data.data).relationships[included_alias];
-        //
-        //     if (relatioship_content instanceof DocumentResource) {
-        //         document_data.included.push(
-        //             this[`get${this.resource_classes_by_type[relatioship_content.data.type]}`](relatioship_content.data.id)
-        //         );
-        //     } else if (relatioship_content instanceof DocumentCollection) {
-        //         for (let has_many_relationship of (<DocumentCollection>(<Resource>document_data.data).relationships[included_alias]).data) {
-        //             document_data.included.push(
-        //                 this[`get${this.resource_classes_by_type[has_many_relationship.type]}`](has_many_relationship.id)
-        //             );
-        //         }
-        //     }
-        // }
 
         return document_data;
     }
@@ -98,6 +75,7 @@ export class TestFactory {
         // NOTE: create book
         let book: Book = new Book();
         book.id = this.getId(id);
+        book.ttl = ttl;
         this.fillBookAttirbutes(book);
 
         // NOTE: add author
@@ -119,6 +97,7 @@ export class TestFactory {
         // NOTE: create author
         let author: Author = new Author();
         author.id = this.getId(id);
+        author.ttl = ttl;
         this.fillAuthorAttirbutes(author);
 
         // NOTE: add books
@@ -138,34 +117,11 @@ export class TestFactory {
     public static getPhoto(id?: string, include: Array<string> = [], ttl = 0): Photo {
         let photo: Photo = new Photo();
         photo.id = this.getId(id);
+        photo.ttl = ttl;
         this.fillPhotoAttirbutes(photo);
 
         return photo;
     }
-
-    // public static getBooksCollection(size: number = 2) {
-    //     let collection: DocumentCollection<Book> = new DocumentCollection();
-    //     for (let index; index < size; index++) {
-    //         let book = this.getBook();
-    //         collection.data.push(book);
-    //     }
-    //     collection.setBuilded(true);
-    //     collection.setLoaded(true);
-    //
-    //     return collection;
-    // }
-    //
-    // public static getAuthorsCollection(size: number = 2) {
-    //     let collection: DocumentCollection<Author> = new DocumentCollection();
-    //     for (let index; index < size; index++) {
-    //         let author = this.getAuthor();
-    //         collection.data.push(author);
-    //     }
-    //     collection.setBuilded(true);
-    //     collection.setLoaded(true);
-    //
-    //     return collection;
-    // }
 
     public static getCollection(resources_class: typeof Resource, size: number = 2, include: Array<string> = []): DocumentCollection {
         let collection: DocumentCollection<Resource> = new DocumentCollection();
