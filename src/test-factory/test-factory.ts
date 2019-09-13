@@ -10,12 +10,11 @@ import { Photo, PhotosService } from './photos.service';
 import * as faker from 'faker';
 
 export class TestFactory {
-
     // NOTE: this is going to be used to merge getAuthor, getBook and getPhoto in 1 method
     private static resource_classes_by_type = {
-        'photos': Photo,
-        'books': Book,
-        'authors': Author
+        photos: Photo,
+        books: Book,
+        authors: Author
     };
 
     public static getResourceDocumentData(document_class: typeof Resource, include: Array<string> = []): IDocumentData {
@@ -30,7 +29,7 @@ export class TestFactory {
         return document_data;
     }
 
-    public static getCollectionDocumentData(document_class: typeof Resource, size=2, include: Array<string> = []): IDocumentData {
+    public static getCollectionDocumentData(document_class: typeof Resource, size = 2, include: Array<string> = []): IDocumentData {
         let main_collection: DocumentCollection = this.getCollection(document_class, size, include);
 
         let document_data: IDocumentData = {
@@ -172,7 +171,7 @@ export class TestFactory {
         return id || 'new_' + Math.floor(Math.random() * 10000).toString();
     }
 
-    private static includeFromService(resource: Resource, relationship_alias='books', class_to_add: typeof Resource) {
+    private static includeFromService(resource: Resource, relationship_alias = 'books', class_to_add: typeof Resource) {
         if (resource.relationships[relationship_alias] instanceof DocumentResource) {
             this.includeHasOneFromService(resource, relationship_alias, class_to_add);
         } else if (resource.relationships[relationship_alias] instanceof DocumentCollection) {
@@ -254,7 +253,7 @@ export class TestFactory {
                 }
                 this.fillResourceRelationshipsInDocumentData(document_data, document_data.data, included_alias);
             }
-            for (let resource of (<Array<Resource>>document_data.data)) {
+            for (let resource of <Array<Resource>>document_data.data) {
                 this.fillResourceRelationshipsInDocumentData(document_data, resource, included_alias);
             }
         }

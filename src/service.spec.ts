@@ -73,15 +73,13 @@ describe('not cached collections', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
-        authorsService.all().subscribe(
-            authors => {
-                expect(http_request_spy).toHaveBeenCalled();
-                expect(authors.is_loading).toBe(true);
-                expect(authors.loaded).toBe(false);
-                expect(authors.builded).toBe(false);
-                expect(authors.source).toBe('new');
-            }
-        );
+        authorsService.all().subscribe(authors => {
+            expect(http_request_spy).toHaveBeenCalled();
+            expect(authors.is_loading).toBe(true);
+            expect(authors.loaded).toBe(false);
+            expect(authors.builded).toBe(false);
+            expect(authors.source).toBe('new');
+        });
     });
 
     // NOTE: observable has 200 ms to emit the full collection (fake http delays 100 ms)
@@ -96,13 +94,11 @@ describe('not cached collections', () => {
                     return authors.builded && authors.loaded && !authors.is_loading;
                 })
             )
-            .subscribe(
-                authors => {
-                    expect(http_request_spy).toHaveBeenCalled();
-                    expect(authors.source).toBe('server');
-                    expect(authors.data.length).toBeGreaterThan(0);
-                    done();
-                }
-            );
+            .subscribe(authors => {
+                expect(http_request_spy).toHaveBeenCalled();
+                expect(authors.source).toBe('server');
+                expect(authors.data.length).toBeGreaterThan(0);
+                done();
+            });
     }, 200);
 });
