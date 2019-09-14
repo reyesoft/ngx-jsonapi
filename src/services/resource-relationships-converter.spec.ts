@@ -1,5 +1,5 @@
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
-import { DocumentCollection } from 'src/document-collection';
+import { DocumentCollection } from '../document-collection';
 import { CacheStore } from '../services/cachestore';
 import { CacheMemory } from '../services/cachememory';
 import { Converter } from './converter';
