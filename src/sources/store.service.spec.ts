@@ -1,8 +1,8 @@
 // import 'localforage-getitems';
 import { async, TestBed } from '@angular/core/testing';
 import { StoreService } from './store.service';
-import * as localForage from 'localforage';
-import { extendPrototype as extendGetitems } from 'localforage-getitems';
+// import * as localForage from 'localforage';
+// import { extendPrototype as extendGetitems } from 'localforage-getitems';
 import { Base } from '../services/base';
 import { noop, Subject, Observable } from 'rxjs';
 import { IDataResource } from '../interfaces/data-resource';

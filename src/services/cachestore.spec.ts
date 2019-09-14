@@ -1,15 +1,9 @@
 import { CacheStore } from './cachestore';
 import { Core } from '../core';
-import { Converter } from '../services/converter';
-import { Resource } from '../resource';
-import { DocumentCollection } from '../document-collection';
-import { IDataCollection } from '../interfaces/data-collection';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { JsonapiConfig } from '../jsonapi-config';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
-import { CollectionInfoComponent } from 'demo/app/shared/collection-info.component';
-// import { StoreService } from '../sources/store.service';
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
