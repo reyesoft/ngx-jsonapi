@@ -104,6 +104,7 @@
         "@angular/platform-browser-dynamic": "^6.0.0",
         "@angular/platform-server": "^6.0.0",
         "@angular/router": "^6.0.0",
+        "@types/faker": "^4.1.5",
         "@types/fs-extra": "^2.1.0",
         "@types/glob": "^5.0.33",
         "@types/jasmine": "^2.8.8",
@@ -122,6 +123,7 @@
         "cpy-cli": "^1.0.1",
         "deep-freeze": "^0.0.1",
         "fake-indexeddb": "^2.1.1",
+        "faker": "^4.1.0",
         "fs-extra": "^2.1.2",
         "gh-pages": "^1.1.0",
         "glob": "^7.1.2",
@@ -156,5 +158,6 @@
     "dependencies": {
         "dexie": "^2.0.4",
         "rxjs": "^6.2"
-    }
+    },
+    "version": "0.0.0"
 }

@@ -25,6 +25,7 @@ export class Resource implements ICacheable {
     public is_new = true;
     public is_saving = false;
     public is_loading = false;
+    public loaded = true;
     public source: 'new' | 'memory' | 'store' | 'server' = 'new';
     public cache_last_update = 0;
     public ttl = 0;
@@ -259,7 +260,7 @@ export class Resource implements ICacheable {
 
     public save<T extends Resource>(params?: IParamsResource): Observable<object> {
         params = { ...Base.ParamsResource, ...params };
-        if (this.is_saving || this.is_loading) {
+        if (this.is_saving || !this.loaded) {
             return of({});
         }
         this.is_saving = true;
@@ -305,5 +306,36 @@ export class Resource implements ICacheable {
         );
 
         return subject;
+    }
+
+    public setLoaded(value: boolean): void {
+        // tslint:disable-next-line:deprecation
+        this.is_loading = !value;
+        this.loaded = value;
+    }
+
+    public setLoadedAndPropagate(value: boolean): void {
+        this.setLoaded(value);
+        for (let relationship_alias in this.relationships) {
+            let relationship = this.relationships[relationship_alias];
+            if (relationship instanceof DocumentCollection) {
+                relationship.setLoaded(value);
+            }
+        }
+    }
+
+    /** @todo generate interface */
+    public setSource(value: 'new' | 'memory' | 'store' | 'server'): void {
+        this.source = value;
+    }
+
+    public setSourceAndPropagate(value: 'new' | 'memory' | 'store' | 'server'): void {
+        this.setSource(value);
+        for (let relationship_alias in this.relationships) {
+            let relationship = this.relationships[relationship_alias];
+            if (relationship instanceof DocumentCollection) {
+                relationship.setSource(value);
+            }
+        }
     }
 }
