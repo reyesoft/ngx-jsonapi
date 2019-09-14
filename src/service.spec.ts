@@ -97,5 +97,5 @@ describe('not cached collections', () => {
                 expect(authors.data.length).toBeGreaterThan(0);
                 done();
             });
-    }, 200);
+    }, 500);
 });
