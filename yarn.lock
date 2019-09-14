@@ -6146,7 +6146,7 @@ jest-preset-angular@3.0.1:
     jest-zone-patch "^0.0.7"
     ts-jest "^21.0.0"
 
-jest-preset-angular@^7.0.0:
+jest-preset-angular@^7.1.1:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/jest-preset-angular/-/jest-preset-angular-7.1.1.tgz#b51fc910e5abea91701fcd89532823ae5990450b"
   integrity sha512-/uJUi9IHoCxtB6aH6I+llpHjyfGfP2q32lcBCUKKk16v1uYKXvj1Nfdlvfvu/eqjZVoKEDLP+Ejup4bbsc0gAA==
@@ -6475,7 +6475,7 @@ jest@21.0.2:
   dependencies:
     jest-cli "^21.0.2"
 
-jest@^24.0.0:
+jest@^24.9.0:
   version "24.9.0"
   resolved "https://registry.yarnpkg.com/jest/-/jest-24.9.0.tgz#987d290c05a08b52c56188c1002e368edb007171"
   integrity sha512-YvkBL1Zm7d2B1+h5fHEOdyjCG+sGMz4f8D86/0HiqJ6MB4MnDc8FgP5vdWsGnemOQro7lnYo8UakZ3+5A0jxGw==

@@ -10,8 +10,8 @@ module.exports = {
 
   globals: {
       'ts-jest': {
-          tsConfigFile: 'src/tsconfig.spec.json'
+          tsConfig: 'src/tsconfig.spec.json'
       },
-      __TRANSFORM_HTML__: true
+      stringifyContentPathRegex: true
   },
 };
