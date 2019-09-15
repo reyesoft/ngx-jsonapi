@@ -6,14 +6,14 @@ import { TestFactory } from '../test-factory/test-factory';
 
 describe('JsonRipper', () => {
     let authors = new DocumentCollection();
-    authors.data.push(TestFactory.getAuthor('1'));
-    let author2 = TestFactory.getAuthor('2');
-    author2.attributes.name = 'Ray Bradbury';
-    authors.data.push(author2);
+    authors.data.push(TestFactory.getAuthor('2'));
+    let author1 = TestFactory.getAuthor('1');
+    author1.attributes.name = 'Ray Bradbury';
+    authors.data.push(author1);
     let book1 = TestFactory.getBook('1');
-    book1.addRelationship(author2, 'author');
-    author2.addRelationship(book1);
-    author2.addRelationship(TestFactory.getBook('2'));
+    book1.addRelationship(author1, 'author');
+    author1.addRelationship(book1);
+    author1.addRelationship(TestFactory.getBook('2'));
 
     it('A collection is converted to objects for a DataProvider', () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
@@ -22,10 +22,10 @@ describe('JsonRipper', () => {
         let obj = JsonRipper.toElements('some/url', authors);
         expect(obj.length).toBe(3);
         expect(obj[0].key).toBe('some/url');
-        expect(obj[0].data).toMatchObject(['authors.1', 'authors.2']);
+        expect(obj[0].data.keys).toMatchObject(['authors.2', 'authors.1']); // unsorted resources is intentional
         expect(obj[2].data.data).toMatchObject({
             attributes: { name: 'Ray Bradbury' },
-            id: '2',
+            id: '1',
             type: 'authors',
             relationships: {
                 books: {
@@ -46,7 +46,7 @@ describe('JsonRipper', () => {
         let obj = JsonRipper.toElements('some/url/include', authors, ['books']);
         expect(obj.length).toBe(5);
         expect(obj[0].key).toBe('some/url/include');
-        expect(obj[0].data).toMatchObject(['authors.1', 'authors.2']);
+        expect(obj[0].data.keys).toMatchObject(['authors.2', 'authors.1']);
         expect(obj[4].data.data).toMatchObject({
             id: '2',
             type: 'books',
@@ -68,7 +68,7 @@ describe('JsonRipper', () => {
 
             expect(json.data[1]).toMatchObject({
                 attributes: { name: 'Ray Bradbury' },
-                id: '2',
+                id: '1',
                 type: 'authors',
                 relationships: {
                     books: {
@@ -77,6 +77,18 @@ describe('JsonRipper', () => {
                 }
             });
 
+            done();
+        });
+    }, 500);
+
+    it('A ripped collection maintain _updated_at property', done => {
+        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
+        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
+
+        let jsonRipper = new JsonRipper();
+        jsonRipper.saveCollection('some/url', authors);
+        jsonRipper.getCollection('some/url').then(json => {
+            expect(json.meta._cache_updated_at).toBeGreaterThanOrEqual(Date.now() - 100);
             done();
         });
     }, 500);
@@ -102,12 +114,6 @@ describe('JsonRipper', () => {
                         data: { id: /.+/, type: 'authors' }
                     }
                 }
-                // ,
-                // relationships: {
-                //     books: {
-                //         data: [{ id: '1', type: 'aaa' }, { id: '2', type: 'aaa' } ]
-                //     }
-                // }
             });
 
             done();

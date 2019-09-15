@@ -12,6 +12,7 @@ import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDataObject } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection } from './interfaces/data-collection';
+import { JsonRipper } from './services/json-ripper';
 
 export class Service<R extends Resource = Resource> {
     public cachememory: CacheMemory;
@@ -220,38 +221,40 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
-        // when fields is set, get resource form server
         if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
+            // data on memory and its live
             temporary_collection.source = 'memory';
             subject.next(temporary_collection);
             setTimeout(() => subject.complete(), 0);
+        } else if (temporary_collection.cache_last_update > 0) {
+            // data on memory, but it isn't live
+            temporary_collection.source = 'memory';
+            this.getAllFromServer(path, params, temporary_collection, subject);
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'individual') {
             // STORE (individual)
             temporary_collection.setLoaded(false);
 
-            this.getService()
-                .cachestore.fillCollectionFromStore(path.getForCache(), path.includes, temporary_collection)
-                .subscribe(
-                    () => {
-                        temporary_collection.source = 'store';
+            let json_ripper = new JsonRipper();
+            json_ripper.getCollection(path.getForCache(), path.includes).then(
+                success => {
+                    temporary_collection.source = 'store';
+                    temporary_collection.fill(success);
+                    temporary_collection.cache_last_update = success.meta._cache_updated_at;
 
-                        // when load collection from store, we save collection on memory
-                        this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
-
-                        // when fields is set, get resource form server
-                        if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
-                            temporary_collection.setLoadedAndPropagate(true);
-                            temporary_collection.setBuildedAndPropagate(true);
-                            subject.next(temporary_collection);
-                            subject.complete();
-                        } else {
-                            this.getAllFromServer(path, params, temporary_collection, subject);
-                        }
-                    },
-                    err => {
+                    // when fields is set, get resource form server
+                    if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
+                        temporary_collection.setLoadedAndPropagate(true);
+                        temporary_collection.setBuildedAndPropagate(true);
+                        subject.next(temporary_collection);
+                        subject.complete();
+                    } else {
                         this.getAllFromServer(path, params, temporary_collection, subject);
                     }
-                );
+                },
+                err => {
+                    this.getAllFromServer(path, params, temporary_collection, subject);
+                }
+            );
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'compact') {
             // STORE (compact)
             temporary_collection.setLoaded(false);
@@ -309,6 +312,8 @@ export class Service<R extends Resource = Resource> {
                 temporary_collection.setLoadedAndPropagate(true);
 
                 this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
+                let json_ripper = new JsonRipper();
+                json_ripper.saveCollection(path.getForCache(), temporary_collection, path.includes);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     // setCollection takes 1 ms per item
                     this.getService().cachestore.setCollection(path.getForCache(), temporary_collection, params.include);

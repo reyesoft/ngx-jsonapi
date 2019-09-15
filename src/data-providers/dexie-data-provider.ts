@@ -1,9 +1,8 @@
 import { IDataProvider, IObject, IElement } from './data-provider';
-import { Dexie } from 'dexie';
+import Dexie from 'dexie';
 import { Subject, Observable } from 'rxjs';
 import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
-import { IObjectsById } from '../interfaces';
 
 export class DexieDataProvider implements IDataProvider {
     private db: Dexie;
@@ -30,13 +29,20 @@ export class DexieDataProvider implements IDataProvider {
         return data;
     }
 
-    public getElements(keys: Array<string>): Promise<Array<IObject>> {
-        return this.db
+    public async getElements(keys: Array<string>): Promise<Array<IObject>> {
+        let data = {};
+        await this.db
             .table('elements')
             .where(':id')
             .anyOf(keys)
-            .toArray()
-            .then(data => data.map(element => element.data));
+            .each(element => {
+                data[element.data.type + '.' + element.data.id] = element.data;
+            });
+
+        // we need to maintain same order, database return ordered by key
+        return keys.map(key => {
+            return data[key];
+        });
     }
 
     public saveElement(key: string, data: any): void {
@@ -55,51 +61,4 @@ export class DexieDataProvider implements IDataProvider {
             this.db.table('elements').bulkPut(items, keys);
         });
     }
-
-    private getDataObject(type: 'collection' | string, id_or_url: string): Observable<IDataCollection | IDataResource> {
-        let subject = new Subject<IDataResource | IDataCollection>();
-        // we use different tables for resources and collections
-        const table_name = type === 'collection' ? 'collections' : 'elements';
-
-        this.db.open().then(async () => {
-            let item = await this.db.table(table_name).get(type + '.' + id_or_url);
-            if (item === undefined) {
-                subject.error(null);
-            } else {
-                subject.next(item);
-            }
-
-            subject.complete();
-        });
-
-        return subject.asObservable();
-    }
-
-    // private async getDataResources(keys: Array<string>): Promise<IObjectsById<IDataResourceStorage>> {
-    //     const collection = this.db
-    //         .table('elements')
-    //         .where(':id')
-    //         .anyOf(keys);
-
-    //     let resources_by_id = {};
-    //     await collection.each(item => {
-    //         resources_by_id[item.id] = item;
-    //     });
-
-    //     return resources_by_id;
-    // }
-
-    // private saveResource(type: string, url_or_id: string, value: IDataResource): void {
-    //     let data_resource_storage: IDataResourceStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
-    //     this.db.open().then(async () => {
-    //         return this.db.table('elements').put(data_resource_storage, type + '.' + url_or_id);
-    //     });
-    // }
-
-    // private saveCollection(url_or_id: string, value: IDataCollection): void {
-    //     let data_collection_storage: IDataCollectionStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
-    //     this.db.open().then(async () => {
-    //         return this.db.table('collections').put(data_collection_storage, 'collection.' + url_or_id);
-    //     });
-    // }
 }

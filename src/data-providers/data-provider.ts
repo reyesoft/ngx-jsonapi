@@ -4,7 +4,7 @@ export interface IObject {
 
 export interface IElement {
     key: string;
-    data: IObject /* | Array<string> */;
+    data: IObject;
 }
 
 export interface IDataProvider {

@@ -1,3 +1,4 @@
+import { IObject } from './../data-providers/data-provider';
 import { IAttributes } from '../interfaces';
 import { ILinks } from '../interfaces/links';
 
@@ -7,6 +8,6 @@ export interface IDataResource {
     attributes?: IAttributes;
     relationships?: object;
     links?: ILinks;
-    meta?: object;
+    meta?: IObject;
     _lastupdate_time?: number; // used when come from Store
 }
