@@ -1,7 +1,7 @@
 import { Resource } from '../resource';
 import { IDocumentData } from '../interfaces/document';
 import { IDataResource } from '../interfaces/data-resource';
-import { DocumentCollection } from 'src/document-collection';
+import { DocumentCollection } from '../document-collection';
 import { DocumentResource } from '../document-resource';
 import { Service } from '../service';
 import { Author, AuthorsService } from './authors.service';
@@ -56,7 +56,7 @@ export class TestFactory {
     //     resource.attributes.title = faker.name.title();
     //
     //     // NOTE: add author
-    //     (<IDataResource>resource.relationships.author.data) = this.getDataResourceWithType('author');
+    //     (<IDataResource>resource.relationships.author.data) = this.getDataResourceWithType('authors');
     //     if (include.includes('author')) {
     //         this.includeHasOneFromService(resource, 'author', Photo);
     //     }
@@ -78,7 +78,7 @@ export class TestFactory {
         this.fillBookAttirbutes(book);
 
         // NOTE: add author
-        (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('author');
+        (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('authors');
         if (include.includes('author')) {
             this.includeFromService(book, 'author', Photo);
         }

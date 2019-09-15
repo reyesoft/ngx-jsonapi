@@ -1,12 +1,10 @@
 import { DocumentCollection } from './document-collection';
-import { IDataObject } from 'src/interfaces/data-object';
-import { Base } from 'src/services/base';
-import { IParamsResource } from 'src/interfaces/params-resource';
+import { IDataObject } from './interfaces/data-object';
+import { IParamsResource } from './interfaces/params-resource';
 import { DocumentResource } from './document-resource';
 import { Core } from './core';
 import { PathBuilder } from './services/path-builder';
 import { Resource } from './resource';
-import { IDataCollection } from './interfaces/data-collection';
 import { of } from 'rxjs';
 
 describe('resource', () => {

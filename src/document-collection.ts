@@ -1,9 +1,12 @@
+import { IDataObject } from './interfaces/data-object';
+import { IParamsCollection } from './interfaces/params-collection';
 import { Resource } from './resource';
 import { Page } from './services/page';
 import { Document } from './document';
 import { ICacheable } from './interfaces/cacheable';
 import { Converter } from './services/converter';
 import { IDataCollection } from './interfaces/data-collection';
+import { IDataResource } from './interfaces/data-resource';
 
 export class DocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
     public data: Array<R> = [];
@@ -112,5 +115,15 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
     /** @todo generate interface */
     public setSource(value: 'new' | 'memory' | 'store' | 'server'): void {
         this.source = value;
+    }
+
+    public toObject(params?: IParamsCollection): IDataCollection {
+        let data = this.data.map(resource => {
+            return resource.toObject(params).data;
+        });
+
+        return {
+            data: data
+        };
     }
 }
