@@ -11,7 +11,6 @@ describe('document resource', () => {
         expect(document_resource.content).toBe('id');
     });
     it('data property should have a new resource instance', () => {
-        let Resource_spy = spyOn(Resource, 'constructor');
         let resource = new Resource();
         expect(document_resource.data).toEqual(resource);
     });

@@ -42,7 +42,7 @@ class CustomResourceService extends Service<CustomResource> {
 describe('core methods', () => {
     let core: Core;
     it('should crete core service instance', () => {
-        spyOn(JsonapiStore.prototype, 'constructor');
+        spyOn<any>(JsonapiStore.prototype, 'constructor');
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),

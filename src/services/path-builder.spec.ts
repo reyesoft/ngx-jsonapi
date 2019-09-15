@@ -45,7 +45,7 @@ describe('Path Builder', () => {
         expect(appendPath_spy).toHaveBeenCalledWith(testService.getPath());
     });
     it('applyParams method should call setInclude with params.include (if exists) to assign them to the includes array', () => {
-        let setInclude_spy = spyOn(path_builder, 'setInclude');
+        let setInclude_spy = spyOn<any>(path_builder, 'setInclude');
         path_builder.applyParams(testService, { beforepath: 'pre/' });
         expect(setInclude_spy).not.toHaveBeenCalled();
         path_builder.applyParams(testService, { beforepath: 'pre/', include: ['include'] });
