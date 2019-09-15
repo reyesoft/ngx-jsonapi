@@ -12,50 +12,31 @@ import { DocumentResource } from '../document-resource';
 
 export class CacheStore {
     public async getResource(resource: Resource, include: Array<string> = []): Promise<object> {
-        let mypromise: Promise<object> = new Promise((resolve, reject): void => {
-            Core.injectedServices.JsonapiStoreService.getDataObject(resource.type, resource.id).subscribe(
-                success => {
-                    try {
-                        resource.fill({ data: success });
+        let success = await Core.injectedServices.JsonapiStoreService.getDataObject(resource.type, resource.id);
 
-                        // include some times is a collection :S
-                        let include_promises: Array<Promise<object>> = [];
+        resource.fill({ data: success });
 
-                        // NOTE: fix to resources stored without relationships
-                        if (include.length > 0 && !resource.relationships) {
-                            resource.relationships = new (resource.getService()).resource().relationships;
-                        }
+        // include some times is a collection :S
+        let include_promises: Array<Promise<object>> = [];
 
-                        for (let resource_alias of include) {
-                            this.fillRelationshipFromStore(resource, resource_alias, include_promises);
-                        }
+        // NOTE: fix to resources stored without relationships
+        if (include.length > 0 && !resource.relationships) {
+            resource.relationships = new (resource.getService()).resource().relationships;
+        }
 
-                        resource.cache_last_update = success._lastupdate_time;
+        for (let resource_alias of include) {
+            this.fillRelationshipFromStore(resource, resource_alias, include_promises);
+        }
 
-                        // no debo esperar a que se resuelvan los include
-                        if (include_promises.length === 0) {
-                            resolve(success);
-                        } else {
-                            // esperamos las promesas de los include antes de dar el resolve
-                            Promise.all(include_promises)
-                                .then(success3 => {
-                                    resolve(success3);
-                                })
-                                .catch(error3 => {
-                                    reject(error3);
-                                });
-                        }
-                    } catch (e) {
-                        reject();
-                    }
-                },
-                () => {
-                    reject();
-                }
-            );
-        });
+        resource.cache_last_update = success._lastupdate_time;
 
-        return mypromise;
+        // no debo esperar a que se resuelvan los include
+        if (include_promises.length === 0) {
+            return success;
+        } else {
+            // esperamos las promesas de los include antes de dar el resolve
+            return Promise.all(include_promises);
+        }
     }
 
     public setResource(resource: Resource) {
@@ -122,43 +103,30 @@ export class CacheStore {
         return true;
     }
 
-    public fillCollectionFromStore(url: string, include: Array<string>, collection: DocumentCollection): Observable<DocumentCollection> {
-        let subject = new Subject<DocumentCollection>();
+    public async fillCollectionFromStore(url: string, include: Array<string>, collection: DocumentCollection): Promise<DocumentCollection> {
+        let data_collection: IDataCollection = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', url);
+        // build collection from store and resources from memory
+        if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
+            collection.source = 'store'; // collection from storeservice, resources from memory
+            collection.builded = true;
+            collection.setLoaded(true);
+            collection.cache_last_update = data_collection._lastupdate_time;
 
-        Core.injectedServices.JsonapiStoreService.getDataObject('collection', url).subscribe(
-            (data_collection: IDataCollection) => {
-                // build collection from store and resources from memory
-                if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
-                    collection.source = 'store'; // collection from storeservice, resources from memory
-                    collection.builded = true;
-                    collection.setLoaded(true);
-                    collection.cache_last_update = data_collection._lastupdate_time;
-                    subject.next(collection);
-                    setTimeout(() => subject.complete());
+            return collection;
+        }
 
-                    return;
-                }
+        await this.fillCollectionWithArrrayAndResourcesOnStore(data_collection, include, collection);
+        // just for precaution, we not rewrite server data
+        if (collection.source !== 'new') {
+            console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#', collection);
+            throw new Error('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
+        }
+        collection.source = 'store'; // collection and resources from storeservice
+        collection.cache_last_update = data_collection._lastupdate_time;
+        collection.builded = true;
+        collection.setLoaded(true);
 
-                this.fillCollectionWithArrrayAndResourcesOnStore(data_collection, include, collection)
-                    .then(() => {
-                        // just for precaution, we not rewrite server data
-                        if (collection.source !== 'new') {
-                            console.warn('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#', collection);
-                            throw new Error('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
-                        }
-                        collection.source = 'store'; // collection and resources from storeservice
-                        collection.cache_last_update = data_collection._lastupdate_time;
-                        collection.builded = true;
-                        collection.setLoaded(true);
-                        subject.next(collection);
-                        setTimeout(() => subject.complete());
-                    })
-                    .catch(err => subject.error(err));
-            },
-            err => subject.error(err)
-        );
-
-        return subject;
+        return collection;
     }
 
     private fillCollectionWithArrrayAndResourcesOnMemory(dataresources: Array<IDataResource>, collection: DocumentCollection): boolean {

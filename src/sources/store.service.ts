@@ -28,25 +28,19 @@ export class StoreService /* implements IStoreService */ {
         this.checkIfIsTimeToClean();
     }
 
-    public getDataObject(type: 'collection', url: string): Observable<IDataCollection>;
-    public getDataObject(type: string, id: string): Observable<IDataResource>;
-    public getDataObject(type: 'collection' | string, id_or_url: string): Observable<IDataCollection | IDataResource> {
-        let subject = new Subject<IDataResource | IDataCollection>();
+    public async getDataObject(type: 'collection', url: string): Promise<IDataCollection>;
+    public async getDataObject(type: string, id: string): Promise<IDataResource>;
+    public async getDataObject(type: 'collection' | string, id_or_url: string): Promise<IDataCollection | IDataResource> {
         // we use different tables for resources and collections
         const table_name = type === 'collection' ? 'collections' : 'elements';
 
-        this.db.open().then(async () => {
-            let item = await this.db.table(table_name).get(type + '.' + id_or_url);
-            if (item === undefined) {
-                subject.error(null);
-            } else {
-                subject.next(item);
-            }
+        await this.db.open();
+        let item = await this.db.table(table_name).get(type + '.' + id_or_url);
+        if (item === undefined) {
+            throw new Error(null);
+        }
 
-            subject.complete();
-        });
-
-        return subject.asObservable();
+        return item;
     }
 
     public async getDataResources(keys: Array<string>): Promise<IObjectsById<IDataResourceStorage>> {

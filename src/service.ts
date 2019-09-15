@@ -221,69 +221,73 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
-        if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
+        this.getAllFromLocal(params, path, temporary_collection)
+            .then(() => {
+                subject.next(temporary_collection);
+                setTimeout(() => subject.complete(), 0);
+            })
+            .catch(() => {
+                temporary_collection.setLoaded(false);
+                subject.next(temporary_collection);
+                this.getAllFromServer(path, params, temporary_collection, subject);
+            });
+
+        return subject.asObservable();
+    }
+
+    private async getAllFromLocal(
+        params: IParamsCollection = {},
+        path: PathCollectionBuilder,
+        temporary_collection: DocumentCollection<R>
+    ): Promise<void> {
+        if (Object.keys(params.fields).length > 0) {
+            // not supported yet
+            throw new Error('All from local is not supported whith fields param.');
+        }
+        if (isLive(temporary_collection, params.ttl)) {
             // data on memory and its live
             temporary_collection.source = 'memory';
-            subject.next(temporary_collection);
-            setTimeout(() => subject.complete(), 0);
+
+            return;
         } else if (temporary_collection.cache_last_update > 0) {
             // data on memory, but it isn't live
-            temporary_collection.source = 'memory';
-            this.getAllFromServer(path, params, temporary_collection, subject);
+            throw new Error('Memory filled with local data, but is die.');
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'individual') {
             // STORE (individual)
             temporary_collection.setLoaded(false);
 
             let json_ripper = new JsonRipper();
-            json_ripper.getCollection(path.getForCache(), path.includes).then(
-                success => {
-                    temporary_collection.source = 'store';
-                    temporary_collection.fill(success);
-                    temporary_collection.cache_last_update = success.meta._cache_updated_at;
+            let success = await json_ripper.getCollection(path.getForCache(), path.includes);
+            temporary_collection.source = 'store';
+            temporary_collection.fill(success);
+            temporary_collection.cache_last_update = success.meta._cache_updated_at;
 
-                    // when fields is set, get resource form server
-                    if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
-                        temporary_collection.setLoadedAndPropagate(true);
-                        temporary_collection.setBuildedAndPropagate(true);
-                        subject.next(temporary_collection);
-                        subject.complete();
-                    } else {
-                        this.getAllFromServer(path, params, temporary_collection, subject);
-                    }
-                },
-                err => {
-                    this.getAllFromServer(path, params, temporary_collection, subject);
-                }
-            );
+            // when fields is set, get resource form server
+            if (isLive(temporary_collection, params.ttl)) {
+                temporary_collection.setLoadedAndPropagate(true);
+                temporary_collection.setBuildedAndPropagate(true);
+
+                return;
+            }
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'compact') {
             // STORE (compact)
             temporary_collection.setLoaded(false);
 
-            Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact').subscribe(
-                success => {
-                    temporary_collection.source = 'store';
-                    temporary_collection.fill(success);
-                    temporary_collection.cache_last_update = success._lastupdate_time;
+            let success = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact');
+            temporary_collection.source = 'store';
+            temporary_collection.fill(success);
+            temporary_collection.cache_last_update = success._lastupdate_time;
 
-                    // when fields is set, get resource form server
-                    if (isLive(temporary_collection, params.ttl) && Object.keys(params.fields).length === 0) {
-                        temporary_collection.setLoadedAndPropagate(true);
-                        temporary_collection.setBuildedAndPropagate(true);
-                        subject.next(temporary_collection);
-                        subject.complete();
-                    } else {
-                        this.getAllFromServer(path, params, temporary_collection, subject);
-                    }
-                },
-                err => {
-                    this.getAllFromServer(path, params, temporary_collection, subject);
-                }
-            );
-        } else {
-            this.getAllFromServer(path, params, temporary_collection, subject);
+            // when fields is set, get resource form server
+            if (isLive(temporary_collection, params.ttl)) {
+                temporary_collection.setLoadedAndPropagate(true);
+                temporary_collection.setBuildedAndPropagate(true);
+
+                return;
+            }
         }
 
-        return subject.asObservable();
+        throw new Error('We cant handle this request');
     }
 
     protected getAllFromServer(
@@ -292,8 +296,6 @@ export class Service<R extends Resource = Resource> {
         temporary_collection: DocumentCollection<R>,
         subject: BehaviorSubject<DocumentCollection<R>>
     ) {
-        temporary_collection.setLoaded(false);
-        subject.next(temporary_collection);
         Core.get(path.get()).subscribe(
             success => {
                 // this create a new ID for every resource (for caching proposes)
