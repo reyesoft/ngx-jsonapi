@@ -216,6 +216,10 @@ export class Service<R extends Resource = Resource> {
 
         // make request
         let temporary_collection = this.getOrCreateCollection(path);
+        // if (temporary_collection.ttl === 61) {
+        //     console.log('path --->', path);
+        //     console.log('temporary_collection --->', temporary_collection);
+        // }
         temporary_collection.page.number = params.page.number * 1;
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
