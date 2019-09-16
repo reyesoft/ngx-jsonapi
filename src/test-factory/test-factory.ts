@@ -78,7 +78,7 @@ export class TestFactory {
         this.fillBookAttirbutes(book);
 
         // NOTE: add author
-        (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('author');
+        (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('authors');
         if (include.includes('author')) {
             this.includeFromService(book, 'author', Photo);
         }
@@ -171,7 +171,7 @@ export class TestFactory {
         return id || 'new_' + Math.floor(Math.random() * 10000).toString();
     }
 
-    private static includeFromService(resource: Resource, relationship_alias = 'books', class_to_add: typeof Resource) {
+    private static includeFromService(resource: Resource, relationship_alias: string, class_to_add: typeof Resource) {
         if (resource.relationships[relationship_alias] instanceof DocumentResource) {
             this.includeHasOneFromService(resource, relationship_alias, class_to_add);
         } else if (resource.relationships[relationship_alias] instanceof DocumentCollection) {
