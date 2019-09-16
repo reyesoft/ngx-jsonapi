@@ -193,7 +193,9 @@ export class Service<R extends Resource = Resource> {
         this.getService().cachememory.deprecateCollections(path.getForCache());
         this.getService().cachestore.deprecateCollections(path.getForCache());
 
-        return db.deprecateCollection().then(() => true);
+        let json_ripper = new JsonRipper();
+
+        return json_ripper.deprecateCollection(path.getForCache()).then(() => true);
     }
 
     public parseToServer(attributes: IAttributes): void {

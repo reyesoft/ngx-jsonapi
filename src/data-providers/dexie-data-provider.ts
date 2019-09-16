@@ -20,7 +20,7 @@ export class DexieDataProvider implements IDataProvider {
 
     public async getElement(key: string): Promise<IObject | Array<IObject>> {
         // @todo improve this on future, we need to know type from JsonRipper
-        // const table_name = key.match(/[a-z]+\.[a-zA-Z]+/) ? 'elements' : 'collections';
+        // const table_name = key.match(/[a-zA-Z0-9][a-zA-Z0-9_\-]*\.[a-zA-Z0-9][a-zA-Z0-9_\-]*/) ? 'elements' : 'collections';
         const table_name = 'elements';
 
         await DexieDataProvider.db.open();
@@ -54,9 +54,20 @@ export class DexieDataProvider implements IDataProvider {
         });
     }
 
-    public async deprecateCollection(/* key_start_with: string */): Promise<void> {
+    // @todo implement dexie.modify(changes)
+    // @todo test
+    public async updateElements(key_start_with: string, changes: IObject): Promise<void> {
         return DexieDataProvider.db.open().then(async () => {
-            return DexieDataProvider.db.table('elements').clear();
+            if (key_start_with === '') {
+                return DexieDataProvider.db.table('elements').clear();
+            } else {
+                return DexieDataProvider.db
+                    .table('elements')
+                    .where(':id')
+                    .startsWith(key_start_with)
+                    .delete()
+                    .then(() => null);
+            }
         });
     }
 

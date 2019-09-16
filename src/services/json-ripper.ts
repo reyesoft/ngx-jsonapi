@@ -161,4 +161,8 @@ export class JsonRipper {
             content: resource.toObject()
         };
     }
+
+    public async deprecateCollection(key_start_with: string): Promise<void> {
+        return this.dataProvider.updateElements(key_start_with, {});
+    }
 }

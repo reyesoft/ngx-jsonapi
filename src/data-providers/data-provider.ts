@@ -13,4 +13,6 @@ export interface IDataProvider {
 
     saveElement(key: string, data: IObject): Promise<void>;
     saveElements(elements: Array<IElement>): Promise<void>;
+
+    updateElements(key_start_with: string, new_data: IObject): Promise<void>;
 }
