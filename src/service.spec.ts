@@ -71,13 +71,16 @@ describe('Requesting not cached collections. All() method:', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
-        authorsService.all().pipe(first()).subscribe(authors => {
-            expect(authors.is_loading).toBe(true);
-            expect(authors.loaded).toBe(false);
-            expect(authors.builded).toBe(false);
-            expect(authors.source).toBe('new');
-            done();
-        });
+        authorsService
+            .all()
+            .pipe(first())
+            .subscribe(authors => {
+                expect(authors.is_loading).toBe(true);
+                expect(authors.loaded).toBe(false);
+                expect(authors.builded).toBe(false);
+                expect(authors.source).toBe('new');
+                done();
+            });
     });
 
     // NOTE: observable has 200 ms to emit the full collection (fake http delays 100 ms)
@@ -138,14 +141,12 @@ describe('Requesting cached collections from memory. All() method should:', () =
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
-        authorsService
-            .all()
-            .subscribe(authors => {
-                expect(http_request_spy).not.toHaveBeenCalled();
-                expect(authors.source).toBe('memory');
-                expect(authors.data.length).toBeGreaterThan(0);
-                done();
-            });
+        authorsService.all().subscribe(authors => {
+            expect(http_request_spy).not.toHaveBeenCalled();
+            expect(authors.source).toBe('memory');
+            expect(authors.data.length).toBeGreaterThan(0);
+            done();
+        });
     });
 
     it(`return alive collections from memory (that were reviously saved in memory from store)...`, done => {
@@ -229,13 +230,16 @@ describe('Requesting cached collections from store. All() method:', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
-        authorsService.all().pipe(first()).subscribe(authors => {
-            expect(authors.is_loading).toBe(true);
-            expect(authors.loaded).toBe(false);
-            expect(authors.builded).toBe(false);
-            expect(authors.source).toBe('new');
-            done();
-        });
+        authorsService
+            .all()
+            .pipe(first())
+            .subscribe(authors => {
+                expect(authors.is_loading).toBe(true);
+                expect(authors.loaded).toBe(false);
+                expect(authors.builded).toBe(false);
+                expect(authors.source).toBe('new');
+                done();
+            });
     });
 
     it(`return alive collections from store...`, done => {
