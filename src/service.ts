@@ -252,31 +252,23 @@ export class Service<R extends Resource = Resource> {
         } else if (temporary_collection.cache_last_update > 0) {
             // data on memory, but it isn't live
             throw new Error('Memory filled with local data, but is die.');
-        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'individual') {
-            // STORE (individual)
+        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+            // STORE
             temporary_collection.setLoaded(false);
 
-            let json_ripper = new JsonRipper();
-            let success = await json_ripper.getCollection(path.getForCache(), path.includes);
-            temporary_collection.source = 'store';
-            temporary_collection.fill(success);
-            temporary_collection.cache_last_update = success.meta._cache_updated_at;
-
-            // when fields is set, get resource form server
-            if (isLive(temporary_collection, params.ttl)) {
-                temporary_collection.setLoadedAndPropagate(true);
-                temporary_collection.setBuildedAndPropagate(true);
-
-                return;
+            let success: IDataCollection;
+            if (params.store_cache_method === 'compact') {
+                // STORE (compact)
+                success = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact');
+                temporary_collection.cache_last_update = success._lastupdate_time;
+            } else {
+                // STORE (individual)
+                let json_ripper = new JsonRipper();
+                success = await json_ripper.getCollection(path.getForCache(), path.includes);
+                temporary_collection.cache_last_update = success.meta._cache_updated_at;
             }
-        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'compact') {
-            // STORE (compact)
-            temporary_collection.setLoaded(false);
-
-            let success = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact');
             temporary_collection.source = 'store';
             temporary_collection.fill(success);
-            temporary_collection.cache_last_update = success._lastupdate_time;
 
             // when fields is set, get resource form server
             if (isLive(temporary_collection, params.ttl)) {

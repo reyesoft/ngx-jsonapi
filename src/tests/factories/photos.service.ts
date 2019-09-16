@@ -1,5 +1,5 @@
-import { Resource } from '../resource';
-import { Service } from '../service';
+import { Resource } from '../../resource';
+import { Service } from '../../service';
 
 export class Photo extends Resource {
     public attributes = {

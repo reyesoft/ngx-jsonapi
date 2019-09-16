@@ -68,7 +68,7 @@ describe('Path Builder', () => {
         path_builder.paths = ['test', 'path'];
         (path_builder as any).get_params = ['and', 'test', 'params'];
         let path = path_builder.getForCache();
-        // this creates test/pathand/test/params instead of test/path/and/test/params <= is this on purpose?
+        // this creates test/pathand/tests/params instead of test/path/and/tests/params <= is this on purpose?
         expect(path).toBe(path_builder.paths.join('/') + (path_builder as any).get_params.join('/'));
     });
     it('if get_params length is 0, getForCache shouldn t add them to the resulting string', () => {

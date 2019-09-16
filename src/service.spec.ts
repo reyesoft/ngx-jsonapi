@@ -4,8 +4,8 @@ import { Http as JsonapiHttpImported } from './sources/http.service';
 import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { JsonapiConfig } from './jsonapi-config';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { TestFactory } from './test-factory/test-factory';
-import { Author, AuthorsService } from './test-factory/authors.service';
+import { TestFactory } from './tests/factories/test-factory';
+import { Author, AuthorsService } from './tests/factories/authors.service';
 import { delay, filter } from 'rxjs/operators';
 
 class HttpHandlerMock implements HttpHandler {

@@ -36,7 +36,7 @@ export class DexieDataProvider implements IDataProvider {
             .where(':id')
             .anyOf(keys)
             .each(element => {
-                data[element.data.type + '.' + element.data.id] = element.data;
+                data[element.data.type + '.' + element.data.id] = element;
             });
 
         // we need to maintain same order, database return ordered by key
@@ -45,19 +45,21 @@ export class DexieDataProvider implements IDataProvider {
         });
     }
 
-    public saveElement(key: string, data: any): void {
-        return;
+    public async saveElement(key: string, item: any): Promise<void> {
+        return this.db.open().then(() => {
+            this.db.table('elements').put(item, key);
+        });
     }
 
-    public saveElements(elements: Array<IElement>): void {
+    public async saveElements(elements: Array<IElement>): Promise<void> {
         let keys: Array<string> = [];
         let items = elements.map(element => {
             keys.push(element.key);
 
-            return element.data;
+            return element.content;
         });
 
-        this.db.open().then(() => {
+        return this.db.open().then(() => {
             this.db.table('elements').bulkPut(items, keys);
         });
     }

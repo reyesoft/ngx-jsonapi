@@ -1,4 +1,4 @@
-import { IDataResource } from './data-resource';
+import { IDataObject } from './data-object';
 import { IDataCollection } from './data-collection';
 
 export interface ICacheableDocument {
@@ -14,7 +14,7 @@ export interface ICacheableCollection extends IDataCollection, ICacheableDocumen
     };
 }
 
-export interface ICacheableResource extends IDataResource, ICacheableDocument {
+export interface ICacheableResource extends IDataObject, ICacheableDocument {
     meta: {
         _cache_updated_at: number;
         // [key: string]: any;

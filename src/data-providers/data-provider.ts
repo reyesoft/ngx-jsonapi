@@ -4,13 +4,13 @@ export interface IObject {
 
 export interface IElement {
     key: string;
-    data: IObject;
+    content: IObject;
 }
 
 export interface IDataProvider {
     getElement(key: string): Promise<IObject | Array<IObject>>;
     getElements(keys: Array<string>): Promise<Array<IObject>>;
 
-    saveElement(key: string, data: IObject): void;
-    saveElements(elements: Array<IElement>): void;
+    saveElement(key: string, data: IObject): Promise<void>;
+    saveElements(elements: Array<IElement>): Promise<void>;
 }
