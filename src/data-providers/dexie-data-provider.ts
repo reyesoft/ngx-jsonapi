@@ -5,11 +5,14 @@ import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
 
 export class DexieDataProvider implements IDataProvider {
-    private db: Dexie;
+    private static db: Dexie;
 
     public constructor() {
-        this.db = new Dexie('dexie_data_provider');
-        this.db.version(1).stores({
+        if (DexieDataProvider.db) {
+            return;
+        }
+        DexieDataProvider.db = new Dexie('dexie_data_provider');
+        DexieDataProvider.db.version(1).stores({
             collections: '',
             elements: ''
         });
@@ -20,8 +23,8 @@ export class DexieDataProvider implements IDataProvider {
         // const table_name = key.match(/[a-z]+\.[a-zA-Z]+/) ? 'elements' : 'collections';
         const table_name = 'elements';
 
-        await this.db.open();
-        const data = await this.db.table(table_name).get(key);
+        await DexieDataProvider.db.open();
+        const data = await DexieDataProvider.db.table(table_name).get(key);
         if (data === undefined) {
             throw new Error(key + ' not found.');
         }
@@ -31,7 +34,7 @@ export class DexieDataProvider implements IDataProvider {
 
     public async getElements(keys: Array<string>): Promise<Array<IObject>> {
         let data = {};
-        await this.db
+        await DexieDataProvider.db
             .table('elements')
             .where(':id')
             .anyOf(keys)
@@ -46,8 +49,14 @@ export class DexieDataProvider implements IDataProvider {
     }
 
     public async saveElement(key: string, item: any): Promise<void> {
-        return this.db.open().then(() => {
-            this.db.table('elements').put(item, key);
+        return DexieDataProvider.db.open().then(() => {
+            DexieDataProvider.db.table('elements').put(item, key);
+        });
+    }
+
+    public async deprecateCollection(/* key_start_with: string */): Promise<void> {
+        return DexieDataProvider.db.open().then(async () => {
+            return DexieDataProvider.db.table('elements').clear();
         });
     }
 
@@ -59,8 +68,8 @@ export class DexieDataProvider implements IDataProvider {
             return element.content;
         });
 
-        return this.db.open().then(() => {
-            this.db.table('elements').bulkPut(items, keys);
+        return DexieDataProvider.db.open().then(() => {
+            DexieDataProvider.db.table('elements').bulkPut(items, keys);
         });
     }
 }

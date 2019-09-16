@@ -92,7 +92,7 @@ describe('core methods', () => {
             });
     });
 
-    it(`the resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources,
+    it(`resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources,
         including nested relationships`, async () => {
         let test_resource = new TestResource();
         test_resource.type = 'test_resources';
@@ -124,7 +124,7 @@ describe('core methods', () => {
         let included = [test_resource_has_one_relationship, test_resource_has_many_relationship_1, test_resource_nested_relationship];
 
         let test_service = new TestService();
-        test_service.clearCacheMemory();
+        await test_service.clearCacheMemory();
         test_service.cachememory.resources = {};
         Core.injectedServices.JsonapiStoreService.clearCache();
         test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));
@@ -154,7 +154,7 @@ describe('core methods', () => {
             });
     });
 
-    it(`the resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources`, async () => {
+    it(`resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources`, async () => {
         let test_resource = new TestResource();
         test_resource.type = 'test_resources';
         test_resource.id = '1';

@@ -13,6 +13,7 @@ import { IDataObject } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection } from './interfaces/data-collection';
 import { JsonRipper } from './services/json-ripper';
+import { DexieDataProvider } from './data-providers/dexie-data-provider';
 
 export class Service<R extends Resource = Resource> {
     public cachememory: CacheMemory;
@@ -69,49 +70,63 @@ export class Service<R extends Resource = Resource> {
     public get(id: string, params: IParamsResource = {}): Observable<R> {
         params = { ...Base.ParamsResource, ...params };
 
-        // http request
         let path = new PathBuilder();
         path.applyParams(this, params);
         path.appendPath(id);
 
-        // CACHEMEMORY
         let resource: R = this.getOrCreateResource(id);
-        resource.is_loading = true;
-        resource.loaded = false;
+        resource.setLoaded(false);
 
         let subject = new BehaviorSubject<R>(resource);
 
-        // when fields is set, get resource form server
-        if (isLive(resource, params.ttl) && Object.keys(params.fields).length === 0) {
-            resource.setLoaded(true);
-            resource.source = 'memory';
-            setTimeout(() => {
-                subject.complete();
+        this.getGetFromLocal(params, path, resource)
+            .then(() => {
+                subject.next(resource);
+                setTimeout(() => subject.complete(), 0);
+            })
+            .catch(() => {
+                resource.setLoaded(false);
+                subject.next(resource);
+                this.getGetFromServer(path, resource, subject);
             });
-        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            // CACHESTORE
-            this.getService()
-                .cachestore.getResource(resource, params.include)
-                .then(() => {
-                    // when fields is set, get resource form server
-                    if (!isLive(resource, params.ttl) || Object.keys(params.fields).length > 0) {
-                        subject.next(resource);
-                        throw new Error('No está viva la caché de IndexedDB');
-                    }
-                    resource.setLoadedAndPropagate(true);
-                    resource.source = 'store';
-                    subject.next(resource);
-                    subject.complete();
-                })
-                .catch(() => {
-                    this.getGetFromServer(path, resource, subject);
-                });
-        } else {
-            this.getGetFromServer(path, resource, subject);
-        }
-        subject.next(resource);
 
         return subject.asObservable();
+    }
+
+    private async getGetFromLocal(params: IParamsCollection = {}, path: PathBuilder, resource: R): Promise<void> {
+        if (Object.keys(params.fields).length > 0) {
+            // not supported yet
+            throw new Error('All from local is not supported whith fields param.');
+        }
+        if (isLive(resource, params.ttl)) {
+            // data on memory and its live
+            resource.setLoaded(true);
+            resource.source = 'memory';
+
+            return;
+        } else if (resource.cache_last_update > 0) {
+            // data on memory, but it isn't live
+            throw new Error('Memory filled with local data, but is die.');
+        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+            // STORE
+            resource.setLoaded(false);
+
+            let json_ripper = new JsonRipper();
+            let success = await json_ripper.getResource(JsonRipper.getResourceKey(resource), path.includes);
+            resource.cache_last_update = success.meta._cache_updated_at;
+
+            // when fields is set, get resource form server
+            if (!isLive(resource, params.ttl) || Object.keys(params.fields).length > 0) {
+                throw new Error('No está viva la caché e IndexedDB');
+            }
+            resource.setLoadedAndPropagate(true);
+            resource.fill(success);
+            resource.source = 'store';
+
+            return;
+        }
+
+        throw new Error('We cant handle this request');
     }
 
     protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
@@ -120,6 +135,8 @@ export class Service<R extends Resource = Resource> {
                 resource.fill(<IDataObject>success);
                 resource.setLoadedAndPropagate(true);
                 resource.setSourceAndPropagate('server');
+                let json_ripper = new JsonRipper();
+                json_ripper.saveResource(resource, path.includes);
                 this.getService().cachememory.setResource(resource, true);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
@@ -167,14 +184,16 @@ export class Service<R extends Resource = Resource> {
         return <R>resource;
     }
 
-    public clearCacheMemory(): boolean {
+    public async clearCacheMemory(): Promise<boolean> {
         let path = new PathBuilder();
         path.applyParams(this);
 
-        return (
-            this.getService().cachememory.deprecateCollections(path.getForCache()) &&
-            this.getService().cachestore.deprecateCollections(path.getForCache())
-        );
+        let db = new DexieDataProvider();
+
+        this.getService().cachememory.deprecateCollections(path.getForCache());
+        this.getService().cachestore.deprecateCollections(path.getForCache());
+
+        return db.deprecateCollection().then(() => true);
     }
 
     public parseToServer(attributes: IAttributes): void {
