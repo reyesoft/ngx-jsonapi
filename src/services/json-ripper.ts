@@ -42,7 +42,7 @@ export class JsonRipper {
                 relationship.forEach(related_resource => {
                     included_keys.push(JsonRipper.getResourceKey(related_resource));
                 });
-            } else if ('id' in relationship) {
+            } else if (relationship && 'id' in relationship) {
                 included_keys.push(JsonRipper.getResourceKey(relationship));
             }
         });
@@ -141,6 +141,9 @@ export class JsonRipper {
                     elements.push(JsonRipper.getElement(related_resource));
                 });
             } else if (relationship instanceof DocumentResource) {
+                if (relationship.data === null) {
+                    return;
+                }
                 elements.push(JsonRipper.getElement(relationship.data));
             }
         });

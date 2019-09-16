@@ -102,6 +102,26 @@ describe('JsonRipper for resources', () => {
         done();
     }, 500);
 
+    it('A ripped resource with hasOne = null saved via DataProvider is converted to a Json', async done => {
+        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
+        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
+
+        let jsonRipper = new JsonRipper();
+        book.relationships.author.data = null;
+        await jsonRipper.saveResource(book, ['author']);
+        let json = await jsonRipper.getResource(JsonRipper.getResourceKey(book), ['author']);
+        expect(json.included.length).toEqual(0);
+        expect(json.data.relationships.author.data).toEqual(null);
+        // expect(json.included[0]).toMatchObject({
+        //     id: '2',
+        //     type: 'authors',
+        //     attributes: {},
+        //     relationships: {}
+        // });
+
+        done();
+    }, 500);
+
     it('Requesting DataProvider not cached resource thrown an error', done => {
         let jsonRipper = new JsonRipper();
         jsonRipper

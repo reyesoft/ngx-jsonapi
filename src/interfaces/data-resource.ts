@@ -6,7 +6,7 @@ export interface IDataResource {
     type: string;
     id: string;
     attributes?: IAttributes;
-    relationships?: object;
+    relationships?: IObject;
     links?: ILinks;
     meta?: IObject;
     _lastupdate_time?: number; // used when come from Store
