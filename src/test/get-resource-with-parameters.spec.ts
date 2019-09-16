@@ -1,7 +1,7 @@
 // WARNING: this test is not isolated
 
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { DocumentCollection } from 'src/document-collection';
+import { DocumentCollection } from '../document-collection';
 import { DocumentResource } from '../document-resource';
 import { Resource } from '../resource';
 import { Http as JsonapiHttpImported } from '../sources/http.service';

@@ -1,16 +1,12 @@
-import { Resource } from './resource';
-import { PathCollectionBuilder } from 'src/services/path-collection-builder';
-import { Service } from './service';
-import { Converter } from './services/converter';
 import { Core } from './core';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { JsonapiConfig } from './jsonapi-config';
-import { BehaviorSubject, Observable, concat } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { TestFactory } from './test-factory/test-factory';
 import { Author, AuthorsService } from './test-factory/authors.service';
-import { delay, filter } from 'rxjs/operators';
+import { delay, filter, first } from 'rxjs/operators';
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
@@ -68,18 +64,19 @@ describe('Requesting not cached collections. All() method:', () => {
         );
         authorsService = new AuthorsService();
         authorsService.register();
+        authorsService.clearCacheMemory();
     });
 
-    it(`should request the collection to the server and emit before it's loaded or builded`, () => {
+    it(`should emit before the collection is loaded or builded`, done => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
-        authorsService.all().subscribe(authors => {
-            expect(http_request_spy).toHaveBeenCalled();
+        authorsService.all().pipe(first()).subscribe(authors => {
             expect(authors.is_loading).toBe(true);
             expect(authors.loaded).toBe(false);
             expect(authors.builded).toBe(false);
             expect(authors.source).toBe('new');
+            done();
         });
     });
 
@@ -101,7 +98,7 @@ describe('Requesting not cached collections. All() method:', () => {
                 expect(authors.data.length).toBeGreaterThan(0);
                 done();
             });
-    }, 200);
+    });
 });
 
 describe('Requesting cached collections from memory. All() method should:', () => {
@@ -136,19 +133,6 @@ describe('Requesting cached collections from memory. All() method should:', () =
             });
     });
 
-    it(`emit before it's loaded or builded`, () => {
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
-
-        authorsService.all().subscribe(authors => {
-            expect(http_request_spy).not.toHaveBeenCalled();
-            expect(authors.is_loading).toBe(true);
-            expect(authors.loaded).toBe(false);
-            expect(authors.builded).toBe(false);
-            expect(authors.source).toBe('new');
-        });
-    });
-
     it(`return alive collections from memory...`, done => {
         expect(authorsService.collections_ttl).toBeGreaterThan(0); // to prevent from removeing or changing this value to 0
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
@@ -156,11 +140,6 @@ describe('Requesting cached collections from memory. All() method should:', () =
 
         authorsService
             .all()
-            .pipe(
-                filter(authors => {
-                    return authors.builded && authors.loaded && !authors.is_loading; // builded, loaded, is_loading checks
-                })
-            )
             .subscribe(authors => {
                 expect(http_request_spy).not.toHaveBeenCalled();
                 expect(authors.source).toBe('memory');
@@ -246,16 +225,16 @@ describe('Requesting cached collections from store. All() method:', () => {
         (authorsService.cachememory as any).collections = {};
     });
 
-    it(`emit before it's loaded or builded`, () => {
+    it(`emit before it's loaded or builded`, done => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
-        authorsService.all().subscribe(authors => {
-            expect(http_request_spy).not.toHaveBeenCalled();
+        authorsService.all().pipe(first()).subscribe(authors => {
             expect(authors.is_loading).toBe(true);
             expect(authors.loaded).toBe(false);
             expect(authors.builded).toBe(false);
             expect(authors.source).toBe('new');
+            done();
         });
     });
 
@@ -272,7 +251,6 @@ describe('Requesting cached collections from store. All() method:', () => {
                 })
             )
             .subscribe(authors => {
-                // console.log('source -->', authors.source);
                 expect(http_request_spy).not.toHaveBeenCalled();
                 expect(authors.source).toBe('store');
                 expect(authors.data.length).toBeGreaterThan(0);

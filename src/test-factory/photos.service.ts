@@ -1,4 +1,5 @@
-import { Service, Resource } from 'ngx-jsonapi';
+import { Resource } from '../resource';
+import { Service } from '../service';
 
 export class Photo extends Resource {
     public attributes = {

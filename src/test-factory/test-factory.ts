@@ -1,7 +1,7 @@
 import { Resource } from '../resource';
 import { IDocumentData } from '../interfaces/document';
 import { IDataResource } from '../interfaces/data-resource';
-import { DocumentCollection } from 'src/document-collection';
+import { DocumentCollection } from '../document-collection';
 import { DocumentResource } from '../document-resource';
 import { Service } from '../service';
 import { Author, AuthorsService } from './authors.service';

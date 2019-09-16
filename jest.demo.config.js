@@ -16,6 +16,6 @@ module.exports = {
       'ts-jest': {
           tsConfigFile: 'demo/tsconfig.spec.json'
       },
-      __TRANSFORM_HTML__: true
+      stringifyContentPathRegex: true
   },
 };
