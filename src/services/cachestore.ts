@@ -1,3 +1,4 @@
+import { ICacheableDataCollection } from './../interfaces/data-collection';
 import { IObjectsById } from '../interfaces';
 import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
@@ -6,7 +7,6 @@ import { Base } from './base';
 import { Resource } from '../resource';
 import { Converter } from './converter';
 import { DocumentCollection } from '../document-collection';
-import { Observable, Subject } from 'rxjs';
 import { Page } from './page';
 import { DocumentResource } from '../document-resource';
 
@@ -28,7 +28,7 @@ export class CacheStore {
             this.fillRelationshipFromStore(resource, resource_alias, include_promises);
         }
 
-        resource.cache_last_update = success._lastupdate_time;
+        resource.cache_last_update = success.cache_last_update;
 
         // no debo esperar a que se resuelvan los include
         if (include_promises.length === 0) {
@@ -104,13 +104,13 @@ export class CacheStore {
     }
 
     public async fillCollectionFromStore(url: string, include: Array<string>, collection: DocumentCollection): Promise<DocumentCollection> {
-        let data_collection: IDataCollection = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', url);
+        let data_collection: ICacheableDataCollection = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', url);
         // build collection from store and resources from memory
         if (this.fillCollectionWithArrrayAndResourcesOnMemory(data_collection.data, collection)) {
             collection.source = 'store'; // collection from storeservice, resources from memory
             collection.builded = true;
             collection.setLoaded(true);
-            collection.cache_last_update = data_collection._lastupdate_time;
+            collection.cache_last_update = data_collection.cache_last_update;
 
             return collection;
         }
@@ -122,7 +122,7 @@ export class CacheStore {
             throw new Error('ts-angular-json: esto no debería pasar. buscar eEa2ASd2#');
         }
         collection.source = 'store'; // collection and resources from storeservice
-        collection.cache_last_update = data_collection._lastupdate_time;
+        collection.cache_last_update = data_collection.cache_last_update;
         collection.builded = true;
         collection.setLoaded(true);
 

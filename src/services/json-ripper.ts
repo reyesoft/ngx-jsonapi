@@ -1,18 +1,14 @@
-import { IDataObject } from './../interfaces/data-object';
-import { ICacheableResource } from './../interfaces/cacheable-document';
+import { ICacheableDataCollection } from './../interfaces/data-collection';
+import { ICacheableDocumentResource } from './../interfaces/data-object';
 import { Resource } from './../resource';
 import { DocumentResource } from './../document-resource';
 import { DexieDataProvider } from '../data-providers/dexie-data-provider';
 import { IDataProvider, IElement } from './../data-providers/data-provider';
 import { DocumentCollection } from '../document-collection';
-import { ICacheableCollection } from '../interfaces/cacheable-document';
 
 interface IStoredCollection {
     updated_at: number;
     keys: Array<string>;
-}
-interface IStoredResource extends IDataObject {
-    updated_at: number;
 }
 export class JsonRipper {
     private dataProvider: IDataProvider;
@@ -21,14 +17,15 @@ export class JsonRipper {
         this.dataProvider = new DexieDataProvider();
     }
 
-    public async getResource(key: string, include: Array<string> = []): Promise<ICacheableResource> {
+    public async getResource(key: string, include: Array<string> = []): Promise<ICacheableDocumentResource> {
         let stored_resource = (await this.getDataResources([key])).shift();
 
+        if (stored_resource === undefined) {
+            throw new Error(`Resource ${key} don't found.`);
+        }
+
         if (include.length === 0) {
-            return {
-                data: stored_resource.data,
-                meta: { _cache_updated_at: stored_resource.updated_at }
-            };
+            return stored_resource;
         }
 
         let included_keys = [];
@@ -50,21 +47,22 @@ export class JsonRipper {
         let included_resources = await this.getDataResources(included_keys);
 
         return {
-            data: stored_resource.data,
-            included: included_resources.map(document_resource => document_resource.data),
-            meta: { _cache_updated_at: stored_resource.updated_at }
+            ...stored_resource,
+            included: included_resources.map(document_resource => document_resource.data)
         };
     }
 
-    public async getCollection(url: string, include: Array<string> = []): Promise<ICacheableCollection> {
+    public async getCollection(url: string, include: Array<string> = []): Promise<ICacheableDataCollection> {
         let stored_collection = await this.getDataCollection(url);
         let data_resources = await this.getDataResources(stored_collection.keys);
 
+        let ret = {
+            data: data_resources.map(data_resource => data_resource.data),
+            cache_last_update: stored_collection.updated_at
+        };
+
         if (include.length === 0) {
-            return {
-                data: data_resources.map(data_resource => data_resource.data),
-                meta: { _cache_updated_at: stored_collection.updated_at }
-            };
+            return ret;
         }
 
         let included_keys = [];
@@ -88,9 +86,8 @@ export class JsonRipper {
         let included_resources = await this.getDataResources(included_keys);
 
         return {
-            data: data_resources.map(data_resource => data_resource.data),
-            included: included_resources.map(document_resource => document_resource.data),
-            meta: { _cache_updated_at: stored_collection.updated_at }
+            ...ret,
+            included: included_resources.map(document_resource => document_resource.data)
         };
     }
 
@@ -98,8 +95,8 @@ export class JsonRipper {
         return <Promise<IStoredCollection>>this.dataProvider.getElement(url);
     }
 
-    private async getDataResources(keys: Array<string>): Promise<Array<IStoredResource>> {
-        return <Promise<Array<IStoredResource>>>this.dataProvider.getElements(keys);
+    private async getDataResources(keys: Array<string>): Promise<Array<ICacheableDocumentResource>> {
+        return <Promise<Array<ICacheableDocumentResource>>>this.dataProvider.getElements(keys);
     }
 
     public saveCollection(url: string, collection: DocumentCollection, include = []): void {
@@ -130,9 +127,10 @@ export class JsonRipper {
         let elements: Array<IElement> = [
             {
                 key: key,
-                content: { ...resource.toObject(), updated_at: Date.now() }
+                content: resource.toObject()
             }
         ];
+        elements[0].content.data.cache_last_update = Date.now();
 
         include.forEach(relationship_alias => {
             const relationship = resource.relationships[relationship_alias];

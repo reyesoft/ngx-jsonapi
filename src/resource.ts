@@ -4,7 +4,7 @@ import { Service } from './service';
 import { Base } from './services/base';
 import { PathBuilder } from './services/path-builder';
 import { Converter } from './services/converter';
-import { IDataObject } from './interfaces/data-object';
+import { IDocumentResource, ICacheableDocumentResource } from './interfaces/data-object';
 import { IAttributes, IParamsResource, ILinks } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { DocumentResource } from './document-resource';
@@ -41,7 +41,7 @@ export class Resource implements ICacheable {
         }
     }
 
-    public toObject(params?: IParamsResource): IDataObject {
+    public toObject(params?: IParamsResource): IDocumentResource {
         params = { ...{}, ...Base.ParamsResource, ...params };
 
         let relationships = {};
@@ -119,7 +119,7 @@ export class Resource implements ICacheable {
             attributes = this.attributes;
         }
 
-        let ret: IDataObject = {
+        let ret: IDocumentResource = {
             data: {
                 type: this.type,
                 id: this.id,
@@ -145,7 +145,7 @@ export class Resource implements ICacheable {
         return ret;
     }
 
-    public fill(data_object: IDataObject, included_resources?: IResourcesByType): void {
+    public fill(data_object: IDocumentResource | ICacheableDocumentResource, included_resources?: IResourcesByType): void {
         included_resources = included_resources || Converter.buildIncluded(data_object);
 
         this.id = data_object.data.id || '';
@@ -174,6 +174,10 @@ export class Resource implements ICacheable {
             if (srvc && 'parseFromServer' in srvc) {
                 srvc.parseFromServer(this.attributes);
             }
+        }
+
+        if ('cache_last_update' in data_object.data) {
+            this.cache_last_update = data_object.data.cache_last_update;
         }
 
         new ResourceRelationshipsConverter(
@@ -291,7 +295,7 @@ export class Resource implements ICacheable {
                 // is a resource?
                 if ('id' in success.data) {
                     this.id = success.data.id;
-                    this.fill(<IDataObject>success);
+                    this.fill(<IDocumentResource>success);
                 } else if (isArray(success.data)) {
                     console.warn('Server return a collection when we save()', success.data);
                 }

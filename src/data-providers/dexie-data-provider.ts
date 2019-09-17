@@ -1,8 +1,5 @@
 import { IDataProvider, IObject, IElement } from './data-provider';
 import Dexie from 'dexie';
-import { Subject, Observable } from 'rxjs';
-import { IDataResource } from '../interfaces/data-resource';
-import { IDataCollection } from '../interfaces/data-collection';
 
 export class DexieDataProvider implements IDataProvider {
     private static db: Dexie;

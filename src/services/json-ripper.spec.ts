@@ -29,6 +29,9 @@ describe('JsonRipper for resources', () => {
             }
         });
 
+        // console.log(book.toObject().data.relationships.photos);
+        // console.log(book.toObject().data.relationships.author);
+
         // hasManyRelationships
         // expect(obj[2].content.data.relationships.books.data.length).toBe(2);
         // expect(Object.keys(obj[2].content.data.relationships.books.data[0]).length).toBe(2); // id and type
@@ -72,17 +75,15 @@ describe('JsonRipper for resources', () => {
         done();
     }, 500);
 
-    it('A ripped resource maintain _updated_at property', async done => {
+    it('A ripped resource maintain cache_last_update property', async () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
         let jsonRipper = new JsonRipper();
         await jsonRipper.saveResource(book);
         let json = await jsonRipper.getResource(JsonRipper.getResourceKey(book));
-        expect(json.meta._cache_updated_at).toBeGreaterThanOrEqual(Date.now() - 100);
-
-        done();
-    }, 500);
+        expect(json.data.cache_last_update).toBeGreaterThanOrEqual(Date.now() - 100);
+    });
 
     it('A ripped resource with include saved via DataProvider is converted to a Json', async done => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
@@ -102,7 +103,7 @@ describe('JsonRipper for resources', () => {
         done();
     }, 500);
 
-    it('A ripped resource with hasOne = null saved via DataProvider is converted to a Json', async done => {
+    it('A ripped resource with hasOne = null saved via DataProvider is converted to a Json', async () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
@@ -118,9 +119,7 @@ describe('JsonRipper for resources', () => {
         //     attributes: {},
         //     relationships: {}
         // });
-
-        done();
-    }, 500);
+    });
 
     it('Requesting DataProvider not cached resource thrown an error', done => {
         let jsonRipper = new JsonRipper();
@@ -130,7 +129,7 @@ describe('JsonRipper for resources', () => {
             .catch(data => {
                 done();
             });
-    }, 500);
+    }, 50);
 });
 
 describe('JsonRipper for collections', () => {
@@ -205,21 +204,19 @@ describe('JsonRipper for collections', () => {
         });
 
         done();
-    }, 500);
+    });
 
-    it('A ripped collection maintain _updated_at property', async done => {
+    it('A ripped collection maintain cache_last_update property', async () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
         let jsonRipper = new JsonRipper();
         jsonRipper.saveCollection('some/url', authors);
         let json = await jsonRipper.getCollection('some/url');
-        expect(json.meta._cache_updated_at).toBeGreaterThanOrEqual(Date.now() - 100);
+        expect(json.cache_last_update).toBeGreaterThanOrEqual(Date.now() - 100);
+    });
 
-        done();
-    }, 500);
-
-    it('A ripped collection with include saved via DataProvider is converted to a Json', async done => {
+    it('A ripped collection with include saved via DataProvider is converted to a Json', async () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
@@ -240,11 +237,23 @@ describe('JsonRipper for collections', () => {
                 }
             }
         });
+    });
 
-        done();
-    }, 500);
+    it('A ripped collection returns _lastupdate_time on collection and resources property', async () => {
+        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
+        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
-    it('Requesting a DataProvider not cached collection thrown an error', done => {
+        let jsonRipper = new JsonRipper();
+        jsonRipper.saveCollection('some/url/include', authors, ['books']);
+
+        let json = await jsonRipper.getCollection('some/url/include', ['books']);
+        expect(json.cache_last_update).toBeGreaterThan(0);
+
+        // collection.fill responsability to fill, but ripper need to comunicate last update
+        expect(json.data[1].cache_last_update).toBeGreaterThan(0);
+    }, 50);
+
+    it('Requesting a DataProvider not cached collection thrown an error', async done => {
         let jsonRipper = new JsonRipper();
         jsonRipper
             .getCollection('some/bad/url')
@@ -252,5 +261,5 @@ describe('JsonRipper for collections', () => {
             .catch(data => {
                 done();
             });
-    }, 500);
+    });
 });

@@ -1,6 +1,6 @@
 import { IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
-import { IDataObject } from '../interfaces/data-object';
+import { IDocumentResource } from '../interfaces/data-object';
 import { IDataResource } from '../interfaces/data-resource';
 import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
@@ -29,7 +29,7 @@ export class ResourceRelationshipsConverter {
     public buildRelationships(): void {
         // recorro los relationships levanto el service correspondiente
         for (const relation_alias in this.relationships_from) {
-            let relation_from_value: IDataCollection & IDataObject = this.relationships_from[relation_alias];
+            let relation_from_value: IDataCollection & IDocumentResource = this.relationships_from[relation_alias];
 
             if (this.relationships_dest[relation_alias] && relation_from_value.data === null) {
                 // TODO: FE-92 --- check and improve conditions when building has-one relationships
@@ -82,7 +82,7 @@ export class ResourceRelationshipsConverter {
         (<DocumentCollection>this.relationships_dest[relation_alias]).fill(relation_from_value);
     }
 
-    private __buildRelationshipHasOne(relation_data_from: IDataObject, relation_alias: string): void {
+    private __buildRelationshipHasOne(relation_data_from: IDocumentResource, relation_alias: string): void {
         // new related resource <> cached related resource <> ? delete!
         if (!('type' in relation_data_from.data)) {
             this.relationships_dest[relation_alias].data = [];

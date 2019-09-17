@@ -9,9 +9,9 @@ import { IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { isLive } from './common';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
-import { IDataObject } from './interfaces/data-object';
+import { IDocumentResource } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
-import { IDataCollection } from './interfaces/data-collection';
+import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
 import { JsonRipper } from './services/json-ripper';
 import { DexieDataProvider } from './data-providers/dexie-data-provider';
 
@@ -113,7 +113,6 @@ export class Service<R extends Resource = Resource> {
 
             let json_ripper = new JsonRipper();
             let success = await json_ripper.getResource(JsonRipper.getResourceKey(resource), path.includes);
-            resource.cache_last_update = success.meta._cache_updated_at;
 
             // when fields is set, get resource form server
             if (!isLive(resource, params.ttl) || Object.keys(params.fields).length > 0) {
@@ -132,7 +131,7 @@ export class Service<R extends Resource = Resource> {
     protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
         Core.get(path.get()).subscribe(
             success => {
-                resource.fill(<IDataObject>success);
+                resource.fill(<IDocumentResource>success);
                 resource.setLoadedAndPropagate(true);
                 resource.setSourceAndPropagate('server');
                 let json_ripper = new JsonRipper();
@@ -238,10 +237,6 @@ export class Service<R extends Resource = Resource> {
 
         // make request
         let temporary_collection = this.getOrCreateCollection(path);
-        // if (temporary_collection.ttl === 61) {
-        //     console.log('path --->', path);
-        //     console.log('temporary_collection --->', temporary_collection);
-        // }
         temporary_collection.page.number = params.page.number * 1;
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
@@ -281,16 +276,14 @@ export class Service<R extends Resource = Resource> {
             // STORE
             temporary_collection.setLoaded(false);
 
-            let success: IDataCollection;
+            let success: ICacheableDataCollection;
             if (params.store_cache_method === 'compact') {
                 // STORE (compact)
                 success = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact');
-                temporary_collection.cache_last_update = success._lastupdate_time;
             } else {
                 // STORE (individual)
                 let json_ripper = new JsonRipper();
                 success = await json_ripper.getCollection(path.getForCache(), path.includes);
-                temporary_collection.cache_last_update = success.meta._cache_updated_at;
             }
             temporary_collection.source = 'store';
             temporary_collection.fill(success);

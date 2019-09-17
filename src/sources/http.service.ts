@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IDataObject } from '../interfaces/data-object';
+import { IDocumentResource } from '../interfaces/data-object';
 import { HttpClient, HttpHeaders, HttpEvent } from '@angular/common/http';
 import { JsonapiConfig } from '../jsonapi-config';
 import { share, tap } from 'rxjs/operators';
@@ -13,7 +13,7 @@ export class Http {
 
     public constructor(private http: HttpClient, private rsJsonapiConfig: JsonapiConfig) {}
 
-    public exec(path: string, method: string, data?: IDataObject): Observable<IDocumentData> {
+    public exec(path: string, method: string, data?: IDocumentResource): Observable<IDocumentData> {
         let req = {
             body: data || null,
             headers: new HttpHeaders({

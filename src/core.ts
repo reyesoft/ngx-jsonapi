@@ -6,7 +6,7 @@ import { Resource } from './resource';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
-import { IDataObject } from './interfaces/data-object';
+import { IDocumentResource } from './interfaces/data-object';
 import { noop } from 'rxjs/internal/util/noop';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
@@ -51,7 +51,12 @@ export class Core {
         return Core.exec(path, 'get');
     }
 
-    public static exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true): Observable<IDocumentData> {
+    public static exec(
+        path: string,
+        method: string,
+        data?: IDocumentResource,
+        call_loadings_error: boolean = true
+    ): Observable<IDocumentData> {
         Core.me.refreshLoadings(1);
 
         return Core.injectedServices.JsonapiHttp.exec(path, method, data).pipe(

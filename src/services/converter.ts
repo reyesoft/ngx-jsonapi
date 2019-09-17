@@ -3,7 +3,7 @@ import { Core } from '../core';
 import { Resource } from '../resource';
 import { Service } from '../service';
 import { IResourcesByType, IObjectsById } from '../interfaces';
-import { IDataObject } from '../interfaces/data-object';
+import { IDocumentResource } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataResource } from '../interfaces/data-resource';
 import { isDevMode } from '@angular/core';
@@ -55,7 +55,7 @@ export class Converter<R extends Resource> {
         return resource_service;
     }
 
-    public static buildIncluded(document_from: IDataCollection | IDataObject): IResourcesByType {
+    public static buildIncluded(document_from: IDataCollection | IDocumentResource): IResourcesByType {
         if ('included' in document_from) {
             return Converter.json_array2resources_array_by_type(document_from.included);
         }

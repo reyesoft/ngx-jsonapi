@@ -1,5 +1,6 @@
+import { ICacheableDataCollection } from './../interfaces/data-collection';
+import { ICacheableDataResource } from './../interfaces/data-resource';
 import Dexie from 'dexie';
-import { Subject, Observable } from 'rxjs';
 import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IObjectsById } from '../interfaces';
@@ -28,9 +29,9 @@ export class StoreService /* implements IStoreService */ {
         this.checkIfIsTimeToClean();
     }
 
-    public async getDataObject(type: 'collection', url: string): Promise<IDataCollection>;
-    public async getDataObject(type: string, id: string): Promise<IDataResource>;
-    public async getDataObject(type: 'collection' | string, id_or_url: string): Promise<IDataCollection | IDataResource> {
+    public async getDataObject(type: 'collection', url: string): Promise<ICacheableDataCollection>;
+    public async getDataObject(type: string, id: string): Promise<ICacheableDataResource>;
+    public async getDataObject(type: 'collection' | string, id_or_url: string): Promise<ICacheableDataCollection | ICacheableDataResource> {
         // we use different tables for resources and collections
         const table_name = type === 'collection' ? 'collections' : 'elements';
 

@@ -1,11 +1,11 @@
-import { IDataObject } from './interfaces/data-object';
+import { IDocumentResource } from './interfaces/data-object';
 import { IParamsCollection } from './interfaces/params-collection';
 import { Resource } from './resource';
 import { Page } from './services/page';
 import { Document } from './document';
 import { ICacheable } from './interfaces/cacheable';
 import { Converter } from './services/converter';
-import { IDataCollection } from './interfaces/data-collection';
+import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
 import { IDataResource } from './interfaces/data-resource';
 
 export class DocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
@@ -28,8 +28,8 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         return null;
     }
 
-    public fill(data_collection: IDataCollection): void {
-        let included_resources = Converter.buildIncluded(data_collection);
+    public fill(data_collection: IDataCollection | ICacheableDataCollection): void {
+        Converter.buildIncluded(data_collection);
 
         // sometimes get Cannot set property 'number' of undefined (page)
         if (this.page && data_collection.meta) {
@@ -62,6 +62,10 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         }
 
         this.meta = data_collection.meta || {};
+
+        if ('cache_last_update' in data_collection) {
+            this.cache_last_update = data_collection.cache_last_update;
+        }
     }
 
     public replaceOrAdd(resource: R): void {

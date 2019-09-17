@@ -1,5 +1,6 @@
+import { TestFactory } from './tests/factories/test-factory';
 import { DocumentCollection } from './document-collection';
-import { IDataObject } from './interfaces/data-object';
+import { IDocumentResource } from './interfaces/data-object';
 import { IParamsResource } from './interfaces/params-resource';
 import { DocumentResource } from './document-resource';
 import { Core } from './core';
@@ -64,7 +65,7 @@ describe('resource', () => {
         expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', second_expected_resource_in_save, true);
     });
 
-    it('toObject method should parse the resouce in a new IDataObject', () => {
+    it('toObject method should parse the resouce in a new IDocumentResource', () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
         let new_resource: Resource = new Resource();
@@ -85,7 +86,7 @@ describe('resource', () => {
             ttl: 0
             // id: '',
         };
-        let to_object_resource: IDataObject = new_resource.toObject(params);
+        let to_object_resource: IDocumentResource = new_resource.toObject(params);
         expect(to_object_resource.data.id).toBe('1');
         expect(to_object_resource.data.type).toBe('main');
         expect(to_object_resource.data.attributes.main_attribute).toBe('123456789');
@@ -95,6 +96,9 @@ describe('resource', () => {
         expect(to_object_resource.included[0].type).toBe('resource_relationship');
         expect(to_object_resource.included[0].attributes.first).toBe('1');
     });
+});
+
+describe('resource.toObject() method', () => {
     it('(toObject) If the service has a parseToServer method, ir should be applied in toObject method', () => {
         let mocked_service_data = {
             parseToServer: (attr: { [key: string]: any }): { [key: string]: any } => {
@@ -125,6 +129,7 @@ describe('resource', () => {
         let to_object_resource = new_resource.toObject(params);
         expect(to_object_resource.data.attributes.main_attribute).toBe(123456789);
     });
+
     it('(toObject) If a relationship is not a document resource or document collection instance, a warn should be reaised', () => {
         let console_warn_spy = spyOn(console, 'warn');
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
@@ -147,10 +152,11 @@ describe('resource', () => {
             ttl: 0
             // id: '',
         };
-        let to_object_resource: IDataObject = new_resource.toObject(params);
+        let to_object_resource: IDocumentResource = new_resource.toObject(params);
         expect(to_object_resource).toBeTruthy();
         expect(console_warn_spy).toHaveBeenCalled();
     });
+
     it('(toObject) If a relationship is not in the include param, it should not be included in the resulting include field', () => {
         let console_warn_spy = spyOn(console, 'warn');
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
@@ -173,10 +179,11 @@ describe('resource', () => {
             ttl: 0
             // id: '',
         };
-        let to_object_resource: IDataObject = new_resource.toObject(params);
+        let to_object_resource: IDocumentResource = new_resource.toObject(params);
         expect(to_object_resource).toBeTruthy();
         expect(to_object_resource.included).toBeFalsy();
     });
+
     it('(toObject) If a relationship is empty, it should not be included in the resulting resource realtionships', () => {
         let console_warn_spy = spyOn(console, 'warn');
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
@@ -194,14 +201,19 @@ describe('resource', () => {
             ttl: 0
             // id: '',
         };
-        let to_object_resource: IDataObject = new_resource.toObject(params);
+        let to_object_resource: IDocumentResource = new_resource.toObject(params);
         expect(to_object_resource).toBeTruthy();
         expect(to_object_resource.data.relationships).toEqual({});
     });
 
-    it('(toObject) If a hasMany relationship is empty, it should be removed from the resulting relationships', () => {
+    it('(toObject) hasMany empty and unbuilded relationship, it should be removed from the resulting relationships', () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
+
+        let book = TestFactory.getBook('5');
+        book.attributes.title = 'Fahrenheit 451';
+        book.addRelationship(TestFactory.getAuthor('2'), 'author');
+
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
@@ -216,7 +228,7 @@ describe('resource', () => {
             ttl: 0
             // id: '',
         };
-        let to_object_resource: IDataObject = new_resource.toObject(params);
+        let to_object_resource: IDocumentResource = new_resource.toObject(params);
         expect(to_object_resource).toBeTruthy();
         expect(to_object_resource.data.relationships).toEqual({});
         expect(to_object_resource.included).toBeFalsy();
@@ -245,13 +257,15 @@ describe('resource', () => {
             ttl: 0
             // id: '',
         };
-        let to_object_resource: IDataObject = new_resource.toObject(params);
+        let to_object_resource: IDocumentResource = new_resource.toObject(params);
         expect(to_object_resource).toBeTruthy();
         expect((to_object_resource.data.relationships as any).resource_relationships.data[0].id).toBe('123');
 
         expect(to_object_resource.included[0].id).toBe('123');
     });
+});
 
+describe('resource.save() method', () => {
     it('if set, te save method should send the "meta" property when saving a resource', async () => {
         let resource = new Resource();
         spyOn(resource, 'getService').and.returnValue(false);

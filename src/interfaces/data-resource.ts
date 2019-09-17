@@ -1,3 +1,4 @@
+import { IHasCacheData } from './has-cache-data';
 import { IObject } from './../data-providers/data-provider';
 import { IAttributes } from '../interfaces';
 import { ILinks } from '../interfaces/links';
@@ -9,5 +10,6 @@ export interface IDataResource {
     relationships?: IObject;
     links?: ILinks;
     meta?: IObject;
-    _lastupdate_time?: number; // used when come from Store
 }
+
+export interface ICacheableDataResource extends IDataResource, IHasCacheData {}

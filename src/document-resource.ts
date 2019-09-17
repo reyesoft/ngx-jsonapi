@@ -1,7 +1,7 @@
 import { Resource } from './resource';
 import { Page } from './services/page';
 import { Document } from './document';
-import { IDataObject } from './interfaces/data-object';
+import { IDocumentResource } from './interfaces/data-object';
 
 export class DocumentResource<R extends Resource = Resource> extends Document {
     public data: R = <R>new Resource(); // @todo?
@@ -14,7 +14,7 @@ export class DocumentResource<R extends Resource = Resource> extends Document {
 
     public page = new Page();
 
-    public fill(data_resource: IDataObject): void {
+    public fill(data_resource: IDocumentResource): void {
         this.data.fill(data_resource);
         this.meta = data_resource.meta || {};
     }
