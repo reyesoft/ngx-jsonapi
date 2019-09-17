@@ -212,13 +212,6 @@ export class Resource implements ICacheable {
         });
     }
 
-    /**
-     * @deprecated
-     */
-    public addRelationshipsArray<R extends Resource>(resources: Array<R>, type_alias: string): void {
-        this.addRelationships(resources, type_alias);
-    }
-
     public removeRelationship(type_alias: string, id: string): boolean {
         if (!(type_alias in this.relationships)) {
             return false;
@@ -230,6 +223,10 @@ export class Resource implements ICacheable {
         let relation = this.relationships[type_alias];
         if (relation instanceof DocumentCollection) {
             relation.data = relation.data.filter(resource => resource.id !== id);
+            if (relation.data.length === 0) {
+                // used by toObject() when hasMany is empty
+                relation.builded = true;
+            }
         } else {
             relation.data = null;
         }

@@ -158,9 +158,9 @@ describe('resource.toObject() method', () => {
     });
 
     it('(toObject) If a relationship is not in the include param, it should not be included in the resulting include field', () => {
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
+
         let console_warn_spy = spyOn(console, 'warn');
-        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
-        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
@@ -184,59 +184,36 @@ describe('resource.toObject() method', () => {
         expect(to_object_resource.included).toBeFalsy();
     });
 
-    it('(toObject) If a relationship is empty, it should not be included in the resulting resource realtionships', () => {
-        let console_warn_spy = spyOn(console, 'warn');
-        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
-        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
-        let new_resource: Resource = new Resource();
-        new_resource.type = 'main';
-        new_resource.id = '1';
-        new_resource.attributes = { main_attribute: '123456789' };
-        new_resource.relationships = {
-            resource_relationship: new DocumentResource()
-        };
-        let params: IParamsResource = {
-            beforepath: '',
-            include: [],
-            ttl: 0
-            // id: '',
-        };
-        let to_object_resource: IDocumentResource = new_resource.toObject(params);
-        expect(to_object_resource).toBeTruthy();
-        expect(to_object_resource.data.relationships).toEqual({});
-    });
-
-    it('(toObject) hasMany empty and unbuilded relationship, it should be removed from the resulting relationships', () => {
-        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
-        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
+    it('(toObject) hasMany empty and untouched relationship should be removed from the resulting relationships', () => {
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
 
         let book = TestFactory.getBook('5');
-        book.attributes.title = 'Fahrenheit 451';
-        book.addRelationship(TestFactory.getAuthor('2'), 'author');
 
-        let new_resource: Resource = new Resource();
-        new_resource.type = 'main';
-        new_resource.id = '1';
-        new_resource.attributes = { main_attribute: '123456789' };
-        new_resource.relationships = {
-            resource_relationships: new DocumentCollection()
-        };
-        let resource_relationships: DocumentCollection = new DocumentCollection();
         let params: IParamsResource = {
             beforepath: '',
             include: ['resource_relationships'],
             ttl: 0
-            // id: '',
         };
-        let to_object_resource: IDocumentResource = new_resource.toObject(params);
-        expect(to_object_resource).toBeTruthy();
-        expect(to_object_resource.data.relationships).toEqual({});
-        expect(to_object_resource.included).toBeFalsy();
+        let book_object = book.toObject(params);
+        expect(book_object.data.relationships.photos).toBeUndefined();
+        expect(book_object.included).toBeFalsy();
+    });
+
+    it('(toObject) hasMany empty and builded relationship should be return a emtpy relationship', () => {
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
+
+        let book = TestFactory.getBook('1');
+        book.addRelationship(TestFactory.getPhoto('5'), 'photos');
+        expect(book.toObject().data.relationships.photos.data[0].id).toBe('5');
+
+        book.removeRelationship('photos', '5');
+        expect(book.relationships.photos.builded).toBe(true);
+        expect(book.toObject().data.relationships.photos.data).toEqual([]);
     });
 
     it('(toObject) hasMany relationships that are OK should be included in  the resulting relationships', () => {
-        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
-        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
+
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
@@ -262,6 +239,38 @@ describe('resource.toObject() method', () => {
         expect((to_object_resource.data.relationships as any).resource_relationships.data[0].id).toBe('123');
 
         expect(to_object_resource.included[0].id).toBe('123');
+    });
+
+    it('(toObject) hasOne empty data and untouched relationship should be removed from the resulting relationships', () => {
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
+
+        let book = TestFactory.getBook('5');
+        let book_object = book.toObject();
+        expect(book_object.data.relationships.author).toBeUndefined();
+        expect(book_object.included).toBeFalsy();
+    });
+
+    it('(toObject) hasOne data null relationship should be return a data nulled relationship', () => {
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
+
+        let book = TestFactory.getBook('5');
+        book.addRelationship(TestFactory.getAuthor('1'), 'author');
+        expect(book.toObject().data.relationships.author.data.id).toBe('1');
+        book.removeRelationship('author', '1');
+        expect(book.relationships.author.data).toBeNull();
+        let book_object = book.toObject();
+        expect(book_object.data.relationships.author.data).toBeNull();
+        expect(book_object.included).toBeFalsy();
+    });
+
+    it('(toObject) hasOne data filled relationship should be return a simple object relationship', () => {
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
+
+        let book = TestFactory.getBook('5');
+        book.addRelationship(TestFactory.getAuthor('1'), 'author');
+        let book_object = book.toObject();
+        expect(book_object.data.relationships.author.data.id).toBe('1');
+        expect(book_object.included).toBeFalsy();
     });
 });
 

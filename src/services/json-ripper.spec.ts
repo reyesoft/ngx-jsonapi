@@ -29,9 +29,6 @@ describe('JsonRipper for resources', () => {
             }
         });
 
-        // console.log(book.toObject().data.relationships.photos);
-        // console.log(book.toObject().data.relationships.author);
-
         // hasManyRelationships
         // expect(obj[2].content.data.relationships.books.data.length).toBe(2);
         // expect(Object.keys(obj[2].content.data.relationships.books.data[0]).length).toBe(2); // id and type
@@ -144,8 +141,7 @@ describe('JsonRipper for collections', () => {
     author1.addRelationship(TestFactory.getBook('2'));
 
     it('A collection is converted to objects for a DataProvider', () => {
-        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
-        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
 
         let obj = JsonRipper.toElements('some/url', authors);
         expect(obj.length).toBe(3);
@@ -168,8 +164,7 @@ describe('JsonRipper for collections', () => {
     });
 
     it('A collection with include is converted to objects for a DataProvider', () => {
-        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
-        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
 
         let obj = JsonRipper.toElements('some/url/include', authors, ['books']);
         expect(obj.length).toBe(5);
@@ -184,8 +179,7 @@ describe('JsonRipper for collections', () => {
     });
 
     it('A ripped collection saved via DataProvider is converted to a Json', async done => {
-        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
-        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
 
         let jsonRipper = new JsonRipper();
         jsonRipper.saveCollection('some/url', authors);
@@ -207,8 +201,7 @@ describe('JsonRipper for collections', () => {
     });
 
     it('A ripped collection maintain cache_last_update property', async () => {
-        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
-        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
 
         let jsonRipper = new JsonRipper();
         jsonRipper.saveCollection('some/url', authors);
@@ -217,8 +210,7 @@ describe('JsonRipper for collections', () => {
     });
 
     it('A ripped collection with include saved via DataProvider is converted to a Json', async () => {
-        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
-        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
 
         let jsonRipper = new JsonRipper();
         jsonRipper.saveCollection('some/url/include', authors, ['books']);
@@ -227,8 +219,8 @@ describe('JsonRipper for collections', () => {
         expect(json.data.length).toEqual(2);
         expect(json.included.length).toEqual(2);
 
-        expect(json.included[1]).toMatchObject({
-            id: '2',
+        expect(json.included[0]).toMatchObject({
+            id: '1',
             type: 'books',
             attributes: {},
             relationships: {
@@ -240,8 +232,7 @@ describe('JsonRipper for collections', () => {
     });
 
     it('A ripped collection returns _lastupdate_time on collection and resources property', async () => {
-        let mocked_service_data: { [key: string]: any } = { parseToServer: false };
-        spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
 
         let jsonRipper = new JsonRipper();
         jsonRipper.saveCollection('some/url/include', authors, ['books']);

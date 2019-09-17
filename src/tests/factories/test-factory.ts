@@ -75,17 +75,17 @@ export class TestFactory {
         let book: Book = new Book();
         book.id = this.getId(id);
         book.ttl = ttl;
-        this.fillBookAttirbutes(book);
+        this.fillBookAttributes(book);
 
         // NOTE: add author
-        (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('authors');
         if (include.includes('author')) {
+            (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('authors');
             this.includeFromService(book, 'author', Photo);
         }
 
         // NOTE: add photos
-        (book.relationships.photos.data as Array<IDataResource>).concat(this.getDataResourcesWithType('photos', 2));
         if (include.includes('photos')) {
+            (book.relationships.photos.data as Array<IDataResource>).concat(this.getDataResourcesWithType('photos', 2));
             this.includeFromService(book, 'photos', Photo);
         }
 
@@ -147,7 +147,7 @@ export class TestFactory {
     }
 
     // TODO: create a dynamic attribute filler by data type and merge 3 methods in 1
-    private static fillBookAttirbutes(book: Book): Book {
+    private static fillBookAttributes(book: Book): Book {
         book.attributes.title = faker.name.title();
         book.attributes.date_published = faker.date.past();
         book.attributes.created_at = faker.date.past();
