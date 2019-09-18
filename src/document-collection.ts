@@ -1,7 +1,8 @@
+import { CacheableHelper } from './services/cacheable-helper.';
 import { IParamsCollection } from './interfaces/params-collection';
 import { Resource } from './resource';
 import { Page } from './services/page';
-import { Document } from './document';
+import { Document, ContentTypes } from './document';
 import { ICacheable } from './interfaces/cacheable';
 import { Converter } from './services/converter';
 import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
@@ -130,12 +131,7 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
     public setLoadedAndPropagate(value: boolean): void {
         this.setLoaded(value);
         this.data.forEach(resource => {
-            for (let relationship_alias in resource.relationships) {
-                let relationship = resource.relationships[relationship_alias];
-                if (relationship instanceof DocumentCollection) {
-                    relationship.setLoaded(value);
-                }
-            }
+            CacheableHelper.propagateLoaded(resource.relationships, value);
         });
     }
 
@@ -150,8 +146,7 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         });
     }
 
-    /** @todo generate interface */
-    public setSource(value: 'new' | 'memory' | 'store' | 'server'): void {
+    public setSource(value: ContentTypes): void {
         this.source = value;
     }
 

@@ -1,3 +1,4 @@
+import { CacheableHelper } from './services/cacheable-helper.';
 import { Core } from './core';
 import { IResourcesByType } from './interfaces/resources-by-type';
 import { Service } from './service';
@@ -13,6 +14,7 @@ import { isArray } from 'util';
 import { Observable, Subject, of } from 'rxjs';
 import { ResourceRelationshipsConverter } from './services/resource-relationships-converter';
 import { IRelationships } from './interfaces/relationship';
+import { ContentTypes } from './document';
 
 export class Resource implements ICacheable {
     public id: string = '';
@@ -26,7 +28,7 @@ export class Resource implements ICacheable {
     public is_saving = false;
     public is_loading = false;
     public loaded = true;
-    public source: 'new' | 'memory' | 'store' | 'server' = 'new';
+    public source: ContentTypes = 'new';
     public cache_last_update = 0;
     public ttl = 0;
 
@@ -317,20 +319,15 @@ export class Resource implements ICacheable {
 
     public setLoadedAndPropagate(value: boolean): void {
         this.setLoaded(value);
-        for (let relationship_alias in this.relationships) {
-            let relationship = this.relationships[relationship_alias];
-            if (relationship instanceof DocumentCollection) {
-                relationship.setLoaded(value);
-            }
-        }
+        CacheableHelper.propagateLoaded(this.relationships, value);
     }
 
     /** @todo generate interface */
-    public setSource(value: 'new' | 'memory' | 'store' | 'server'): void {
+    public setSource(value: ContentTypes): void {
         this.source = value;
     }
 
-    public setSourceAndPropagate(value: 'new' | 'memory' | 'store' | 'server'): void {
+    public setSourceAndPropagate(value: ContentTypes): void {
         this.setSource(value);
         for (let relationship_alias in this.relationships) {
             let relationship = this.relationships[relationship_alias];

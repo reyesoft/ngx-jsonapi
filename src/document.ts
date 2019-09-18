@@ -1,6 +1,8 @@
 import { IDocumentData } from './interfaces/document';
 import { Resource } from './resource';
 
+export type ContentTypes = 'new' | 'memory' | 'store' | 'server';
+
 export interface IBasicResource {
     id: string;
     type: string;
@@ -29,7 +31,7 @@ export class Document implements IDocumentData, IDocumentHasResources, IDocument
     // deprecated since 2.2.0. Use loaded.
     public is_loading = true;
     public loaded = false;
-    public source: 'new' | 'memory' | 'store' | 'server' = 'new';
+    public source: ContentTypes = 'new';
     public cache_last_update = 0;
     public meta: {
         [key: string]: any;
