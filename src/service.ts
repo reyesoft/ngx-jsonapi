@@ -103,6 +103,17 @@ export class Service<R extends Resource = Resource> {
             resource.setLoaded(true);
             resource.source = 'memory';
 
+            // solve problem with invalid data
+            // @todo we cannot serve memory version because we never save id+type on relationships if we dont have original resource
+            // check document-colleciton. data: Array<R | IBasicResource> = [];
+            // ex: go to from authors to an author with photos (photos relationship are missing on store and memory)
+            for (let relationship_alias in resource.relationships) {
+                let relationship = resource.relationships[relationship_alias];
+                if (!relationship.builded) {
+                    throw Error('wooops, we dont have required information');
+                }
+            }
+
             return;
         } else if (resource.cache_last_update > 0) {
             // data on memory, but it isn't live

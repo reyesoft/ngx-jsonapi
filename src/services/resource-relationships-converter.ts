@@ -55,26 +55,9 @@ export class ResourceRelationshipsConverter {
     }
 
     private __buildRelationshipHasMany(relation_from_value: IDataCollection, relation_alias: string) {
-        let relation_type = relation_from_value.data[0] ? relation_from_value.data[0].type : '';
-        if (relation_type === '') {
-            return;
-        }
-
-        relation_alias = relation_alias || relation_type;
-        if (!this.getService(relation_type)) {
-            if (isDevMode()) {
-                console.warn(
-                    'The relationship ' + relation_alias + ' (type',
-                    relation_type,
-                    ') cant be generated because service for this type has not been injected.'
-                );
-            }
-
-            return;
-        }
-
         if (relation_from_value.data.length === 0) {
             this.relationships_dest[relation_alias] = new DocumentCollection();
+            this.relationships_dest[relation_alias].builded = true;
 
             return;
         }
@@ -125,7 +108,7 @@ export class ResourceRelationshipsConverter {
 
             // Store the include in cache
             this.getService(resource_data_from.type).cachememory.setResource(data, true);
-            this.getService(resource_data_from.type).cachestore.setResource(data);
+            // this.getService(resource_data_from.type).cachestore.setResource(data);
 
             return data;
         } else {

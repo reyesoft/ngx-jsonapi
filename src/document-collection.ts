@@ -1,4 +1,3 @@
-import { IDocumentResource } from './interfaces/data-object';
 import { IParamsCollection } from './interfaces/params-collection';
 import { Resource } from './resource';
 import { Page } from './services/page';
@@ -7,6 +6,7 @@ import { ICacheable } from './interfaces/cacheable';
 import { Converter } from './services/converter';
 import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
 import { IDataResource } from './interfaces/data-resource';
+import { isDevMode } from '@angular/core';
 
 export class DocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
     public data: Array<R> = [];
@@ -17,7 +17,7 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         return iterated_resource.id;
     }
 
-    public find(id: string): R {
+    public find(id: string): R | null {
         // this is the best way: https://jsperf.com/fast-array-foreach
         for (let i = 0; i < this.data.length; i++) {
             if (this.data[i].id === id) {
@@ -44,12 +44,19 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         this.data = [];
         this.builded = data_collection.data && data_collection.data.length === 0;
         for (let dataresource of data_collection.data) {
-            let res = this.find(dataresource.id) || Converter.getService(dataresource.type).getOrCreateResource(dataresource.id);
-            res.fill({ data: dataresource } /* , included_resources */); // @todo check with included resources?
-            new_ids[dataresource.id] = dataresource.id;
-            this.data.push(<R>res);
-            if (Object.keys(res.attributes).length > 0) {
-                this.builded = true;
+            try {
+                let res = this.getResourceOrFail(dataresource);
+                res.fill({ data: dataresource } /* , included_resources */); // @todo check with included resources?
+                new_ids[dataresource.id] = dataresource.id;
+                this.data.push(<R>res);
+                if (Object.keys(res.attributes).length > 0) {
+                    this.builded = true;
+                }
+            } catch (error) {
+                // collection with only ids?
+                // we lost this data for save on future, for example required by JsonRipper
+                // this.content = 'ids';
+                // this.data.push({ id: 1, type: 'sadf' });
             }
         }
 
@@ -66,6 +73,33 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         if ('cache_last_update' in data_collection) {
             this.cache_last_update = data_collection.cache_last_update;
         }
+    }
+
+    private getResourceOrFail(dataresource: IDataResource): Resource {
+        let res = this.find(dataresource.id);
+
+        if (res !== null) {
+            return res;
+        }
+
+        let service = Converter.getService(dataresource.type);
+
+        // remove when getService return null or catch errors
+        // this prvent a fill on undefinied service :/
+        if (!service) {
+            if (isDevMode()) {
+                console.warn(
+                    'The relationship ' + 'relation_alias?' + ' (type',
+                    dataresource.type,
+                    ') cant be generated because service for this type has not been injected.'
+                );
+            }
+
+            throw new Error('Cant create service for ' + dataresource.type);
+        }
+        // END remove when getService return null or catch errors
+
+        return service.getOrCreateResource(dataresource.id);
     }
 
     public replaceOrAdd(resource: R): void {

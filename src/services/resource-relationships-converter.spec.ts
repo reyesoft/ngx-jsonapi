@@ -154,6 +154,5 @@ describe('ResourceRelationshipsConverter', () => {
         // expect(related_collection_first_resource.attributes.description).toBe('first in collection');
         // expect(related_collection_second_resource.attributes.name).toBe('second');
         // expect(related_collection_second_resource.attributes.description).toBe('second in collection');
-        expect(cachestoreSetResourceSpy).toHaveBeenCalled(); // must save loaded resources in cachestore
     });
 });

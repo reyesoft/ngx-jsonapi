@@ -286,7 +286,7 @@ export class Resource implements ICacheable {
                 // foce reload cache (for example, we add a new element)
                 if (!this.id) {
                     this.getService().cachememory.deprecateCollections(path.get());
-                    this.getService().cachestore.deprecateCollections(path.get());
+                    // this.getService().cachestore.deprecateCollections(path.get()); @todo replace for ripper
                 }
 
                 // is a resource?
