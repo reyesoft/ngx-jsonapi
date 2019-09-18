@@ -1,3 +1,4 @@
+import { JsonRipper } from './services/json-ripper';
 import { CacheableHelper } from './services/cacheable-helper.';
 import { Core } from './core';
 import { IResourcesByType } from './interfaces/resources-by-type';
@@ -285,10 +286,11 @@ export class Resource implements ICacheable {
             success => {
                 this.is_saving = false;
 
-                // foce reload cache (for example, we add a new element)
+                // force reload collections cache (example: we add a new element)
                 if (!this.id) {
                     this.getService().cachememory.deprecateCollections(path.get());
-                    // this.getService().cachestore.deprecateCollections(path.get()); @todo replace for ripper
+                    let jsonripper = new JsonRipper();
+                    jsonripper.deprecateCollection(path.get());
                 }
 
                 // is a resource?
