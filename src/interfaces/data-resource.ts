@@ -7,6 +7,7 @@ export interface IBasicDataResource {
     id: string;
     type: string;
 }
+
 export interface IDataResource extends IBasicDataResource {
     attributes?: IAttributes;
     relationships?: IObject;
