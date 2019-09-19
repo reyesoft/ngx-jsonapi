@@ -8,15 +8,14 @@ import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { JsonapiConfig } from '../jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Core } from '../core';
-import { Observable, BehaviorSubject, of as observableOf } from 'rxjs';
-import { delay, filter } from 'rxjs/operators';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { Service } from '../service';
 
 let test_response_subject = new BehaviorSubject(new HttpResponse());
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        return test_response_subject.asObservable().pipe(delay(100));
+        return test_response_subject.asObservable();
     }
 }
 

@@ -4,8 +4,8 @@ import { IAttributes } from '../interfaces';
 import { ILinks } from '../interfaces/links';
 
 export interface IBasicDataResource {
-    type: string;
     id: string;
+    type: string;
 }
 
 export interface IDataResource extends IBasicDataResource {
