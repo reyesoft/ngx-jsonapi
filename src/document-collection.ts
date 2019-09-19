@@ -11,7 +11,7 @@ import { isDevMode } from '@angular/core';
 
 // used for collections on relationships, for parent document use DocumentCollection
 export class RelatedDocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
-    public data: Array<Resource> | Array<IBasicDataResource> = [];
+    public data: Array<Resource | IBasicDataResource> = [];
     // public data: Array<Resource | IBasicDataResource> = [];
     public page = new Page();
     public ttl = 0;
@@ -49,7 +49,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
 
         // convert and add new dataresoures to final collection
         let new_ids = {};
-        this.data = [];
+        this.data.length = 0;
         this.builded = data_collection.data && data_collection.data.length === 0;
         for (let dataresource of data_collection.data) {
             try {
@@ -61,10 +61,9 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
                     this.builded = true;
                 }
             } catch (error) {
-                // collection with only ids?
-                // we lost this data for save on future, for example required by JsonRipper
-                // this.content = 'ids';
-                // this.data.push({ id: 1, type: 'sadf' });
+                this.content = 'ids';
+                this.builded = false;
+                this.data.push({ id: dataresource.id, type: dataresource.type });
             }
         }
 
