@@ -208,7 +208,19 @@ describe('resource.toObject() method', () => {
 
         book.removeRelationship('photos', '5');
         expect(book.relationships.photos.builded).toBe(true);
+        expect(book.relationships.photos.content).toBe('collection');
         expect(book.toObject().data.relationships.photos.data).toEqual([]);
+    });
+
+    it('(toObject) hasMany whith only ids and builded relationship should be return a relationship with ids', () => {
+        spyOn(Resource.prototype, 'getService').and.returnValue({});
+
+        let book = TestFactory.getBook('1');
+        book.relationships.photos.fill({ data: [{ id: '4', type: 'photos' }] });
+        expect(book.relationships.photos.builded).toBe(false);
+        expect(book.relationships.photos.content).toBe('ids');
+        expect(book.toObject().data.relationships.photos.data.length).toBe(1);
+        expect(book.toObject().data.relationships.photos.data[0]).toMatchObject({ id: '4', type: 'photos' });
     });
 
     it('(toObject) hasMany relationships that are OK should be included in  the resulting relationships', () => {
