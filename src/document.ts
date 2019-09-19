@@ -1,14 +1,11 @@
+import { IBasicDataResource } from './interfaces/data-resource';
 import { IDocumentData } from './interfaces/document';
 import { Resource } from './resource';
 
 export type ContentTypes = 'new' | 'memory' | 'store' | 'server';
 
-export interface IBasicResource {
-    id: string;
-    type: string;
-}
 interface IDocumentHasIds {
-    data: Array<IBasicResource>;
+    data: Array<IBasicDataResource>;
     content: 'ids';
 }
 interface IDocumentHasResources {
@@ -16,7 +13,7 @@ interface IDocumentHasResources {
     content: 'collection';
 }
 interface IDocumentHasId {
-    data: IBasicResource;
+    data: IBasicDataResource;
     content: 'id';
 }
 interface IDocumentHasResource {

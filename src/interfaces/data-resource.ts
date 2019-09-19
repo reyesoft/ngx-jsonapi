@@ -3,9 +3,12 @@ import { IObject } from './../data-providers/data-provider';
 import { IAttributes } from '../interfaces';
 import { ILinks } from '../interfaces/links';
 
-export interface IDataResource {
+export interface IBasicDataResource {
     type: string;
     id: string;
+}
+
+export interface IDataResource extends IBasicDataResource {
     attributes?: IAttributes;
     relationships?: IObject;
     links?: ILinks;

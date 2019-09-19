@@ -6,23 +6,30 @@ import { Document, ContentTypes } from './document';
 import { ICacheable } from './interfaces/cacheable';
 import { Converter } from './services/converter';
 import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
-import { IDataResource } from './interfaces/data-resource';
+import { IDataResource, IBasicDataResource } from './interfaces/data-resource';
 import { isDevMode } from '@angular/core';
 
-export class DocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
-    public data: Array<R> = [];
+// used for collections on relationships, for parent document use DocumentCollection
+export class RelatedDocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
+    public data: Array<Resource> | Array<IBasicDataResource> = [];
+    // public data: Array<Resource | IBasicDataResource> = [];
     public page = new Page();
     public ttl = 0;
+    public content: 'ids' | 'collection' = 'ids';
 
     public trackBy(iterated_resource: Resource): string {
         return iterated_resource.id;
     }
 
     public find(id: string): R | null {
+        if (this.content === 'ids') {
+            return null;
+        }
+
         // this is the best way: https://jsperf.com/fast-array-foreach
         for (let i = 0; i < this.data.length; i++) {
             if (this.data[i].id === id) {
-                return this.data[i];
+                return <R>this.data[i];
             }
         }
 
@@ -49,7 +56,7 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
                 let res = this.getResourceOrFail(dataresource);
                 res.fill({ data: dataresource } /* , included_resources */); // @todo check with included resources?
                 new_ids[dataresource.id] = dataresource.id;
-                this.data.push(<R>res);
+                (<Array<R>>this.data).push(<R>res);
                 if (Object.keys(res.attributes).length > 0) {
                     this.builded = true;
                 }
@@ -106,7 +113,7 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
     public replaceOrAdd(resource: R): void {
         let res = this.find(resource.id);
         if (res === null) {
-            this.data.push(resource);
+            (<Array<R>>this.data).push(resource);
         } else {
             res = resource;
         }
@@ -130,7 +137,11 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
 
     public setLoadedAndPropagate(value: boolean): void {
         this.setLoaded(value);
-        this.data.forEach(resource => {
+
+        if (this.content === 'ids') {
+            return;
+        }
+        (<Array<R>>this.data).forEach(resource => {
             CacheableHelper.propagateLoaded(resource.relationships, value);
         });
     }
@@ -141,7 +152,10 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
 
     public setBuildedAndPropagate(value: boolean): void {
         this.setBuilded(value);
-        this.data.forEach(resource => {
+        if (this.content === 'ids') {
+            return;
+        }
+        (<Array<R>>this.data).forEach(resource => {
             resource.setLoaded(value);
         });
     }
@@ -151,7 +165,11 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
     }
 
     public toObject(params?: IParamsCollection): IDataCollection {
-        let data = this.data.map(resource => {
+        if (!this.builded) {
+            return { data: this.data };
+        }
+
+        let data = (<Array<R>>this.data).map(resource => {
             return resource.toObject(params).data;
         });
 
@@ -159,4 +177,8 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
             data: data
         };
     }
+}
+export class DocumentCollection<R extends Resource = Resource> extends RelatedDocumentCollection {
+    public data: Array<R> = [];
+    public content: 'collection' = 'collection';
 }
