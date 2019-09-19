@@ -337,12 +337,8 @@ export class Service<R extends Resource = Resource> {
                 this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
                 let json_ripper = new JsonRipper();
                 json_ripper.saveCollection(path.getForCache(), temporary_collection, path.includes);
-                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    // setCollection takes 1 ms per item
-                    this.getService().cachestore.setCollection(path.getForCache(), temporary_collection, params.include);
-                    if (params.store_cache_method === 'compact') {
-                        Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <IDataCollection>success);
-                    }
+                if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'compact') {
+                    Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <IDataCollection>success);
                 }
 
                 subject.next(temporary_collection);
