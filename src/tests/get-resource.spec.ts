@@ -16,7 +16,7 @@ let test_response_subject = new BehaviorSubject(new HttpResponse());
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        return test_response_subject.asObservable().pipe(delay(100));
+        return test_response_subject.asObservable();
     }
 }
 
