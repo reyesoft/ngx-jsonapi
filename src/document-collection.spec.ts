@@ -1,7 +1,5 @@
 import { DocumentCollection } from './document-collection';
 import { Resource } from './resource';
-import { IDataCollection } from './interfaces/data-collection';
-import { Converter } from './services/converter';
 
 describe('document-collection', () => {
     let collection = new DocumentCollection();
