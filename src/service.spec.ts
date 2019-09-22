@@ -191,7 +191,7 @@ describe('service.all()', () => {
         expect(http_request_spy).toHaveBeenCalledTimes(0);
     });
 
-    it(`with cached on store (dead) collection emits source ^store|`, async () => {
+    it(`with cached on store (dead) collection emits source ^store-server|`, async () => {
         // caching collection
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
         authorsService.collections_ttl = 0; // dead
