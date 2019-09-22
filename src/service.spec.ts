@@ -64,7 +64,11 @@ describe('service.all()', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
-        let expected = [{ builded: false, loaded: false, source: 'new' }, { builded: true, loaded: true, source: 'server' }];
+        let expected = [
+            // expected emits
+            { builded: false, loaded: false, source: 'new' },
+            { builded: true, loaded: true, source: 'server' }
+        ];
         let i = 0;
         authorsService.all().subscribe({
             next(authors) {
@@ -85,7 +89,11 @@ describe('service.all()', () => {
         await authorsService.all().toPromise();
 
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        let expected = [{ builded: true, loaded: true, source: 'memory' }, { builded: true, loaded: true, source: 'memory' }];
+        let expected = [
+            // expected emits
+            { builded: true, loaded: true, source: 'memory' },
+            { builded: true, loaded: true, source: 'memory' }
+        ];
         let i = 0;
         authorsService.all().subscribe({
             next(authors) {
