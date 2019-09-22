@@ -7,7 +7,7 @@ import { JsonapiConfig } from './jsonapi-config';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TestFactory } from './tests/factories/test-factory';
 import { Author, AuthorsService } from './tests/factories/authors.service';
-import { delay, filter, first } from 'rxjs/operators';
+import { delay, filter, first, scan, map, toArray } from 'rxjs/operators';
 
 // #### marbles dont work with promises, issue opened on marbles, becouse work with a fake timing frames
 
@@ -89,7 +89,7 @@ describe('service.all()', () => {
         await authorsService.clearCacheMemory();
     });
 
-    it(`without cached collection emits source ^new-server|`, done => {
+    it(`without cached collection emits source ^new-server|`, async () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
@@ -98,20 +98,21 @@ describe('service.all()', () => {
             { builded: false, loaded: false, source: 'new' },
             { builded: true, loaded: true, source: 'server' }
         ];
-        let i = 0;
-        authorsService.all().subscribe({
-            next(authors) {
-                expect(authors).toMatchObject(expected[i++]);
-            },
-            complete() {
-                expect(expected.length).toBe(i);
-                expect(http_request_spy).toHaveBeenCalledTimes(1);
-                done();
-            }
-        });
+
+        let emmits = await authorsService
+            .all()
+            .pipe(
+                map(emmit => {
+                    return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emmits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
     });
 
-    it(`with cached on memory (live) collection emits source ^memory|`, async done => {
+    it(`with cached on memory (live) collection emits source ^memory|`, async () => {
         // caching collection
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
         authorsService.collections_ttl = 5; // live
@@ -122,20 +123,21 @@ describe('service.all()', () => {
             // expected emits
             { builded: true, loaded: true, source: 'memory' }
         ];
-        let i = 0;
-        authorsService.all().subscribe({
-            next(authors) {
-                expect(authors).toMatchObject(expected[i++]);
-            },
-            complete() {
-                expect(expected.length).toBe(i);
-                expect(http_request_spy).toHaveBeenCalledTimes(0);
-                done();
-            }
-        });
+
+        let emmits = await authorsService
+            .all()
+            .pipe(
+                map(emmit => {
+                    return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emmits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(0);
     });
 
-    it(`with cached on memory (dead) collection emits source ^memory-server|`, async done => {
+    it(`with cached on memory (dead) collection emits source ^memory-server|`, async () => {
         // caching collection
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
         authorsService.collections_ttl = 0; // dead
@@ -148,21 +150,21 @@ describe('service.all()', () => {
             { builded: true, loaded: false, source: 'memory' },
             { builded: true, loaded: true, source: 'server' }
         ];
-        let i = 0;
 
-        authorsService.all().subscribe({
-            next(authors) {
-                expect(authors).toMatchObject(expected[i++]);
-            },
-            complete() {
-                expect(expected.length).toBe(i);
-                expect(http_request_spy).toHaveBeenCalledTimes(1);
-                done();
-            }
-        });
+        let emmits = await authorsService
+            .all()
+            .pipe(
+                map(emmit => {
+                    return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emmits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
     });
 
-    it(`with cached on store (live) collection emits source ^store|`, async done => {
+    it(`with cached on store (live) collection emits source ^store|`, async () => {
         // caching collection
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
         authorsService.collections_ttl = 5; // live
@@ -175,21 +177,21 @@ describe('service.all()', () => {
             { builded: true, loaded: false, source: 'server' }, // @todo remove or source:new
             { builded: true, loaded: true, source: 'store' }
         ];
-        let i = 0;
 
-        authorsService.all().subscribe({
-            next(authors) {
-                expect(authors).toMatchObject(expected[i++]);
-            },
-            complete() {
-                expect(expected.length).toBe(i);
-                expect(http_request_spy).toHaveBeenCalledTimes(0);
-                done();
-            }
-        });
+        let emmits = await authorsService
+            .all()
+            .pipe(
+                map(emmit => {
+                    return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emmits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(0);
     });
 
-    it(`with cached on store (dead) collection emits source ^store|`, async done => {
+    it(`with cached on store (dead) collection emits source ^store|`, async () => {
         // caching collection
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
         authorsService.collections_ttl = 0; // dead
@@ -202,17 +204,17 @@ describe('service.all()', () => {
             { builded: true, loaded: false, source: 'server' }, // @todo store
             { builded: true, loaded: true, source: 'server' }
         ];
-        let i = 0;
 
-        authorsService.all().subscribe({
-            next(authors) {
-                expect(authors).toMatchObject(expected[i++]);
-            },
-            complete() {
-                expect(expected.length).toBe(i);
-                expect(http_request_spy).toHaveBeenCalledTimes(1);
-                done();
-            }
-        });
+        let emmits = await authorsService
+            .all()
+            .pipe(
+                map(emmit => {
+                    return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emmits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
     });
 });
