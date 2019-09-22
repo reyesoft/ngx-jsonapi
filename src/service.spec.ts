@@ -1,3 +1,4 @@
+import { JsonRipper } from './services/json-ripper';
 import { Core } from './core';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { Http as JsonapiHttpImported } from './sources/http.service';
@@ -6,7 +7,35 @@ import { JsonapiConfig } from './jsonapi-config';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TestFactory } from './tests/factories/test-factory';
 import { Author, AuthorsService } from './tests/factories/authors.service';
-import { delay, filter, first, map, last } from 'rxjs/operators';
+import { delay, filter, first } from 'rxjs/operators';
+
+// #### marbles dont work with promises, issue opened on marbles, becouse work with a fake timing frames
+
+// #### EXTENDING EXPECT FOR EXPECTED SUBSCRIPTION DATA EMITS
+// #### dont work because is not possible return same error with toMatchObject, issue opened on jest
+// declare global {
+//     namespace jest {
+//         // tslint:disable-next-line:interface-name
+//         interface Matchers<R> {
+//             toMatchEmit(validator: any): R;
+//         }
+//     }
+// }
+// expect.extend({
+//     toMatchEmit(received: Object, validator) {
+//         if (validator === undefined) {
+//             return {
+//                 message: (): string => `We receive an extra emmit: ${received.toString() }`,
+//                 pass: false
+//             };
+//         }
+//         expect(received).toMatchObject(validator);
+//         return {
+//             message: (): string => `WTF :/`,
+//             pass: true
+//         };
+//     }
+// });
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
@@ -49,7 +78,7 @@ class DynamicHttpHandlerMock implements HttpHandler {
 describe('service.all()', () => {
     let core: Core;
     let authorsService: AuthorsService;
-    beforeEach(() => {
+    beforeEach(async () => {
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),
@@ -57,7 +86,7 @@ describe('service.all()', () => {
         );
         authorsService = new AuthorsService();
         authorsService.register();
-        authorsService.clearCacheMemory();
+        await authorsService.clearCacheMemory();
     });
 
     it(`without cached collection emits source ^new-server|`, done => {
@@ -85,13 +114,12 @@ describe('service.all()', () => {
     it(`with cached on memory (live) collection emits source ^memory|`, async done => {
         // caching collection
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
-        authorsService.collections_ttl = 1000; // live on memory
+        authorsService.collections_ttl = 5; // live
         await authorsService.all().toPromise();
 
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
             // expected emits
-            { builded: true, loaded: true, source: 'memory' },
             { builded: true, loaded: true, source: 'memory' }
         ];
         let i = 0;
@@ -106,173 +134,85 @@ describe('service.all()', () => {
             }
         });
     });
-});
 
-describe('service.all() with cached collection on memory', () => {
-    let core: Core;
-    let authorsService: AuthorsService;
-
-    beforeAll(done => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
-        );
-        authorsService = new AuthorsService();
-        authorsService.collections_ttl = 60; // in seconds
-        authorsService.register();
-        authorsService.clearCacheMemory();
-        authorsService.cachestore.deprecateCollections(''); // deprecate all collection cached from previous tests in cachestore
-
-        // caching resources
+    it(`with cached on memory (dead) collection emits source ^memory-server|`, async done => {
+        // caching collection
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
-        authorsService
-            .all()
-            .pipe(
-                filter(authors => {
-                    return authors.builded && authors.loaded && !authors.is_loading; // builded, loaded, is_loading checks
-                })
-            )
-            .subscribe(authors => {
-                expect(authors.source).toBe('server');
-                expect(authors.data.length).toBeGreaterThan(0);
-                done();
-            });
-    });
+        authorsService.collections_ttl = 0; // dead
+        await authorsService.all().toPromise();
 
-    it(`return alive collections from memory...`, done => {
-        expect(authorsService.collections_ttl).toBeGreaterThan(0); // to prevent from removeing or changing this value to 0
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
+        let expected = [
+            // expected emits
+            { builded: true, loaded: true, source: 'memory' }, // @todo remove this emit
+            { builded: true, loaded: false, source: 'memory' },
+            { builded: true, loaded: true, source: 'server' }
+        ];
+        let i = 0;
 
-        authorsService.all().subscribe(authors => {
-            expect(http_request_spy).not.toHaveBeenCalled();
-            expect(authors.source).toBe('memory');
-            expect(authors.data.length).toBeGreaterThan(0);
-            done();
+        authorsService.all().subscribe({
+            next(authors) {
+                expect(authors).toMatchObject(expected[i++]);
+            },
+            complete() {
+                expect(expected.length).toBe(i);
+                expect(http_request_spy).toHaveBeenCalledTimes(1);
+                done();
+            }
         });
     });
 
-    it(`return alive collections from memory (that were reviously saved in memory from store)...`, done => {
-        // TODO: test should not know about cachememory methods or properties, but service.clearChacheMemory deprecates store too...
-        // should we create clearCacheStore and sepatrate it from clearChacheMemory?
-        (authorsService.cachememory as any).collections = {};
+    it(`with cached on store (live) collection emits source ^store|`, async done => {
+        // caching collection
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
+        authorsService.collections_ttl = 5; // live
+        await authorsService.all().toPromise();
+        authorsService.cachememory.deprecateCollections(''); // kill only memory cache
 
-        expect(authorsService.collections_ttl).toBeGreaterThan(0); // to prevent from removeing or changing this value to 0
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
+        let expected = [
+            // expected emits
+            { builded: true, loaded: false, source: 'server' }, // @todo remove or source:new
+            { builded: true, loaded: true, source: 'store' }
+        ];
+        let i = 0;
 
-        authorsService
-            .all()
-            .pipe(
-                filter(authors => {
-                    return authors.builded && authors.loaded && !authors.is_loading; // builded, loaded, is_loading checks
-                })
-            )
-            .subscribe(authors => {
-                expect(http_request_spy).not.toHaveBeenCalled();
-                expect(authors.source).toBe('store');
-                expect(authors.data.length).toBeGreaterThan(0);
-                // done();
-                authorsService
-                    .all()
-                    .pipe(
-                        filter(memory_authors => {
-                            // builded, loaded, is_loading checks
-                            return memory_authors.builded && memory_authors.loaded && !memory_authors.is_loading;
-                        })
-                    )
-                    .subscribe(memory_authors => {
-                        expect(http_request_spy).not.toHaveBeenCalled();
-                        expect(memory_authors.source).toBe('memory');
-                        expect(memory_authors.data.length).toBeGreaterThan(0);
-                        done();
-                    });
-            });
-    });
-});
-
-describe('service.all() with cached collection on store', () => {
-    let core: Core;
-    let authorsService: AuthorsService;
-
-    beforeAll(done => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
-        );
-        authorsService = new AuthorsService();
-        authorsService.collections_ttl = 61; // in seconds
-        authorsService.register();
-        authorsService.clearCacheMemory();
-        authorsService.cachestore.deprecateCollections(''); // deprecate all collection cached from previous tests in cachestore
-
-        // caching resources
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
-        authorsService
-            .all()
-            .pipe(
-                filter(authors => {
-                    return authors.builded && authors.loaded && !authors.is_loading; // builded, loaded, is_loading checks
-                })
-            )
-            .subscribe(authors => {
-                expect(authors.source).toBe('server');
-                expect(authors.data.length).toBeGreaterThan(0);
+        authorsService.all().subscribe({
+            next(authors) {
+                expect(authors).toMatchObject(expected[i++]);
+            },
+            complete() {
+                expect(expected.length).toBe(i);
+                expect(http_request_spy).toHaveBeenCalledTimes(0);
                 done();
-            });
+            }
+        });
     });
 
-    beforeEach(() => {
-        // TODO: test should not know about cachememory methods or properties, but service.clearChacheMemory deprecates store too...
-        // should we create clearCacheStore and sepatrate it from clearChacheMemory?
-        (authorsService.cachememory as any).collections = {};
-    });
+    it(`with cached on store (dead) collection emits source ^store|`, async done => {
+        // caching collection
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
+        authorsService.collections_ttl = 0; // dead
+        await authorsService.all().toPromise();
+        authorsService.clearCacheMemory(); // kill only memory cache
 
-    it(`emit before it's loaded or builded`, done => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
+        let expected = [
+            // expected emits
+            { builded: true, loaded: false, source: 'server' }, // @todo store
+            { builded: true, loaded: true, source: 'server' }
+        ];
+        let i = 0;
 
-        authorsService
-            .all()
-            .pipe(first())
-            .subscribe(authors => {
-                expect(authors.is_loading).toBe(true);
-                expect(authors.loaded).toBe(false);
-                expect(authors.builded).toBe(false);
-                expect(authors.source).toBe('new');
+        authorsService.all().subscribe({
+            next(authors) {
+                expect(authors).toMatchObject(expected[i++]);
+            },
+            complete() {
+                expect(expected.length).toBe(i);
+                expect(http_request_spy).toHaveBeenCalledTimes(1);
                 done();
-            });
-        authorsService
-            .all()
-            .pipe(first())
-            .subscribe(authors => {
-                expect(authors.is_loading).toBe(true);
-                expect(authors.loaded).toBe(false);
-                expect(authors.builded).toBe(false);
-                expect(authors.source).toBe('new');
-                done();
-            });
-    });
-
-    it(`return alive collections from store...`, done => {
-        expect(authorsService.collections_ttl).toBeGreaterThan(0); // to prevent from removeing or changing this value to 0
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
-
-        authorsService
-            .all()
-            .pipe(
-                filter(authors => {
-                    return authors.builded && authors.loaded && !authors.is_loading; // builded, loaded, is_loading checks
-                })
-            )
-            .subscribe(authors => {
-                expect(http_request_spy).not.toHaveBeenCalled();
-                expect(authors.source).toBe('store');
-                expect(authors.data.length).toBeGreaterThan(0);
-                done();
-            });
+            }
+        });
     });
 });

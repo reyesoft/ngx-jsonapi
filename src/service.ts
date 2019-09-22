@@ -142,6 +142,7 @@ export class Service<R extends Resource = Resource> {
                 resource.fill(<IDocumentResource>success);
                 resource.setLoadedAndPropagate(true);
                 resource.setSourceAndPropagate('server');
+                resource.cache_last_update = Date.now();
                 let json_ripper = new JsonRipper();
                 json_ripper.saveResource(resource, path.includes);
                 this.getService().cachememory.setResource(resource, true);
@@ -251,7 +252,9 @@ export class Service<R extends Resource = Resource> {
 
         this.getAllFromLocal(params, path, temporary_collection)
             .then(() => {
-                subject.next(temporary_collection);
+                if (temporary_collection.source !== 'memory') {
+                    subject.next(temporary_collection);
+                }
                 setTimeout(() => subject.complete(), 0);
             })
             .catch(() => {
@@ -342,8 +345,8 @@ export class Service<R extends Resource = Resource> {
                     Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <IDataCollection>success);
                 }
                 subject.next(temporary_collection);
-                // setTimeout(() => subject.complete(), 0);
-                subject.complete();
+                setTimeout(() => subject.complete(), 0);
+                // subject.complete();
             },
             error => {
                 temporary_collection.setLoadedAndPropagate(true);

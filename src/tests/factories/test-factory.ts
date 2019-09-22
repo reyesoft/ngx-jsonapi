@@ -126,6 +126,7 @@ export class TestFactory {
         }
         collection.setBuilded(true);
         collection.setLoaded(true);
+        collection.cache_last_update = Date.now();
 
         return collection;
     }

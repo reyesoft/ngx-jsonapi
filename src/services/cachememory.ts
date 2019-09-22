@@ -7,19 +7,6 @@ import { IObjectsById } from '../interfaces';
 export class CacheMemory<R extends Resource = Resource> {
     public resources: IObjectsById<Resource> = {};
     private collections: { [url: string]: DocumentCollection<R> } = {};
-    private collections_lastupdate: { [url: string]: number } = {};
-
-    public isCollectionExist(url: string): boolean {
-        return url in this.collections && this.collections[url].source !== 'new' ? true : false;
-    }
-
-    public isCollectionLive(url: string, ttl: number): boolean {
-        return Date.now() <= this.collections_lastupdate[url] + ttl * 1000;
-    }
-
-    public isResourceLive(id: string, ttl: number): boolean {
-        return this.resources[id] && Date.now() <= this.resources[id].cache_last_update + ttl * 1000;
-    }
 
     public getOrCreateCollection(url: string): DocumentCollection<R> {
         if (!(url in this.collections)) {
@@ -42,8 +29,7 @@ export class CacheMemory<R extends Resource = Resource> {
         }
         this.collections[url].data = collection.data;
         this.collections[url].page = collection.page;
-        // this.collections_lastupdate[url] = Date.now();
-        this.collections_lastupdate[url] = collection.cache_last_update;
+        this.collections[url].cache_last_update = collection.cache_last_update;
     }
 
     public getOrCreateResource(type: string, id: string): Resource {
@@ -69,9 +55,9 @@ export class CacheMemory<R extends Resource = Resource> {
     }
 
     public deprecateCollections(path_includes: string = ''): boolean {
-        for (let collection_key in this.collections_lastupdate) {
+        for (let collection_key in this.collections) {
             if (collection_key.includes(path_includes)) {
-                this.collections_lastupdate[collection_key] = 0;
+                this.collections[collection_key].cache_last_update = 0;
             }
         }
 
