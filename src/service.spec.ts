@@ -1,4 +1,3 @@
-import { JsonRipper } from './services/json-ripper';
 import { Core } from './core';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { Http as JsonapiHttpImported } from './sources/http.service';
@@ -7,7 +6,7 @@ import { JsonapiConfig } from './jsonapi-config';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TestFactory } from './tests/factories/test-factory';
 import { Author, AuthorsService } from './tests/factories/authors.service';
-import { delay, filter, first, scan, map, toArray } from 'rxjs/operators';
+import { delay, map, toArray } from 'rxjs/operators';
 
 // #### marbles dont work with promises, issue opened on marbles, becouse work with a fake timing frames
 
@@ -146,7 +145,6 @@ describe('service.all()', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
             // expected emits
-            { builded: true, loaded: true, source: 'memory' }, // @todo remove this emit
             { builded: true, loaded: false, source: 'memory' },
             { builded: true, loaded: true, source: 'server' }
         ];
@@ -164,7 +162,7 @@ describe('service.all()', () => {
         expect(http_request_spy).toHaveBeenCalledTimes(1);
     });
 
-    it(`with cached on store (live) collection emits source ^store|`, async () => {
+    it(`with cached on store (live) collection emits source ^new-store|`, async () => {
         // caching collection
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
         authorsService.collections_ttl = 5; // live
@@ -174,7 +172,7 @@ describe('service.all()', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
             // expected emits
-            { builded: true, loaded: false, source: 'server' }, // @todo remove or source:new
+            { builded: true, loaded: false, source: 'new' },
             { builded: true, loaded: true, source: 'store' }
         ];
 
@@ -201,7 +199,7 @@ describe('service.all()', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
             // expected emits
-            { builded: true, loaded: false, source: 'server' }, // @todo store
+            { builded: true, loaded: false, source: 'new' },
             { builded: true, loaded: true, source: 'server' }
         ];
 

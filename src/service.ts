@@ -166,6 +166,9 @@ export class Service<R extends Resource = Resource> {
         const service = this.getService();
         const collection = <DocumentCollection<R>>service.cachememory.getOrCreateCollection(path.getForCache());
         collection.ttl = service.collections_ttl;
+        if (collection.source !== 'new') {
+            collection.source = 'memory';
+        }
 
         return collection;
     }
@@ -250,20 +253,27 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
-        this.getAllFromLocal(params, path, temporary_collection)
-            .then(() => {
-                if (temporary_collection.source !== 'memory') {
+        if (Object.keys(params.fields).length > 0) {
+            // memory/store cache dont suppont fields
+            this.getAllFromServer(path, params, temporary_collection, subject);
+        } else if (isLive(temporary_collection, params.ttl)) {
+            // data on memory and its live
+            setTimeout(() => subject.complete(), 0);
+        } else if (temporary_collection.cache_last_update === 0) {
+            // we dont have any data on memory
+            temporary_collection.source = 'new';
+            this.getAllFromLocal(params, path, temporary_collection)
+                .then(() => {
                     subject.next(temporary_collection);
-                }
-                setTimeout(() => subject.complete(), 0);
-            })
-            .catch(() => {
-                temporary_collection.setLoaded(false);
-                if (temporary_collection.cache_last_update > 0) {
-                    subject.next(temporary_collection);
-                }
-                this.getAllFromServer(path, params, temporary_collection, subject);
-            });
+                    setTimeout(() => subject.complete(), 0);
+                })
+                .catch(() => {
+                    temporary_collection.setLoaded(false);
+                    this.getAllFromServer(path, params, temporary_collection, subject);
+                });
+        } else {
+            this.getAllFromServer(path, params, temporary_collection, subject);
+        }
 
         return subject.asObservable();
     }
@@ -273,21 +283,7 @@ export class Service<R extends Resource = Resource> {
         path: PathCollectionBuilder,
         temporary_collection: DocumentCollection<R>
     ): Promise<void> {
-        if (Object.keys(params.fields).length > 0) {
-            // not supported yet
-            throw new Error('All from local is not supported whith fields param.');
-        }
-        if (isLive(temporary_collection, params.ttl)) {
-            // data on memory and its live
-            temporary_collection.source = 'memory';
-
-            return;
-        } else if (temporary_collection.cache_last_update > 0) {
-            // data on memory, but it isn't live
-            temporary_collection.source = 'memory';
-
-            throw new Error('Memory filled with local data, but is die.');
-        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+        if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // STORE
             temporary_collection.setLoaded(false);
 
@@ -321,6 +317,7 @@ export class Service<R extends Resource = Resource> {
         temporary_collection: DocumentCollection<R>,
         subject: BehaviorSubject<DocumentCollection<R>>
     ) {
+        temporary_collection.setLoaded(false);
         Core.get(path.get()).subscribe(
             success => {
                 // this create a new ID for every resource (for caching proposes)
@@ -346,7 +343,6 @@ export class Service<R extends Resource = Resource> {
                 }
                 subject.next(temporary_collection);
                 setTimeout(() => subject.complete(), 0);
-                // subject.complete();
             },
             error => {
                 temporary_collection.setLoadedAndPropagate(true);
