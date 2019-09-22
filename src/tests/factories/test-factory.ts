@@ -20,10 +20,7 @@ export class TestFactory {
     public static getResourceDocumentData(document_class: typeof Resource, include: Array<string> = []): IDocumentData {
         let main_resource: Resource = this[`get${document_class.name}`]();
 
-        let document_data: IDocumentData = {
-            data: main_resource
-        };
-
+        let document_data: IDocumentData = main_resource.toObject();
         this.fillDocumentDataIncludedRelatioships(document_data, include);
 
         return document_data;
@@ -32,9 +29,7 @@ export class TestFactory {
     public static getCollectionDocumentData(document_class: typeof Resource, size = 2, include: Array<string> = []): IDocumentData {
         let main_collection: DocumentCollection = this.getCollection(document_class, size, include);
 
-        let document_data: IDocumentData = {
-            data: main_collection.data
-        };
+        let document_data: IDocumentData = main_collection.toObject();
         this.fillDocumentDataIncludedRelatioships(document_data, include);
 
         return document_data;

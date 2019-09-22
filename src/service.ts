@@ -7,7 +7,7 @@ import { CacheMemory } from './services/cachememory';
 import { CacheStore } from './services/cachestore';
 import { IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 import { DocumentCollection } from './document-collection';
-import { isLive } from './common';
+import { isLive, relationshipsAreBuilded } from './common';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDocumentResource } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
@@ -81,12 +81,15 @@ export class Service<R extends Resource = Resource> {
 
         this.getGetFromLocal(params, path, resource)
             .then(() => {
-                subject.next(resource);
+                if (resource.source !== 'memory') {
+                    subject.next(resource);
+                }
                 setTimeout(() => subject.complete(), 0);
             })
             .catch(() => {
-                resource.setLoaded(false);
-                subject.next(resource);
+                if (resource.cache_last_update > 0) {
+                    subject.next(resource);
+                }
                 this.getGetFromServer(path, resource, subject);
             });
 
@@ -98,27 +101,21 @@ export class Service<R extends Resource = Resource> {
             // not supported yet
             throw new Error('All from local is not supported whith fields param.');
         }
-        if (isLive(resource, params.ttl)) {
-            // data on memory and its live
-            resource.setLoaded(true);
-            resource.source = 'memory';
 
-            // solve problem with invalid data
-            // @todo we cannot serve memory version because we never save id+type on relationships if we dont have original resource
-            // check document-colleciton. data: Array<R | IBasicResource> = [];
-            // example: go to from authors to an author with photos (photos relationship are missing on store and memory)
-            for (let relationship_alias in resource.relationships) {
-                let relationship = resource.relationships[relationship_alias];
-                if (!relationship.builded) {
-                    throw Error('wooops, we dont have required information');
-                }
+        if (relationshipsAreBuilded(resource, params.include)) {
+            if (isLive(resource, params.ttl)) {
+                // data on memory and its live
+                resource.setLoaded(true);
+                resource.source = 'memory';
+
+                return;
+            } else if (resource.cache_last_update > 0) {
+                // data on memory, but it isn't live
+                throw new Error('Memory filled with local data, but is die.');
             }
+        }
 
-            return;
-        } else if (resource.cache_last_update > 0) {
-            // data on memory, but it isn't live
-            throw new Error('Memory filled with local data, but is die.');
-        } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+        if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // STORE
             resource.setLoaded(false);
 
@@ -340,8 +337,8 @@ export class Service<R extends Resource = Resource> {
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'compact') {
                     Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <IDataCollection>success);
                 }
-
                 subject.next(temporary_collection);
+                // setTimeout(() => subject.complete(), 0);
                 subject.complete();
             },
             error => {

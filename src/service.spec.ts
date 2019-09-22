@@ -6,7 +6,7 @@ import { JsonapiConfig } from './jsonapi-config';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TestFactory } from './tests/factories/test-factory';
 import { Author, AuthorsService } from './tests/factories/authors.service';
-import { delay, filter, first } from 'rxjs/operators';
+import { delay, filter, first, map, last } from 'rxjs/operators';
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
@@ -16,19 +16,14 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 
-describe('service methods', () => {
-    let core;
-    let service;
-
-    beforeEach(() => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
-        service = new AuthorsService();
-        service.register();
-    });
+describe('service basic methods', () => {
+    let core = new Core(
+        new JsonapiConfig(),
+        new JsonapiStore(),
+        new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+    );
+    let service = new AuthorsService();
+    service.register();
 
     it('a new resource has a type', () => {
         const resource = service.new();
@@ -45,17 +40,15 @@ describe('service methods', () => {
 });
 
 let test_response_subject = new BehaviorSubject(new HttpResponse());
-
 class DynamicHttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
         return test_response_subject.asObservable().pipe(delay(0));
     }
 }
 
-describe('Requesting not cached collections. All() method:', () => {
+describe('service.all()', () => {
     let core: Core;
     let authorsService: AuthorsService;
-
     beforeEach(() => {
         core = new Core(
             new JsonapiConfig(),
@@ -67,44 +60,35 @@ describe('Requesting not cached collections. All() method:', () => {
         authorsService.clearCacheMemory();
     });
 
-    it(`should emit before the collection is loaded or builded`, done => {
+    it(`without cached collection emit source: new, server`, done => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
-        authorsService
-            .all()
-            .pipe(first())
-            .subscribe(authors => {
-                expect(authors.is_loading).toBe(true);
-                expect(authors.loaded).toBe(false);
-                expect(authors.builded).toBe(false);
-                expect(authors.source).toBe('new');
+        let expected = [
+            { builded: false, loaded: false, source: 'new' },
+            { builded: false, loaded: false, source: 'new' },
+            { builded: true, loaded: true, source: 'server' }
+        ];
+        let i = 0;
+        authorsService.all().subscribe({
+            next(authors) {
+                expect(authors).toMatchObject(expected[i++]);
+                if (i > 2) {
+                    expect(authors.data.length).toBeGreaterThan(0);
+                } else {
+                    expect(authors.data.length).toBe(0);
+                }
+            },
+            complete() {
+                expect(expected.length).toBe(i);
+                expect(http_request_spy).toHaveBeenCalledTimes(1);
                 done();
-            });
-    });
-
-    // NOTE: observable has 200 ms to emit the full collection (fake http delays 100 ms)
-    it(`when resources are loaded and builded, should emit the resource as loaded and builded from server`, done => {
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
-
-        authorsService
-            .all()
-            .pipe(
-                filter(authors => {
-                    return authors.builded && authors.loaded && !authors.is_loading; // builded, loaded, is_loading checks
-                })
-            )
-            .subscribe(authors => {
-                expect(http_request_spy).toHaveBeenCalled();
-                expect(authors.source).toBe('server');
-                expect(authors.data.length).toBeGreaterThan(0);
-                done();
-            });
+            }
+        });
     });
 });
 
-describe('Requesting cached collections from memory. All() method should:', () => {
+describe('service.all() with cached collection on memory', () => {
     let core: Core;
     let authorsService: AuthorsService;
 
@@ -188,7 +172,7 @@ describe('Requesting cached collections from memory. All() method should:', () =
     });
 });
 
-describe('Requesting cached collections from store. All() method:', () => {
+describe('service.all() with cached collection on store', () => {
     let core: Core;
     let authorsService: AuthorsService;
 
@@ -230,6 +214,16 @@ describe('Requesting cached collections from store. All() method:', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
+        authorsService
+            .all()
+            .pipe(first())
+            .subscribe(authors => {
+                expect(authors.is_loading).toBe(true);
+                expect(authors.loaded).toBe(false);
+                expect(authors.builded).toBe(false);
+                expect(authors.source).toBe('new');
+                done();
+            });
         authorsService
             .all()
             .pipe(first())
