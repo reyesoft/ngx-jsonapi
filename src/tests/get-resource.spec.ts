@@ -10,6 +10,7 @@ import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Core } from '../core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Service } from '../service';
+import { map, toArray } from 'rxjs/operators';
 
 let test_response_subject = new BehaviorSubject(new HttpResponse());
 
@@ -71,24 +72,30 @@ describe('core methods', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: { data: test_resource } }));
 
-        await test_service
+        let resource: Resource;
+        let emmits = await test_service
             .get('1')
-            .toPromise()
-            .then(resource => {
-                expect(resource.type).toBe('test_resources');
-                expect(resource.id).toBe('1');
-                expect(resource.attributes.name).toBe('test_name');
+            .pipe(
+                map(emmit => {
+                    resource = emmit;
 
-                let headers = new HttpHeaders({
-                    'Content-Type': 'application/vnd.api+json',
-                    Accept: 'application/vnd.api+json'
-                });
-                let request = {
-                    body: null,
-                    headers: expect.any(Object)
-                };
-                expect(http_request_spy).toHaveBeenCalledWith('get', 'http://yourdomain/api/v1/test_resources/1', request);
-            });
+                    return { loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            ).toPromise();
+        expect(emmits).toMatchObject([
+            // expected emits
+            { loaded: false, source: 'new' },
+            { loaded: true, source: 'server' }
+        ]);
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
+        expect(resource.type).toBe('test_resources');
+        expect(resource.id).toBe('1');
+        expect(resource.attributes.name).toBe('test_name');
+        expect(http_request_spy).toHaveBeenCalledWith('get', 'http://yourdomain/api/v1/test_resources/1', {
+            body: null,
+            headers: expect.any(Object)
+        });
     });
 
     it(`resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources,
