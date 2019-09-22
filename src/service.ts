@@ -256,7 +256,9 @@ export class Service<R extends Resource = Resource> {
             })
             .catch(() => {
                 temporary_collection.setLoaded(false);
-                subject.next(temporary_collection);
+                if (temporary_collection.cache_last_update > 0) {
+                    subject.next(temporary_collection);
+                }
                 this.getAllFromServer(path, params, temporary_collection, subject);
             });
 
@@ -279,6 +281,8 @@ export class Service<R extends Resource = Resource> {
             return;
         } else if (temporary_collection.cache_last_update > 0) {
             // data on memory, but it isn't live
+            temporary_collection.source = 'memory';
+
             throw new Error('Memory filled with local data, but is die.');
         } else if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // STORE

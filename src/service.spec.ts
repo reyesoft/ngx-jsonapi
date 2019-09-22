@@ -60,29 +60,43 @@ describe('service.all()', () => {
         authorsService.clearCacheMemory();
     });
 
-    it(`without cached collection emit source: new, server`, done => {
+    it(`without cached collection emits source ^new-server|`, done => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
-        let expected = [
-            { builded: false, loaded: false, source: 'new' },
-            { builded: false, loaded: false, source: 'new' },
-            { builded: true, loaded: true, source: 'server' }
-        ];
+        let expected = [{ builded: false, loaded: false, source: 'new' }, { builded: true, loaded: true, source: 'server' }];
         let i = 0;
         authorsService.all().subscribe({
             next(authors) {
                 expect(authors).toMatchObject(expected[i++]);
-                if (i > 2) {
-                    expect(authors.data.length).toBeGreaterThan(0);
-                } else {
-                    expect(authors.data.length).toBe(0);
-                }
             },
             complete() {
                 expect(expected.length).toBe(i);
                 expect(http_request_spy).toHaveBeenCalledTimes(1);
                 done();
+            }
+        });
+    });
+
+    it(`with cached on memory (live) collection emits source ^memory|`, done => {
+        // caching resources
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
+        authorsService.collections_ttl = 1000; // live
+        authorsService.all().subscribe({
+            complete() {
+                let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+                let expected = [{ builded: true, loaded: true, source: 'memory' }, { builded: true, loaded: true, source: 'memory' }];
+                let i = 0;
+                authorsService.all().subscribe({
+                    next(authors) {
+                        expect(authors).toMatchObject(expected[i++]);
+                    },
+                    complete() {
+                        expect(expected.length).toBe(i);
+                        expect(http_request_spy).toHaveBeenCalledTimes(0);
+                        done();
+                    }
+                });
             }
         });
     });
