@@ -335,7 +335,7 @@ export class Service<R extends Resource = Resource> {
                 temporary_collection.source = 'server';
                 temporary_collection.setLoadedAndPropagate(true);
 
-                this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
+                // this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
                 let json_ripper = new JsonRipper();
                 json_ripper.saveCollection(path.getForCache(), temporary_collection, path.includes);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'compact') {

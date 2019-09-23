@@ -209,7 +209,7 @@ describe('service.all()', () => {
         expect(http_request_spy).toHaveBeenCalledTimes(0);
     });
 
-    it(`with cached on store (dead) collection emits source ^store-server|`, async () => {
+    it(`with cached on store (dead) collection emits source ^new-store-server|`, async () => {
         // caching collection
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
         authorsService.collections_ttl = 0; // dead
@@ -220,6 +220,7 @@ describe('service.all()', () => {
         let expected = [
             // expected emits
             { builded: true, loaded: false, source: 'new' },
+            // { builded: true, loaded: false, source: 'store' }, // @todo
             { builded: true, loaded: true, source: 'server' }
         ];
 
@@ -236,6 +237,7 @@ describe('service.all()', () => {
         expect(http_request_spy).toHaveBeenCalledTimes(1);
     });
 });
+
 describe('service.all() and next service.get()', () => {
     let core: Core;
     let authorsService: AuthorsService;
@@ -250,7 +252,7 @@ describe('service.all() and next service.get()', () => {
         await authorsService.clearCacheMemory();
     });
 
-    it(`without cached collection and next request get() with include`, async () => {
+    it(`with cached collection on memory and next request get() with new include`, async () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
 
@@ -260,10 +262,21 @@ describe('service.all() and next service.get()', () => {
             { builded: true, loaded: true, source: 'server' }
         ];
 
-        let authors = await authorsService.all({ include: ['photos', 'books'] }).toPromise();
-
-        // authorsService.get(authors.data[0].id);
+        let authors = await authorsService.all({ include: ['books'] }).toPromise();
+        let author = await authorsService.get(authors.data[0].id, { include: ['photos', 'books'] }).toPromise();
 
         // @todo
+    });
+
+    it(`with cached collection on store and next request get() with new include`, async () => {
+        //
+    });
+
+    it(`with cached collection on memory and next request get() with same include`, async () => {
+        //
+    });
+
+    it(`with cached collection on store and next request get() with same include`, async () => {
+        //
     });
 });
