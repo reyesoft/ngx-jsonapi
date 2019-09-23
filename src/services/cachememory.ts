@@ -47,7 +47,7 @@ export class CacheMemory<R extends Resource = Resource> {
 
     public setResource(resource: Resource, update_lastupdate = false): void {
         if (resource.id in this.resources) {
-            this.addResourceOrFill(resource);
+            this.fillExistentResource(resource);
         } else {
             this.resources[resource.id] = resource;
         }
@@ -83,55 +83,55 @@ export class CacheMemory<R extends Resource = Resource> {
         delete this.resources[id];
     }
 
-    private addResourceOrFill(source: Resource): void {
+    private fillExistentResource(source: Resource): void {
         let destination = this.resources[source.id];
 
-        destination.attributes = source.attributes;
+        destination.attributes = { ...destination.attributes, ...source.attributes };
 
         destination.relationships = destination.relationships || source.relationships;
 
         // remove relationships on destination resource
-        for (let type_alias in destination.relationships) {
-            // problem with no declared services
-            if (destination.relationships[type_alias].data === undefined) {
-                continue;
-            }
+        // for (let type_alias in destination.relationships) {
+        //     // problem with no declared services
+        //     if (destination.relationships[type_alias].data === undefined) {
+        //         continue;
+        //     }
 
-            if (!(type_alias in source.relationships)) {
-                delete destination.relationships[type_alias];
-            } else {
-                // relation is a collection
-                let collection = <DocumentCollection>destination.relationships[type_alias];
-                // TODO: talkto Pablo, this could be and Object... (following IF statement added by Maxi)
-                if (!Array.isArray(collection.data)) {
-                    continue;
-                }
-                for (let resource of collection.data) {
-                    if (collection.find(resource.id) === null) {
-                        delete destination.relationships[type_alias];
-                    }
-                }
-            }
-        }
+        //     if (!(type_alias in source.relationships)) {
+        //         delete destination.relationships[type_alias];
+        //     } else {
+        //         // relation is a collection
+        //         let collection = <DocumentCollection>destination.relationships[type_alias];
+        //         // TODO: talkto Pablo, this could be and Object... (following IF statement added by Maxi)
+        //         if (!Array.isArray(collection.data)) {
+        //             continue;
+        //         }
+        //         for (let resource of collection.data) {
+        //             if (collection.find(resource.id) === null) {
+        //                 delete destination.relationships[type_alias];
+        //             }
+        //         }
+        //     }
+        // }
 
-        // add source relationships to destination
-        for (let type_alias in source.relationships) {
-            // problem with no declared services
-            if (source.relationships[type_alias].data === undefined) {
-                continue;
-            }
+        // // add source relationships to destination
+        // for (let type_alias in source.relationships) {
+        //     // problem with no declared services
+        //     if (source.relationships[type_alias].data === undefined) {
+        //         continue;
+        //     }
 
-            if (source.relationships[type_alias].data === null) {
-                // TODO: FE-92 --- check and improve conditions when building has-one relationships
-                destination.relationships[type_alias].data = null;
-                continue;
-            }
+        //     if (source.relationships[type_alias].data === null) {
+        //         // TODO: FE-92 --- check and improve conditions when building has-one relationships
+        //         destination.relationships[type_alias].data = null;
+        //         continue;
+        //     }
 
-            if ('id' in source.relationships[type_alias].data) {
-                destination.addRelationship(<Resource>source.relationships[type_alias].data, type_alias);
-            } else {
-                destination.addRelationships(<Array<Resource>>source.relationships[type_alias].data, type_alias);
-            }
-        }
+        //     if ('id' in source.relationships[type_alias].data) {
+        //         destination.addRelationship(<Resource>source.relationships[type_alias].data, type_alias);
+        //     } else {
+        //         destination.addRelationships(<Array<Resource>>source.relationships[type_alias].data, type_alias);
+        //     }
+        // }
     }
 }

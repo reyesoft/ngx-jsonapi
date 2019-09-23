@@ -10,7 +10,7 @@ import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Core } from '../core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Service } from '../service';
-import { map, toArray } from 'rxjs/operators';
+import { map, toArray, tap } from 'rxjs/operators';
 
 let test_response_subject = new BehaviorSubject(new HttpResponse());
 
@@ -70,28 +70,30 @@ describe('core methods', () => {
         test_resource.attributes = { name: 'test_name' };
         let test_service = new TestService();
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: { data: test_resource } }));
+        test_response_subject.next(new HttpResponse({ body: test_resource.toObject() }));
 
         let resource: Resource;
         let emmits = await test_service
             .get('1')
             .pipe(
-                map(emmit => {
+                tap(emmit => {
                     resource = emmit;
-
+                }),
+                map(emmit => {
                     return { loaded: emmit.loaded, source: emmit.source };
                 }),
                 toArray()
-            ).toPromise();
+            )
+            .toPromise();
         expect(emmits).toMatchObject([
             // expected emits
             { loaded: false, source: 'new' },
             { loaded: true, source: 'server' }
         ]);
-        expect(http_request_spy).toHaveBeenCalledTimes(1);
         expect(resource.type).toBe('test_resources');
         expect(resource.id).toBe('1');
         expect(resource.attributes.name).toBe('test_name');
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
         expect(http_request_spy).toHaveBeenCalledWith('get', 'http://yourdomain/api/v1/test_resources/1', {
             body: null,
             headers: expect.any(Object)

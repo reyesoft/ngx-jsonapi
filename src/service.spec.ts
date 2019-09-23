@@ -6,7 +6,7 @@ import { JsonapiConfig } from './jsonapi-config';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TestFactory } from './tests/factories/test-factory';
 import { Author, AuthorsService } from './tests/factories/authors.service';
-import { delay, map, toArray } from 'rxjs/operators';
+import { delay, map, toArray, tap } from 'rxjs/operators';
 
 // #### marbles dont work with promises, issue opened on marbles, becouse work with a fake timing frames
 
@@ -35,6 +35,8 @@ import { delay, map, toArray } from 'rxjs/operators';
 //         };
 //     }
 // });
+
+// @todo disable PhotoService
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
@@ -101,6 +103,12 @@ describe('service.all()', () => {
         let emmits = await authorsService
             .all()
             .pipe(
+                tap(emmit => {
+                    if (emmit.data.length > 0) {
+                        expect(emmit.data[0].relationships).toHaveProperty('photos');
+                        expect(emmit.data[0].relationships).toHaveProperty('books');
+                    }
+                }),
                 map(emmit => {
                     return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source };
                 }),
@@ -152,6 +160,12 @@ describe('service.all()', () => {
         let emmits = await authorsService
             .all()
             .pipe(
+                tap(emmit => {
+                    if (emmit.data.length > 0) {
+                        expect(emmit.data[0].relationships).toHaveProperty('photos');
+                        expect(emmit.data[0].relationships).toHaveProperty('books');
+                    }
+                }),
                 map(emmit => {
                     return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source };
                 }),
@@ -179,6 +193,12 @@ describe('service.all()', () => {
         let emmits = await authorsService
             .all()
             .pipe(
+                tap(emmit => {
+                    if (emmit.data.length > 0) {
+                        expect(emmit.data[0].relationships).toHaveProperty('photos');
+                        expect(emmit.data[0].relationships).toHaveProperty('books');
+                    }
+                }),
                 map(emmit => {
                     return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source };
                 }),
@@ -214,5 +234,36 @@ describe('service.all()', () => {
             .toPromise();
         expect(emmits).toMatchObject(expected);
         expect(http_request_spy).toHaveBeenCalledTimes(1);
+    });
+});
+describe('service.all() and next service.get()', () => {
+    let core: Core;
+    let authorsService: AuthorsService;
+    beforeEach(async () => {
+        core = new Core(
+            new JsonapiConfig(),
+            new JsonapiStore(),
+            new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
+        );
+        authorsService = new AuthorsService();
+        authorsService.register();
+        await authorsService.clearCacheMemory();
+    });
+
+    it(`without cached collection and next request get() with include`, async () => {
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
+
+        let expected = [
+            // expected emits
+            { builded: false, loaded: false, source: 'new' },
+            { builded: true, loaded: true, source: 'server' }
+        ];
+
+        let authors = await authorsService.all({ include: ['photos', 'books'] }).toPromise();
+
+        // authorsService.get(authors.data[0].id);
+
+        // @todo
     });
 });

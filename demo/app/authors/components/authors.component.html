@@ -8,6 +8,7 @@
             <th>Date of birth</th>
             <th>Date of dead</th>
             <th>Books</th>
+            <th>Photos</th>
         </tr>
     </thead>
     <tr *ngFor="let author of authors.data; trackBy: authors.trackBy">
@@ -24,6 +25,9 @@
             <span *ngIf="author.relationships.books.data.length > 1">
                 and {{ author.relationships.books.data.length}} more...
             </span>
+        </td>
+        <td>
+            {{ author.relationships.photos.data.length }}
         </td>
         <!-- <td><button (click)="delete(author)">Delete</button></td> -->
     </tr>
