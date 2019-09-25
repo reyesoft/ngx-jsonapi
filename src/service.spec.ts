@@ -272,11 +272,42 @@ describe('service.all() and next service.get()', () => {
         //
     });
 
-    it(`with cached collection on memory and next request get() with same include`, async () => {
+    it(`with cached collection on memory and next request get() without include`, async () => {
         //
     });
 
-    it(`with cached collection on store and next request get() with same include`, async () => {
+    it(`with cached collection on store and next request get() without include`, async () => {
         //
+    });
+});
+
+// esto no está en getresource ?
+describe('service.get()', () => {
+    it(`without cached resource emits source ^new-server|`, async () => {
+        // @todo
+    });
+
+    it(`with cached on memory (live) resource emits source ^memory|`, async () => {
+        // @todo
+    });
+
+    it(`with cached on memory (live) resource but with new includeemits source ^memory-server|`, async () => {
+        // @todo
+    });
+
+    it(`with cached on memory (dead) resource emits source ^memory-server|`, async () => {
+        // @todo
+    });
+
+    it(`with cached on store (live) resource emits source ^new-store|`, async () => {
+        // @todo
+    });
+
+    it(`with cached on store (live) resource but with new include emits source ^store-server|`, async () => {
+        // @todo
+    });
+
+    it(`with cached on store (dead) resource emits source ^new-store-server|`, async () => {
+        // @todo
     });
 });
