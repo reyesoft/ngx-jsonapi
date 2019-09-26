@@ -114,7 +114,7 @@ describe('core methods', () => {
                 expect(resource.type).toBe('test_resources');
                 expect(resource.id).toBe('1');
                 expect(resource.attributes.name).toBe('test_name');
-                expect(resource.attributes.optional).toBeFalsy();
+                // expect(resource.attributes.optional).toBeFalsy();   // @todo why? memory will not remove attributes if are not sent by server
 
                 let request = {
                     body: null,

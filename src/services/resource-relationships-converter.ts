@@ -1,3 +1,4 @@
+import { CacheMemory } from './cachememory';
 import { IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDocumentResource } from '../interfaces/data-object';
@@ -107,15 +108,16 @@ export class ResourceRelationshipsConverter {
             let data = this.included_resources[resource_data_from.type][resource_data_from.id];
 
             // Store the include in cache
-            this.getService(resource_data_from.type).cachememory.setResource(data, true);
+            CacheMemory.getInstance().setResource(data, true);
             // this.getService(resource_data_from.type).cachestore.setResource(data);
 
             return data;
         } else {
             // OPTIONAL: return cached Resource
             let service = this.getService(resource_data_from.type);
-            if (service && resource_data_from.id in service.cachememory.resources) {
-                return service.cachememory.resources[resource_data_from.id];
+            let resource = CacheMemory.getInstance().getResource(resource_data_from.type, resource_data_from.id);
+            if (resource) {
+                return resource;
             }
         }
     }

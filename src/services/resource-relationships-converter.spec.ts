@@ -42,8 +42,6 @@ const test_services = {
 
 function getService(type: string) {
     let service = test_services[type];
-    service.cachememory = new CacheMemory();
-    service.cachememory.resources = {};
 
     return service;
 }

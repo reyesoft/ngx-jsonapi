@@ -1,3 +1,4 @@
+import { CacheMemory } from './services/cachememory';
 import { JsonRipper } from './services/json-ripper';
 import { CacheableHelper } from './services/cacheable-helper.';
 import { Core } from './core';
@@ -288,7 +289,7 @@ export class Resource implements ICacheable {
 
                 // force reload collections cache (example: we add a new element)
                 if (!this.id) {
-                    this.getService().cachememory.deprecateCollections(path.get());
+                    CacheMemory.getInstance().deprecateCollections(path.get());
                     let jsonripper = new JsonRipper();
                     jsonripper.deprecateCollection(path.get());
                 }

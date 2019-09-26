@@ -1,3 +1,4 @@
+import { CacheMemory } from './services/cachememory';
 import { Injectable, Optional, isDevMode } from '@angular/core';
 import { serviceIsRegistered } from './common';
 import { PathBuilder } from './services/path-builder';
@@ -96,18 +97,17 @@ export class Core {
 
     @serviceIsRegistered
     public static removeCachedResource(resource_type: string, resource_id: string): void {
-        Core.me.getResourceService(resource_type).cachememory.removeResource(resource_id);
+        CacheMemory.getInstance().removeResource(resource_type, resource_id);
         if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            // TODO: FE-85 ---> agregar removeResource en cacheStorage
-            Core.me.getResourceService(resource_type).cachestore.removeResource(resource_id, resource_type);
+            // TODO: FE-85 ---> add method on JsonRipper
         }
     }
 
     @serviceIsRegistered
     public static setCachedResource(resource: Resource): void {
-        Core.me.getResourceService(resource.type).cachememory.setResource(resource, true);
+        CacheMemory.getInstance().setResource(resource, true);
         if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            Core.me.getResourceService(resource.type).cachestore.setResource(resource);
+            // TODO: FE-85 ---> add method on JsonRipper
         }
     }
 
@@ -116,9 +116,9 @@ export class Core {
         let service = Core.me.getResourceService(type);
         let path = new PathBuilder();
         path.applyParams(service);
-        service.cachememory.deprecateCollections(path.getForCache());
+        CacheMemory.getInstance().deprecateCollections(path.getForCache());
         if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            service.cachestore.deprecateCollections(path.getForCache());
+            // TODO: FE-85 ---> add method on JsonRipper
         }
     }
 

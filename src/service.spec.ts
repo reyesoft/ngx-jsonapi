@@ -1,3 +1,4 @@
+import { CacheMemory } from './services/cachememory';
 import { Core } from './core';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { Http as JsonapiHttpImported } from './sources/http.service';
@@ -181,7 +182,7 @@ describe('service.all()', () => {
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
         authorsService.collections_ttl = 5; // live
         await authorsService.all().toPromise();
-        authorsService.cachememory.deprecateCollections(''); // kill only memory cache
+        CacheMemory.getInstance().deprecateCollections(''); // kill only memory cache
 
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [

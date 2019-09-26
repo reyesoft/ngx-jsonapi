@@ -15,7 +15,6 @@ import { JsonRipper } from './services/json-ripper';
 import { DexieDataProvider } from './data-providers/dexie-data-provider';
 
 export class Service<R extends Resource = Resource> {
-    public cachememory: CacheMemory;
     public type: string;
     public resource = Resource;
     public collections_ttl: number;
@@ -29,8 +28,6 @@ export class Service<R extends Resource = Resource> {
         if (Core.me === null) {
             throw new Error('Error: you are trying register `' + this.type + '` before inject JsonapiCore somewhere, almost one time.');
         }
-        // only when service is registered, not cloned object
-        this.cachememory = new CacheMemory();
 
         return Core.me.registerService<R>(this);
     }
@@ -157,7 +154,7 @@ export class Service<R extends Resource = Resource> {
 
     public getOrCreateCollection(path: PathCollectionBuilder): DocumentCollection<R> {
         const service = this.getService();
-        const collection = <DocumentCollection<R>>service.cachememory.getOrCreateCollection(path.getForCache());
+        const collection = <DocumentCollection<R>>CacheMemory.getInstance().getOrCreateCollection(path.getForCache());
         collection.ttl = service.collections_ttl;
         if (collection.source !== 'new') {
             collection.source = 'memory';
@@ -168,22 +165,25 @@ export class Service<R extends Resource = Resource> {
 
     public getOrCreateResource(id: string): R {
         let service = Converter.getService(this.type);
-        if (service.cachememory && id in service.cachememory.resources) {
-            return <R>service.cachememory.resources[id];
-        } else {
-            let resource = service.new();
-            resource.id = id;
-            service.cachememory.setResource(resource, false);
+        let resource: R;
 
-            return <R>resource;
+        resource = <R>CacheMemory.getInstance().getResource(this.type, id);
+        if (resource !== null) {
+            return resource;
         }
+
+        resource = <R>service.new();
+        resource.id = id;
+        CacheMemory.getInstance().setResource(resource, false);
+
+        return resource;
     }
 
     public createResource(id: string): R {
         let service = Converter.getService(this.type);
         let resource = service.new();
         resource.id = id;
-        service.cachememory.setResource(resource, false);
+        CacheMemory.getInstance().setResource(resource, false);
 
         return <R>resource;
     }
@@ -194,7 +194,7 @@ export class Service<R extends Resource = Resource> {
 
         let db = new DexieDataProvider();
 
-        this.getService().cachememory.deprecateCollections(path.getForCache());
+        CacheMemory.getInstance().deprecateCollections(path.getForCache());
 
         let json_ripper = new JsonRipper();
 
@@ -221,7 +221,7 @@ export class Service<R extends Resource = Resource> {
 
         Core.delete(path.get()).subscribe(
             success => {
-                this.getService().cachememory.removeResource(id);
+                CacheMemory.getInstance().removeResource(this.type, id);
                 subject.next();
                 subject.complete();
             },

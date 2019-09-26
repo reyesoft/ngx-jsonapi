@@ -1,3 +1,4 @@
+import { CacheMemory } from './cachememory';
 // import * as angular from 'angular';
 import { Core } from '../core';
 import { Resource } from '../resource';
@@ -69,10 +70,8 @@ export class Converter<R extends Resource> {
             console.error('Jsonapi Resource is not correct', data);
         }
 
-        let resource: Resource;
-        if (data.id in Converter.getService(data.type).cachememory.resources) {
-            resource = Converter.getService(data.type).cachememory.resources[data.id];
-        } else {
+        let resource: Resource = CacheMemory.getInstance().getResource(data.type, data.id);
+        if (resource === null) {
             resource = Converter.getService(data.type).getOrCreateResource(data.id);
         }
 

@@ -389,4 +389,8 @@ describe('resource.save() method', () => {
         };
         expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', expected_resource_in_save, true);
     });
+
+    // @todo fill from store to more new version of resource
+    // for example store has more lationships, but we are filling a resource created from server.
+    // is possible this scenario?
 });
