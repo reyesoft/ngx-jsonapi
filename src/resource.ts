@@ -168,6 +168,8 @@ export class Resource implements ICacheable {
 
         // wee need a registered service
         if (!service) {
+            console.warn('we dont have any service ', data_object.data.type);
+
             return;
         }
 

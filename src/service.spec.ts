@@ -7,6 +7,7 @@ import { JsonapiConfig } from './jsonapi-config';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { TestFactory } from './tests/factories/test-factory';
 import { Author, AuthorsService } from './tests/factories/authors.service';
+import { Book, BooksService } from './tests/factories/books.service';
 import { delay, map, toArray, tap } from 'rxjs/operators';
 
 // #### marbles dont work with promises, issue opened on marbles, becouse work with a fake timing frames
@@ -79,21 +80,21 @@ class DynamicHttpHandlerMock implements HttpHandler {
 
 describe('service.all()', () => {
     let core: Core;
-    let authorsService: AuthorsService;
+    let booksService: BooksService;
     beforeEach(async () => {
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),
             new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
         );
-        authorsService = new AuthorsService();
-        authorsService.register();
-        await authorsService.clearCacheMemory();
+        booksService = new BooksService();
+        booksService.register();
+        await booksService.clearCacheMemory();
     });
 
     it(`without cached collection emits source ^new-server|`, async () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
 
         let expected = [
             // expected emits
@@ -101,13 +102,13 @@ describe('service.all()', () => {
             { builded: true, loaded: true, source: 'server' }
         ];
 
-        let emmits = await authorsService
+        let emmits = await booksService
             .all()
             .pipe(
                 tap(emmit => {
                     if (emmit.data.length > 0) {
                         expect(emmit.data[0].relationships).toHaveProperty('photos');
-                        expect(emmit.data[0].relationships).toHaveProperty('books');
+                        expect(emmit.data[0].relationships).toHaveProperty('author');
                     }
                 }),
                 map(emmit => {
@@ -122,9 +123,9 @@ describe('service.all()', () => {
 
     it(`with cached on memory (live) collection emits source ^memory|`, async () => {
         // caching collection
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
-        authorsService.collections_ttl = 5; // live
-        await authorsService.all().toPromise();
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+        booksService.collections_ttl = 5; // live
+        await booksService.all().toPromise();
 
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
@@ -132,7 +133,7 @@ describe('service.all()', () => {
             { builded: true, loaded: true, source: 'memory' }
         ];
 
-        let emmits = await authorsService
+        let emmits = await booksService
             .all()
             .pipe(
                 map(emmit => {
@@ -147,9 +148,9 @@ describe('service.all()', () => {
 
     it(`with cached on memory (dead) collection emits source ^memory-server|`, async () => {
         // caching collection
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
-        authorsService.collections_ttl = 0; // dead
-        await authorsService.all().toPromise();
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+        booksService.collections_ttl = 0; // dead
+        await booksService.all().toPromise();
 
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
@@ -158,13 +159,13 @@ describe('service.all()', () => {
             { builded: true, loaded: true, source: 'server' }
         ];
 
-        let emmits = await authorsService
+        let emmits = await booksService
             .all()
             .pipe(
                 tap(emmit => {
                     if (emmit.data.length > 0) {
                         expect(emmit.data[0].relationships).toHaveProperty('photos');
-                        expect(emmit.data[0].relationships).toHaveProperty('books');
+                        expect(emmit.data[0].relationships).toHaveProperty('author');
                     }
                 }),
                 map(emmit => {
@@ -179,9 +180,9 @@ describe('service.all()', () => {
 
     it(`with cached on store (live) collection emits source ^new-store|`, async () => {
         // caching collection
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
-        authorsService.collections_ttl = 5; // live
-        await authorsService.all().toPromise();
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+        booksService.collections_ttl = 5; // live
+        await booksService.all().toPromise();
         CacheMemory.getInstance().deprecateCollections(''); // kill only memory cache
 
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
@@ -191,13 +192,13 @@ describe('service.all()', () => {
             { builded: true, loaded: true, source: 'store' }
         ];
 
-        let emmits = await authorsService
+        let emmits = await booksService
             .all()
             .pipe(
                 tap(emmit => {
                     if (emmit.data.length > 0) {
                         expect(emmit.data[0].relationships).toHaveProperty('photos');
-                        expect(emmit.data[0].relationships).toHaveProperty('books');
+                        expect(emmit.data[0].relationships).toHaveProperty('author');
                     }
                 }),
                 map(emmit => {
@@ -212,10 +213,10 @@ describe('service.all()', () => {
 
     it(`with cached on store (dead) collection emits source ^new-store-server|`, async () => {
         // caching collection
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
-        authorsService.collections_ttl = 0; // dead
-        await authorsService.all().toPromise();
-        authorsService.clearCacheMemory(); // kill only memory cache
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+        booksService.collections_ttl = 0; // dead
+        await booksService.all().toPromise();
+        booksService.clearCacheMemory(); // kill only memory cache
 
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
@@ -225,7 +226,7 @@ describe('service.all()', () => {
             { builded: true, loaded: true, source: 'server' }
         ];
 
-        let emmits = await authorsService
+        let emmits = await booksService
             .all()
             .pipe(
                 map(emmit => {
