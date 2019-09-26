@@ -17,7 +17,9 @@
             <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
         </td>
         <td>{{ book.attributes.date_published | date }}</td>
-        <td>{{ book.relationships.author.data.attributes.name }} #{{ book.relationships.author.data.id }}</td>
+        <td>
+            <a [routerLink]="['/authors', book.relationships.author.id]">{{ book.relationships.author.data.attributes.name }}</a>
+        </td>
         <td><span *ngFor="let photo of book.relationships.photos.data">{{ photo.id }}, </span></td>
         <td><a ng-click="delete(book)" title="not supported by demo server"><small>DELETE</small></a></td>
     </tr>

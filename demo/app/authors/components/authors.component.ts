@@ -1,3 +1,4 @@
+import { Photo } from './../../../../src/tests/factories/photos.service';
 import { BooksService } from './../../books/books.service';
 import { Component } from '@angular/core';
 import { DocumentCollection } from 'ngx-jsonapi';
@@ -23,7 +24,12 @@ export class AuthorsComponent {
                 .subscribe(
                     authors => {
                         this.authors = authors;
-                        console.info('success authors controller', authors, 'page', page || 1, authors.page.number);
+                        this.authors.data.forEach(recurso => {
+                            console.info('success', recurso);
+                            console.info('books', recurso.relationships.books);
+                            console.info('photos', recurso.relationships.photos);
+                            console.info('<<<<<<<<<<<<<<<<<<<<<');
+                        });
                     },
                     error => console.error('Could not load authors :(', error)
                 );
