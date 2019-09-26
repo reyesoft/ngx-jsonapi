@@ -250,7 +250,6 @@ export class Service<R extends Resource = Resource> {
             this.getAllFromServer(path, params, temporary_collection, subject);
         } else if (isLive(temporary_collection, params.ttl)) {
             // data on memory and its live
-            console.log('devuelvo todo de memory');
             setTimeout(() => subject.complete(), 0);
         } else if (temporary_collection.cache_last_update === 0) {
             // we dont have any data on memory
