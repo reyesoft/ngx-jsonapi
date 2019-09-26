@@ -4,11 +4,7 @@ import { Document } from './document';
 import { IDocumentResource } from './interfaces/data-object';
 
 export class DocumentResource<R extends Resource = Resource> extends Document {
-    public data: R = <R>new Resource(); // @todo?
-    // @todo #209
-    // <R>new Resource(); cannot be a Resource or null, for example a book without an author (books.relationships.authors.data), or data missing
-    // public data: R | null | undefined;
-
+    public data: R | null | undefined = <R>new Resource();
     public builded = false;
     public content: 'id' | 'resource' = 'id';
 

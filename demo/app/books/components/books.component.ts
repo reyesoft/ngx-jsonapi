@@ -24,10 +24,17 @@ export class BooksComponent {
                     page: { number: page || 1 },
                     include: ['author', 'photos']
                 })
-                .subscribe(books => {
-                    this.books = books;
-                    console.info('success books controll', this.books);
-                }, (error): void => console.info('error books controll', error));
+                .subscribe(
+                    books => {
+                        this.books = books;
+                        // console.info('success books controll', this.books);
+                        books.data.forEach(element => {
+                            console.log('element', books.builded, element.relationships.author.data);
+                            console.log('element', books.builded, element.relationships.author.data.relationships);
+                        });
+                    },
+                    (error): void => console.info('error books controll', error)
+                );
         });
     }
 
