@@ -4,7 +4,6 @@ import { Resource } from './resource';
 import { PathBuilder } from './services/path-builder';
 import { Converter } from './services/converter';
 import { CacheMemory } from './services/cachememory';
-import { CacheStore } from './services/cachestore';
 import { IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { isLive, relationshipsAreBuilded } from './common';
@@ -17,7 +16,6 @@ import { DexieDataProvider } from './data-providers/dexie-data-provider';
 
 export class Service<R extends Resource = Resource> {
     public cachememory: CacheMemory;
-    public cachestore: CacheStore;
     public type: string;
     public resource = Resource;
     public collections_ttl: number;
@@ -33,7 +31,6 @@ export class Service<R extends Resource = Resource> {
         }
         // only when service is registered, not cloned object
         this.cachememory = new CacheMemory();
-        this.cachestore = new CacheStore();
 
         return Core.me.registerService<R>(this);
     }
@@ -139,10 +136,9 @@ export class Service<R extends Resource = Resource> {
                 resource.setLoadedAndPropagate(true);
 
                 // this.getService().cachememory.setResource(resource, true);
-                let json_ripper = new JsonRipper();
-                json_ripper.saveResource(resource, path.includes);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    this.getService().cachestore.setResource(resource);
+                    let json_ripper = new JsonRipper();
+                    json_ripper.saveResource(resource, path.includes);
                 }
                 subject.next(resource);
                 setTimeout(() => subject.complete(), 0);
@@ -199,7 +195,6 @@ export class Service<R extends Resource = Resource> {
         let db = new DexieDataProvider();
 
         this.getService().cachememory.deprecateCollections(path.getForCache());
-        this.getService().cachestore.deprecateCollections(path.getForCache());
 
         let json_ripper = new JsonRipper();
 

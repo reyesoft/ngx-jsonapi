@@ -1,4 +1,3 @@
-import { CacheStore } from './cachestore';
 import { Core } from '../core';
 import { Converter } from '../services/converter';
 import { Resource } from '../resource';
@@ -10,6 +9,7 @@ import { JsonapiConfig } from '../jsonapi-config';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
 // import { StoreService } from '../sources/store.service';
 
+// @deprecated ?
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
         let subject = new BehaviorSubject(new HttpResponse());
@@ -35,8 +35,6 @@ describe('Cachestore filler', () => {
             JsonapiHttp: new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
             rsJsonapiConfig: new JsonapiConfig()
         };
-
-        let cachestore = new CacheStore();
 
         let data_collection: IDataCollection = {
             data: [
@@ -73,7 +71,7 @@ describe('Cachestore filler', () => {
             })
         );
 
-        await (cachestore as any).fillCollectionWithArrrayAndResourcesOnStore(data_collection, [], collection);
+        // await (cachestore as any).fillCollectionWithArrrayAndResourcesOnStore(data_collection, [], collection);
 
         expect(collection.data.length).toBe(1);
         expect(collection.data[0].attributes.name).toBe('Cool name');
