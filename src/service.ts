@@ -67,6 +67,7 @@ export class Service<R extends Resource = Resource> {
         return this.path || this.type;
     }
 
+    // if you change this logic, maybe you need to change all()
     public get(id: string, params: IParamsResource = {}): Observable<R> {
         params = { ...Base.ParamsResource, ...params };
 
@@ -79,80 +80,76 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<R>(resource);
 
-        this.getGetFromLocal(params, path, resource)
-            .then(() => {
-                if (resource.source !== 'memory') {
+        if (Object.keys(params.fields).length > 0) {
+            // memory/store cache dont suppont fields
+            this.getGetFromServer(path, resource, subject);
+        } else if (isLive(resource, params.ttl)) {
+            // data on memory and its live
+            setTimeout(() => subject.complete(), 0);
+        } else if (resource.cache_last_update === 0) {
+            // we dont have any data on memory
+            this.getGetFromLocal(params, path, resource)
+                .then(() => {
                     subject.next(resource);
-                }
-                setTimeout(() => subject.complete(), 0);
-            })
-            .catch(() => {
-                if (resource.cache_last_update > 0) {
-                    subject.next(resource);
-                }
-                this.getGetFromServer(path, resource, subject);
-            });
+                    setTimeout(() => subject.complete(), 0);
+                })
+                .catch(() => {
+                    resource.setLoaded(false);
+                    this.getGetFromServer(path, resource, subject);
+                });
+        } else {
+            this.getGetFromServer(path, resource, subject);
+        }
 
         return subject.asObservable();
     }
 
+    // if you change this logic, maybe you need to change getAllFromLocal()
     private async getGetFromLocal(params: IParamsCollection = {}, path: PathBuilder, resource: R): Promise<void> {
-        if (Object.keys(params.fields).length > 0) {
-            // not supported yet
-            throw new Error('All from local is not supported whith fields param.');
-        }
-
-        if (relationshipsAreBuilded(resource, params.include)) {
-            if (isLive(resource, params.ttl)) {
-                // data on memory and its live
-                resource.setLoaded(true);
-                resource.source = 'memory';
-
-                return;
-            } else if (resource.cache_last_update > 0) {
-                // data on memory, but it isn't live
-                throw new Error('Memory filled with local data, but is die.');
-            }
-        }
-
         if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
             // STORE
             resource.setLoaded(false);
 
+            // STORE (individual)
             let json_ripper = new JsonRipper();
             let success = await json_ripper.getResource(JsonRipper.getResourceKey(resource), path.includes);
 
-            // when fields is set, get resource form server
-            if (!isLive(resource, params.ttl) || Object.keys(params.fields).length > 0) {
-                throw new Error('No está viva la caché e IndexedDB');
-            }
-            resource.setLoadedAndPropagate(true);
-            resource.fill(success);
             resource.source = 'store';
+            resource.fill(success);
 
-            return;
+            // when fields is set, get resource form server
+            if (isLive(resource, params.ttl)) {
+                resource.setLoadedAndPropagate(true);
+                // resource.setBuildedAndPropagate(true);
+
+                return;
+            }
         }
 
         throw new Error('We cant handle this request');
     }
 
+    // if you change this logic, maybe you need to change getAllFromServer()
     protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
         Core.get(path.get()).subscribe(
             success => {
                 resource.fill(<IDocumentResource>success);
-                resource.setLoadedAndPropagate(true);
-                resource.setSourceAndPropagate('server');
                 resource.cache_last_update = Date.now();
+                resource.source = 'server';
+                resource.setLoadedAndPropagate(true);
+
+                // this.getService().cachememory.setResource(resource, true);
                 let json_ripper = new JsonRipper();
                 json_ripper.saveResource(resource, path.includes);
-                this.getService().cachememory.setResource(resource, true);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
                     this.getService().cachestore.setResource(resource);
                 }
                 subject.next(resource);
-                subject.complete();
+                setTimeout(() => subject.complete(), 0);
             },
             error => {
+                resource.setLoadedAndPropagate(true);
+                subject.next(resource);
                 subject.error(error);
             }
         );
@@ -241,13 +238,13 @@ export class Service<R extends Resource = Resource> {
         return subject.asObservable();
     }
 
+    // if you change this logic, maybe you need to change get()
     public all(params: IParamsCollection = {}): Observable<DocumentCollection<R>> {
         params = { ...Base.ParamsCollection, ...params };
 
         let path = new PathCollectionBuilder();
         path.applyParams(this, params);
 
-        // make request
         let temporary_collection = this.getOrCreateCollection(path);
         temporary_collection.page.number = params.page.number * 1;
 
@@ -278,6 +275,7 @@ export class Service<R extends Resource = Resource> {
         return subject.asObservable();
     }
 
+    // if you change this logic, maybe you need to change getGetFromLocal()
     private async getAllFromLocal(
         params: IParamsCollection = {},
         path: PathCollectionBuilder,
@@ -311,6 +309,7 @@ export class Service<R extends Resource = Resource> {
         throw new Error('We cant handle this request');
     }
 
+    // if you change this logic, maybe you need to change getGetFromServer()
     protected getAllFromServer(
         path: PathBuilder,
         params: IParamsCollection,
