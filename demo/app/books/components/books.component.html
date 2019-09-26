@@ -11,7 +11,7 @@
         </tr>
     </thead>
     <!-- Use authors example. @deprected since version 2.0.0 -->
-    <tr *ngFor="let book of books.data">
+    <tr *ngFor="let book of books.data; trackBy: books.trackBy">
         <td>{{ book.id }}</td>
         <td>
             <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
