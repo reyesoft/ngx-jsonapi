@@ -64,8 +64,11 @@ describe('Path Builder', () => {
 
     it('if fields are provided, they should be formatted and included in get_params', () => {
         let addParam_parent_spy = spyOn(path_collection_builder, 'addParam').and.callThrough();
-        path_collection_builder.applyParams(testService, { fields: { test: ['test_attribute', 'other_test_attribute'] } });
+        path_collection_builder.applyParams(testService, { fields: 
+            { test: ['test_attribute', 'other_test_attribute'], test2: ['test2_attribute'] } 
+        });
         expect((path_collection_builder as any).get_params.indexOf('fields[test]=test_attribute,other_test_attribute')).toBeGreaterThan(-1);
+        expect((path_collection_builder as any).get_params.indexOf('fields[test2]=test2_attribute')).toBeGreaterThan(-1);
     });
 
     it('if page params are provided, applyParams should call addParam one or two times with the page number and size', () => {
