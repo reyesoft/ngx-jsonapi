@@ -1,10 +1,54 @@
 import { DocumentResource } from './document-resource';
 import { Resource } from './resource';
 import { Page } from './services/page';
-import { Document } from './document';
-import { IDocumentResource } from './interfaces/data-object';
+import { Core } from './core';
+import { StoreService as JsonapiStore } from './sources/store.service';
+import { Http as JsonapiHttpImported } from './sources/http.service';
+import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
+import { JsonapiConfig } from './jsonapi-config';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Author, AuthorsService } from './tests/factories/authors.service';
+import { Book, BooksService } from './tests/factories/books.service';
+import { delay, map, toArray, tap } from 'rxjs/operators';
 
-describe('document resource', () => {
+class HttpHandlerMock implements HttpHandler {
+    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+        let subject = new BehaviorSubject(new HttpResponse());
+
+        return subject.asObservable();
+    }
+}
+
+describe('service basic methods', () => {
+    let core = new Core(
+        new JsonapiConfig(),
+        new JsonapiStore(),
+        new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+    );
+    let service = new AuthorsService();
+    service.register();
+
+    it('a new resource has a type', () => {
+        const resource = service.new();
+        expect(resource instanceof Author).toBeTruthy();
+        expect(resource.type).toEqual('authors');
+    });
+
+    it('a new resource with id has a type', () => {
+        const resource = service.createResource('31');
+        expect(resource instanceof Author).toBeTruthy();
+        expect(resource.id).toEqual('31');
+        expect(resource.type).toEqual('authors');
+    });
+});
+
+let test_response_subject = new BehaviorSubject(new HttpResponse());
+class DynamicHttpHandlerMock implements HttpHandler {
+    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+        return test_response_subject.asObservable().pipe(delay(0));
+    }
+}
+describe('document resource general', () => {
     let document_resource = new DocumentResource();
     it('should be created', () => {
         expect(document_resource.builded).toBe(false);
@@ -14,12 +58,18 @@ describe('document resource', () => {
         let resource = new Resource();
         expect(document_resource.data).toEqual(resource);
     });
-    it('page property should have a new page instance', () => {
-        let page = new Page();
-        expect(document_resource.page).toEqual(page);
+});
+
+describe('document resource fill() method', () => {
+    let document_resource = new DocumentResource<Book>();
+    let booksService = new BooksService();
+    beforeEach(async () => {
+        booksService = new BooksService();
+        booksService.register();
+        await booksService.clearCacheMemory();
     });
-    it('fill mehotd should call Reource class fill mehtod with the passed IDocumentResource parameter and fill meta property', () => {
-        let Resource_fill_spy = spyOn(document_resource.data, 'fill');
+
+    it('fill() with only ids generate content=id and empty relationships', () => {
         document_resource.fill({
             data: {
                 type: 'data',
@@ -27,9 +77,39 @@ describe('document resource', () => {
             },
             meta: { meta: 'meta' }
         });
-        expect(Resource_fill_spy).toHaveBeenCalled();
+        expect(document_resource.data.relationships).toMatchObject({});
+        expect(document_resource.builded).toBeFalsy();
+        expect(document_resource.content).toBe('id');
         expect(document_resource.meta).toEqual({ meta: 'meta' });
     });
+
+    it('fill() with only ids generate content=id and empty relationships, and we call fill() again with complete data', () => {
+        document_resource = new DocumentResource<Book>();
+        document_resource.unsetData();
+
+        // fill with more data
+        document_resource.fill({
+            data: {
+                type: 'books',
+                id: '4',
+                attributes: {
+                    name: 'Ray'
+                },
+                relationships: {
+                    author: {
+                        data: null
+                    },
+                    books: {
+                        data: []
+                    }
+                }
+            }
+        });
+        // expect(document_resource.builded).toBeTruthy();
+        // expect(document_resource.content).toBe('resource');
+        // expect('xxxxxx').toBe('uuuuuuuuuuuuuuuuuuuuuuuuuu');
+    });
+
     it('if passed IDocumentResource has no meta property, fill mehotd should should assign an empty Object', () => {
         document_resource.meta = null;
         let Resource_fill_spy = spyOn(document_resource.data, 'fill');
