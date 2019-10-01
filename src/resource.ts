@@ -1,3 +1,4 @@
+import { CacheMemory } from './services/cachememory';
 import { JsonRipper } from './services/json-ripper';
 import { CacheableHelper } from './services/cacheable-helper.';
 import { Core } from './core';
@@ -148,7 +149,7 @@ export class Resource implements ICacheable {
         return ret;
     }
 
-    public fill(data_object: IDocumentResource | ICacheableDocumentResource, included_resources?: IResourcesByType): void {
+    public fill(data_object: IDocumentResource | ICacheableDocumentResource, included_resources?: IResourcesByType): boolean {
         included_resources = included_resources || Converter.buildIncluded(data_object);
 
         this.id = data_object.data.id || '';
@@ -167,7 +168,7 @@ export class Resource implements ICacheable {
 
         // wee need a registered service
         if (!service) {
-            return;
+            return false;
         }
 
         // only ids?
@@ -189,6 +190,8 @@ export class Resource implements ICacheable {
             this.relationships,
             included_resources
         ).buildRelationships();
+
+        return true;
     }
 
     public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
@@ -288,7 +291,7 @@ export class Resource implements ICacheable {
 
                 // force reload collections cache (example: we add a new element)
                 if (!this.id) {
-                    this.getService().cachememory.deprecateCollections(path.get());
+                    CacheMemory.getInstance().deprecateCollections(path.get());
                     let jsonripper = new JsonRipper();
                     jsonripper.deprecateCollection(path.get());
                 }

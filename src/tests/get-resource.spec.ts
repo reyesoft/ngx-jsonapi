@@ -133,7 +133,6 @@ describe('core methods', () => {
 
         let test_service = new TestService();
         await test_service.clearCacheMemory();
-        test_service.cachememory.resources = {};
         Core.injectedServices.JsonapiStoreService.clearCache();
         test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));
 

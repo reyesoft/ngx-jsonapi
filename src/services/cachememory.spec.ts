@@ -1,11 +1,10 @@
 import { Author } from './../tests/factories/authors.service';
 import { CacheMemory } from './cachememory';
 import { TestFactory } from '../tests/factories/test-factory';
-import { Resource } from '../resource';
 
 describe('Cache Memory deprecation and live conditions', () => {
     it('collections cache_last_update', async () => {
-        let cachememory = new CacheMemory();
+        let cachememory = CacheMemory.getInstance();
         let collection = TestFactory.getCollection(Author);
         cachememory.setCollection('authors', collection);
 
@@ -15,7 +14,7 @@ describe('Cache Memory deprecation and live conditions', () => {
     });
 
     it('deprecateCollections(``) deprecate all', async () => {
-        let cachememory = new CacheMemory();
+        let cachememory = CacheMemory.getInstance();
         let collection = TestFactory.getCollection(Author);
         cachememory.setCollection('authors', collection);
 
@@ -33,7 +32,7 @@ describe('Cache Memory deprecation and live conditions', () => {
     });
 
     it('deprecateCollections(`some_type`) deprecate only some_type collections', async () => {
-        let cachememory = new CacheMemory();
+        let cachememory = CacheMemory.getInstance();
         let collection = TestFactory.getCollection(Author);
         cachememory.setCollection('authors', collection);
 
