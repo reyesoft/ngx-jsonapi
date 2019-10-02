@@ -92,23 +92,26 @@ export class JsonRipper {
     }
 
     private async getDataCollection(url: string): Promise<IStoredCollection> {
-        return <Promise<IStoredCollection>>this.dataProvider.getElement(url);
+        return <Promise<IStoredCollection>>this.dataProvider.getElement(url, 'collections');
     }
 
     private async getDataResources(keys: Array<string>): Promise<Array<ICacheableDocumentResource>> {
-        return <Promise<Array<ICacheableDocumentResource>>>this.dataProvider.getElements(keys);
+        return <Promise<Array<ICacheableDocumentResource>>>this.dataProvider.getElements(keys, 'elements');
     }
 
     public saveCollection(url: string, collection: DocumentCollection, include = []): void {
-        this.dataProvider.saveElements(JsonRipper.toElements(url, collection, include));
+        this.dataProvider.saveElements(JsonRipper.collectionToElement(url, collection), 'collections');
+        this.dataProvider.saveElements(JsonRipper.collectionResourcesToElements(collection, include), 'elements');
     }
 
     public async saveResource(resource: Resource, include = []): Promise<void> {
-        return this.dataProvider.saveElements(JsonRipper.toResourceElements(JsonRipper.getResourceKey(resource), resource, include));
+        return this.dataProvider.saveElements(
+            JsonRipper.toResourceElements(JsonRipper.getResourceKey(resource), resource, include),
+            'elements'
+        );
     }
 
-    public static toElements(url: string, collection: DocumentCollection, include = []): Array<IElement> {
-        let elements: Array<IElement> = [];
+    private static collectionToElement(url: string, collection: DocumentCollection): Array<IElement> {
         let collection_element = {
             key: url,
             content: { updated_at: Date.now(), keys: [] }
@@ -116,9 +119,17 @@ export class JsonRipper {
         collection.data.forEach(resource => {
             let key = JsonRipper.getResourceKey(resource);
             collection_element.content.keys.push(key);
+        });
+
+        return [collection_element];
+    }
+
+    private static collectionResourcesToElements(collection: DocumentCollection, include = []): Array<IElement> {
+        let elements: Array<IElement> = [];
+        collection.data.forEach(resource => {
+            let key = JsonRipper.getResourceKey(resource);
             elements.push(...JsonRipper.toResourceElements(key, resource, include));
         });
-        elements.unshift(collection_element);
 
         return elements;
     }
@@ -161,6 +172,6 @@ export class JsonRipper {
     }
 
     public async deprecateCollection(key_start_with: string): Promise<void> {
-        return this.dataProvider.updateElements(key_start_with, {});
+        return this.dataProvider.updateElements(key_start_with, {}, 'collections');
     }
 }
