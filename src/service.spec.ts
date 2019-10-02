@@ -188,8 +188,9 @@ describe('service.all()', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
             // expected emits
-            { builded: true, loaded: false, source: 'new' },
-            { builded: true, loaded: true, source: 'store' }
+            // source_resource: 'server' because we dont touch child elements
+            { builded: true, loaded: false, source: 'new', source_resource: 'server' },
+            { builded: true, loaded: true, source: 'store', source_resource: 'store' }
         ];
 
         let emmits = await booksService
@@ -202,7 +203,7 @@ describe('service.all()', () => {
                     }
                 }),
                 map(emmit => {
-                    return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source };
+                    return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source, source_resource: emmit.data[0].source };
                 }),
                 toArray()
             )

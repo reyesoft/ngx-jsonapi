@@ -2,7 +2,7 @@ import { CacheableHelper } from './services/cacheable-helper.';
 import { IParamsCollection } from './interfaces/params-collection';
 import { Resource } from './resource';
 import { Page } from './services/page';
-import { Document, ContentTypes } from './document';
+import { Document, SourceType } from './document';
 import { ICacheable } from './interfaces/cacheable';
 import { Converter } from './services/converter';
 import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
@@ -54,7 +54,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         for (let dataresource of data_collection.data) {
             try {
                 let res = this.getResourceOrFail(dataresource);
-                res.fill({ data: dataresource } /* , included_resources */); // @todo check with included resources?
+                res.fill({ data: dataresource });
                 new_ids[dataresource.id] = dataresource.id;
                 (<Array<R>>this.data).push(<R>res);
                 if (Object.keys(res.attributes).length > 0) {
@@ -159,8 +159,17 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         });
     }
 
-    public setSource(value: ContentTypes): void {
+    public setSource(value: SourceType): void {
         this.source = value;
+    }
+
+    public setSourceAndPropagate(value: SourceType): void {
+        this.setSource(value);
+        this.data.forEach(resource => {
+            if (resource instanceof Resource) {
+                resource.setSource(value);
+            }
+        });
     }
 
     public toObject(params?: IParamsCollection): IDataCollection {
