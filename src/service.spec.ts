@@ -286,6 +286,19 @@ describe('service.all() and next service.get()', () => {
 
 // esto no está en getresource ?
 describe('service.get()', () => {
+    let core: Core;
+    let booksService: BooksService;
+    beforeEach(async () => {
+        core = new Core(
+            new JsonapiConfig(),
+            new JsonapiStore(),
+            new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
+        );
+        booksService = new BooksService();
+        booksService.register();
+        // await booksService.clearCacheMemory();
+    });
+
     it(`without cached resource emits source ^new-server|`, async () => {
         // @todo
     });
@@ -294,8 +307,34 @@ describe('service.get()', () => {
         // @todo
     });
 
-    it(`with cached on memory (live) resource but with new includeemits source ^memory-server|`, async () => {
-        // @todo
+    it(`with cached on memory (live) resource but with new include emits source ^memory-server|`, async () => {
+        // caching collection
+        // test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
+        // console.log(TestFactory.getResourceDocumentData(Book));
+        // await booksService.get('1', { ttl: 0 }).toPromise();
+        // let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        // let expected = [
+        //     // expected emits
+        //     { builded: true, loaded: false, source: 'memory' },
+        //     { builded: true, loaded: true, source: 'server' }
+        // ];
+        // let emmits = await booksService
+        //     .all()
+        //     .pipe(
+        //         tap(emmit => {
+        //             if (emmit.data.length > 0) {
+        //                 expect(emmit.data[0].relationships).toHaveProperty('photos');
+        //                 expect(emmit.data[0].relationships).toHaveProperty('author');
+        //             }
+        //         }),
+        //         map(emmit => {
+        //             return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source };
+        //         }),
+        //         toArray()
+        //     )
+        //     .toPromise();
+        // expect(emmits).toMatchObject(expected);
+        // expect(http_request_spy).toHaveBeenCalledTimes(1);
     });
 
     it(`with cached on memory (dead) resource emits source ^memory-server|`, async () => {

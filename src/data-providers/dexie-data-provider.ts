@@ -15,11 +15,7 @@ export class DexieDataProvider implements IDataProvider {
         });
     }
 
-    public async getElement(key: string): Promise<IObject | Array<IObject>> {
-        // @todo improve this on future, we need to know type from JsonRipper
-        // const table_name = key.match(/[a-zA-Z0-9][a-zA-Z0-9_\-]*\.[a-zA-Z0-9][a-zA-Z0-9_\-]*/) ? 'elements' : 'collections';
-        const table_name = 'elements';
-
+    public async getElement(key: string, table_name = 'elements'): Promise<IObject | Array<IObject>> {
         await DexieDataProvider.db.open();
         const data = await DexieDataProvider.db.table(table_name).get(key);
         if (data === undefined) {
@@ -29,10 +25,10 @@ export class DexieDataProvider implements IDataProvider {
         return data;
     }
 
-    public async getElements(keys: Array<string>): Promise<Array<IObject>> {
+    public async getElements(keys: Array<string>, table_name = 'elements'): Promise<Array<IObject>> {
         let data = {};
         await DexieDataProvider.db
-            .table('elements')
+            .table(table_name)
             .where(':id')
             .anyOf(keys)
             .each(element => {
@@ -45,21 +41,21 @@ export class DexieDataProvider implements IDataProvider {
         });
     }
 
-    public async saveElement(key: string, item: any): Promise<void> {
-        return DexieDataProvider.db.open().then(() => {
-            DexieDataProvider.db.table('elements').put(item, key);
-        });
-    }
+    // public async saveElement(key: string, item: any): Promise<void> {
+    //     return DexieDataProvider.db.open().then(() => {
+    //         DexieDataProvider.db.table('elements').put(item, key);
+    //     });
+    // }
 
     // @todo implement dexie.modify(changes)
     // @todo test
-    public async updateElements(key_start_with: string, changes: IObject): Promise<void> {
+    public async updateElements(key_start_with: string, changes: IObject, table_name = 'elements'): Promise<void> {
         return DexieDataProvider.db.open().then(async () => {
             if (key_start_with === '') {
-                return DexieDataProvider.db.table('elements').clear();
+                return DexieDataProvider.db.table(table_name).clear();
             } else {
                 return DexieDataProvider.db
-                    .table('elements')
+                    .table(table_name)
                     .where(':id')
                     .startsWith(key_start_with)
                     .delete()
@@ -68,7 +64,7 @@ export class DexieDataProvider implements IDataProvider {
         });
     }
 
-    public async saveElements(elements: Array<IElement>): Promise<void> {
+    public async saveElements(elements: Array<IElement>, table_name = 'elements'): Promise<void> {
         let keys: Array<string> = [];
         let items = elements.map(element => {
             keys.push(element.key);
@@ -77,7 +73,7 @@ export class DexieDataProvider implements IDataProvider {
         });
 
         return DexieDataProvider.db.open().then(() => {
-            DexieDataProvider.db.table('elements').bulkPut(items, keys);
+            DexieDataProvider.db.table(table_name).bulkPut(items, keys);
         });
     }
 }
