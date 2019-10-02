@@ -16,7 +16,7 @@ import { isArray } from 'util';
 import { Observable, Subject, of } from 'rxjs';
 import { ResourceRelationshipsConverter } from './services/resource-relationships-converter';
 import { IRelationships } from './interfaces/relationship';
-import { ContentTypes } from './document';
+import { SourceType } from './document';
 
 export class Resource implements ICacheable {
     public id: string = '';
@@ -30,7 +30,7 @@ export class Resource implements ICacheable {
     public is_saving = false;
     public is_loading = false;
     public loaded = true;
-    public source: ContentTypes = 'new';
+    public source: SourceType = 'new';
     public cache_last_update = 0;
     public ttl = 0;
 
@@ -149,9 +149,7 @@ export class Resource implements ICacheable {
         return ret;
     }
 
-    public fill(data_object: IDocumentResource | ICacheableDocumentResource, included_resources?: IResourcesByType): boolean {
-        included_resources = included_resources || Converter.buildIncluded(data_object);
-
+    public fill(data_object: IDocumentResource | ICacheableDocumentResource): boolean {
         this.id = data_object.data.id || '';
 
         // WARNING: leaving previous line for a tiem because this can produce undesired behavior
@@ -188,7 +186,7 @@ export class Resource implements ICacheable {
             Converter.getService,
             data_object.data.relationships || {},
             this.relationships,
-            included_resources
+            Converter.buildIncluded(data_object)
         ).buildRelationships();
 
         return true;
@@ -328,11 +326,11 @@ export class Resource implements ICacheable {
     }
 
     /** @todo generate interface */
-    public setSource(value: ContentTypes): void {
+    public setSource(value: SourceType): void {
         this.source = value;
     }
 
-    public setSourceAndPropagate(value: ContentTypes): void {
+    public setSourceAndPropagate(value: SourceType): void {
         this.setSource(value);
         for (let relationship_alias in this.relationships) {
             let relationship = this.relationships[relationship_alias];

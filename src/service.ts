@@ -100,27 +100,27 @@ export class Service<R extends Resource = Resource> {
 
     // if you change this logic, maybe you need to change getAllFromLocal()
     private async getGetFromLocal(params: IParamsCollection = {}, path: PathBuilder, resource: R): Promise<void> {
-        if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            // STORE
-            resource.setLoaded(false);
-
-            // STORE (individual)
-            let json_ripper = new JsonRipper();
-            let success = await json_ripper.getResource(JsonRipper.getResourceKey(resource), path.includes);
-
-            resource.source = 'store';
-            resource.fill(success);
-
-            // when fields is set, get resource form server
-            if (isLive(resource, params.ttl)) {
-                resource.setLoadedAndPropagate(true);
-                // resource.setBuildedAndPropagate(true);
-
-                return;
-            }
+        // STORE
+        if (!Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+            throw new Error('We cant handle this request');
         }
 
-        throw new Error('We cant handle this request');
+        resource.setLoaded(false);
+
+        // STORE (individual)
+        let json_ripper = new JsonRipper();
+        let success = await json_ripper.getResource(JsonRipper.getResourceKey(resource), path.includes);
+
+        resource.fill(success);
+        resource.setSource('store');
+
+        // when fields is set, get resource form server
+        if (isLive(resource, params.ttl)) {
+            resource.setLoadedAndPropagate(true);
+            // resource.setBuildedAndPropagate(true);
+
+            return;
+        }
     }
 
     // if you change this logic, maybe you need to change getAllFromServer()
@@ -129,8 +129,8 @@ export class Service<R extends Resource = Resource> {
             success => {
                 resource.fill(<IDocumentResource>success);
                 resource.cache_last_update = Date.now();
-                resource.source = 'server';
                 resource.setLoadedAndPropagate(true);
+                resource.setSourceAndPropagate('server');
 
                 // this.getService().cachememory.setResource(resource, true);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
@@ -276,32 +276,32 @@ export class Service<R extends Resource = Resource> {
         path: PathCollectionBuilder,
         temporary_collection: DocumentCollection<R>
     ): Promise<void> {
-        if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            // STORE
-            temporary_collection.setLoaded(false);
-
-            let success: ICacheableDataCollection;
-            if (params.store_cache_method === 'compact') {
-                // STORE (compact)
-                success = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact');
-            } else {
-                // STORE (individual)
-                let json_ripper = new JsonRipper();
-                success = await json_ripper.getCollection(path.getForCache(), path.includes);
-            }
-            temporary_collection.source = 'store';
-            temporary_collection.fill(success);
-
-            // when fields is set, get resource form server
-            if (isLive(temporary_collection, params.ttl)) {
-                temporary_collection.setLoadedAndPropagate(true);
-                temporary_collection.setBuildedAndPropagate(true);
-
-                return;
-            }
+        // STORE
+        if (!Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+            throw new Error('We cant handle this request');
         }
 
-        throw new Error('We cant handle this request');
+        temporary_collection.setLoaded(false);
+
+        let success: ICacheableDataCollection;
+        if (params.store_cache_method === 'compact') {
+            // STORE (compact)
+            success = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact');
+        } else {
+            // STORE (individual)
+            let json_ripper = new JsonRipper();
+            success = await json_ripper.getCollection(path.getForCache(), path.includes);
+        }
+        temporary_collection.fill(success);
+        temporary_collection.setSourceAndPropagate('store');
+
+        // when fields is set, get resource form server
+        if (isLive(temporary_collection, params.ttl)) {
+            temporary_collection.setLoadedAndPropagate(true);
+            temporary_collection.setBuildedAndPropagate(true);
+
+            return;
+        }
     }
 
     // if you change this logic, maybe you need to change getGetFromServer()
@@ -326,7 +326,7 @@ export class Service<R extends Resource = Resource> {
                 }
                 temporary_collection.fill(<IDataCollection>success);
                 temporary_collection.cache_last_update = Date.now();
-                temporary_collection.source = 'server';
+                temporary_collection.setSourceAndPropagate('server');
                 temporary_collection.setLoadedAndPropagate(true);
 
                 // this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
