@@ -51,13 +51,13 @@ export class Converter<R extends Resource> {
     }
 
     public static getService(type: string): Service {
-        let resource_service = Core.me.getResourceService(type);
+        let resource_service = Core.me.getResourceServiceOrFail(type);
 
         return resource_service;
     }
 
     public static buildIncluded(document_from: IDataCollection | IDocumentResource): IResourcesByType {
-        if ('included' in document_from) {
+        if ('included' in document_from && document_from.included) {
             return Converter.json_array2resources_array_by_type(document_from.included);
         }
 
@@ -70,7 +70,7 @@ export class Converter<R extends Resource> {
             console.error('Jsonapi Resource is not correct', data);
         }
 
-        let resource: Resource = CacheMemory.getInstance().getResource(data.type, data.id);
+        let resource: Resource | null = CacheMemory.getInstance().getResource(data.type, data.id);
         if (resource === null) {
             resource = Converter.getService(data.type).getOrCreateResource(data.id);
         }
