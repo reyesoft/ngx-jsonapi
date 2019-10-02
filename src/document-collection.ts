@@ -51,14 +51,6 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         let new_ids = {};
         this.data.length = 0;
         this.builded = data_collection.data && data_collection.data.length === 0;
-        try {
-            for (let dataresource of data_collection.data) {
-                //
-            }
-        } catch (e) {
-            console.log('---------------------------> data_collection.data', data_collection);
-            console.log('---------------------------> data_collection.data', data_collection.meta.dsfasdfas.fasdf);
-        }
         for (let dataresource of data_collection.data) {
             try {
                 let res = this.getResourceOrFail(dataresource);

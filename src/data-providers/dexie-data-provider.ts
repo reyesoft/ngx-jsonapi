@@ -41,12 +41,6 @@ export class DexieDataProvider implements IDataProvider {
         });
     }
 
-    // public async saveElement(key: string, item: any): Promise<void> {
-    //     return DexieDataProvider.db.open().then(() => {
-    //         DexieDataProvider.db.table('elements').put(item, key);
-    //     });
-    // }
-
     // @todo implement dexie.modify(changes)
     // @todo test
     public async updateElements(key_start_with: string, changes: IObject, table_name = 'elements'): Promise<void> {
