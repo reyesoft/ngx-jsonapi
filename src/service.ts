@@ -193,8 +193,6 @@ export class Service<R extends Resource = Resource> {
         let path = new PathBuilder();
         path.applyParams(this);
 
-        let db = new DexieDataProvider();
-
         CacheMemory.getInstance().deprecateCollections(path.getForCache());
 
         let json_ripper = new JsonRipper();

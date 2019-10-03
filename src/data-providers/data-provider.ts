@@ -7,12 +7,11 @@ export interface IElement {
     content: IObject;
 }
 
+export type TableNameType = 'collections' | 'elements';
+
 export interface IDataProvider {
-    getElement(key: string): Promise<IObject | Array<IObject>>;
-    getElements(keys: Array<string>): Promise<Array<IObject>>;
-
-    saveElement(key: string, data: IObject): Promise<void>;
-    saveElements(elements: Array<IElement>): Promise<void>;
-
-    updateElements(key_start_with: string, new_data: IObject): Promise<void>;
+    getElement(key: string, table_name: TableNameType): Promise<IObject | Array<IObject>>;
+    getElements(keys: Array<string>, table_name: TableNameType): Promise<Array<IObject>>;
+    saveElements(elements: Array<IElement>, table_name: TableNameType): Promise<void>;
+    updateElements(key_start_with: string, new_data: IObject, table_name: TableNameType): Promise<void>;
 }

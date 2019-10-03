@@ -140,10 +140,11 @@ describe('JsonRipper for collections', () => {
     author1.addRelationship(book1);
     author1.addRelationship(TestFactory.getBook('2'));
 
+    /* Is private now
     it('A collection is converted to objects for a DataProvider', () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let obj = JsonRipper.toElements('some/url', authors);
+        let obj = JsonRipper.collectionToElement('some/url', authors);
         expect(obj.length).toBe(3);
         expect(obj[0].key).toBe('some/url');
         expect(obj[0].content.keys).toMatchObject(['authors.2', 'authors.1']); // unsorted resources is intentional
@@ -166,7 +167,7 @@ describe('JsonRipper for collections', () => {
     it('A collection with include is converted to objects for a DataProvider', () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let obj = JsonRipper.toElements('some/url/include', authors, ['books']);
+        let obj = JsonRipper.collectionToElement('some/url/include', authors, ['books']);
         expect(obj.length).toBe(5);
         expect(obj[0].key).toBe('some/url/include');
         expect(obj[0].content.keys).toMatchObject(['authors.2', 'authors.1']);
@@ -177,6 +178,7 @@ describe('JsonRipper for collections', () => {
             relationships: {}
         });
     });
+    */
 
     it('A ripped collection saved via DataProvider is converted to a Json', async done => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
