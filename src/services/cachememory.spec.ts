@@ -80,6 +80,15 @@ describe('Cache Memory deprecation and live conditions', () => {
         expect(author_on_memory).toBe(null);
     });
 
+    it('getResourceOrFail() should return the stored resource if exists', () => {
+        let cachememory = CacheMemory.getInstance();
+        let author = TestFactory.getAuthor();
+        cachememory.setResource(author, true);
+
+        let author_on_memory = <Author>cachememory.getResourceOrFail('authors', author.id);
+        expect(author_on_memory).toBeTruthy();
+    });
+
     it('getOrCreateResource() should return the requested resource', () => {
         let cachememory = CacheMemory.getInstance();
         let author = TestFactory.getAuthor();
