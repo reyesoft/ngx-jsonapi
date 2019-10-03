@@ -25,15 +25,25 @@ export function relationshipsAreBuilded(resource: Resource, includes: Array<stri
 }
 
 export function isCollection(document: DocumentResource | DocumentCollection): document is DocumentCollection {
+    if (!document.data) {
+        return false;
+    }
+
     return !('id' in document.data);
 }
 
 export function isResource(document: DocumentResource | DocumentCollection): document is DocumentResource {
+    if (!document.data) {
+        return false;
+    }
+
     return 'id' in document.data;
 }
 
 // NOTE: Checks that the service passed to the method is registered (method needs to have service's type or a resource as first arg)
-export function serviceIsRegistered(target: Object, key: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor | null {
+// changes "PropertyDescriptor | null" type for "any" to avoid typescript error in decorators property decorators
+// (see https://stackoverflow.com/questions/37694322/typescript-ts1241-unable-to-resolve-signature-of-method-decorator-when-called-a)
+export function serviceIsRegistered(target: Object, key: string | symbol, descriptor: PropertyDescriptor): any {
     const original = descriptor.value;
 
     descriptor.value = function() {
