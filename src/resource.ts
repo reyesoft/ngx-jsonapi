@@ -1,5 +1,5 @@
 import { CacheMemory } from './services/cachememory';
-import { IDataResource } from 'src/interfaces/data-resource';
+import { IDataResource } from './interfaces/data-resource';
 import { JsonRipper } from './services/json-ripper';
 import { CacheableHelper } from './services/cacheable-helper.';
 import { Core } from './core';
@@ -250,8 +250,8 @@ export class Resource implements ICacheable {
     public hasOneRelated(resource: string): boolean {
         return Boolean(
             this.relationships[resource] &&
-            (<Resource>this.relationships[resource].data).type &&
-            (<Resource>this.relationships[resource].data).type !== ''
+                (<Resource>this.relationships[resource].data).type &&
+                (<Resource>this.relationships[resource].data).type !== ''
         );
     }
 

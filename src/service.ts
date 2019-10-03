@@ -1,6 +1,5 @@
 import { Core } from './core';
-import { IBuildedParamsCollection } from 'src/interfaces/params-collection';
-import { Page } from 'src/services/page';
+import { IBuildedParamsCollection } from './interfaces/params-collection';
 import { Base } from './services/base';
 import { Resource } from './resource';
 import { PathBuilder } from './services/path-builder';

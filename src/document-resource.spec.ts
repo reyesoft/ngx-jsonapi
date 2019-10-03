@@ -112,7 +112,7 @@ describe('document resource fill() method', () => {
 
     it('if passed IDocumentResource has no meta property, fill mehotd should should assign an empty Object', () => {
         (document_resource.meta as any) = null;
-        let Resource_fill_spy = spyOn((<Resource>document_resource.data), 'fill');
+        let Resource_fill_spy = spyOn(<Resource>document_resource.data, 'fill');
         document_resource.fill({
             data: {
                 type: 'data',

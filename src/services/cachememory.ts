@@ -32,7 +32,7 @@ export class CacheMemory<R extends Resource = Resource> {
             return this.resources[this.getKey(type, id)];
         }
 
-        throw(new Error('The requested resource does not exist in cache memory'));
+        throw new Error('The requested resource does not exist in cache memory');
     }
 
     private getKey(type: string, id: string): string {
@@ -113,10 +113,7 @@ export class CacheMemory<R extends Resource = Resource> {
 
         // this.resources[id].relationships = {}; // just for confirm deletion on view
         for (let relationship in resource.relationships) {
-            if (
-                resource.relationships[relationship].data === null
-                || resource.relationships[relationship].data === undefined
-            ) {
+            if (resource.relationships[relationship].data === null || resource.relationships[relationship].data === undefined) {
                 continue;
             }
             if (resource.relationships[relationship].data instanceof Array) {
