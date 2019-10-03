@@ -50,7 +50,13 @@ export class Converter<R extends Resource> {
         }
     }
 
-    public static getService(type: string): Service {
+    public static getService(type: string): Service | undefined {
+        let resource_service = Core.me.getResourceService(type);
+
+        return resource_service;
+    }
+
+    public static getServiceOrFail(type: string): Service {
         let resource_service = Core.me.getResourceServiceOrFail(type);
 
         return resource_service;
@@ -72,7 +78,7 @@ export class Converter<R extends Resource> {
 
         let resource: Resource | null = CacheMemory.getInstance().getResource(data.type, data.id);
         if (resource === null) {
-            resource = Converter.getService(data.type).getOrCreateResource(data.id);
+            resource = Converter.getServiceOrFail(data.type).getOrCreateResource(data.id);
         }
 
         resource.attributes = data.attributes || {};

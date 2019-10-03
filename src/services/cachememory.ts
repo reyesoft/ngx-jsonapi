@@ -69,7 +69,7 @@ export class CacheMemory<R extends Resource = Resource> {
             return resource;
         }
 
-        resource = Converter.getService(type).new();
+        resource = Converter.getServiceOrFail(type).new();
         resource.id = id;
         // needed for a lot of request (all and get, tested on multinexo.com)
         this.setResource(resource, false);

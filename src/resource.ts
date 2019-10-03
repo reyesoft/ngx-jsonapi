@@ -1,4 +1,5 @@
 import { CacheMemory } from './services/cachememory';
+import { IDataResource } from 'src/interfaces/data-resource';
 import { JsonRipper } from './services/json-ripper';
 import { CacheableHelper } from './services/cacheable-helper.';
 import { Core } from './core';
@@ -49,8 +50,8 @@ export class Resource implements ICacheable {
         params = { ...{}, ...Base.ParamsResource, ...params };
 
         let relationships = {};
-        let included = [];
-        let included_ids = []; // just for control don't repeat any resource
+        let included: Array<IDataResource> = [];
+        let included_ids: Array<string> = []; // just for control don't repeat any resource
 
         // REALTIONSHIPS
         for (const relation_alias in this.relationships) {
@@ -72,15 +73,15 @@ export class Resource implements ICacheable {
 
                     // no se agregó aún a included && se ha pedido incluir con el parms.include
                     let temporal_id = resource.type + '_' + resource.id;
-                    if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relation_alias) !== -1) {
+                    if (included_ids.indexOf(temporal_id) === -1 && params.include && params.include.indexOf(relation_alias) !== -1) {
                         included_ids.push(temporal_id);
                         included.push(resource.toObject({}).data);
                     }
                 }
             } else {
                 // @TODO PABLO: agregué el check de null porque sino fallan las demás condiciones, además es para eliminar la relacxión del back
-                if (relationship.data === null) {
-                    relationships[relation_alias] = { data: null };
+                if (relationship.data === null || relationship.data === undefined) {
+                    relationships[relation_alias] = { data: relationship.data };
                     continue;
                 }
                 if (!(relationship instanceof DocumentResource)) {
@@ -88,7 +89,7 @@ export class Resource implements ICacheable {
                 }
 
                 let relationship_data = <Resource>relationship.data;
-                if (!('id' in relationship.data) && Object.keys(relationship.data).length > 0) {
+                if (relationship.data && !('id' in relationship.data) && Object.keys(relationship.data).length > 0) {
                     console.warn(relation_alias + ' defined with hasMany:false, but I have a collection');
                 }
 
@@ -107,7 +108,7 @@ export class Resource implements ICacheable {
 
                 // no se agregó aún a included && se ha pedido incluir con el parms.include
                 let temporal_id = relationship_data.type + '_' + relationship_data.id;
-                if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relation_alias) !== -1) {
+                if (included_ids.indexOf(temporal_id) === -1 && params.include && params.include.indexOf(relation_alias) !== -1) {
                     included_ids.push(temporal_id);
                     included.push(relationship_data.toObject({}).data);
                 }
@@ -156,13 +157,17 @@ export class Resource implements ICacheable {
         // this.attributes = data_object.data.attributes || this.attributes;
         this.attributes = { ...(this.attributes || {}), ...data_object.data.attributes };
 
-        // NOTE: fix if stored resource has no relationships property
-        if (!this.relationships) {
-            this.relationships = new (Converter.getService(data_object.data.type)).resource().relationships;
-        }
-
         this.is_new = false;
+
+        // NOTE: fix if stored resource has no relationships property
         let service = Converter.getService(data_object.data.type);
+
+        if (!this.relationships && service) {
+            this.relationships = new service.resource().relationships;
+        }
+        // else if (!this.relationships && !service) {
+        //     this.relationships = {};
+        // }
 
         // wee need a registered service
         if (!service) {
@@ -243,7 +248,7 @@ export class Resource implements ICacheable {
     }
 
     public hasOneRelated(resource: string): boolean {
-        return (
+        return Boolean(
             this.relationships[resource] &&
             (<Resource>this.relationships[resource].data).type &&
             (<Resource>this.relationships[resource].data).type !== ''
@@ -260,7 +265,7 @@ export class Resource implements ICacheable {
     @return This resource like a service
     */
     public getService(): Service {
-        return Converter.getService(this.type);
+        return Converter.getServiceOrFail(this.type);
     }
 
     public save<T extends Resource>(params?: IParamsResource): Observable<object> {
