@@ -96,9 +96,11 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         if (!service) {
             if (isDevMode()) {
                 console.warn(
-                    'The relationship ' + 'relation_alias?' + ' (type',
-                    dataresource.type,
-                    ') cant be generated because service for this type has not been injected.'
+                    'The relationship ' +
+                        'relation_alias?' +
+                        ' (type ' +
+                        dataresource.type +
+                        ') cant be generated because service for this type has not been injected.'
                 );
             }
 

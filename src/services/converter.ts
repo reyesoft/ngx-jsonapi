@@ -70,13 +70,9 @@ export class Converter<R extends Resource> {
             console.error('Jsonapi Resource is not correct', data);
         }
 
-        let resource: Resource = CacheMemory.getInstance().getResource(data.type, data.id);
-        if (resource === null) {
-            resource = Converter.getService(data.type).getOrCreateResource(data.id);
-        }
+        let resource: Resource = CacheMemory.getInstance().getOrCreateResource(data.type, data.id);
+        resource.fill({ data: data });
 
-        resource.attributes = data.attributes || {};
-        resource.relationships = <{ [key: string]: any }>data.relationships || resource.relationships;
         resource.is_new = false;
 
         return resource;

@@ -16,6 +16,7 @@
         <td>
             <a [routerLink]="['/authors', author.id]">{{ author.attributes.name }}</a>
             <code title="Cache last update"><small>{{ author.cache_last_update | date:'H:MM:SS' }}</small></code>
+            <code><small>{{ author.source }}</small></code>
         </td>
         <td>{{ author.attributes.date_of_birth | date }}</td>
         <td>{{ author.attributes.date_of_death | date }}</td>

@@ -24,12 +24,6 @@ export class AuthorsComponent {
                 .subscribe(
                     authors => {
                         this.authors = authors;
-                        this.authors.data.forEach(recurso => {
-                            console.info('success', recurso);
-                            console.info('books', recurso.relationships.books);
-                            console.info('photos', recurso.relationships.photos);
-                            console.info('<<<<<<<<<<<<<<<<<<<<<');
-                        });
                     },
                     error => console.error('Could not load authors :(', error)
                 );

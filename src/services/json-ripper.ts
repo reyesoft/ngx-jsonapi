@@ -31,7 +31,8 @@ export class JsonRipper {
         let included_keys = [];
         include.forEach(relationship_alias => {
             if (!stored_resource.data.relationships[relationship_alias]) {
-                return;
+                // this is a classic problem when relationship property is missing on included resources
+                throw new Error('We dont have relation_alias on stored data resource');
             }
 
             const relationship = stored_resource.data.relationships[relationship_alias].data;

@@ -10,6 +10,7 @@ export function isLive(cacheable: ICacheable, ttl: number = null): boolean {
     return Date.now() < cacheable.cache_last_update + ttl_in_seconds * 1000;
 }
 
+// @todo test required for hasMany and hasOne
 export function relationshipsAreBuilded(resource: Resource, includes: Array<string>): boolean {
     if (includes.length === 0) {
         return true;
