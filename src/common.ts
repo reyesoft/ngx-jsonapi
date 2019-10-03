@@ -4,8 +4,8 @@ import { DocumentResource } from './document-resource';
 import { DocumentCollection } from './document-collection';
 import { Resource } from './resource';
 
-export function isLive(cacheable: ICacheable, ttl: number = null): boolean {
-    let ttl_in_seconds = typeof ttl === 'number' ? ttl : cacheable.ttl || 0;
+export function isLive(cacheable: ICacheable, ttl?: number): boolean {
+    let ttl_in_seconds = ttl && typeof ttl === 'number' ? ttl : cacheable.ttl || 0;
 
     return Date.now() < cacheable.cache_last_update + ttl_in_seconds * 1000;
 }
