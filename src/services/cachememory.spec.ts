@@ -89,6 +89,14 @@ describe('Cache Memory deprecation and live conditions', () => {
         expect(author_on_memory).toBeTruthy();
     });
 
+    it('getResourceOrFail() should throw an error if the requested resource does not exist', () => {
+        let cachememory = CacheMemory.getInstance();
+        expect(
+            () => { cachememory.getResourceOrFail('authors', 'new_' + Math.floor(Math.random() * 6)); }
+        )
+        .toThrow(new Error('The requested resource does not exist in cache memory'));
+    });
+
     it('getOrCreateResource() should return the requested resource', () => {
         let cachememory = CacheMemory.getInstance();
         let author = TestFactory.getAuthor();
