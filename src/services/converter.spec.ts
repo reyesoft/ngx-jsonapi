@@ -1,6 +1,6 @@
 import { Converter } from './converter';
 import { Core } from '../core';
-import { JsonapiConfig } from 'src/jsonapi-config';
+import { JsonapiConfig } from '../jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
@@ -31,5 +31,9 @@ describe('Converter', () => {
 
         expect(converted.sometype.AR.id).toBe('AR');
         expect(converted.sometype.AR.type).toBe('sometype');
+    });
+
+    it('procreate() dont remove relationship properties when is not present or empty on data', () => {
+        // @todo
     });
 });

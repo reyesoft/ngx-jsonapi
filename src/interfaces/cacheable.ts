@@ -1,6 +1,11 @@
-export interface ICacheable {
+import { SourceType } from './../document';
+import { IHasCacheData } from './has-cache-data';
+
+// deprecated since 2.2.0. Use loaded.
+export interface ICacheable extends IHasCacheData {
+    // deprecated since 2.2.0. Use loaded.
     is_loading: boolean;
-    source: 'new' | 'memory' | 'store' | 'server';
-    cache_last_update: number;
+    loaded: boolean;
+    source: SourceType;
     ttl?: number;
 }

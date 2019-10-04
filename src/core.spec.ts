@@ -1,8 +1,8 @@
 // WARNING: this test is not correctly isolated
 
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
-import { DocumentCollection } from 'src/document-collection';
-import { DocumentResource } from 'src/document-resource';
+import { DocumentCollection } from './document-collection';
+import { DocumentResource } from './document-resource';
 import { Resource } from './resource';
 import { Service } from './service';
 import { Http as JsonapiHttpImported } from './sources/http.service';
@@ -42,7 +42,7 @@ class CustomResourceService extends Service<CustomResource> {
 describe('core methods', () => {
     let core: Core;
     it('should crete core service instance', () => {
-        spyOn(JsonapiStore.prototype, 'constructor');
+        spyOn<any>(JsonapiStore.prototype, 'constructor');
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),

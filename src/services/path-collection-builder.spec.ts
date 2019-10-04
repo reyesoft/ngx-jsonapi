@@ -3,7 +3,7 @@ import { Service } from '../service';
 import { PathBuilder } from './path-builder';
 import { PathCollectionBuilder } from './path-collection-builder';
 import { UrlParamsBuilder } from './url-params-builder';
-import { JsonapiConfig } from 'src/jsonapi-config';
+import { JsonapiConfig } from '../jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
@@ -54,7 +54,7 @@ describe('Path Builder', () => {
         expect(parseToServer_null_spy).not.toHaveBeenCalled();
     });
     it('if remotefilters are provided, applyParams should call addParam with paramsurl.toparams result as parameter', () => {
-        let addParam_parent_spy = spyOn(path_collection_builder, 'addParam');
+        let addParam_parent_spy = spyOn<any>(path_collection_builder, 'addParam');
         let toparams_parent_spy = spyOn(UrlParamsBuilder.prototype, 'toparams');
         path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' } });
         let test_params = new UrlParamsBuilder().toparams({ status: 'test_status' });
@@ -63,7 +63,6 @@ describe('Path Builder', () => {
     });
 
     it('if fields are provided, they should be formatted and included in get_params', () => {
-        let addParam_parent_spy = spyOn(path_collection_builder, 'addParam').and.callThrough();
         path_collection_builder.applyParams(testService, { fields: { test: ['test_attribute', 'other_test_attribute'] } });
         expect((path_collection_builder as any).get_params.indexOf('fields[test]=test_attribute,other_test_attribute')).toBeGreaterThan(-1);
     });
@@ -71,7 +70,7 @@ describe('Path Builder', () => {
     it('if page params are provided, applyParams should call addParam one or two times with the page number and size', () => {
         Core.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
         Core.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
-        let addParam_parent_spy = spyOn(path_collection_builder, 'addParam');
+        let addParam_parent_spy = spyOn<any>(path_collection_builder, 'addParam');
         path_collection_builder.applyParams(testService, { page: { number: 2 } });
         expect(addParam_parent_spy).toHaveBeenCalledTimes(1);
         expect(addParam_parent_spy).toHaveBeenCalledWith('page_index=2');
@@ -83,7 +82,7 @@ describe('Path Builder', () => {
     it('if page number param is 1, applyParams should not call addParam with page number', () => {
         Core.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
         Core.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
-        let addParam_parent_spy = spyOn(path_collection_builder, 'addParam');
+        let addParam_parent_spy = spyOn<any>(path_collection_builder, 'addParam');
         path_collection_builder.applyParams(testService, { page: { number: 1 } });
         expect(addParam_parent_spy).not.toHaveBeenCalled();
         path_collection_builder.applyParams(testService, { page: { number: 1, size: 10 } });
@@ -92,7 +91,7 @@ describe('Path Builder', () => {
         expect(addParam_parent_spy).toHaveBeenCalledWith('page_size=10');
     });
     it('if sort params are provided, applyParams method should join the array with "," and call addParam with the resulting string', () => {
-        let addParam_parent_spy = spyOn(path_collection_builder, 'addParam');
+        let addParam_parent_spy = spyOn<any>(path_collection_builder, 'addParam');
         path_collection_builder.applyParams(testService, { sort: ['test', 'sort'] });
         expect(addParam_parent_spy).toHaveBeenCalledWith('sort=test,sort');
     });

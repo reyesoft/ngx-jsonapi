@@ -17,10 +17,10 @@ export class PathCollectionBuilder extends PathBuilder {
         }
         if (params.page) {
             if (params.page.number > 1) {
-                this.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.number + '=' + params.page.number);
+                this.addParam(this.getPageConfig().number + '=' + params.page.number);
             }
             if (params.page.size) {
-                this.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.size + '=' + params.page.size);
+                this.addParam(this.getPageConfig().size + '=' + params.page.size);
             }
         }
         if (params.sort && params.sort.length) {
@@ -33,6 +33,15 @@ export class PathCollectionBuilder extends PathBuilder {
             }
             this.addParam(fields_param);
         }
+    }
+
+    private getPageConfig(): { number: string; size: string } {
+        return (
+            (Core.injectedServices.rsJsonapiConfig.parameters && Core.injectedServices.rsJsonapiConfig.parameters.page) || {
+                number: 'number',
+                size: 'size'
+            }
+        );
     }
 
     protected addParam(param: string): void {

@@ -1,7 +1,7 @@
 // WARNING: this test is not isolated
 
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { DocumentCollection } from 'src/document-collection';
+import { DocumentCollection } from '../document-collection';
 import { DocumentResource } from '../document-resource';
 import { Resource } from '../resource';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
@@ -114,7 +114,9 @@ describe('core methods', () => {
                 expect(resource.type).toBe('test_resources');
                 expect(resource.id).toBe('1');
                 expect(resource.attributes.name).toBe('test_name');
-                expect(resource.attributes.optional).toBeFalsy();
+                // @todo why? memory will not remove attributes if are not sent by server
+                // for example two different requests with different list of fields (one request remove attributes of the another resource)
+                // expect(resource.attributes.optional).toBeFalsy();
 
                 let request = {
                     body: null,

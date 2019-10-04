@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IDataObject } from '../interfaces/data-object';
+import { IDocumentResource } from '../interfaces/data-object';
 import { HttpClient, HttpHeaders, HttpEvent } from '@angular/common/http';
 import { JsonapiConfig } from '../jsonapi-config';
 import { share, tap } from 'rxjs/operators';
@@ -13,7 +13,7 @@ export class Http {
 
     public constructor(private http: HttpClient, private rsJsonapiConfig: JsonapiConfig) {}
 
-    public exec(path: string, method: string, data?: IDataObject): Observable<IDocumentData> {
+    public exec(path: string, method: string, data?: IDocumentResource): Observable<IDocumentData> {
         let req = {
             body: data || null,
             headers: new HttpHeaders({
@@ -27,7 +27,7 @@ export class Http {
             if (!this.get_requests[path]) {
                 let obs = this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
                     tap(() => {
-                        this.get_requests[path] = undefined;
+                        delete this.get_requests[path];
                     }),
                     share()
                 );
@@ -41,7 +41,7 @@ export class Http {
 
         return this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
             tap(() => {
-                this.get_requests[path] = undefined;
+                delete this.get_requests[path];
             }),
             share()
         );

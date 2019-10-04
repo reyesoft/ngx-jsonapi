@@ -1,8 +1,7 @@
 import { Core } from '../core';
 import { Service } from '../service';
 import { PathBuilder } from './path-builder';
-
-import { JsonapiConfig } from 'src/jsonapi-config';
+import { JsonapiConfig } from '../jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
@@ -46,7 +45,7 @@ describe('Path Builder', () => {
         expect(appendPath_spy).toHaveBeenCalledWith(testService.getPath());
     });
     it('applyParams method should call setInclude with params.include (if exists) to assign them to the includes array', () => {
-        let setInclude_spy = spyOn(path_builder, 'setInclude');
+        let setInclude_spy = spyOn<any>(path_builder, 'setInclude');
         path_builder.applyParams(testService, { beforepath: 'pre/' });
         expect(setInclude_spy).not.toHaveBeenCalled();
         path_builder.applyParams(testService, { beforepath: 'pre/', include: ['include'] });
@@ -69,7 +68,7 @@ describe('Path Builder', () => {
         path_builder.paths = ['test', 'path'];
         (path_builder as any).get_params = ['and', 'test', 'params'];
         let path = path_builder.getForCache();
-        // this creates test/pathand/test/params instead of test/path/and/test/params <= is this on purpose?
+        // this creates test/pathand/tests/params instead of test/path/and/tests/params <= is this on purpose?
         expect(path).toBe(path_builder.paths.join('/') + (path_builder as any).get_params.join('/'));
     });
     it('if get_params length is 0, getForCache shouldn t add them to the resulting string', () => {

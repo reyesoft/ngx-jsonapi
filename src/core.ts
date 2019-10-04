@@ -1,3 +1,4 @@
+import { CacheMemory } from './services/cachememory';
 import { Injectable, Optional, isDevMode } from '@angular/core';
 import { serviceIsRegistered } from './common';
 import { PathBuilder } from './services/path-builder';
@@ -6,7 +7,7 @@ import { Resource } from './resource';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { StoreService as JsonapiStore } from './sources/store.service';
-import { IDataObject } from './interfaces/data-object';
+import { IDocumentResource } from './interfaces/data-object';
 import { noop } from 'rxjs/internal/util/noop';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
@@ -51,7 +52,12 @@ export class Core {
         return Core.exec(path, 'get');
     }
 
-    public static exec(path: string, method: string, data?: IDataObject, call_loadings_error: boolean = true): Observable<IDocumentData> {
+    public static exec(
+        path: string,
+        method: string,
+        data?: IDocumentResource,
+        call_loadings_error: boolean = true
+    ): Observable<IDocumentData> {
         Core.me.refreshLoadings(1);
 
         return Core.injectedServices.JsonapiHttp.exec(path, method, data).pipe(
@@ -85,35 +91,43 @@ export class Core {
     }
 
     // @todo this function could return an empty value, fix required
-    public getResourceService(type: string): Service {
+    public getResourceService(type: string): Service | undefined {
         return this.resourceServices[type];
+    }
+
+    public getResourceServiceOrFail(type: string): Service {
+        let service = this.resourceServices[type];
+        if (!service) {
+            throw new Error('The requested service has not been registered, please use register() method or @Autoregister() decorator');
+        }
+
+        return service;
     }
 
     @serviceIsRegistered
     public static removeCachedResource(resource_type: string, resource_id: string): void {
-        Core.me.getResourceService(resource_type).cachememory.removeResource(resource_id);
+        CacheMemory.getInstance().removeResource(resource_type, resource_id);
         if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            // TODO: FE-85 ---> agregar removeResource en cacheStorage
-            Core.me.getResourceService(resource_type).cachestore.removeResource(resource_id, resource_type);
+            // TODO: FE-85 ---> add method on JsonRipper
         }
     }
 
     @serviceIsRegistered
     public static setCachedResource(resource: Resource): void {
-        Core.me.getResourceService(resource.type).cachememory.setResource(resource, true);
+        CacheMemory.getInstance().setResource(resource, true);
         if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            Core.me.getResourceService(resource.type).cachestore.setResource(resource);
+            // TODO: FE-85 ---> add method on JsonRipper
         }
     }
 
     @serviceIsRegistered
     public static deprecateCachedCollections(type: string): void {
-        let service = Core.me.getResourceService(type);
+        let service = Core.me.getResourceServiceOrFail(type);
         let path = new PathBuilder();
         path.applyParams(service);
-        service.cachememory.deprecateCollections(path.getForCache());
+        CacheMemory.getInstance().deprecateCollections(path.getForCache());
         if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            service.cachestore.deprecateCollections(path.getForCache());
+            // TODO: FE-85 ---> add method on JsonRipper
         }
     }
 
@@ -134,12 +148,17 @@ export class Core {
 
     // just an helper
     public duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: Array<string>): R {
-        let newresource = <R>this.getResourceService(resource.type).new();
+        let newresource = <R>this.getResourceServiceOrFail(resource.type).new();
         newresource.id = 'new_' + Math.floor(Math.random() * 10000).toString();
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };
 
         for (const alias in resource.relationships) {
             let relationship = resource.relationships[alias];
+
+            if (!relationship.data) {
+                newresource.relationships[alias] = resource.relationships[alias];
+                continue;
+            }
 
             if ('id' in relationship.data) {
                 // relation hasOne

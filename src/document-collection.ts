@@ -1,32 +1,43 @@
+import { CacheableHelper } from './services/cacheable-helper.';
+import { IParamsCollection } from './interfaces/params-collection';
 import { Resource } from './resource';
 import { Page } from './services/page';
-import { Document } from './document';
+import { Document, SourceType } from './document';
 import { ICacheable } from './interfaces/cacheable';
 import { Converter } from './services/converter';
-import { IDataCollection } from './interfaces/data-collection';
+import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
+import { IDataResource, IBasicDataResource } from './interfaces/data-resource';
+import { isDevMode } from '@angular/core';
 
-export class DocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
-    public data: Array<R> = [];
+// used for collections on relationships, for parent document use DocumentCollection
+export class RelatedDocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
+    public data: Array<Resource | IBasicDataResource> = [];
+    // public data: Array<Resource | IBasicDataResource> = [];
     public page = new Page();
     public ttl = 0;
+    public content: 'ids' | 'collection' = 'ids';
 
     public trackBy(iterated_resource: Resource): string {
         return iterated_resource.id;
     }
 
-    public find(id: string): R {
+    public find(id: string): R | null {
+        if (this.content === 'ids') {
+            return null;
+        }
+
         // this is the best way: https://jsperf.com/fast-array-foreach
         for (let i = 0; i < this.data.length; i++) {
             if (this.data[i].id === id) {
-                return this.data[i];
+                return <R>this.data[i];
             }
         }
 
         return null;
     }
 
-    public fill(data_collection: IDataCollection): void {
-        let included_resources = Converter.buildIncluded(data_collection);
+    public fill(data_collection: IDataCollection | ICacheableDataCollection): void {
+        Converter.buildIncluded(data_collection);
 
         // sometimes get Cannot set property 'number' of undefined (page)
         if (this.page && data_collection.meta) {
@@ -38,15 +49,21 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
 
         // convert and add new dataresoures to final collection
         let new_ids = {};
-        this.data = [];
+        this.data.length = 0;
         this.builded = data_collection.data && data_collection.data.length === 0;
         for (let dataresource of data_collection.data) {
-            let res = this.find(dataresource.id) || Converter.getService(dataresource.type).getOrCreateResource(dataresource.id);
-            res.fill({ data: dataresource } /* , included_resources */); // @todo check with included resources?
-            new_ids[dataresource.id] = dataresource.id;
-            this.data.push(<R>res);
-            if (Object.keys(res.attributes).length > 0) {
-                this.builded = true;
+            try {
+                let res = this.getResourceOrFail(dataresource);
+                res.fill({ data: dataresource });
+                new_ids[dataresource.id] = dataresource.id;
+                (<Array<R>>this.data).push(<R>res);
+                if (Object.keys(res.attributes).length > 0) {
+                    this.builded = true;
+                }
+            } catch (error) {
+                this.content = 'ids';
+                this.builded = false;
+                this.data.push({ id: dataresource.id, type: dataresource.type });
             }
         }
 
@@ -59,19 +76,52 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         }
 
         this.meta = data_collection.meta || {};
+
+        if ('cache_last_update' in data_collection) {
+            this.cache_last_update = data_collection.cache_last_update;
+        }
+    }
+
+    private getResourceOrFail(dataresource: IDataResource): Resource {
+        let res = this.find(dataresource.id);
+
+        if (res !== null) {
+            return res;
+        }
+
+        let service = Converter.getService(dataresource.type);
+
+        // remove when getService return null or catch errors
+        // this prvent a fill on undefinied service :/
+        if (!service) {
+            if (isDevMode()) {
+                console.warn(
+                    'The relationship ' +
+                        'relation_alias?' +
+                        ' (type ' +
+                        dataresource.type +
+                        ') cant be generated because service for this type has not been injected.'
+                );
+            }
+
+            throw new Error('Cant create service for ' + dataresource.type);
+        }
+        // END remove when getService return null or catch errors
+
+        return service.getOrCreateResource(dataresource.id);
     }
 
     public replaceOrAdd(resource: R): void {
         let res = this.find(resource.id);
         if (res === null) {
-            this.data.push(resource);
+            (<Array<R>>this.data).push(resource);
         } else {
             res = resource;
         }
     }
 
     public hasMorePages(): boolean | null {
-        if (this.page.size < 1) {
+        if (!this.page.size || this.page.size < 1) {
             return null;
         }
 
@@ -79,4 +129,66 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
 
         return total_resources < this.page.total_resources;
     }
+
+    public setLoaded(value: boolean): void {
+        // tslint:disable-next-line:deprecation
+        this.is_loading = !value;
+        this.loaded = value;
+    }
+
+    public setLoadedAndPropagate(value: boolean): void {
+        this.setLoaded(value);
+
+        if (this.content === 'ids') {
+            return;
+        }
+        (<Array<R>>this.data).forEach(resource => {
+            CacheableHelper.propagateLoaded(resource.relationships, value);
+        });
+    }
+
+    public setBuilded(value: boolean): void {
+        this.builded = value;
+    }
+
+    public setBuildedAndPropagate(value: boolean): void {
+        this.setBuilded(value);
+        if (this.content === 'ids') {
+            return;
+        }
+        (<Array<R>>this.data).forEach(resource => {
+            resource.setLoaded(value);
+        });
+    }
+
+    public setSource(value: SourceType): void {
+        this.source = value;
+    }
+
+    public setSourceAndPropagate(value: SourceType): void {
+        this.setSource(value);
+        this.data.forEach(resource => {
+            if (resource instanceof Resource) {
+                resource.setSource(value);
+            }
+        });
+    }
+
+    public toObject(params?: IParamsCollection): IDataCollection {
+        if (!this.builded) {
+            return { data: this.data };
+        }
+
+        let data = (<Array<R>>this.data).map(resource => {
+            return resource.toObject(params).data;
+        });
+
+        return {
+            data: data
+        };
+    }
+}
+export class DocumentCollection<R extends Resource = Resource> extends RelatedDocumentCollection {
+    public data: Array<R> = [];
+    public content: 'collection' = 'collection';
 }

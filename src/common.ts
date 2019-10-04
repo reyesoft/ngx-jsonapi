@@ -2,23 +2,49 @@ import { ICacheable } from './interfaces/cacheable';
 import { Core } from './core';
 import { DocumentResource } from './document-resource';
 import { DocumentCollection } from './document-collection';
+import { Resource } from './resource';
 
-export function isLive(cacheable: ICacheable, ttl: number = null): boolean {
-    let ttl_in_seconds = typeof ttl === 'number' ? ttl : cacheable.ttl || 0;
+export function isLive(cacheable: ICacheable, ttl?: number): boolean {
+    let ttl_in_seconds = ttl && typeof ttl === 'number' ? ttl : cacheable.ttl || 0;
 
-    return Date.now() <= cacheable.cache_last_update + ttl_in_seconds * 1000;
+    return Date.now() < cacheable.cache_last_update + ttl_in_seconds * 1000;
+}
+
+// @todo test required for hasMany and hasOne
+export function relationshipsAreBuilded(resource: Resource, includes: Array<string>): boolean {
+    if (includes.length === 0) {
+        return true;
+    }
+
+    for (let relationship_alias in resource.relationships) {
+        if (includes.includes(relationship_alias) && !resource.relationships[relationship_alias].builded) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 export function isCollection(document: DocumentResource | DocumentCollection): document is DocumentCollection {
+    if (!document.data) {
+        return false;
+    }
+
     return !('id' in document.data);
 }
 
 export function isResource(document: DocumentResource | DocumentCollection): document is DocumentResource {
+    if (!document.data) {
+        return false;
+    }
+
     return 'id' in document.data;
 }
 
 // NOTE: Checks that the service passed to the method is registered (method needs to have service's type or a resource as first arg)
-export function serviceIsRegistered(target: Object, key: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor | null {
+// changes "PropertyDescriptor | null" type for "any" to avoid typescript error in decorators property decorators
+// (see https://stackoverflow.com/questions/37694322/typescript-ts1241-unable-to-resolve-signature-of-method-decorator-when-called-a)
+export function serviceIsRegistered(target: Object, key: string | symbol, descriptor: PropertyDescriptor): any {
     const original = descriptor.value;
 
     descriptor.value = function() {
