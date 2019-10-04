@@ -10,6 +10,7 @@ export function isLive(cacheable: ICacheable, ttl?: number): boolean {
     return Date.now() < cacheable.cache_last_update + ttl_in_seconds * 1000;
 }
 
+// @todo test required for hasMany and hasOne
 export function relationshipsAreBuilded(resource: Resource, includes: Array<string>): boolean {
     if (includes.length === 0) {
         return true;
@@ -25,11 +26,19 @@ export function relationshipsAreBuilded(resource: Resource, includes: Array<stri
 }
 
 export function isCollection(document: DocumentResource | DocumentCollection): document is DocumentCollection {
-    return document.data && !('id' in document.data);
+    if (!document.data) {
+        return false;
+    }
+
+    return !('id' in document.data);
 }
 
 export function isResource(document: DocumentResource | DocumentCollection): document is DocumentResource {
-    return document.data && 'id' in document.data;
+    if (!document.data) {
+        return false;
+    }
+
+    return 'id' in document.data;
 }
 
 // NOTE: Checks that the service passed to the method is registered (method needs to have service's type or a resource as first arg)

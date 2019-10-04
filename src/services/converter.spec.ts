@@ -32,4 +32,8 @@ describe('Converter', () => {
         expect(converted.sometype.AR.id).toBe('AR');
         expect(converted.sometype.AR.type).toBe('sometype');
     });
+
+    it('procreate() dont remove relationship properties when is not present or empty on data', () => {
+        // @todo
+    });
 });

@@ -19,7 +19,7 @@ export class BookComponent {
         private route: ActivatedRoute
     ) {
         route.params.subscribe(({ id }) => {
-            let book$ = booksService.get(id, { include: ['author', 'photos'] }).subscribe(
+            booksService.get(id, { include: ['author', 'photos'] }).subscribe(
                 book => {
                     this.book = book;
                     console.log('success book', this.book);

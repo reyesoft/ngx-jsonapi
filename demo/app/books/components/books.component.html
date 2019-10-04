@@ -18,13 +18,11 @@
         </td>
         <td>{{ book.attributes.date_published | date }}</td>
         <td>
-            <a [routerLink]="['/authors', book.relationships.author.id]">{{ book.relationships.author.data.attributes.name }}</a>
-            <!-- <span *ngIf="book.relationships.author.builded">
-                {{ book.relationships.author.relationships.books | json }}
-                {{ book.relationships.author.relationships.photos | json }}
-            </span> -->
+            <a *ngIf="book.relationships.author.builded" [routerLink]="['/authors', book.relationships.author.data.id]">{{ book.relationships.author.data.attributes.name }}</a>
         </td>
-        <td><span *ngFor="let photo of book.relationships.photos.data">{{ photo.id }}, </span></td>
+        <td>
+            <span *ngFor="let photo of book.relationships.photos.data">{{ photo.id }}, </span>
+        </td>
         <td><a ng-click="delete(book)" title="not supported by demo server"><small>DELETE</small></a></td>
     </tr>
 </table>

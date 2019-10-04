@@ -32,7 +32,8 @@ export class JsonRipper {
         include.forEach(relationship_alias => {
             // @NOTE: typescript doesn't detect throwError added a few lines above when stored_resource === undefnied
             if (!stored_resource || !stored_resource.data.relationships || !stored_resource.data.relationships[relationship_alias]) {
-                return;
+                // this is a classic problem when relationship property is missing on included resources
+                throw new Error('We dont have relation_alias on stored data resource');
             }
 
             const relationship = stored_resource.data.relationships[relationship_alias].data;

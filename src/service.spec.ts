@@ -1,3 +1,4 @@
+import { IDocumentResource } from './interfaces/data-object';
 import { CacheMemory } from './services/cachememory';
 import { Core } from './core';
 import { StoreService as JsonapiStore } from './sources/store.service';
@@ -10,43 +11,14 @@ import { Author, AuthorsService } from './tests/factories/authors.service';
 import { Book, BooksService } from './tests/factories/books.service';
 import { delay, map, toArray, tap } from 'rxjs/operators';
 
-// #### marbles dont work with promises, issue opened on marbles, becouse work with a fake timing frames
-
-// #### EXTENDING EXPECT FOR EXPECTED SUBSCRIPTION DATA EMITS
-// #### dont work because is not possible return same error with toMatchObject, issue opened on jest
-// declare global {
-//     namespace jest {
-//         // tslint:disable-next-line:interface-name
-//         interface Matchers<R> {
-//             toMatchEmit(validator: any): R;
-//         }
-//     }
-// }
-// expect.extend({
-//     toMatchEmit(received: Object, validator) {
-//         if (validator === undefined) {
-//             return {
-//                 message: (): string => `We receive an extra emmit: ${received.toString() }`,
-//                 pass: false
-//             };
-//         }
-//         expect(received).toMatchObject(validator);
-//         return {
-//             message: (): string => `WTF :/`,
-//             pass: true
-//         };
-//     }
-// });
-
 // @todo disable PhotoService
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject = new BehaviorSubject(new HttpResponse());
-
-        return subject.asObservable();
+        return test_response_subject.asObservable().pipe(delay(0));
     }
 }
+let test_response_subject = new BehaviorSubject(new HttpResponse());
 
 describe('service basic methods', () => {
     let core = new Core(
@@ -69,14 +41,11 @@ describe('service basic methods', () => {
         expect(resource.id).toEqual('31');
         expect(resource.type).toEqual('authors');
     });
-});
 
-let test_response_subject = new BehaviorSubject(new HttpResponse());
-class DynamicHttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        return test_response_subject.asObservable().pipe(delay(0));
-    }
-}
+    it('getOrCreateResource()', () => {
+        // @todo
+    });
+});
 
 describe('service.all()', () => {
     let core: Core;
@@ -85,11 +54,13 @@ describe('service.all()', () => {
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
         );
         booksService = new BooksService();
         booksService.register();
         await booksService.clearCacheMemory();
+        test_response_subject.complete();
+        test_response_subject = new BehaviorSubject(new HttpResponse());
     });
 
     it(`without cached collection emits source ^new-server|`, async () => {
@@ -248,7 +219,7 @@ describe('service.all() and next service.get()', () => {
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
         );
         authorsService = new AuthorsService();
         authorsService.register();
@@ -284,57 +255,154 @@ describe('service.all() and next service.get()', () => {
     });
 });
 
-// esto no está en getresource ?
 describe('service.get()', () => {
     let core: Core;
     let booksService: BooksService;
+    let authorsService: AuthorsService;
     beforeEach(async () => {
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
         );
         booksService = new BooksService();
         booksService.register();
-        // await booksService.clearCacheMemory();
+        await booksService.clearCacheMemory();
+        authorsService = new AuthorsService();
+        authorsService.register();
+        await authorsService.clearCacheMemory();
+        test_response_subject.complete();
+        test_response_subject = new BehaviorSubject(new HttpResponse());
     });
 
-    it(`without cached resource emits source ^new-server|`, async () => {
+    it(`no cached resource emits source ^new-server|`, async () => {
         // @todo
     });
 
-    it(`with cached on memory (live) resource emits source ^memory|`, async () => {
-        // @todo
+    it(`memory cached (live) resource emits source ^memory|`, async () => {
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
+        // caching resource
+        await booksService.get('1').toPromise();
+
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let expected = [
+            // expected emits
+            { loaded: true, source: 'memory' }
+        ];
+        let emmits = await booksService
+            .get('1', { ttl: 1000 })
+            .pipe(
+                map(emmit => {
+                    return { loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emmits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(0);
     });
 
-    it(`with cached on memory (live) resource but with new include emits source ^memory-server|`, async () => {
-        // caching collection
-        // test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
-        // console.log(TestFactory.getResourceDocumentData(Book));
-        // await booksService.get('1', { ttl: 0 }).toPromise();
-        // let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        // let expected = [
-        //     // expected emits
-        //     { builded: true, loaded: false, source: 'memory' },
-        //     { builded: true, loaded: true, source: 'server' }
-        // ];
-        // let emmits = await booksService
-        //     .all()
-        //     .pipe(
-        //         tap(emmit => {
-        //             if (emmit.data.length > 0) {
-        //                 expect(emmit.data[0].relationships).toHaveProperty('photos');
-        //                 expect(emmit.data[0].relationships).toHaveProperty('author');
-        //             }
-        //         }),
-        //         map(emmit => {
-        //             return { builded: emmit.builded, loaded: emmit.loaded, source: emmit.source };
-        //         }),
-        //         toArray()
-        //     )
-        //     .toPromise();
-        // expect(emmits).toMatchObject(expected);
-        // expect(http_request_spy).toHaveBeenCalledTimes(1);
+    it(`on memory (live) resource + include existent has-one-relationship emits source ^memory-server|`, async () => {
+        let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Book);
+        body_resource.data.relationships = { author: { data: { id: '1', type: 'authors' } } };
+        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        // caching resource
+        await booksService.get('1').toPromise();
+
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let expected = [
+            // expected emits
+            { loaded: false, source: 'memory' },
+            { loaded: true, source: 'server' }
+        ];
+        let emmits = await booksService
+            .get('1', { ttl: 1000, include: ['author'] })
+            .pipe(
+                map(emmit => {
+                    return { loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emmits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
+    });
+
+    it(`on memory (live) resource + include existent has-many-relationship emits source ^memory-server|`, async () => {
+        let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Author);
+        body_resource.data.id = '555';
+        body_resource.data.relationships = { books: { data: [{ id: '555', type: 'books' }] } };
+        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        // caching resource
+        await authorsService.get('555').toPromise();
+
+        let expected = [
+            // expected emits
+            { loaded: false, source: 'memory' },
+            { loaded: true, source: 'server' }
+        ];
+        let emmits = await authorsService
+            .get('555', { ttl: 1000, include: ['books'] })
+            .pipe(
+                map(emmit => {
+                    return { loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emmits).toMatchObject(expected);
+    });
+
+    it(`with cached on memory (live) resource + include empty has-one-relationship emits source ^memory|`, async () => {
+        let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Book);
+        body_resource.data.relationships = { photos: { data: [] } };
+        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        // caching resource
+        await booksService.get('1').toPromise();
+
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let expected = [
+            // expected emits
+            { loaded: true, source: 'memory' }
+        ];
+        let emmits = await booksService
+            .get('1', { ttl: 1000, include: ['photos'] })
+            .pipe(
+                tap(emmit => {
+                    // expect(emmit.data[0].relationships).toHaveProperty('author');
+                }),
+                map(emmit => {
+                    return { loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emmits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(0);
+    });
+
+    it(`with cached on memory (live) resource + include empty has-many-relationship emits source ^memory|`, async () => {
+        let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Author);
+        body_resource.data.id = '556';
+        body_resource.data.relationships = { books: { data: [] } };
+        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        // caching resource
+        await authorsService.get('556').toPromise();
+
+        let expected = [
+            // expected emits
+            { loaded: true, source: 'memory' }
+        ];
+        let emmits = await authorsService
+            .get('556', { ttl: 1000, include: ['books'] })
+            .pipe(
+                map(emmit => {
+                    return { loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emmits).toMatchObject(expected);
     });
 
     it(`with cached on memory (dead) resource emits source ^memory-server|`, async () => {

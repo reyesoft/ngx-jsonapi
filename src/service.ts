@@ -1,3 +1,4 @@
+import { first } from 'rxjs/operators';
 import { Core } from './core';
 import { IBuildedParamsCollection } from './interfaces/params-collection';
 import { Base } from './services/base';
@@ -75,11 +76,12 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<R>(resource);
 
-        if (Object.keys(params.fields).length > 0) {
+        if (Object.keys(params.fields || []).length > 0) {
             // memory/store cache dont suppont fields
             this.getGetFromServer(path, resource, subject);
-        } else if (isLive(resource, params.ttl)) {
+        } else if (isLive(resource, params.ttl) && relationshipsAreBuilded(resource, params.include || [])) {
             // data on memory and its live
+            resource.setLoaded(true);
             setTimeout(() => subject.complete(), 0);
         } else if (resource.cache_last_update === 0) {
             // we dont have any data on memory
@@ -169,13 +171,15 @@ export class Service<R extends Resource = Resource> {
         let resource: R;
 
         resource = <R>CacheMemory.getInstance().getResource(this.type, id);
-        if (resource !== null) {
-            return resource;
+        if (resource === null) {
+            resource = <R>service.new();
+            resource.id = id;
+            CacheMemory.getInstance().setResource(resource, false);
         }
 
-        resource = <R>service.new();
-        resource.id = id;
-        CacheMemory.getInstance().setResource(resource, false);
+        if (resource.source !== 'new') {
+            resource.source = 'memory';
+        }
 
         return resource;
     }

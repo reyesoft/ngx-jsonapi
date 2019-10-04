@@ -27,7 +27,7 @@ export class Http {
             if (!this.get_requests[path]) {
                 let obs = this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
                     tap(() => {
-                        this.get_requests[path] = undefined;
+                        delete this.get_requests[path];
                     }),
                     share()
                 );
@@ -41,7 +41,7 @@ export class Http {
 
         return this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
             tap(() => {
-                this.get_requests[path] = undefined;
+                delete this.get_requests[path];
             }),
             share()
         );
