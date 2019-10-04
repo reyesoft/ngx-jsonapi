@@ -25,19 +25,11 @@ export function relationshipsAreBuilded(resource: Resource, includes: Array<stri
 }
 
 export function isCollection(document: DocumentResource | DocumentCollection): document is DocumentCollection {
-    if (!document.data) {
-        return false;
-    }
-
-    return !('id' in document.data);
+    return document.data && !('id' in document.data);
 }
 
 export function isResource(document: DocumentResource | DocumentCollection): document is DocumentResource {
-    if (!document.data) {
-        return false;
-    }
-
-    return 'id' in document.data;
+    return document.data && 'id' in document.data;
 }
 
 // NOTE: Checks that the service passed to the method is registered (method needs to have service's type or a resource as first arg)

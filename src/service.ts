@@ -75,7 +75,7 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new BehaviorSubject<R>(resource);
 
-        if (params.fields && Object.keys(params.fields).length > 0) {
+        if (Object.keys(params.fields).length > 0) {
             // memory/store cache dont suppont fields
             this.getGetFromServer(path, resource, subject);
         } else if (isLive(resource, params.ttl)) {

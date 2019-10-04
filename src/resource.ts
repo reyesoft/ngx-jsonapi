@@ -165,9 +165,6 @@ export class Resource implements ICacheable {
         if (!this.relationships && service) {
             this.relationships = new service.resource().relationships;
         }
-        // else if (!this.relationships && !service) {
-        //     this.relationships = {};
-        // }
 
         // wee need a registered service
         if (!service) {
