@@ -1,5 +1,3 @@
-import { Service } from '../service';
-
 export function Autoregister() {
     return (target): any => {
         const original = target;

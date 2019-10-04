@@ -20,10 +20,10 @@ interface IDocumentHasResource {
     data: Resource;
     content: 'resource';
 }
-export class Document implements IDocumentData, IDocumentHasResources, IDocumentHasIds, IDocumentHasId, IDocumentHasResource {
-    public data;
+export abstract class Document implements IDocumentData, IDocumentHasResources, IDocumentHasIds, IDocumentHasId, IDocumentHasResource {
+    public data: any;
     public builded = false;
-    public content;
+    public content: any;
 
     // deprecated since 2.2.0. Use loaded.
     public is_loading = true;
