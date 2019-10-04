@@ -23,39 +23,37 @@ let core = new Core(
 
 const testService = new Service();
 testService.getPrePath = (): string => {
-    return 'test/pre-path';
+    return 'v1';
 };
 testService.getPath = (): string => {
-    return 'test/path';
+    return 'authors';
 };
 
 describe('Path Builder', () => {
-    let path_builder = new PathBuilder();
-    it('should create', () => {
-        expect(path_builder).toBeTruthy();
+    let path_builder: PathBuilder;
+    beforeEach(async () => {
+        path_builder = new PathBuilder();
     });
+
     it('applyParams method should call appendPath two to four times: with service s pre-path, params.beforepath (if exists),\
      and service s path', () => {
         let appendPath_spy = spyOn(path_builder, 'appendPath');
         path_builder.applyParams(testService);
         expect(appendPath_spy).toHaveBeenCalledTimes(2);
-        path_builder.applyParams(testService, { beforepath: 'pre/', include: ['include'] });
+        path_builder.applyParams(testService, { beforepath: 'users/1', include: ['include'] });
         expect(appendPath_spy).toHaveBeenCalledWith(testService.getPrePath());
-        expect(appendPath_spy).toHaveBeenCalledWith('pre/');
+        expect(appendPath_spy).toHaveBeenCalledWith('users/1');
         expect(appendPath_spy).toHaveBeenCalledWith(testService.getPath());
     });
-    it('applyParams method should call setInclude with params.include (if exists) to assign them to the includes array', () => {
-        let setInclude_spy = spyOn<any>(path_builder, 'setInclude');
-        path_builder.applyParams(testService, { beforepath: 'pre/' });
-        expect(setInclude_spy).not.toHaveBeenCalled();
-        path_builder.applyParams(testService, { beforepath: 'pre/', include: ['include'] });
-        expect(setInclude_spy).toHaveBeenCalledWith(['include']);
-        expect(path_builder.includes).toEqual(['include']);
+    it('applyParams include', () => {
+        path_builder.applyParams(testService, { beforepath: 'users/1' });
+        expect(path_builder.get()).toMatch('v1/users/1/authors');
+        path_builder.applyParams(testService, { beforepath: 'users/1', include: ['include'] });
+        expect(path_builder.get()).toMatch('v1/users/1/authors?include=include');
     });
-    it('applyParams method should add fields to get_params if they are included in the request', () => {
-        path_builder.applyParams(testService, { fields: { test: ['test_attribute'], test2: ['test2_attribute'] } });
-        expect((path_builder as any).get_params.indexOf('fields[test]=test_attribute')).toBeGreaterThan(-1);
-        expect((path_builder as any).get_params.indexOf('fields[test2]=test2_attribute')).toBeGreaterThan(-1);
+    it('applyParams fields', () => {
+        path_builder.applyParams(testService, { fields: { authors: ['name', 'address'], books: ['title'] } });
+        expect(path_builder.get().includes('fields[authors]=name,address&fields[books]=title')).toBeTruthy();
     });
     it('appendPath method should add passed value to paths array (only if value is not an empty string)', () => {
         path_builder.paths = [];
