@@ -1,4 +1,4 @@
-import { IParamsCollection, IParamsResource } from '../interfaces';
+import { IBuildedParamsCollection, IParamsCollection, IParamsResource } from '../interfaces';
 import { Page } from './page';
 import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
@@ -6,15 +6,15 @@ import { DocumentCollection } from '../document-collection';
 export class Base {
     public static ParamsResource: IParamsResource = {
         beforepath: '',
-        ttl: null,
+        ttl: undefined,
         include: [],
         fields: {},
         id: ''
     };
 
-    public static ParamsCollection: IParamsCollection = {
+    public static ParamsCollection: IBuildedParamsCollection = {
         beforepath: '',
-        ttl: null,
+        ttl: undefined,
         include: [],
         remotefilter: {},
         fields: {},

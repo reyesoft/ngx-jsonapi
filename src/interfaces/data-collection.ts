@@ -1,9 +1,12 @@
-import { IDataResource } from './data-resource';
-import { IDocument, IDocumentData } from '../interfaces/document';
+import { IHasCacheData } from './has-cache-data';
+import { IDataResource, ICacheableDataResource } from './data-resource';
+import { IDocumentData } from '../interfaces/document';
 import { IPage } from './page';
 
 export interface IDataCollection extends IDocumentData {
     data: Array<IDataResource>;
     page?: IPage;
-    _lastupdate_time?: number; // used when come from Store
+}
+export interface ICacheableDataCollection extends IDataCollection, IHasCacheData {
+    data: Array<ICacheableDataResource>;
 }

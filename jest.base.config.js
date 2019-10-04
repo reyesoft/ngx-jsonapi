@@ -5,7 +5,7 @@ module.exports = {
       '<rootDir>/setup-jest.ts'
   ],
   setupFiles: [
-      '<rootDir>/src/test/globals-test.ts'
+      '<rootDir>/src/tests/globals-test.ts'
     ],
   transform: {
       '^.+\\.(ts|js|html)$': 'ts-jest'

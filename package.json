@@ -20,7 +20,7 @@
         "demo:test": "jest --config ./jest.demo.config.js",
         "demo:build": "yarn build && yarn run copy:dist && yarn cli build --prod --base-href \"/\" --output-path \"./demo-dist\"",
         "demo:release": "yarn demo:build && ts-node ./build/demo-release.ts",
-        "ci": "yarn run build && yarn run test --coverage && cat ./coverage/lcov.info | coveralls",
+        "ci": "yarn run build && yarn run test -w 1 --coverage && cat ./coverage/lcov.info | coveralls",
         "watch:tests": "chokidar 'src/**/*.ts' --initial -c 'nyc --reporter=text --reporter=html yarn test'",
         "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
         "release": "yarn run build && cd dist && yarn publish",
@@ -107,9 +107,7 @@
         "@types/faker": "^4.1.5",
         "@types/fs-extra": "^2.1.0",
         "@types/glob": "^5.0.33",
-        "@types/jasmine": "^2.8.8",
-        "@types/jasminewd2": "^2.0.2",
-        "@types/jest": "^20.0.2",
+        "@types/jest": "^24.0.18",
         "@types/lodash": "^4.14.80",
         "@types/node": "^7.0.5",
         "@types/ora": "^1.3.1",
@@ -158,6 +156,5 @@
     "dependencies": {
         "dexie": "^2.0.4",
         "rxjs": "^6.2"
-    },
-    "version": "0.0.0"
+    }
 }

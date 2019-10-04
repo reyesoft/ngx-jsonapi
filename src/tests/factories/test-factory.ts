@@ -1,12 +1,11 @@
-import { Resource } from '../resource';
-import { IDocumentData } from '../interfaces/document';
-import { IDataResource } from '../interfaces/data-resource';
-import { DocumentCollection } from '../document-collection';
-import { DocumentResource } from '../document-resource';
-import { Service } from '../service';
-import { Author, AuthorsService } from './authors.service';
-import { Book, BooksService } from './books.service';
-import { Photo, PhotosService } from './photos.service';
+import { Resource } from '../../resource';
+import { IDocumentData } from '../../interfaces/document';
+import { IDataResource } from '../../interfaces/data-resource';
+import { DocumentCollection } from '../../document-collection';
+import { DocumentResource } from '../../document-resource';
+import { Author } from './authors.service';
+import { Book } from './books.service';
+import { Photo } from './photos.service';
 import * as faker from 'faker';
 
 export class TestFactory {
@@ -20,10 +19,7 @@ export class TestFactory {
     public static getResourceDocumentData(document_class: typeof Resource, include: Array<string> = []): IDocumentData {
         let main_resource: Resource = this[`get${document_class.name}`]();
 
-        let document_data: IDocumentData = {
-            data: main_resource
-        };
-
+        let document_data: IDocumentData = main_resource.toObject();
         this.fillDocumentDataIncludedRelatioships(document_data, include);
 
         return document_data;
@@ -32,9 +28,7 @@ export class TestFactory {
     public static getCollectionDocumentData(document_class: typeof Resource, size = 2, include: Array<string> = []): IDocumentData {
         let main_collection: DocumentCollection = this.getCollection(document_class, size, include);
 
-        let document_data: IDocumentData = {
-            data: main_collection.data
-        };
+        let document_data: IDocumentData = main_collection.toObject();
         this.fillDocumentDataIncludedRelatioships(document_data, include);
 
         return document_data;
@@ -56,7 +50,7 @@ export class TestFactory {
     //     resource.attributes.title = faker.name.title();
     //
     //     // NOTE: add author
-    //     (<IDataResource>resource.relationships.author.data) = this.getDataResourceWithType('author');
+    //     (<IDataResource>resource.relationships.author.data) = this.getDataResourceWithType('authors');
     //     if (include.includes('author')) {
     //         this.includeHasOneFromService(resource, 'author', Photo);
     //     }
@@ -75,17 +69,17 @@ export class TestFactory {
         let book: Book = new Book();
         book.id = this.getId(id);
         book.ttl = ttl;
-        this.fillBookAttirbutes(book);
+        this.fillBookAttributes(book);
 
         // NOTE: add author
-        (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('authors');
         if (include.includes('author')) {
+            (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('authors');
             this.includeFromService(book, 'author', Photo);
         }
 
         // NOTE: add photos
-        (book.relationships.photos.data as Array<IDataResource>).concat(this.getDataResourcesWithType('photos', 2));
         if (include.includes('photos')) {
+            (book.relationships.photos.data as Array<IDataResource>).concat(this.getDataResourcesWithType('photos', 2));
             this.includeFromService(book, 'photos', Photo);
         }
 
@@ -131,6 +125,7 @@ export class TestFactory {
         }
         collection.setBuilded(true);
         collection.setLoaded(true);
+        collection.cache_last_update = Date.now();
 
         return collection;
     }
@@ -147,7 +142,7 @@ export class TestFactory {
     }
 
     // TODO: create a dynamic attribute filler by data type and merge 3 methods in 1
-    private static fillBookAttirbutes(book: Book): Book {
+    private static fillBookAttributes(book: Book): Book {
         book.attributes.title = faker.name.title();
         book.attributes.date_published = faker.date.past();
         book.attributes.created_at = faker.date.past();

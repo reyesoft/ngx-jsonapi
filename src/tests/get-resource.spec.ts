@@ -8,15 +8,15 @@ import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { JsonapiConfig } from '../jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Core } from '../core';
-import { Observable, BehaviorSubject, of as observableOf } from 'rxjs';
-import { delay, filter } from 'rxjs/operators';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { Service } from '../service';
+import { map, toArray, tap } from 'rxjs/operators';
 
 let test_response_subject = new BehaviorSubject(new HttpResponse());
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        return test_response_subject.asObservable().pipe(delay(100));
+        return test_response_subject.asObservable();
     }
 }
 
@@ -58,7 +58,7 @@ describe('core methods', () => {
     });
     it('getResourceService should return the instantiated service from resourceServices related to the type passed as arument', async () => {
         let test_service = new TestService();
-        let test_service_instance = core.getResourceService('test_resources');
+        let test_service_instance = core.getResourceServiceOrFail('test_resources');
         expect(test_service_instance).toBeTruthy();
         expect(test_service_instance.type).toBe('test_resources');
         expect(test_service_instance).toEqual(test_service);
@@ -70,29 +70,37 @@ describe('core methods', () => {
         test_resource.attributes = { name: 'test_name' };
         let test_service = new TestService();
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: { data: test_resource } }));
+        test_response_subject.next(new HttpResponse({ body: test_resource.toObject() }));
 
-        await test_service
+        let resource: Resource;
+        let emmits = await test_service
             .get('1')
-            .toPromise()
-            .then(resource => {
-                expect(resource.type).toBe('test_resources');
-                expect(resource.id).toBe('1');
-                expect(resource.attributes.name).toBe('test_name');
-
-                let headers = new HttpHeaders({
-                    'Content-Type': 'application/vnd.api+json',
-                    Accept: 'application/vnd.api+json'
-                });
-                let request = {
-                    body: null,
-                    headers: expect.any(Object)
-                };
-                expect(http_request_spy).toHaveBeenCalledWith('get', 'http://yourdomain/api/v1/test_resources/1', request);
-            });
+            .pipe(
+                tap(emmit => {
+                    resource = emmit;
+                }),
+                map(emmit => {
+                    return { loaded: emmit.loaded, source: emmit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emmits).toMatchObject([
+            // expected emits
+            { loaded: false, source: 'new' },
+            { loaded: true, source: 'server' }
+        ]);
+        expect(resource.type).toBe('test_resources');
+        expect(resource.id).toBe('1');
+        expect(resource.attributes.name).toBe('test_name');
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
+        expect(http_request_spy).toHaveBeenCalledWith('get', 'http://yourdomain/api/v1/test_resources/1', {
+            body: null,
+            headers: expect.any(Object)
+        });
     });
 
-    it(`the resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources,
+    it(`resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources,
         including nested relationships`, async () => {
         let test_resource = new TestResource();
         test_resource.type = 'test_resources';
@@ -124,8 +132,7 @@ describe('core methods', () => {
         let included = [test_resource_has_one_relationship, test_resource_has_many_relationship_1, test_resource_nested_relationship];
 
         let test_service = new TestService();
-        test_service.clearCacheMemory();
-        test_service.cachememory.resources = {};
+        await test_service.clearCacheMemory();
         Core.injectedServices.JsonapiStoreService.clearCache();
         test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));
 
@@ -154,7 +161,7 @@ describe('core methods', () => {
             });
     });
 
-    it(`the resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources`, async () => {
+    it(`resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources`, async () => {
         let test_resource = new TestResource();
         test_resource.type = 'test_resources';
         test_resource.id = '1';

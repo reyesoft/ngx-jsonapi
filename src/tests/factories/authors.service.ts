@@ -1,6 +1,6 @@
-import { Resource } from '../resource';
-import { DocumentCollection } from '../document-collection';
-import { Service } from '../service';
+import { Resource } from '../../resource';
+import { DocumentCollection } from '../../document-collection';
+import { Service } from '../../service';
 import { Book } from './books.service';
 import { Photo } from './photos.service';
 

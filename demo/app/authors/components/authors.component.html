@@ -8,12 +8,15 @@
             <th>Date of birth</th>
             <th>Date of dead</th>
             <th>Books</th>
+            <th>Photos</th>
         </tr>
     </thead>
     <tr *ngFor="let author of authors.data; trackBy: authors.trackBy">
         <td>{{ author.id }}</td>
         <td>
             <a [routerLink]="['/authors', author.id]">{{ author.attributes.name }}</a>
+            <code title="Cache last update"><small>{{ author.cache_last_update | date:'H:MM:SS' }}</small></code>
+            <code><small>{{ author.source }}</small></code>
         </td>
         <td>{{ author.attributes.date_of_birth | date }}</td>
         <td>{{ author.attributes.date_of_death | date }}</td>
@@ -23,6 +26,9 @@
             <span *ngIf="author.relationships.books.data.length > 1">
                 and {{ author.relationships.books.data.length}} more...
             </span>
+        </td>
+        <td>
+            {{ author.relationships.photos.data.length }}
         </td>
         <!-- <td><button (click)="delete(author)">Delete</button></td> -->
     </tr>

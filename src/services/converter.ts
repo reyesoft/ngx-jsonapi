@@ -1,9 +1,10 @@
+import { CacheMemory } from './cachememory';
 // import * as angular from 'angular';
 import { Core } from '../core';
 import { Resource } from '../resource';
 import { Service } from '../service';
 import { IResourcesByType, IObjectsById } from '../interfaces';
-import { IDataObject } from '../interfaces/data-object';
+import { IDocumentResource } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataResource } from '../interfaces/data-resource';
 import { isDevMode } from '@angular/core';
@@ -49,14 +50,20 @@ export class Converter<R extends Resource> {
         }
     }
 
-    public static getService(type: string): Service {
+    public static getService(type: string): Service | undefined {
         let resource_service = Core.me.getResourceService(type);
 
         return resource_service;
     }
 
-    public static buildIncluded(document_from: IDataCollection | IDataObject): IResourcesByType {
-        if ('included' in document_from) {
+    public static getServiceOrFail(type: string): Service {
+        let resource_service = Core.me.getResourceServiceOrFail(type);
+
+        return resource_service;
+    }
+
+    public static buildIncluded(document_from: IDataCollection | IDocumentResource): IResourcesByType {
+        if ('included' in document_from && document_from.included) {
             return Converter.json_array2resources_array_by_type(document_from.included);
         }
 
@@ -69,15 +76,9 @@ export class Converter<R extends Resource> {
             console.error('Jsonapi Resource is not correct', data);
         }
 
-        let resource: Resource;
-        if (data.id in Converter.getService(data.type).cachememory.resources) {
-            resource = Converter.getService(data.type).cachememory.resources[data.id];
-        } else {
-            resource = Converter.getService(data.type).getOrCreateResource(data.id);
-        }
+        let resource: Resource = CacheMemory.getInstance().getOrCreateResource(data.type, data.id);
+        resource.fill({ data: data });
 
-        resource.attributes = data.attributes || {};
-        resource.relationships = <{ [key: string]: any }>data.relationships || resource.relationships;
         resource.is_new = false;
 
         return resource;

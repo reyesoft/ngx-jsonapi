@@ -1,5 +1,6 @@
+import { ICacheableDataCollection } from './../interfaces/data-collection';
+import { ICacheableDataResource } from './../interfaces/data-resource';
 import Dexie from 'dexie';
-import { Subject, Observable } from 'rxjs';
 import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IObjectsById } from '../interfaces';
@@ -28,25 +29,19 @@ export class StoreService /* implements IStoreService */ {
         this.checkIfIsTimeToClean();
     }
 
-    public getDataObject(type: 'collection', url: string): Observable<IDataCollection>;
-    public getDataObject(type: string, id: string): Observable<IDataResource>;
-    public getDataObject(type: 'collection' | string, id_or_url: string): Observable<IDataCollection | IDataResource> {
-        let subject = new Subject<IDataResource | IDataCollection>();
+    public async getDataObject(type: 'collection', url: string): Promise<ICacheableDataCollection>;
+    public async getDataObject(type: string, id: string): Promise<ICacheableDataResource>;
+    public async getDataObject(type: 'collection' | string, id_or_url: string): Promise<ICacheableDataCollection | ICacheableDataResource> {
         // we use different tables for resources and collections
         const table_name = type === 'collection' ? 'collections' : 'elements';
 
-        this.db.open().then(async () => {
-            let item = await this.db.table(table_name).get(type + '.' + id_or_url);
-            if (item === undefined) {
-                subject.error(null);
-            } else {
-                subject.next(item);
-            }
+        await this.db.open();
+        let item = await this.db.table(table_name).get(type + '.' + id_or_url);
+        if (item === undefined) {
+            throw new Error();
+        }
 
-            subject.complete();
-        });
-
-        return subject.asObservable();
+        return item;
     }
 
     public async getDataResources(keys: Array<string>): Promise<IObjectsById<IDataResourceStorage>> {

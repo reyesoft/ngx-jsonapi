@@ -1,10 +1,14 @@
+import { CacheMemory } from './services/cachememory';
+import { IDataResource } from './interfaces/data-resource';
+import { JsonRipper } from './services/json-ripper';
+import { CacheableHelper } from './services/cacheable-helper.';
 import { Core } from './core';
 import { IResourcesByType } from './interfaces/resources-by-type';
 import { Service } from './service';
 import { Base } from './services/base';
 import { PathBuilder } from './services/path-builder';
 import { Converter } from './services/converter';
-import { IDataObject } from './interfaces/data-object';
+import { IDocumentResource, ICacheableDocumentResource } from './interfaces/data-object';
 import { IAttributes, IParamsResource, ILinks } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { DocumentResource } from './document-resource';
@@ -13,6 +17,7 @@ import { isArray } from 'util';
 import { Observable, Subject, of } from 'rxjs';
 import { ResourceRelationshipsConverter } from './services/resource-relationships-converter';
 import { IRelationships } from './interfaces/relationship';
+import { SourceType } from './document';
 
 export class Resource implements ICacheable {
     public id: string = '';
@@ -26,7 +31,7 @@ export class Resource implements ICacheable {
     public is_saving = false;
     public is_loading = false;
     public loaded = true;
-    public source: 'new' | 'memory' | 'store' | 'server' = 'new';
+    public source: SourceType = 'new';
     public cache_last_update = 0;
     public ttl = 0;
 
@@ -41,12 +46,12 @@ export class Resource implements ICacheable {
         }
     }
 
-    public toObject(params?: IParamsResource): IDataObject {
+    public toObject(params?: IParamsResource): IDocumentResource {
         params = { ...{}, ...Base.ParamsResource, ...params };
 
         let relationships = {};
-        let included = [];
-        let included_ids = []; // just for control don't repeat any resource
+        let included: Array<IDataResource> = [];
+        let included_ids: Array<string> = []; // just for control don't repeat any resource
 
         // REALTIONSHIPS
         for (const relation_alias in this.relationships) {
@@ -68,15 +73,15 @@ export class Resource implements ICacheable {
 
                     // no se agregó aún a included && se ha pedido incluir con el parms.include
                     let temporal_id = resource.type + '_' + resource.id;
-                    if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relation_alias) !== -1) {
+                    if (included_ids.indexOf(temporal_id) === -1 && params.include && params.include.indexOf(relation_alias) !== -1) {
                         included_ids.push(temporal_id);
                         included.push(resource.toObject({}).data);
                     }
                 }
             } else {
                 // @TODO PABLO: agregué el check de null porque sino fallan las demás condiciones, además es para eliminar la relacxión del back
-                if (relationship.data === null) {
-                    relationships[relation_alias] = { data: null };
+                if (relationship.data === null || relationship.data === undefined) {
+                    relationships[relation_alias] = { data: relationship.data };
                     continue;
                 }
                 if (!(relationship instanceof DocumentResource)) {
@@ -84,7 +89,7 @@ export class Resource implements ICacheable {
                 }
 
                 let relationship_data = <Resource>relationship.data;
-                if (!('id' in relationship.data) && Object.keys(relationship.data).length > 0) {
+                if (relationship.data && !('id' in relationship.data) && Object.keys(relationship.data).length > 0) {
                     console.warn(relation_alias + ' defined with hasMany:false, but I have a collection');
                 }
 
@@ -103,7 +108,7 @@ export class Resource implements ICacheable {
 
                 // no se agregó aún a included && se ha pedido incluir con el parms.include
                 let temporal_id = relationship_data.type + '_' + relationship_data.id;
-                if (included_ids.indexOf(temporal_id) === -1 && params.include.indexOf(relation_alias) !== -1) {
+                if (included_ids.indexOf(temporal_id) === -1 && params.include && params.include.indexOf(relation_alias) !== -1) {
                     included_ids.push(temporal_id);
                     included.push(relationship_data.toObject({}).data);
                 }
@@ -119,7 +124,7 @@ export class Resource implements ICacheable {
             attributes = this.attributes;
         }
 
-        let ret: IDataObject = {
+        let ret: IDocumentResource = {
             data: {
                 type: this.type,
                 id: this.id,
@@ -145,26 +150,25 @@ export class Resource implements ICacheable {
         return ret;
     }
 
-    public fill(data_object: IDataObject, included_resources?: IResourcesByType): void {
-        included_resources = included_resources || Converter.buildIncluded(data_object);
-
+    public fill(data_object: IDocumentResource | ICacheableDocumentResource): boolean {
         this.id = data_object.data.id || '';
 
         // WARNING: leaving previous line for a tiem because this can produce undesired behavior
         // this.attributes = data_object.data.attributes || this.attributes;
         this.attributes = { ...(this.attributes || {}), ...data_object.data.attributes };
 
-        // NOTE: fix if stored resource has no relationships property
-        if (!this.relationships) {
-            this.relationships = new (Converter.getService(data_object.data.type)).resource().relationships;
-        }
-
         this.is_new = false;
+
+        // NOTE: fix if stored resource has no relationships property
         let service = Converter.getService(data_object.data.type);
+
+        if (!this.relationships && service) {
+            this.relationships = new service.resource().relationships;
+        }
 
         // wee need a registered service
         if (!service) {
-            return;
+            return false;
         }
 
         // only ids?
@@ -176,12 +180,18 @@ export class Resource implements ICacheable {
             }
         }
 
+        if ('cache_last_update' in data_object.data) {
+            this.cache_last_update = data_object.data.cache_last_update;
+        }
+
         new ResourceRelationshipsConverter(
             Converter.getService,
             data_object.data.relationships || {},
             this.relationships,
-            included_resources
+            Converter.buildIncluded(data_object)
         ).buildRelationships();
+
+        return true;
     }
 
     public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
@@ -208,13 +218,6 @@ export class Resource implements ICacheable {
         });
     }
 
-    /**
-     * @deprecated
-     */
-    public addRelationshipsArray<R extends Resource>(resources: Array<R>, type_alias: string): void {
-        this.addRelationships(resources, type_alias);
-    }
-
     public removeRelationship(type_alias: string, id: string): boolean {
         if (!(type_alias in this.relationships)) {
             return false;
@@ -226,6 +229,10 @@ export class Resource implements ICacheable {
         let relation = this.relationships[type_alias];
         if (relation instanceof DocumentCollection) {
             relation.data = relation.data.filter(resource => resource.id !== id);
+            if (relation.data.length === 0) {
+                // used by toObject() when hasMany is empty
+                relation.builded = true;
+            }
         } else {
             relation.data = null;
         }
@@ -238,10 +245,10 @@ export class Resource implements ICacheable {
     }
 
     public hasOneRelated(resource: string): boolean {
-        return (
+        return Boolean(
             this.relationships[resource] &&
-            (<Resource>this.relationships[resource].data).type &&
-            (<Resource>this.relationships[resource].data).type !== ''
+                (<Resource>this.relationships[resource].data).type &&
+                (<Resource>this.relationships[resource].data).type !== ''
         );
     }
 
@@ -255,7 +262,7 @@ export class Resource implements ICacheable {
     @return This resource like a service
     */
     public getService(): Service {
-        return Converter.getService(this.type);
+        return Converter.getServiceOrFail(this.type);
     }
 
     public save<T extends Resource>(params?: IParamsResource): Observable<object> {
@@ -282,16 +289,17 @@ export class Resource implements ICacheable {
             success => {
                 this.is_saving = false;
 
-                // foce reload cache (for example, we add a new element)
+                // force reload collections cache (example: we add a new element)
                 if (!this.id) {
-                    this.getService().cachememory.deprecateCollections(path.get());
-                    this.getService().cachestore.deprecateCollections(path.get());
+                    CacheMemory.getInstance().deprecateCollections(path.get());
+                    let jsonripper = new JsonRipper();
+                    jsonripper.deprecateCollection(path.get());
                 }
 
                 // is a resource?
                 if ('id' in success.data) {
                     this.id = success.data.id;
-                    this.fill(<IDataObject>success);
+                    this.fill(<IDocumentResource>success);
                 } else if (isArray(success.data)) {
                     console.warn('Server return a collection when we save()', success.data);
                 }
@@ -316,20 +324,15 @@ export class Resource implements ICacheable {
 
     public setLoadedAndPropagate(value: boolean): void {
         this.setLoaded(value);
-        for (let relationship_alias in this.relationships) {
-            let relationship = this.relationships[relationship_alias];
-            if (relationship instanceof DocumentCollection) {
-                relationship.setLoaded(value);
-            }
-        }
+        CacheableHelper.propagateLoaded(this.relationships, value);
     }
 
     /** @todo generate interface */
-    public setSource(value: 'new' | 'memory' | 'store' | 'server'): void {
+    public setSource(value: SourceType): void {
         this.source = value;
     }
 
-    public setSourceAndPropagate(value: 'new' | 'memory' | 'store' | 'server'): void {
+    public setSourceAndPropagate(value: SourceType): void {
         this.setSource(value);
         for (let relationship_alias in this.relationships) {
             let relationship = this.relationships[relationship_alias];
