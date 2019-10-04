@@ -11,43 +11,14 @@ import { Author, AuthorsService } from './tests/factories/authors.service';
 import { Book, BooksService } from './tests/factories/books.service';
 import { delay, map, toArray, tap } from 'rxjs/operators';
 
-// #### marbles dont work with promises, issue opened on marbles, becouse work with a fake timing frames
-
-// #### EXTENDING EXPECT FOR EXPECTED SUBSCRIPTION DATA EMITS
-// #### dont work because is not possible return same error with toMatchObject, issue opened on jest
-// declare global {
-//     namespace jest {
-//         // tslint:disable-next-line:interface-name
-//         interface Matchers<R> {
-//             toMatchEmit(validator: any): R;
-//         }
-//     }
-// }
-// expect.extend({
-//     toMatchEmit(received: Object, validator) {
-//         if (validator === undefined) {
-//             return {
-//                 message: (): string => `We receive an extra emmit: ${received.toString() }`,
-//                 pass: false
-//             };
-//         }
-//         expect(received).toMatchObject(validator);
-//         return {
-//             message: (): string => `WTF :/`,
-//             pass: true
-//         };
-//     }
-// });
-
 // @todo disable PhotoService
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject = new BehaviorSubject(new HttpResponse());
-
-        return subject.asObservable();
+        return test_response_subject.asObservable().pipe(delay(0));
     }
 }
+let test_response_subject = new BehaviorSubject(new HttpResponse());
 
 describe('service basic methods', () => {
     let core = new Core(
@@ -76,13 +47,6 @@ describe('service basic methods', () => {
     });
 });
 
-let test_response_subject = new BehaviorSubject(new HttpResponse());
-class DynamicHttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        return test_response_subject.asObservable().pipe(delay(0));
-    }
-}
-
 describe('service.all()', () => {
     let core: Core;
     let booksService: BooksService;
@@ -90,7 +54,7 @@ describe('service.all()', () => {
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
         );
         booksService = new BooksService();
         booksService.register();
@@ -255,7 +219,7 @@ describe('service.all() and next service.get()', () => {
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
         );
         authorsService = new AuthorsService();
         authorsService.register();
@@ -299,7 +263,7 @@ describe('service.get()', () => {
         core = new Core(
             new JsonapiConfig(),
             new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new DynamicHttpHandlerMock()), new JsonapiConfig())
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
         );
         booksService = new BooksService();
         booksService.register();
