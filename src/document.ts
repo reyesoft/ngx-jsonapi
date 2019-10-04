@@ -20,7 +20,8 @@ interface IDocumentHasResource {
     data: Resource;
     content: 'resource';
 }
-export abstract class Document implements IDocumentData, IDocumentHasResources, IDocumentHasIds, IDocumentHasId, IDocumentHasResource {
+export /* abstract */ class Document
+    implements IDocumentData, IDocumentHasResources, IDocumentHasIds, IDocumentHasId, IDocumentHasResource {
     public data: any;
     public builded = false;
     public content: any;
