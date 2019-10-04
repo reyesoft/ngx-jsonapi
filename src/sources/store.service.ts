@@ -38,7 +38,7 @@ export class StoreService /* implements IStoreService */ {
         await this.db.open();
         let item = await this.db.table(table_name).get(type + '.' + id_or_url);
         if (item === undefined) {
-            throw new Error(null);
+            throw new Error();
         }
 
         return item;

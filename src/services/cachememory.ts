@@ -7,12 +7,12 @@ import { IObjectsById } from '../interfaces';
 export class CacheMemory<R extends Resource = Resource> {
     private resources: IObjectsById<Resource> = {};
     private collections: { [url: string]: DocumentCollection<R> } = {};
-    private static instance: CacheMemory = null;
+    private static instance: CacheMemory;
 
     private constructor() {}
 
     public static getInstance(): CacheMemory {
-        if (CacheMemory.instance === null) {
+        if (!CacheMemory.instance) {
             CacheMemory.instance = new CacheMemory();
         }
 
@@ -25,6 +25,14 @@ export class CacheMemory<R extends Resource = Resource> {
         }
 
         return null;
+    }
+
+    public getResourceOrFail(type: string, id: string): Resource {
+        if (this.getKey(type, id) in this.resources) {
+            return this.resources[this.getKey(type, id)];
+        }
+
+        throw new Error('The requested resource does not exist in cache memory');
     }
 
     private getKey(type: string, id: string): string {
@@ -61,7 +69,7 @@ export class CacheMemory<R extends Resource = Resource> {
             return resource;
         }
 
-        resource = Converter.getService(type).new();
+        resource = Converter.getServiceOrFail(type).new();
         resource.id = id;
         // needed for a lot of request (all and get, tested on multinexo.com)
         this.setResource(resource, false);
@@ -90,6 +98,9 @@ export class CacheMemory<R extends Resource = Resource> {
 
     public removeResource(type: string, id: string): void {
         let resource = this.getResource(type, id);
+        if (!resource) {
+            return;
+        }
         Base.forEach(this.collections, (value, url) => {
             value.data.splice(
                 value.data.findIndex(
@@ -99,14 +110,15 @@ export class CacheMemory<R extends Resource = Resource> {
             );
         });
         resource.attributes = {}; // just for confirm deletion on view
+
         // this.resources[id].relationships = {}; // just for confirm deletion on view
-        for (let relationship in this.resources[id].relationships) {
-            if (resource.relationships[relationship].data === null) {
+        for (let relationship in resource.relationships) {
+            if (resource.relationships[relationship].data === null || resource.relationships[relationship].data === undefined) {
                 continue;
             }
-            if (resource.relationships[relationship].data.constructor === Array) {
+            if (resource.relationships[relationship].data instanceof Array) {
                 resource.relationships[relationship].data = []; // just in case that there is a for loop using it
-            } else if (resource.relationships[relationship].data.constructor === Object) {
+            } else if (resource.relationships[relationship].data instanceof Object) {
                 delete resource.relationships[relationship].data;
             }
         }
@@ -114,7 +126,7 @@ export class CacheMemory<R extends Resource = Resource> {
     }
 
     private fillExistentResource(source: Resource): void {
-        let destination = this.getResource(source.type, source.id);
+        let destination = this.getResourceOrFail(source.type, source.id);
 
         destination.attributes = { ...destination.attributes, ...source.attributes };
 

@@ -53,7 +53,7 @@ export class DexieDataProvider implements IDataProvider {
                     .where(':id')
                     .startsWith(key_start_with)
                     .delete()
-                    .then(() => null);
+                    .then(() => undefined);
             }
         });
     }

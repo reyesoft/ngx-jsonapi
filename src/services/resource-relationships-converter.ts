@@ -99,7 +99,7 @@ export class ResourceRelationshipsConverter {
         }
     }
 
-    private __buildRelationship(resource_data_from: IDataResource): Resource {
+    private __buildRelationship(resource_data_from: IDataResource): Resource | undefined {
         if (
             resource_data_from.type in this.included_resources &&
             resource_data_from.id in this.included_resources[resource_data_from.type]

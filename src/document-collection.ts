@@ -121,7 +121,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
     }
 
     public hasMorePages(): boolean | null {
-        if (this.page.size < 1) {
+        if (!this.page.size || this.page.size < 1) {
             return null;
         }
 

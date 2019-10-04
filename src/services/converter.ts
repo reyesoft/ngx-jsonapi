@@ -50,14 +50,20 @@ export class Converter<R extends Resource> {
         }
     }
 
-    public static getService(type: string): Service {
+    public static getService(type: string): Service | undefined {
         let resource_service = Core.me.getResourceService(type);
 
         return resource_service;
     }
 
+    public static getServiceOrFail(type: string): Service {
+        let resource_service = Core.me.getResourceServiceOrFail(type);
+
+        return resource_service;
+    }
+
     public static buildIncluded(document_from: IDataCollection | IDocumentResource): IResourcesByType {
-        if ('included' in document_from) {
+        if ('included' in document_from && document_from.included) {
             return Converter.json_array2resources_array_by_type(document_from.included);
         }
 
