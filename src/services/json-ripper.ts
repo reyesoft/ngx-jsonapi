@@ -28,9 +28,10 @@ export class JsonRipper {
             return stored_resource;
         }
 
-        let included_keys = [];
+        let included_keys: Array<string> = [];
         include.forEach(relationship_alias => {
-            if (!stored_resource.data.relationships[relationship_alias]) {
+            // @NOTE: typescript doesn't detect throwError added a few lines above when stored_resource === undefnied
+            if (!stored_resource || !stored_resource.data.relationships || !stored_resource.data.relationships[relationship_alias]) {
                 return;
             }
 
@@ -65,10 +66,10 @@ export class JsonRipper {
             return ret;
         }
 
-        let included_keys = [];
+        let included_keys: Array<string> = [];
         include.forEach(relationship_alias => {
             data_resources.forEach(resource => {
-                if (!resource.data.relationships[relationship_alias]) {
+                if (!resource.data.relationships || !resource.data.relationships[relationship_alias]) {
                     return;
                 }
 
@@ -99,7 +100,7 @@ export class JsonRipper {
         return <Promise<Array<ICacheableDocumentResource>>>this.dataProvider.getElements(keys, 'elements');
     }
 
-    public saveCollection(url: string, collection: DocumentCollection, include = []): void {
+    public saveCollection(url: string, collection: DocumentCollection, include: Array<string> = []): void {
         this.dataProvider.saveElements(JsonRipper.collectionToElement(url, collection), 'collections');
         this.dataProvider.saveElements(JsonRipper.collectionResourcesToElements(collection, include), 'elements');
     }
@@ -114,7 +115,7 @@ export class JsonRipper {
     private static collectionToElement(url: string, collection: DocumentCollection): Array<IElement> {
         let collection_element = {
             key: url,
-            content: { updated_at: Date.now(), keys: [] }
+            content: { updated_at: Date.now(), keys: <Array<string>>[] }
         };
         collection.data.forEach(resource => {
             let key = JsonRipper.getResourceKey(resource);
@@ -124,7 +125,7 @@ export class JsonRipper {
         return [collection_element];
     }
 
-    private static collectionResourcesToElements(collection: DocumentCollection, include = []): Array<IElement> {
+    private static collectionResourcesToElements(collection: DocumentCollection, include: Array<string> = []): Array<IElement> {
         let elements: Array<IElement> = [];
         collection.data.forEach(resource => {
             let key = JsonRipper.getResourceKey(resource);
@@ -134,7 +135,7 @@ export class JsonRipper {
         return elements;
     }
 
-    public static toResourceElements(key: string, resource: Resource, include = []): Array<IElement> {
+    public static toResourceElements(key: string, resource: Resource, include: Array<string> = []): Array<IElement> {
         let elements: Array<IElement> = [
             {
                 key: key,
@@ -150,7 +151,7 @@ export class JsonRipper {
                     elements.push(JsonRipper.getElement(related_resource));
                 });
             } else if (relationship instanceof DocumentResource) {
-                if (relationship.data === null) {
+                if (relationship.data === null || relationship.data === undefined) {
                     return;
                 }
                 elements.push(JsonRipper.getElement(relationship.data));

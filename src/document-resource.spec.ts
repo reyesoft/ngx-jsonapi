@@ -77,7 +77,7 @@ describe('document resource fill() method', () => {
             },
             meta: { meta: 'meta' }
         });
-        expect(document_resource.data.relationships).toMatchObject({});
+        expect((<Resource>document_resource.data).relationships).toMatchObject({});
         expect(document_resource.builded).toBeFalsy();
         expect(document_resource.content).toBe('id');
         expect(document_resource.meta).toEqual({ meta: 'meta' });
@@ -111,8 +111,8 @@ describe('document resource fill() method', () => {
     });
 
     it('if passed IDocumentResource has no meta property, fill mehotd should should assign an empty Object', () => {
-        document_resource.meta = null;
-        let Resource_fill_spy = spyOn(document_resource.data, 'fill');
+        delete document_resource.meta;
+        let Resource_fill_spy = spyOn(<Resource>document_resource.data, 'fill');
         document_resource.fill({
             data: {
                 type: 'data',

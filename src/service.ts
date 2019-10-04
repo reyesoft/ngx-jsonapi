@@ -1,4 +1,5 @@
 import { Core } from './core';
+import { IBuildedParamsCollection } from './interfaces/params-collection';
 import { Base } from './services/base';
 import { Resource } from './resource';
 import { PathBuilder } from './services/path-builder';
@@ -164,7 +165,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     public getOrCreateResource(id: string): R {
-        let service = Converter.getService(this.type);
+        let service = Converter.getServiceOrFail(this.type);
         let resource: R;
 
         resource = <R>CacheMemory.getInstance().getResource(this.type, id);
@@ -180,7 +181,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     public createResource(id: string): R {
-        let service = Converter.getService(this.type);
+        let service = Converter.getServiceOrFail(this.type);
         let resource = service.new();
         resource.id = id;
         CacheMemory.getInstance().setResource(resource, false);
@@ -233,36 +234,36 @@ export class Service<R extends Resource = Resource> {
 
     // if you change this logic, maybe you need to change get()
     public all(params: IParamsCollection = {}): Observable<DocumentCollection<R>> {
-        params = { ...Base.ParamsCollection, ...params };
+        let builded_params: IBuildedParamsCollection = { ...Base.ParamsCollection, ...params };
 
         let path = new PathCollectionBuilder();
-        path.applyParams(this, params);
+        path.applyParams(this, builded_params);
 
         let temporary_collection = this.getOrCreateCollection(path);
-        temporary_collection.page.number = params.page.number * 1;
+        temporary_collection.page.number = builded_params.page.number * 1;
 
         let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
-        if (Object.keys(params.fields).length > 0) {
+        if (Object.keys(builded_params.fields).length > 0) {
             // memory/store cache dont suppont fields
-            this.getAllFromServer(path, params, temporary_collection, subject);
-        } else if (isLive(temporary_collection, params.ttl)) {
+            this.getAllFromServer(path, builded_params, temporary_collection, subject);
+        } else if (isLive(temporary_collection, builded_params.ttl)) {
             // data on memory and its live
             setTimeout(() => subject.complete(), 0);
         } else if (temporary_collection.cache_last_update === 0) {
             // we dont have any data on memory
             temporary_collection.source = 'new';
-            this.getAllFromLocal(params, path, temporary_collection)
+            this.getAllFromLocal(builded_params, path, temporary_collection)
                 .then(() => {
                     subject.next(temporary_collection);
                     setTimeout(() => subject.complete(), 0);
                 })
                 .catch(() => {
                     temporary_collection.setLoaded(false);
-                    this.getAllFromServer(path, params, temporary_collection, subject);
+                    this.getAllFromServer(path, builded_params, temporary_collection, subject);
                 });
         } else {
-            this.getAllFromServer(path, params, temporary_collection, subject);
+            this.getAllFromServer(path, builded_params, temporary_collection, subject);
         }
 
         return subject.asObservable();
