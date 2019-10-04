@@ -1,6 +1,7 @@
+import { CacheMemory } from './cachememory';
 import { IResourcesByType } from '../interfaces';
 import { IDataCollection } from '../interfaces/data-collection';
-import { IDataObject } from '../interfaces/data-object';
+import { IDocumentResource } from '../interfaces/data-object';
 import { IDataResource } from '../interfaces/data-resource';
 import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
@@ -29,7 +30,7 @@ export class ResourceRelationshipsConverter {
     public buildRelationships(): void {
         // recorro los relationships levanto el service correspondiente
         for (const relation_alias in this.relationships_from) {
-            let relation_from_value: IDataCollection & IDataObject = this.relationships_from[relation_alias];
+            let relation_from_value: IDataCollection & IDocumentResource = this.relationships_from[relation_alias];
 
             if (this.relationships_dest[relation_alias] && relation_from_value.data === null) {
                 // TODO: FE-92 --- check and improve conditions when building has-one relationships
@@ -55,26 +56,9 @@ export class ResourceRelationshipsConverter {
     }
 
     private __buildRelationshipHasMany(relation_from_value: IDataCollection, relation_alias: string) {
-        let relation_type = relation_from_value.data[0] ? relation_from_value.data[0].type : '';
-        if (relation_type === '') {
-            return;
-        }
-
-        relation_alias = relation_alias || relation_type;
-        if (!this.getService(relation_type)) {
-            if (isDevMode()) {
-                console.warn(
-                    'The relationship ' + relation_alias + ' (type',
-                    relation_type,
-                    ') cant be generated because service for this type has not been injected.'
-                );
-            }
-
-            return;
-        }
-
         if (relation_from_value.data.length === 0) {
             this.relationships_dest[relation_alias] = new DocumentCollection();
+            this.relationships_dest[relation_alias].builded = true;
 
             return;
         }
@@ -82,7 +66,7 @@ export class ResourceRelationshipsConverter {
         (<DocumentCollection>this.relationships_dest[relation_alias]).fill(relation_from_value);
     }
 
-    private __buildRelationshipHasOne(relation_data_from: IDataObject, relation_alias: string): void {
+    private __buildRelationshipHasOne(relation_data_from: IDocumentResource, relation_alias: string): void {
         // new related resource <> cached related resource <> ? delete!
         if (!('type' in relation_data_from.data)) {
             this.relationships_dest[relation_alias].data = [];
@@ -115,7 +99,7 @@ export class ResourceRelationshipsConverter {
         }
     }
 
-    private __buildRelationship(resource_data_from: IDataResource): Resource {
+    private __buildRelationship(resource_data_from: IDataResource): Resource | undefined {
         if (
             resource_data_from.type in this.included_resources &&
             resource_data_from.id in this.included_resources[resource_data_from.type]
@@ -124,15 +108,16 @@ export class ResourceRelationshipsConverter {
             let data = this.included_resources[resource_data_from.type][resource_data_from.id];
 
             // Store the include in cache
-            this.getService(resource_data_from.type).cachememory.setResource(data, true);
-            this.getService(resource_data_from.type).cachestore.setResource(data);
+            CacheMemory.getInstance().setResource(data, true);
+            // this.getService(resource_data_from.type).cachestore.setResource(data);
 
             return data;
         } else {
             // OPTIONAL: return cached Resource
             let service = this.getService(resource_data_from.type);
-            if (service && resource_data_from.id in service.cachememory.resources) {
-                return service.cachememory.resources[resource_data_from.id];
+            let resource = CacheMemory.getInstance().getResource(resource_data_from.type, resource_data_from.id);
+            if (resource) {
+                return resource;
             }
         }
     }

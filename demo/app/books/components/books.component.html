@@ -11,14 +11,18 @@
         </tr>
     </thead>
     <!-- Use authors example. @deprected since version 2.0.0 -->
-    <tr *ngFor="let book of books.data">
+    <tr *ngFor="let book of books.data; trackBy: books.trackBy">
         <td>{{ book.id }}</td>
         <td>
             <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
         </td>
         <td>{{ book.attributes.date_published | date }}</td>
-        <td>{{ book.relationships.author.data.attributes.name }} #{{ book.relationships.author.data.id }}</td>
-        <td><span *ngFor="let photo of book.relationships.photos.data">{{ photo.id }}, </span></td>
+        <td>
+            <a *ngIf="book.relationships.author.builded" [routerLink]="['/authors', book.relationships.author.data.id]">{{ book.relationships.author.data.attributes.name }}</a>
+        </td>
+        <td>
+            <span *ngFor="let photo of book.relationships.photos.data">{{ photo.id }}, </span>
+        </td>
         <td><a ng-click="delete(book)" title="not supported by demo server"><small>DELETE</small></a></td>
     </tr>
 </table>

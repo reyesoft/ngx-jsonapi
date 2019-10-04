@@ -140,7 +140,7 @@ export class AuthorsComponent {
 
 #### Collection sort
 
-Ex: `name` is a authors attribute, and makes a query like `/authors?sort=name,job_title`
+Example: `name` is a authors attribute, and makes a query like `/authors?sort=name,job_title`
 
 ```typescript
 let authors = authorsService.all({

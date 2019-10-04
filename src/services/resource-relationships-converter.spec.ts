@@ -1,6 +1,5 @@
 import { ResourceRelationshipsConverter } from './resource-relationships-converter';
-import { DocumentCollection } from 'src/document-collection';
-import { CacheStore } from '../services/cachestore';
+import { DocumentCollection } from '../document-collection';
 import { CacheMemory } from '../services/cachememory';
 import { Converter } from './converter';
 import { Service } from '../service';
@@ -43,9 +42,6 @@ const test_services = {
 
 function getService(type: string) {
     let service = test_services[type];
-    service.cachememory = new CacheMemory();
-    service.cachememory.resources = {};
-    service.cachestore = new CacheStore();
 
     return service;
 }
@@ -70,7 +66,6 @@ describe('ResourceRelationshipsConverter', () => {
     });
 
     it('should set builded to true when a hasOne relationsihp is builded', () => {
-        spyOn(CacheStore.prototype, 'setResource');
         resource_relationships_converter.buildRelationships();
         expect((resource_relationships_converter as any).relationships_dest.resource.builded).toBeTruthy();
     });
@@ -79,7 +74,6 @@ describe('ResourceRelationshipsConverter', () => {
         using relationships_from data`, () => {
         // set up spy
         spyOn(Converter, 'getService').and.callFake(getService);
-        let cachestoreSetResourceSpy = spyOn(CacheStore.prototype, 'setResource');
 
         // set up fake dest_resource (rememeber that ids must match with relationships_from resources)
         let mock_resource_with_relationships = new MockResource();
@@ -154,6 +148,5 @@ describe('ResourceRelationshipsConverter', () => {
         // expect(related_collection_first_resource.attributes.description).toBe('first in collection');
         // expect(related_collection_second_resource.attributes.name).toBe('second');
         // expect(related_collection_second_resource.attributes.description).toBe('second in collection');
-        expect(cachestoreSetResourceSpy).toHaveBeenCalled(); // must save loaded resources in cachestore
     });
 });

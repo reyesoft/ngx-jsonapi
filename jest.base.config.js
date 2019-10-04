@@ -1,11 +1,14 @@
 module.exports = {
+  testURL: 'http://localhost/',
   preset: 'jest-preset-angular',
-  setupTestFrameworkScriptFile: '<rootDir>/setup-jest.ts',
+  setupFilesAfterEnv: [
+      '<rootDir>/setup-jest.ts'
+  ],
   setupFiles: [
-      '<rootDir>/src/test/globals-test.ts'
+      '<rootDir>/src/tests/globals-test.ts'
     ],
   transform: {
-      '^.+\\.(ts|js|html)$': '<rootDir>/node_modules/jest-preset-angular/preprocessor.js'
+      '^.+\\.(ts|js|html)$': 'ts-jest'
   },
   moduleFileExtensions: [
       'ts',
@@ -13,7 +16,6 @@ module.exports = {
       'html',
       'json'
   ],
-  mapCoverage: true,
   moduleNameMapper: {
       '^ngx-jsonapi/(?!db)(.*)': '<rootDir>/src/$1'
   },
