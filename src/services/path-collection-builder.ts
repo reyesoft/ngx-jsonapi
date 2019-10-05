@@ -37,15 +37,6 @@ export class PathCollectionBuilder extends PathBuilder {
         );
     }
 
-    private getPageConfig(): { number: string; size: string } {
-        return (
-            (Core.injectedServices.rsJsonapiConfig.parameters && Core.injectedServices.rsJsonapiConfig.parameters.page) || {
-                number: 'number',
-                size: 'size'
-            }
-        );
-    }
-
     protected addParam(param: string): void {
         this.get_params.push(param);
     }
