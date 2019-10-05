@@ -16,6 +16,18 @@ describe('resource', () => {
     //     expect(resource.id).toBe('');
     // });
 
+    it('hasManyRelated()', () => {
+        // @todo relation alias is not present
+        // @todo relation alias is present, but data is an empty array
+        // @todo relation alias is present, but data is not present
+    });
+
+    it('hasOneRelated()', () => {
+        // @todo relation alias is not present
+        // @todo relation alias is present, but data is a null
+        // @todo relation alias is present, but data is undefined
+    });
+
     it('should save the resource without relationships that dont refer to a resource or mean to remove the relationship', async () => {
         let resource = new Resource();
         spyOn(resource, 'getService').and.returnValue(false);
