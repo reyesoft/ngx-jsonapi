@@ -25,6 +25,9 @@ export function relationshipsAreBuilded(resource: Resource, includes: Array<stri
     return true;
 }
 
+/**
+ * @deprecated since 2.2.0
+ */
 export function isCollection(document: DocumentResource | DocumentCollection): document is DocumentCollection {
     if (!document.data) {
         return false;
@@ -33,6 +36,9 @@ export function isCollection(document: DocumentResource | DocumentCollection): d
     return !('id' in document.data);
 }
 
+/**
+ * @deprecated since 2.2.0
+ */
 export function isResource(document: DocumentResource | DocumentCollection): document is DocumentResource {
     if (!document.data) {
         return false;
