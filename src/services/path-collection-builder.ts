@@ -26,13 +26,15 @@ export class PathCollectionBuilder extends PathBuilder {
         if (params.sort && params.sort.length) {
             this.addParam('sort=' + params.sort.join(','));
         }
-        if (params.fields && Object.keys(params.fields).length > 0) {
-            let fields_param: string = '';
-            for (let resource_type in params.fields) {
-                fields_param += `fields[${resource_type}]=${params.fields[resource_type].join(',')}`;
+    }
+
+    private getPageConfig(): { number: string; size: string } {
+        return (
+            (Core.injectedServices.rsJsonapiConfig.parameters && Core.injectedServices.rsJsonapiConfig.parameters.page) || {
+                number: 'number',
+                size: 'size'
             }
-            this.addParam(fields_param);
-        }
+        );
     }
 
     private getPageConfig(): { number: string; size: string } {

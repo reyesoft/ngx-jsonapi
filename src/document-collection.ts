@@ -188,7 +188,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         };
     }
 }
-export class DocumentCollection<R extends Resource = Resource> extends RelatedDocumentCollection {
+export class DocumentCollection<R extends Resource = Resource> extends RelatedDocumentCollection<R> {
     public data: Array<R> = [];
     public content: 'collection' = 'collection';
 }
