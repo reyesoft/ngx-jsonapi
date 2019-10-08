@@ -1,4 +1,6 @@
 import { Resource } from '../../resource';
+import { IDataCollection } from '../../interfaces/data-collection';
+import { IDocumentResource } from '../../interfaces/data-object';
 import { IDocumentData } from '../../interfaces/document';
 import { IDataResource } from '../../interfaces/data-resource';
 import { DocumentCollection } from '../../document-collection';
@@ -16,8 +18,8 @@ export class TestFactory {
         authors: Author
     };
 
-    public static getResourceDocumentData(document_class: typeof Resource, include: Array<string> = []): IDocumentData {
-        let main_resource: Resource = this[`get${document_class.name}`]();
+    public static getResourceDocumentData(document_class: typeof Resource, include: Array<string> = [], id?: string): IDocumentData {
+        let main_resource: Resource = this[`get${document_class.name}`](id, include);
 
         let document_data: IDocumentData = main_resource.toObject();
         this.fillDocumentDataIncludedRelatioships(document_data, include);
@@ -94,12 +96,13 @@ export class TestFactory {
         this.fillAuthorAttirbutes(author);
 
         // NOTE: add books
-        (author.relationships.photos.data as Array<IDataResource>).concat(this.getDataResourcesWithType('books', 2));
+        author.relationships.books.data = author.relationships.books.data.concat(<Array<Book>>this.getDataResourcesWithType('books', 2));
         if (include.includes('books')) {
             this.includeFromService(author, 'books', Book);
         }
+
         // NOTE: add photos
-        (author.relationships.photos.data as Array<IDataResource>).concat(this.getDataResourcesWithType('photos', 2));
+        author.relationships.photos.data = author.relationships.photos.data.concat(<Array<Photo>>this.getDataResourcesWithType('photos', 2));
         if (include.includes('photos')) {
             this.includeFromService(author, 'photos', Photo);
         }
@@ -120,8 +123,8 @@ export class TestFactory {
         let collection: DocumentCollection<Resource> = new DocumentCollection();
         for (let index = 0; index < size; index++) {
             let factory_name = `get${resources_class.name}`;
-            let author = this[factory_name](undefined, include);
-            collection.data.push(author);
+            let resource = this[factory_name](undefined, include);
+            collection.data.push(resource);
         }
         collection.setBuilded(true);
         collection.setLoaded(true);
@@ -214,24 +217,30 @@ export class TestFactory {
         return data_resources;
     }
 
+    // @TODO: this method was adapted after adding toObject in server mocks... check if its 100% OK
     private static fillResourceRelationshipsInDocumentData(document_data: IDocumentData, resource: Resource, included_alias: string) {
         if (!document_data.included) {
             document_data.included = [];
         }
 
-        let relatioship_content = resource.relationships[included_alias];
+        let relationship_content: DocumentResource|DocumentCollection|IDocumentResource|IDataCollection = resource.relationships[included_alias];
 
-        if (relatioship_content instanceof DocumentResource) {
-            if (!relatioship_content.data) {
+        // @NOTE: cannot check IDocumentResource interface with instanceof
+        if (relationship_content instanceof DocumentResource || 'type' in relationship_content.data) {
+            if (!relationship_content.data) {
                 return;
             }
             document_data.included.push(
-                this[`get${this.resource_classes_by_type[relatioship_content.data.type]}`](relatioship_content.data.id)
+                // @TODO: improve this code... should avoind forced types and ts errors...
+                this
+                    [`get${this.resource_classes_by_type[(<DocumentResource | IDocumentResource>relationship_content).data.type].name}`]
+                    ((<DocumentResource | IDocumentResource>relationship_content).data.id)
             );
-        } else if (relatioship_content instanceof DocumentCollection) {
+        // @NOTE: cannot check IDataResource interface with instanceof
+        } else if (relationship_content instanceof DocumentCollection || relationship_content.data instanceof Array) {
             for (let has_many_relationship of (<DocumentCollection>resource.relationships[included_alias]).data) {
                 document_data.included.push(
-                    this[`get${this.resource_classes_by_type[has_many_relationship.type]}`](has_many_relationship.id)
+                    this[`get${this.resource_classes_by_type[has_many_relationship.type].name}`](has_many_relationship.id)
                 );
             }
         }
