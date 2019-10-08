@@ -157,8 +157,8 @@ export class Service<R extends Resource = Resource> {
     }
 
     public createResource(id: string): R {
-        let service = this.getService();
-        let resource = new service.resource();
+        let service = Converter.getService(this.type);
+        let resource = service.new();
         resource.id = id;
         service.cachememory.setResource(resource, false);
 

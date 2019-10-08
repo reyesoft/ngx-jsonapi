@@ -19,7 +19,7 @@ You can test library on this online example 👌 <http://ngx-jsonapi.reyesoft.co
 
 </div>
 
-Data is obtained from [Json Api Playground](http://jsonapiplayground.reyesoft.com/) server.
+Data is obtained from [Json Api Playground](https://jsonapiplayground.reyesoft.com/) server.
 
 ## Supported features
 
@@ -251,7 +251,7 @@ yarn
 yarn start
 ```
 
-We use as backend [Json Api Playground](http://jsonapiplayground.reyesoft.com/).
+We use as backend [Json Api Playground](https://jsonapiplayground.reyesoft.com/).
 
 ## Colaborate
 
