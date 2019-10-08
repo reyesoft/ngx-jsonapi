@@ -86,6 +86,11 @@ describe('service.all()', () => {
         await booksService.clearCacheMemory();
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
+
+        // clear cachememory on every test
+        let cachememory = CacheMemory.getInstance();
+        (cachememory as any).resources = {};
+        (cachememory as any).collections = {};
     });
 
     it(`without cached collection emits source ^new-server|`, async () => {
@@ -396,6 +401,7 @@ describe('service.get()', () => {
     let core: Core;
     let booksService: BooksService;
     let authorsService: AuthorsService;
+    let photosService: PhotosService;
     beforeEach(async () => {
         core = new Core(
             new JsonapiConfig(),
@@ -407,6 +413,8 @@ describe('service.get()', () => {
         await booksService.clearCacheMemory();
         authorsService = new AuthorsService();
         authorsService.register();
+        photosService = new PhotosService();
+        photosService.register();
         await authorsService.clearCacheMemory();
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
