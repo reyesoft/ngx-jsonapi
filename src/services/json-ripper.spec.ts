@@ -131,14 +131,16 @@ describe('JsonRipper for resources', () => {
 
 describe('JsonRipper for collections', () => {
     let authors = new DocumentCollection();
-    authors.data.push(TestFactory.getAuthor('2'));
-    let author1 = TestFactory.getAuthor('1');
+    // TODO: remove books include in next line when toObject gets fixed (call jsonripper in non provided service)
+    authors.data.push(TestFactory.getAuthor('2', ['books']));
+    let author1 = TestFactory.getAuthor('1', ['books']);
     author1.attributes.name = 'Ray Bradbury';
     authors.data.push(author1);
-    let book1 = TestFactory.getBook('1');
+    author1.relationships.books.data[0].id = '1';
+    author1.relationships.books.data[1].id = '2';
+    let book1 = author1.relationships.books.data[0];
     book1.addRelationship(author1, 'author');
-    author1.addRelationship(book1);
-    author1.addRelationship(TestFactory.getBook('2'));
+    console.log(author1.relationships.books.data[1]);
 
     /* Is private now
     it('A collection is converted to objects for a DataProvider', () => {
@@ -219,15 +221,16 @@ describe('JsonRipper for collections', () => {
 
         let json = await jsonRipper.getCollection('some/url/include', ['books']);
         expect(json.data.length).toEqual(2);
-        expect(json.included.length).toEqual(2);
+        expect(json.included.length).toEqual(4); // @TODO: equal to 2 when books include is removed in describe's first getAuthor
 
-        expect(json.included[0]).toMatchObject({
+        // @TODO: change to json.included[0] when books include is removed in describe's first getAuthor
+        expect(json.included[2]).toMatchObject({
             id: '1',
             type: 'books',
             attributes: {},
             relationships: {
                 author: {
-                    data: { id: /.+/, type: 'authors' }
+                    data: { id: '1', type: 'authors' }
                 }
             }
         });

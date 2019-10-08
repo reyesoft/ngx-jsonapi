@@ -272,7 +272,8 @@ describe('service.all() and next service.get()', () => {
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Author) }));
-        let author_emits = await authorsService.get(authors.data[0].id, { include: ['photos', 'books'] })
+        let author_emits = await authorsService
+            .get(authors.data[0].id, { include: ['photos', 'books'] })
             .pipe(
                 map(emit => {
                     return { loaded: emit.loaded, source: emit.source };
@@ -304,7 +305,8 @@ describe('service.all() and next service.get()', () => {
         expect(removed_author).toBe(null);
 
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Author) }));
-        let author_emits = await authorsService.get(removed_author_id, { include: ['photos', 'books'] })
+        let author_emits = await authorsService
+            .get(removed_author_id, { include: ['photos', 'books'] })
             .pipe(
                 map(emit => {
                     return { loaded: emit.loaded, source: emit.source };
@@ -333,9 +335,10 @@ describe('service.all() and next service.get()', () => {
         test_response_subject = new BehaviorSubject(new HttpResponse());
         expect(authors.data[0].relationships.books.data[0].attributes).toBeTruthy();
 
-        let author_emits = await authorsService.get(authors.data[0].id)
+        let author_emits = await authorsService
+            .get(authors.data[0].id)
             .pipe(
-                tap(author => received_author = author),
+                tap(author => (received_author = author)),
                 map(emit => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
@@ -370,9 +373,10 @@ describe('service.all() and next service.get()', () => {
         let removed_author_id = authors.data[0].id;
         cachememory.removeResource('authors', removed_author_id); // kill only memory cache
 
-        let author_emits = await authorsService.get(removed_author_id)
+        let author_emits = await authorsService
+            .get(removed_author_id)
             .pipe(
-                tap(author => received_author = author),
+                tap(author => (received_author = author)),
                 map(emit => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
@@ -409,19 +413,15 @@ describe('service.get()', () => {
     });
 
     it(`no cached resource emits source ^new-server|`, async () => {
-        let expected = [
-            { loaded: false, source: 'new' },
-            { loaded: true, source: 'server' }
-        ];
+        let expected = [{ loaded: false, source: 'new' }, { loaded: true, source: 'server' }];
 
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
-        let book_emits = await booksService.get('1')
+        let book_emits = await booksService
+            .get('1')
             .pipe(
-                map(
-                    emit => {
-                        return { loaded: emit.loaded, source: emit.source };
-                    }
-                ),
+                map(emit => {
+                    return { loaded: emit.loaded, source: emit.source };
+                }),
                 toArray()
             )
             .toPromise();
