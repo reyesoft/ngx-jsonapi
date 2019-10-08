@@ -184,7 +184,9 @@ describe('service.all()', () => {
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
         booksService.collections_ttl = 5; // live
         await booksService.all().toPromise();
-        CacheMemory.getInstance().deprecateCollections(''); // kill only memory cache
+        // CacheMemory.getInstance().deprecateCollections(''); // kill only memory cache
+        (CacheMemory as any).resources = {}; // kill memory cache
+        (CacheMemory as any).collections = {}; // kill memory cache
 
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
@@ -218,7 +220,8 @@ describe('service.all()', () => {
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
         booksService.collections_ttl = 5; // live
         await booksService.all({include: ['author']}).toPromise();
-        CacheMemory.getInstance().deprecateCollections(''); // kill only memory cache
+        (CacheMemory as any).resources = {}; // kill memory cache
+        (CacheMemory as any).collections = {}; // kill memory cache
 
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
