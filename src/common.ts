@@ -8,11 +8,11 @@ export function isLive(cacheable: ICacheable, ttl: number = null): boolean {
 }
 
 export function isCollection(document: DocumentResource | DocumentCollection): document is DocumentCollection {
-    return !('id' in document.data);
+    return document !== null && 'data' in document && document.data !== null && !('id' in document.data);
 }
 
 export function isResource(document: DocumentResource | DocumentCollection): document is DocumentResource {
-    return 'id' in document.data;
+    return document !== null && 'data' in document && document.data !== null && 'id' in document.data;
 }
 
 // NOTE: Checks that the service passed to the method is registered (method needs to have service's type or a resource as first arg)

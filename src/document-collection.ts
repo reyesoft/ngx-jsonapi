@@ -1,3 +1,4 @@
+import { IResourcesByType } from './interfaces';
 import { Resource } from './resource';
 import { Page } from './services/page';
 import { Document } from './document';
@@ -25,8 +26,8 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         return null;
     }
 
-    public fill(data_collection: IDataCollection): void {
-        let included_resources = Converter.buildIncluded(data_collection);
+    public fill(data_collection: IDataCollection, included_resources?: IResourcesByType): void {
+        included_resources = included_resources || Converter.buildIncluded(data_collection);
 
         // sometimes get Cannot set property 'number' of undefined (page)
         if (this.page && data_collection.meta) {
@@ -42,7 +43,7 @@ export class DocumentCollection<R extends Resource = Resource> extends Document 
         this.builded = data_collection.data && data_collection.data.length === 0;
         for (let dataresource of data_collection.data) {
             let res = this.find(dataresource.id) || Converter.getService(dataresource.type).getOrCreateResource(dataresource.id);
-            res.fill({ data: dataresource } /* , included_resources */); // @todo check with included resources?
+            res.fill({ data: dataresource }, included_resources);
             new_ids[dataresource.id] = dataresource.id;
             this.data.push(<R>res);
             if (Object.keys(res.attributes).length > 0) {

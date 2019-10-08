@@ -1,6 +1,5 @@
 import { isLive, isCollection, isResource } from './common';
 import { ICacheable } from './interfaces/cacheable';
-import { Resource } from './resource';
 import { DocumentCollection } from './document-collection';
 import { DocumentResource } from './document-resource';
 
