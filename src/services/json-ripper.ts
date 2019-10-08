@@ -167,6 +167,8 @@ export class JsonRipper {
     }
 
     private static getElement(resource: Resource): IElement {
+        console.log('resource in json ripper --->', resource);
+
         return {
             key: JsonRipper.getResourceKey(resource),
             content: resource.toObject()

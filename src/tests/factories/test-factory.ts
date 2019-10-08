@@ -74,14 +74,15 @@ export class TestFactory {
         this.fillBookAttributes(book);
 
         // NOTE: add author
+        (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('authors');
         if (include.includes('author')) {
-            (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('authors');
-            this.includeFromService(book, 'author', Photo);
+            this.includeFromService(book, 'author', Author);
         }
 
         // NOTE: add photos
+        book.relationships.photos.data = book.relationships.photos.data.concat(<Array<Photo>>this.getDataResourcesWithType('photos', 2));
         if (include.includes('photos')) {
-            (book.relationships.photos.data as Array<IDataResource>).concat(this.getDataResourcesWithType('photos', 2));
+            // (book.relationships.photos.data as Array<IDataResource>).concat(this.getDataResourcesWithType('photos', 2));
             this.includeFromService(book, 'photos', Photo);
         }
 
@@ -99,10 +100,15 @@ export class TestFactory {
         author.relationships.books.data = author.relationships.books.data.concat(<Array<Book>>this.getDataResourcesWithType('books', 2));
         if (include.includes('books')) {
             this.includeFromService(author, 'books', Book);
+            for (let book of author.relationships.books.data) {
+                (<Resource>book.relationships.author.data).id = author.id;
+            }
         }
 
         // NOTE: add photos
-        author.relationships.photos.data = author.relationships.photos.data.concat(<Array<Photo>>this.getDataResourcesWithType('photos', 2));
+        author.relationships.photos.data = author.relationships.photos.data.concat(<Array<Photo>>(
+            this.getDataResourcesWithType('photos', 2)
+        ));
         if (include.includes('photos')) {
             this.includeFromService(author, 'photos', Photo);
         }
@@ -170,7 +176,7 @@ export class TestFactory {
     }
 
     private static includeFromService(resource: Resource, relationship_alias: string, class_to_add: typeof Resource) {
-        if (resource.relationships[relationship_alias] instanceof DocumentResource) {
+        if ('id' in resource.relationships[relationship_alias]) {
             this.includeHasOneFromService(resource, relationship_alias, class_to_add);
         } else if (resource.relationships[relationship_alias] instanceof DocumentCollection) {
             this.includeHasManyFromService(resource, relationship_alias, class_to_add);
@@ -198,7 +204,9 @@ export class TestFactory {
             this[fill_method](resource_to_add);
             resources_to_add.push(resource_to_add);
         }
-        resource.addRelationships(resources_to_add, relationship_alias);
+        // @TODO: cannot use addRelationships because its not working here... SHOULD BE FIXED
+        // resource.addRelationships(resources_to_add, relationship_alias);
+        resource.relationships[relationship_alias].data = resources_to_add;
     }
 
     private static getDataResourceWithType(type: string, id?: string): IDataResource {
@@ -223,7 +231,8 @@ export class TestFactory {
             document_data.included = [];
         }
 
-        let relationship_content: DocumentResource|DocumentCollection|IDocumentResource|IDataCollection = resource.relationships[included_alias];
+        let relationship_content: DocumentResource | DocumentCollection | IDocumentResource | IDataCollection =
+            resource.relationships[included_alias];
 
         // @NOTE: cannot check IDocumentResource interface with instanceof
         if (relationship_content instanceof DocumentResource || 'type' in relationship_content.data) {
@@ -232,11 +241,11 @@ export class TestFactory {
             }
             document_data.included.push(
                 // @TODO: improve this code... should avoind forced types and ts errors...
-                this
-                    [`get${this.resource_classes_by_type[(<DocumentResource | IDocumentResource>relationship_content).data.type].name}`]
-                    ((<DocumentResource | IDocumentResource>relationship_content).data.id)
+                this[`get${this.resource_classes_by_type[(<DocumentResource | IDocumentResource>relationship_content).data.type].name}`](
+                    (<DocumentResource | IDocumentResource>relationship_content).data.id
+                )
             );
-        // @NOTE: cannot check IDataResource interface with instanceof
+            // @NOTE: cannot check IDataResource interface with instanceof
         } else if (relationship_content instanceof DocumentCollection || relationship_content.data instanceof Array) {
             for (let has_many_relationship of (<DocumentCollection>resource.relationships[included_alias]).data) {
                 document_data.included.push(
