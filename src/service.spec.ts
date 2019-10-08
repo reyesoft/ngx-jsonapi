@@ -213,6 +213,34 @@ describe('service.all()', () => {
         expect(http_request_spy).toHaveBeenCalledTimes(0);
     });
 
+    it(`with cached on store (live) collection wihtout includes emits source ^new-store|`, async () => {
+        // caching collection
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+        booksService.collections_ttl = 5; // live
+        await booksService.all({include: ['author']}).toPromise();
+        CacheMemory.getInstance().deprecateCollections(''); // kill only memory cache
+
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let expected = [
+            // expected emits
+            // source_resource: 'server' because we dont touch child elements
+            { builded: true, loaded: false, source: 'new', source_resource: 'server' },
+            { builded: true, loaded: true, source: 'store', source_resource: 'store' }
+        ];
+
+        let emits = await booksService
+            .all()
+            .pipe(
+                map(emit => {
+                    return { builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: emit.data[0].source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(0);
+    });
+
     it(`with cached on store (dead) collection emits source ^new-store-server|`, async () => {
         // caching collection
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
