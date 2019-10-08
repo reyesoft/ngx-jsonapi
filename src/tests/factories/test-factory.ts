@@ -82,7 +82,6 @@ export class TestFactory {
         // NOTE: add photos
         book.relationships.photos.data = book.relationships.photos.data.concat(<Array<Photo>>this.getDataResourcesWithType('photos', 2));
         if (include.includes('photos')) {
-            // (book.relationships.photos.data as Array<IDataResource>).concat(this.getDataResourcesWithType('photos', 2));
             this.includeFromService(book, 'photos', Photo);
         }
 
