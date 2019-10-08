@@ -341,4 +341,8 @@ export class Resource implements ICacheable {
             }
         }
     }
+
+    public setCacheLastUpdate(value = Date.now()) {
+        this.cache_last_update = value;
+    }
 }

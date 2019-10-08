@@ -320,6 +320,7 @@ describe('service.all() and next service.get()', () => {
     });
 
     it(`with cached collection on memory and next request get() without include`, async () => {
+        Author.test_ttl = 100000;
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let all_authors_body = TestFactory.getCollectionDocumentData(Author, 1, ['books']);
         test_response_subject.next(new HttpResponse({ body: all_authors_body }));
@@ -347,7 +348,7 @@ describe('service.all() and next service.get()', () => {
             .toPromise();
 
         // @TODO: fix this error!!!
-        // expect(author_emits).toMatchObject(expected); // ERROR!!! [{ loaded: false, source: 'memory' }, { loaded: false, source: 'store' }]
+        expect(author_emits).toMatchObject(expected); // ERROR!!! [{ loaded: false, source: 'memory' }, { loaded: false, source: 'store' }]
         // expect(received_author.relationships.books.data[0].attributes).toBeFalsy(); // ERROR!!!
         expect(http_request_spy).toHaveBeenCalledTimes(1); // on all() request
     });

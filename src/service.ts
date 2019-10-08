@@ -329,6 +329,7 @@ export class Service<R extends Resource = Resource> {
                 }
                 temporary_collection.fill(<IDataCollection>success);
                 temporary_collection.cache_last_update = Date.now();
+                temporary_collection.setCacheLastUpdateAndPropagate();
                 temporary_collection.setSourceAndPropagate('server');
                 temporary_collection.setLoadedAndPropagate(true);
 

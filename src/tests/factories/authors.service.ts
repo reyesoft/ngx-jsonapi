@@ -21,6 +21,15 @@ export class Author extends Resource {
     };
     public type = 'authors';
     public ttl = 0;
+    public static test_ttl;
+
+    public constructor() {
+        super();
+
+        if (Author.test_ttl || Author.test_ttl === 0) {
+            this.ttl = Author.test_ttl;
+        }
+    }
 }
 
 export class AuthorsService extends Service<Author> {

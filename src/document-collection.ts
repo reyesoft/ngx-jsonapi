@@ -174,6 +174,19 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         });
     }
 
+    public setCacheLastUpdate(value = Date.now()) {
+        this.cache_last_update = value;
+    }
+
+    public setCacheLastUpdateAndPropagate(value = Date.now()) {
+        this.setCacheLastUpdate(value);
+        this.data.forEach(resource => {
+            if (resource instanceof Resource) {
+                resource.setCacheLastUpdate(value);
+            }
+        });
+    }
+
     public toObject(params?: IParamsCollection): IDataCollection {
         if (!this.builded) {
             return { data: this.data };
