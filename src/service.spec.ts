@@ -83,7 +83,7 @@ describe('service.all()', () => {
         photosService.register();
         let authorsService = new AuthorsService();
         authorsService.register();
-        await booksService.clearCacheMemory();
+        await booksService.clearCache();
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
 
@@ -322,7 +322,7 @@ describe('service.all() and next service.get()', () => {
         booksService.register();
         let photosService = new PhotosService();
         photosService.register();
-        await authorsService.clearCacheMemory();
+        await authorsService.clearCache();
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
     });
@@ -473,12 +473,12 @@ describe('service.get()', () => {
         );
         booksService = new BooksService();
         booksService.register();
-        await booksService.clearCacheMemory();
+        await booksService.clearCache();
         authorsService = new AuthorsService();
         authorsService.register();
         photosService = new PhotosService();
         photosService.register();
-        await authorsService.clearCacheMemory();
+        await authorsService.clearCache();
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
         // @TODO: should clear CacheMemory before each it
