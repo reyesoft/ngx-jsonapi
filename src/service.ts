@@ -124,6 +124,8 @@ export class Service<R extends Resource = Resource> {
 
             return;
         }
+
+        throw new Error('Resource is dead!');
     }
 
     // if you change this logic, maybe you need to change getAllFromServer()
@@ -193,7 +195,14 @@ export class Service<R extends Resource = Resource> {
         return <R>resource;
     }
 
+    /**
+     * deprecated since 2.2
+     */
     public async clearCacheMemory(): Promise<boolean> {
+        return this.clearCache();
+    }
+
+    public async clearCache(): Promise<boolean> {
         let path = new PathBuilder();
         path.applyParams(this);
 
@@ -240,6 +249,10 @@ export class Service<R extends Resource = Resource> {
     public all(params: IParamsCollection = {}): Observable<DocumentCollection<R>> {
         let builded_params: IBuildedParamsCollection = { ...Base.ParamsCollection, ...params };
 
+        if (!builded_params.ttl && builded_params.ttl !== 0) {
+            builded_params.ttl = this.collections_ttl;
+        }
+
         let path = new PathCollectionBuilder();
         path.applyParams(this, builded_params);
 
@@ -260,7 +273,9 @@ export class Service<R extends Resource = Resource> {
             this.getAllFromLocal(builded_params, path, temporary_collection)
                 .then(() => {
                     subject.next(temporary_collection);
-                    setTimeout(() => subject.complete(), 0);
+                    setTimeout(() => {
+                        subject.complete();
+                    }, 0);
                 })
                 .catch(() => {
                     temporary_collection.setLoaded(false);
@@ -305,6 +320,8 @@ export class Service<R extends Resource = Resource> {
 
             return;
         }
+
+        throw new Error('Collection is dead!');
     }
 
     // if you change this logic, maybe you need to change getGetFromServer()
@@ -329,6 +346,7 @@ export class Service<R extends Resource = Resource> {
                 }
                 temporary_collection.fill(<IDataCollection>success);
                 temporary_collection.cache_last_update = Date.now();
+                temporary_collection.setCacheLastUpdateAndPropagate();
                 temporary_collection.setSourceAndPropagate('server');
                 temporary_collection.setLoadedAndPropagate(true);
 

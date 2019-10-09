@@ -9,6 +9,18 @@ export class Photo extends Resource {
         created_at: new Date(),
         updated_at: new Date()
     };
+
+    public type = 'photos';
+    public ttl = 0;
+    public static test_ttl;
+
+    public constructor() {
+        super();
+
+        if (Photo.test_ttl || Photo.test_ttl === 0) {
+            this.ttl = Photo.test_ttl;
+        }
+    }
 }
 
 export class PhotosService extends Service<Photo> {

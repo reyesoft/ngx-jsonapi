@@ -21,6 +21,15 @@ export class Book extends Resource {
     };
     public type = 'books';
     public ttl = 0;
+    public static test_ttl;
+
+    public constructor() {
+        super();
+
+        if (Book.test_ttl || Book.test_ttl === 0) {
+            this.ttl = Book.test_ttl;
+        }
+    }
 }
 
 export class BooksService extends Service<Book> {

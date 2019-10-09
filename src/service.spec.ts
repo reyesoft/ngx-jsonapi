@@ -86,6 +86,11 @@ describe('service.all()', () => {
         await booksService.clearCacheMemory();
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
+
+        // clear cachememory on every test
+        let cachememory = CacheMemory.getInstance();
+        (cachememory as any).resources = {};
+        (cachememory as any).collections = {};
     });
 
     it(`without cached collection emits source ^new-server|`, async () => {
@@ -179,13 +184,14 @@ describe('service.all()', () => {
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
         booksService.collections_ttl = 5; // live
         await booksService.all().toPromise();
-        CacheMemory.getInstance().deprecateCollections(''); // kill only memory cache
+        let cachememory = CacheMemory.getInstance(); // kill only memory cache
+        (cachememory as any).resources = {}; // kill memory cache
+        (cachememory as any).collections = {}; // kill memory cache
 
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
             // expected emits
-            // source_resource: 'server' because we dont touch child elements
-            { builded: true, loaded: false, source: 'new', source_resource: 'server' },
+            { builded: false, loaded: false, source: 'new', source_resource: undefined },
             { builded: true, loaded: true, source: 'store', source_resource: 'store' }
         ];
 
@@ -199,7 +205,44 @@ describe('service.all()', () => {
                     }
                 }),
                 map(emit => {
-                    return { builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: emit.data[0].source };
+                    if (emit.data.length > 0) {
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: emit.data[0].source };
+                    } else {
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: undefined };
+                    }
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(0);
+    });
+
+    it(`with cached on store (live) collection wihtout includes emits source ^new-store|`, async () => {
+        // caching collection
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+        booksService.collections_ttl = 5; // live
+        await booksService.all({ include: ['author'] }).toPromise();
+        let cachememory = CacheMemory.getInstance(); // kill only memory cache
+        (cachememory as any).resources = {}; // kill memory cache
+        (cachememory as any).collections = {}; // kill memory cache
+
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let expected = [
+            // expected emits
+            { builded: false, loaded: false, source: 'new', source_resource: undefined },
+            { builded: true, loaded: true, source: 'store', source_resource: 'store' }
+        ];
+
+        let emits = await booksService
+            .all()
+            .pipe(
+                map(emit => {
+                    if (emit.data.length > 0) {
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: emit.data[0].source };
+                    } else {
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: undefined };
+                    }
                 }),
                 toArray()
             )
@@ -213,13 +256,39 @@ describe('service.all()', () => {
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
         booksService.collections_ttl = 0; // dead
         await booksService.all().toPromise();
-        booksService.clearCacheMemory(); // kill only memory cache
+        CacheMemory.getInstance().deprecateCollections('');
 
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let expected = [
             // expected emits
             { builded: true, loaded: false, source: 'new' }, // @TODO: builded should be false
-            // { builded: true, loaded: false, source: 'store' }, // @todo
+            { builded: true, loaded: true, source: 'server' }
+        ];
+
+        let emits = await booksService
+            .all()
+            .pipe(
+                map(emit => {
+                    return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
+    });
+
+    it(`with cached on store (dead, no collection_ttl defined) collection emits source ^new-store-server|`, async () => {
+        // caching collection
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+        delete booksService.collections_ttl; // dead
+        await booksService.all().toPromise();
+        CacheMemory.getInstance().deprecateCollections('');
+
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let expected = [
+            // expected emits
+            { builded: true, loaded: false, source: 'new' }, // @TODO: builded should be false
             { builded: true, loaded: true, source: 'server' }
         ];
 
@@ -320,6 +389,7 @@ describe('service.all() and next service.get()', () => {
     });
 
     it(`with cached collection on memory and next request get() without include`, async () => {
+        Author.test_ttl = 100000;
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let all_authors_body = TestFactory.getCollectionDocumentData(Author, 1, ['books']);
         test_response_subject.next(new HttpResponse({ body: all_authors_body }));
@@ -346,8 +416,7 @@ describe('service.all() and next service.get()', () => {
             )
             .toPromise();
 
-        // @TODO: fix this error!!!
-        // expect(author_emits).toMatchObject(expected); // ERROR!!! [{ loaded: false, source: 'memory' }, { loaded: false, source: 'store' }]
+        expect(author_emits).toMatchObject(expected);
         // expect(received_author.relationships.books.data[0].attributes).toBeFalsy(); // ERROR!!!
         expect(http_request_spy).toHaveBeenCalledTimes(1); // on all() request
     });
@@ -385,7 +454,7 @@ describe('service.all() and next service.get()', () => {
             .toPromise();
 
         // @TODO: fix this error!!!
-        // expect(author_emits).toMatchObject(expected); // ERROR!!! [{ loaded: false, source: 'new' }, { loaded: false, source: 'store' }]
+        expect(author_emits).toMatchObject(expected);
         // expect(received_author.relationships.books.data[0].attributes).toBeFalsy(); // ERROR!!!
         expect(http_request_spy).toHaveBeenCalledTimes(1); // on all() request
     });
@@ -395,6 +464,7 @@ describe('service.get()', () => {
     let core: Core;
     let booksService: BooksService;
     let authorsService: AuthorsService;
+    let photosService: PhotosService;
     beforeEach(async () => {
         core = new Core(
             new JsonapiConfig(),
@@ -406,6 +476,8 @@ describe('service.get()', () => {
         await booksService.clearCacheMemory();
         authorsService = new AuthorsService();
         authorsService.register();
+        photosService = new PhotosService();
+        photosService.register();
         await authorsService.clearCacheMemory();
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
@@ -589,7 +661,7 @@ describe('service.get()', () => {
             { loaded: true, source: 'server' }
         ];
         let emits = await booksService
-            .get('1', { ttl: 1000 })
+            .get('1')
             .pipe(
                 map(emit => {
                     return { loaded: emit.loaded, source: emit.source };
@@ -597,9 +669,8 @@ describe('service.get()', () => {
                 toArray()
             )
             .toPromise();
-        // @TODO: fix library
-        // expect(emits).toMatchObject(expected); // ERROR!!! [{ loaded: true, source: 'memory' }, { loaded: true, source: 'server' }]
-        // expect(http_request_spy).toHaveBeenCalledTimes(1); // ERROR: receiving 0...
+        expect(emits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
     });
 
     it(`with cached on store (live) resource emits source ^new-store|`, async () => {
