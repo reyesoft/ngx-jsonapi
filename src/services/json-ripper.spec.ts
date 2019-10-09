@@ -140,7 +140,6 @@ describe('JsonRipper for collections', () => {
     author1.relationships.books.data[1].id = '2';
     let book1 = author1.relationships.books.data[0];
     book1.addRelationship(author1, 'author');
-    console.log(author1.relationships.books.data[1]);
 
     /* Is private now
     it('A collection is converted to objects for a DataProvider', () => {
