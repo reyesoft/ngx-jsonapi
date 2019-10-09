@@ -206,6 +206,7 @@ export class Service<R extends Resource = Resource> {
         let path = new PathBuilder();
         path.applyParams(this);
 
+        // @todo this code is repeated on core.clearCache()
         CacheMemory.getInstance().deprecateCollections(path.getForCache());
 
         let json_ripper = new JsonRipper();
@@ -354,6 +355,7 @@ export class Service<R extends Resource = Resource> {
                 let json_ripper = new JsonRipper();
                 json_ripper.saveCollection(path.getForCache(), temporary_collection, path.includes);
                 if (Core.injectedServices.rsJsonapiConfig.cachestore_support && params.store_cache_method === 'compact') {
+                    // @todo migrate to dexie
                     Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <IDataCollection>success);
                 }
                 subject.next(temporary_collection);
