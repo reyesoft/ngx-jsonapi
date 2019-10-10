@@ -1,3 +1,4 @@
+import { JsonRipper } from './services/json-ripper';
 import { CacheMemory } from './services/cachememory';
 import { Injectable, Optional, isDevMode } from '@angular/core';
 import { serviceIsRegistered } from './common';
@@ -142,10 +143,12 @@ export class Core {
         }
     }
 
-    public clearCache(): boolean {
+    public async clearCache(): Promise<boolean> {
         Core.injectedServices.JsonapiStoreService.clearCache();
+        CacheMemory.getInstance().deprecateCollections('');
+        let json_ripper = new JsonRipper();
 
-        return true;
+        return json_ripper.deprecateCollection('').then(() => true);
     }
 
     // just an helper

@@ -66,7 +66,7 @@ describe('document resource fill() method', () => {
     beforeEach(async () => {
         booksService = new BooksService();
         booksService.register();
-        await booksService.clearCacheMemory();
+        await booksService.clearCache();
     });
 
     it('fill() with only ids generate content=id and empty relationships', () => {
