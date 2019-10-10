@@ -104,6 +104,8 @@ export class Resource implements ICacheable {
                     // @WARNING: no borrar la verificación de que no sea null... sino no se van a poder borrar
                 } else if (!relationship.builded && !relationship_data.id && !relationship_data.type) {
                     delete relationships[relation_alias];
+
+                    continue;
                 }
 
                 // no se agregó aún a included && se ha pedido incluir con el parms.include

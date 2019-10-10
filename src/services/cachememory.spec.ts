@@ -116,7 +116,11 @@ describe('Cache Memory deprecation and live conditions', () => {
         let cachememory = CacheMemory.getInstance();
         expect(() => {
             cachememory.getOrCreateResource('authors', 'new_' + Math.floor(Math.random() * 6));
-        }).toThrow(new Error('The requested service has not been registered, please use register() method or @Autoregister() decorator'));
+        }).toThrow(
+            new Error(
+                'The requested service with type authors has not been registered, please use register() method or @Autoregister() decorator'
+            )
+        );
     });
 
     it('getOrCreateResource() should return a new resource when the requested resource does not exist', () => {
