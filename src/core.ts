@@ -98,7 +98,9 @@ export class Core {
     public getResourceServiceOrFail(type: string): Service {
         let service = this.resourceServices[type];
         if (!service) {
-            throw new Error('The requested service has not been registered, please use register() method or @Autoregister() decorator');
+            throw new Error(
+                `The requested service with type ${type} has not been registered, please use register() method or @Autoregister() decorator`
+            );
         }
 
         return service;
