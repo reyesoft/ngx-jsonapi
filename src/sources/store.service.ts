@@ -10,11 +10,11 @@ interface IStoreElement {
 }
 
 interface IDataResourceStorage extends IDataResource {
-    _lastupdate_time: number;
+    cache_last_update: number;
 }
 
 interface IDataCollectionStorage extends IDataCollection {
-    _lastupdate_time: number;
+    cache_last_update: number;
 }
 
 export class StoreService /* implements IStoreService */ {
@@ -59,14 +59,14 @@ export class StoreService /* implements IStoreService */ {
     }
 
     public saveResource(type: string, url_or_id: string, value: IDataResource): void {
-        let data_resource_storage: IDataResourceStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
+        let data_resource_storage: IDataResourceStorage = { ...{ cache_last_update: Date.now() }, ...value };
         this.db.open().then(async () => {
             return this.db.table('elements').put(data_resource_storage, type + '.' + url_or_id);
         });
     }
 
     public saveCollection(url_or_id: string, value: IDataCollection): void {
-        let data_collection_storage: IDataCollectionStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
+        let data_collection_storage: IDataCollectionStorage = { ...{ cache_last_update: Date.now() }, ...value };
         this.db.open().then(async () => {
             return this.db.table('collections').put(data_collection_storage, 'collection.' + url_or_id);
         });
@@ -93,7 +93,7 @@ export class StoreService /* implements IStoreService */ {
                 .table('elements')
                 .where(':id')
                 .startsWith(type + '.' + id)
-                .modify({ _lastupdate_time: 0 });
+                .modify({ cache_last_update: 0 });
         });
     }
 
@@ -103,7 +103,7 @@ export class StoreService /* implements IStoreService */ {
                 .table('collections')
                 .where(':id')
                 .startsWith(key_start_with)
-                .modify({ _lastupdate_time: 0 });
+                .modify({ cache_last_update: 0 });
         });
     }
 
@@ -161,7 +161,7 @@ export class StoreService /* implements IStoreService */ {
                     this.allstore
                         .getItem(key)
                         .then((success2: IDataCollectionStorage | IDataResourceStorage) => {
-                            if (Date.now() >= success2._lastupdate_time + 24 * 3600 * 1000) {
+                            if (Date.now() >= success2.cache_last_update + 24 * 3600 * 1000) {
                                 this.allstore.removeItem(key);
                             }
                         })

@@ -235,7 +235,7 @@ describe('JsonRipper for collections', () => {
         });
     });
 
-    it('A ripped collection returns _lastupdate_time on collection and resources property', async () => {
+    it('A ripped collection returns cache_last_update on collection and resources property', async () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
         let jsonRipper = new JsonRipper();
