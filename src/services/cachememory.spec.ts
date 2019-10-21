@@ -19,6 +19,29 @@ class HttpHandlerMock implements HttpHandler {
 }
 
 describe('Cache Memory deprecation and live conditions', () => {
+    it('clearCache', () => {
+        let cachememory = CacheMemory.getInstance();
+        let collection = TestFactory.getCollection(Author);
+        cachememory.setCollection('authors', collection);
+
+        let collection_on_memory = cachememory.getOrCreateCollection('authors');
+        expect(collection_on_memory.cache_last_update).toBe(collection.cache_last_update);
+        expect(collection_on_memory.cache_last_update).toBeGreaterThan(0);
+
+        cachememory.clearCache();
+
+        // test that the previous instance has been cleared
+        collection_on_memory = cachememory.getOrCreateCollection('authors');
+        expect(collection_on_memory.cache_last_update).toBe(0);
+        expect(collection_on_memory.source).toBe('new');
+
+        // test that new instances are clear
+        cachememory = CacheMemory.getInstance();
+        collection_on_memory = cachememory.getOrCreateCollection('authors');
+        expect(collection_on_memory.cache_last_update).toBe(0);
+        expect(collection_on_memory.source).toBe('new');
+    });
+
     it('collections cache_last_update', async () => {
         let cachememory = CacheMemory.getInstance();
         let collection = TestFactory.getCollection(Author);

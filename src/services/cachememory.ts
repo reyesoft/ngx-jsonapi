@@ -7,7 +7,7 @@ import { IObjectsById } from '../interfaces';
 export class CacheMemory<R extends Resource = Resource> {
     private resources: IObjectsById<Resource> = {};
     private collections: { [url: string]: DocumentCollection<R> } = {};
-    private static instance: CacheMemory;
+    private static instance: CacheMemory | null;
 
     private constructor() {}
 
@@ -17,6 +17,12 @@ export class CacheMemory<R extends Resource = Resource> {
         }
 
         return CacheMemory.instance;
+    }
+
+    public clearCache() {
+        this.resources = {};
+        this.collections = {};
+        CacheMemory.instance = null;
     }
 
     public getResource(type: string, id: string): Resource | null {

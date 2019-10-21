@@ -145,7 +145,7 @@ export class Core {
 
     public async clearCache(): Promise<boolean> {
         Core.injectedServices.JsonapiStoreService.clearCache();
-        CacheMemory.getInstance().deprecateCollections('');
+        CacheMemory.getInstance().clearCache();
         let json_ripper = new JsonRipper();
 
         return json_ripper.deprecateCollection('').then(() => true);
