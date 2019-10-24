@@ -19,7 +19,6 @@ export class Author extends Resource {
 }
 
 @Injectable()
-@Autoregister()
 export class AuthorsService extends Service<Author> {
     public resource = Author;
     public type = 'authors';
