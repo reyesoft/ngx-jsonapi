@@ -19,14 +19,17 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 
-describe('service basic methods', () => {
-    let core = new Core(
-        new JsonapiConfig(),
-        new JsonapiStore(),
-        new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-    );
-    let service = new AuthorsService();
-    service.register();
+describe('resource basic methods', () => {
+    let core: Core;
+    let service: AuthorsService;
+    beforeAll(async () => {
+        core = new Core(
+            new JsonapiConfig(),
+            new JsonapiStore(),
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+        );
+        service = new AuthorsService();
+    });
 
     it('a new resource has a type', () => {
         const resource = service.new();
@@ -60,9 +63,9 @@ describe('document resource general', () => {
     });
 });
 
-describe('document resource fill() method', async () => {
+describe('document resource fill() method', () => {
     let document_resource = new DocumentResource<Book>();
-    let booksService = new BooksService();
+    let booksService: BooksService;
     beforeEach(async () => {
         booksService = new BooksService();
         booksService.register();
