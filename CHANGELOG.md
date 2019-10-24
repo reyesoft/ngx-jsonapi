@@ -3,8 +3,7 @@
 ## 3.0.0
 
 ES6 support.
-Removed `@Autoregister()` decorator.
-Deprecated service's `register` methods as it will become private in future versions.
+Deprecated `@Autoregister()` decorator.
 
 ## 0.0.1
 
