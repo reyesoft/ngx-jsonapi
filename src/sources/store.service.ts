@@ -9,14 +9,6 @@ interface IStoreElement {
     time: number;
 }
 
-interface IDataResourceStorage extends IDataResource {
-    _lastupdate_time: number;
-}
-
-interface IDataCollectionStorage extends IDataCollection {
-    _lastupdate_time: number;
-}
-
 export class StoreService /* implements IStoreService */ {
     private db: Dexie;
 
@@ -44,7 +36,7 @@ export class StoreService /* implements IStoreService */ {
         return item;
     }
 
-    public async getDataResources(keys: Array<string>): Promise<IObjectsById<IDataResourceStorage>> {
+    public async getDataResources(keys: Array<string>): Promise<IObjectsById<ICacheableDataResource>> {
         const collection = this.db
             .table('elements')
             .where(':id')
@@ -59,14 +51,14 @@ export class StoreService /* implements IStoreService */ {
     }
 
     public saveResource(type: string, url_or_id: string, value: IDataResource): void {
-        let data_resource_storage: IDataResourceStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
+        let data_resource_storage: ICacheableDataResource = { ...{ cache_last_update: Date.now() }, ...value };
         this.db.open().then(async () => {
             return this.db.table('elements').put(data_resource_storage, type + '.' + url_or_id);
         });
     }
 
-    public saveCollection(url_or_id: string, value: IDataCollection): void {
-        let data_collection_storage: IDataCollectionStorage = { ...{ _lastupdate_time: Date.now() }, ...value };
+    public saveCollection(url_or_id: string, value: ICacheableDataCollection): void {
+        let data_collection_storage: ICacheableDataCollection = { ...{ cache_last_update: Date.now() }, ...value };
         this.db.open().then(async () => {
             return this.db.table('collections').put(data_collection_storage, 'collection.' + url_or_id);
         });
@@ -93,7 +85,7 @@ export class StoreService /* implements IStoreService */ {
                 .table('elements')
                 .where(':id')
                 .startsWith(type + '.' + id)
-                .modify({ _lastupdate_time: 0 });
+                .modify({ cache_last_update: 0 });
         });
     }
 
@@ -103,7 +95,7 @@ export class StoreService /* implements IStoreService */ {
                 .table('collections')
                 .where(':id')
                 .startsWith(key_start_with)
-                .modify({ _lastupdate_time: 0 });
+                .modify({ cache_last_update: 0 });
         });
     }
 
@@ -160,8 +152,8 @@ export class StoreService /* implements IStoreService */ {
                     // recorremos cada item y vemos si es tiempo de removerlo
                     this.allstore
                         .getItem(key)
-                        .then((success2: IDataCollectionStorage | IDataResourceStorage) => {
-                            if (Date.now() >= success2._lastupdate_time + 24 * 3600 * 1000) {
+                        .then((success2: ICacheableDataCollection | ICacheableDataResource) => {
+                            if (Date.now() >= success2.cache_last_update + 24 * 3600 * 1000) {
                                 this.allstore.removeItem(key);
                             }
                         })
