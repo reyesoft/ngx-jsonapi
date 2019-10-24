@@ -2,8 +2,7 @@
 
 ## 3.0.0
 
-ES6 support.
-Deprecated `@Autoregister()` decorator.
+ES6 support. Deprecated `@Autoregister()` decorator.
 
 ## 0.0.1
 
