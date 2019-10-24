@@ -37,7 +37,7 @@ async function _compilePackagesWithNgc(pkg: string) {
      *
      * See https://github.com/ngrx/platform/issues/94
      */
-    let [exportPath, moduleName] = /\/testing$/.test(pkg)
+    let [exportPath, moduleName]: Array<string> = /\/testing$/.test(pkg)
         ? [pkg.replace(/(.*\/)testing/i, 'testing'), 'testing']
         : [pkg, 'index'];
 
@@ -46,7 +46,7 @@ async function _compilePackagesWithNgc(pkg: string) {
 
     await Promise.all([
         util.writeFile(`./dist/${pkg}.d.ts`, entryTypeDefinition),
-        util.writeFile(`./dist/${pkg}.metadata.json`, entryMetadata),
+        util.writeFile(`./dist/${pkg}.metadata.json`, entryMetadata)
     ]);
 }
 
@@ -68,7 +68,7 @@ export async function bundleFesms(config: Config) {
             `-i ./dist/index.js`,
             `-o ./dist/${topLevelName}/${config.scope}/${pkg}.js`,
             `-f es`,
-            `--sourcemap`,
+            `--sourcemap`
         ]);
 
         await util.mapSources(
@@ -87,7 +87,7 @@ export async function downLevelFesmsToES5(config: Config) {
         '--target es5',
         '--module es2015',
         '--noLib',
-        '--sourceMap',
+        '--sourceMap'
     ];
 
     await mapAsync(packages, async pkg => {
@@ -234,7 +234,7 @@ export async function minifyUmdBundles(config: Config) {
             file,
             ...uglifyArgs,
             `-o ${out}`,
-            `--source-map "filename='${out}.map' includeSources='${file}', content='${file}.map'"`,
+            `--source-map "filename='${out}.map' includeSources='${file}', content='${file}.map'"`
         ]);
     });
 }
@@ -254,7 +254,7 @@ export async function copyDocs(config: Config) {
 
         await Promise.all([
             util.copy(`${source}/README.md`, `${target}/README.md`),
-            util.copy('./LICENSE', `${target}/LICENSE`),
+            util.copy('./LICENSE', `${target}/LICENSE`)
         ]);
     });
 }
@@ -290,10 +290,10 @@ export async function publishToRepo(config: Config) {
         const SHA = await util.git([`rev-parse HEAD`]);
         const SHORT_SHA = await util.git([`rev-parse --short HEAD`]);
         const COMMITTER_USER_NAME = await util.git([
-            `--no-pager show -s --format='%cN' HEAD`,
+            `--no-pager show -s --format='%cN' HEAD`
         ]);
         const COMMITTER_USER_EMAIL = await util.git([
-            `--no-pager show -s --format='%cE' HEAD`,
+            `--no-pager show -s --format='%cE' HEAD`
         ]);
 
         await util.cmd('rm -rf', [`${REPO_DIR}`]);
@@ -307,7 +307,7 @@ export async function publishToRepo(config: Config) {
         await process.chdir('../../');
         await util.cmd('rm -rf', [`${REPO_DIR}/*`]);
         await util.git([
-            `log --format="%h %s" -n 1 > ${REPO_DIR}/commit_message`,
+            `log --format="%h %s" -n 1 > ${REPO_DIR}/commit_message`
         ]);
         await util.cmd('cp', [`-R ${SOURCE_DIR}/* ${REPO_DIR}/`]);
         await process.chdir(`${REPO_DIR}`);
@@ -322,7 +322,7 @@ export async function publishToRepo(config: Config) {
 }
 
 export function mapAsync<T>(
-    list: T[],
+    list: Array<T>,
     mapFn: (v: T, i: number) => Promise<any>
 ) {
     return Promise.all(list.map(mapFn));

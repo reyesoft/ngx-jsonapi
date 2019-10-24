@@ -25,25 +25,24 @@ class HttpHandlerMock implements HttpHandler {
 let test_response_subject = new BehaviorSubject(new HttpResponse());
 
 describe('service basic methods', () => {
-    let core = new Core(
-        new JsonapiConfig(),
-        new JsonapiStore(),
-        new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-    );
-    let service = new AuthorsService();
-    service.register();
-    let photosService = new PhotosService();
-    photosService.register();
-    let booksService = new BooksService();
-    booksService.register();
+    let core: Core;
+    let service: AuthorsService;
+    beforeAll(async () => {
+        core = new Core(
+            new JsonapiConfig(),
+            new JsonapiStore(),
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+        );
+        service = new AuthorsService();
+    });
 
-    it('a new resource has a type', () => {
+    it('a new resource has a type', async () => {
         const resource = service.new();
         expect(resource instanceof Author).toBeTruthy();
         expect(resource.type).toEqual('authors');
     });
 
-    it('a new resource with id has a type', () => {
+    it('a new resource with id has a type', async () => {
         const resource = service.createResource('31');
         expect(resource instanceof Author).toBeTruthy();
         expect(resource.id).toEqual('31');

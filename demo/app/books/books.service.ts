@@ -18,7 +18,6 @@ export class Book extends Resource {
 }
 
 @Injectable()
-@Autoregister()
 export class BooksService extends Service<Book> {
     public resource = Book;
     public type = 'books';

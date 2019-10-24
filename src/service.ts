@@ -22,6 +22,10 @@ export class Service<R extends Resource = Resource> {
     public collections_ttl: number;
     protected path: string; // without slashes
 
+    public constructor() {
+        setTimeout(() => this.register());
+    }
+
     /*
     Register service on Core
     @return true if the resource don't exist and registered ok
