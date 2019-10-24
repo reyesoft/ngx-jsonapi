@@ -60,7 +60,7 @@ describe('document resource general', () => {
     });
 });
 
-describe('document resource fill() method', () => {
+describe('document resource fill() method', async () => {
     let document_resource = new DocumentResource<Book>();
     let booksService = new BooksService();
     beforeEach(async () => {
