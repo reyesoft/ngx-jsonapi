@@ -121,6 +121,94 @@ describe('service.all()', () => {
         expect(http_request_spy).toHaveBeenCalledTimes(1);
     });
 
+    it(`without cached collection with has-one relationships`, async () => {
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book, 2, ['author']) }));
+
+        let expected = [
+            // expected emits
+            { builded: false, loaded: false, source: 'new' },
+            { builded: true, loaded: true, source: 'server' }
+        ];
+
+        let emits = await booksService
+            .all({include: ['author']})
+            .pipe(
+                tap(emit => {
+                    if (emit.data.length > 0) {
+                        expect((<Author>emit.data[0].relationships.author.data).attributes.name).toBeDefined();
+                    }
+                }),
+                map(emit => {
+                    return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
+    });
+
+    it(`ttl: 0 with has-one relationships with unknown attribute`, async () => {
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let books_with_author = TestFactory.getCollectionDocumentData(Book, 2, ['author']);
+        ((<Array<Author>>books_with_author.included)[0].attributes as any).unknown_attribute = 'unknown_value';
+        test_response_subject.next(new HttpResponse({ body: books_with_author }));
+
+        let expected = [
+            // expected emits
+            { builded: false, loaded: false, source: 'new' },
+            { builded: true, loaded: true, source: 'server' }
+        ];
+
+        let emits = await booksService
+            .all({include: ['author'], ttl: 0})
+            .pipe(
+                tap(emit => {
+                    if (emit.data.length > 0) {
+                        expect((<Author>emit.data[0].relationships.author.data).attributes.name).toBeDefined();
+                    }
+                }),
+                map(emit => {
+                    return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
+    });
+
+    it(`ttl: 0 with wrong relationship`, async () => {
+        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let books = TestFactory.getCollectionDocumentData(Book);
+        (books.data[0].relationships.author.data as any) = [];
+        test_response_subject.next(new HttpResponse({ body: books }));
+
+        let expected = [
+            // expected emits
+            { builded: false, loaded: false, source: 'new' },
+            { builded: true, loaded: true, source: 'server' }
+        ];
+
+        let emits = await booksService
+            .all({include: ['author'], ttl: 0})
+            .pipe(
+                tap(emit => {
+                    if (emit.data.length > 0) {
+                        expect(emit.data[0].relationships.author).toBeUndefined();
+                    }
+                }),
+                map(emit => {
+                    return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emits).toMatchObject(expected);
+        expect(http_request_spy).toHaveBeenCalledTimes(1);
+    });
+
     it(`with cached on memory (live) collection emits source ^memory|`, async () => {
         // caching collection
         test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
