@@ -22,6 +22,12 @@ export class PathCollectionBuilder extends PathBuilder {
             if (params.page.size) {
                 this.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.size + '=' + params.page.size);
             }
+            if (params.page.cursor) {
+                this.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.cursor + '=' + params.page.cursor);
+            }
+            if (params.page.limit) {
+                this.addParam(Core.injectedServices.rsJsonapiConfig.parameters.page.limit + '=' + params.page.limit);
+            }
         }
         if (params.sort && params.sort.length) {
             this.addParam('sort=' + params.sort.join(','));
