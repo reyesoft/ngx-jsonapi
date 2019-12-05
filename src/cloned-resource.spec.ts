@@ -11,13 +11,8 @@ import { delay } from 'rxjs/operators';
 import { AuthorsService } from './tests/factories/authors.service';
 import { PhotosService } from './tests/factories/photos.service';
 import { ClonedResource } from './cloned-resource';
-import { Resource } from './resource';
 import { async } from '@angular/core/testing';
-import { TestFactory } from './tests/factories/test-factory';
-import { Book, BooksService } from './tests/factories/books.service';
-
-// @todo disable PhotoService
-// @TODO: fix error in toObject when relationship's service is not injected
+import { BooksService } from './tests/factories/books.service';
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
@@ -247,7 +242,6 @@ describe('CloneResource properties changes', () => {
     });
 
     it ('Changing clone HAS MANY relationships', () => {
-        let http_client_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let author = authors_service.new();
         author.id = '123456';
         author.attributes.created_at = new Date();
