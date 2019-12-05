@@ -68,7 +68,7 @@ export class Service<R extends Resource = Resource> {
         return this.path || this.type;
     }
 
-    public getClone(id: string, params: IParamsResource = {}): Observable<ClonedResource> {
+    public getClone(id: string, params: IParamsResource = {}): Observable<ClonedResource<R>> {
         return this.get(id, params)
             .pipe(
                 map((resource: Resource) => {
