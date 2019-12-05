@@ -26,16 +26,6 @@ class HttpHandlerMock implements HttpHandler {
 }
 let test_response_subject = new BehaviorSubject(new HttpResponse());
 
-function httpRequestBodyFactory(data) {
-    return {
-        body: data || null,
-        headers: new HttpHeaders({
-            'Content-Type': 'application/vnd.api+json',
-            Accept: 'application/vnd.api+json'
-        })
-    };
-}
-
 describe('ClonedResource save', () => {
     let core: Core;
     let authors_service: AuthorsService;
