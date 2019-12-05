@@ -804,13 +804,12 @@ describe('service.get()', () => {
 
     it ('getClone should return a clone of the requested resource', async () => {
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
-        await booksService
-            .getClone('1')
-            .subscribe((resource_clone) => {
-                expect(resource_clone.source).toBe(resource_clone.parent.source);
-                expect(resource_clone.loaded).toBe(resource_clone.parent.loaded);
-                expect(resource_clone.attributes).toMatchObject(resource_clone.parent.attributes);
-                expect(resource_clone.relationships).toMatchObject(resource_clone.parent.relationships);
-            });
+        let book_clone = await booksService.getClone('1').toPromise();
+        let original_book = await booksService.get('1').toPromise();
+        expect(book_clone.source).toBe(original_book.source);
+        expect(book_clone.loaded).toBe(original_book.loaded);
+        expect(book_clone.attributes).toMatchObject(original_book.attributes);
+        expect(book_clone.relationships.author.data.id).toBe(original_book.relationships.author.data.id);
+        expect(book_clone.relationships.author.loaded).toBe(original_book.relationships.author.loaded);
     });
 });
