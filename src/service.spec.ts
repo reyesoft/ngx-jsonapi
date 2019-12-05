@@ -777,3 +777,40 @@ describe('service.get()', () => {
         expect(http_request_spy).toHaveBeenCalledTimes(1);
     });
 });
+
+describe('service.get()', () => {
+    let core: Core;
+    let booksService: BooksService;
+    let authorsService: AuthorsService;
+    let photosService: PhotosService;
+    beforeEach(async () => {
+        core = new Core(
+            new JsonapiConfig(),
+            new JsonapiStore(),
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+        );
+        booksService = new BooksService();
+        booksService.register();
+        await booksService.clearCache();
+        authorsService = new AuthorsService();
+        authorsService.register();
+        photosService = new PhotosService();
+        photosService.register();
+        await authorsService.clearCache();
+        test_response_subject.complete();
+        test_response_subject = new BehaviorSubject(new HttpResponse());
+        // @TODO: should clear CacheMemory before each it
+    });
+
+    it ('getClone should return a clone of the requested resource', async () => {
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
+        await booksService
+            .getClone('1')
+            .subscribe((resource_clone) => {
+                expect(resource_clone.source).toBe(resource_clone.parent.source);
+                expect(resource_clone.loaded).toBe(resource_clone.parent.loaded);
+                expect(resource_clone.attributes).toMatchObject(resource_clone.parent.attributes);
+                expect(resource_clone.relationships).toMatchObject(resource_clone.parent.relationships);
+            });
+    });
+});
