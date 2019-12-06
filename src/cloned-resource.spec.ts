@@ -53,16 +53,14 @@ describe('ClonedResource save', () => {
         test_response_subject.next(new HttpResponse({ body: author_clone.toObject() }));
         author_clone.attributes.name = 'Luis';
         author_clone.save().subscribe(author_data => {
-            expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject(
-                {
-                    data: {
-                        attributes: {name: 'Luis'},
-                        id: '123456',
-                        relationships: {},
-                        type: 'authors'
-                    }
+            expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
+                data: {
+                    attributes: { name: 'Luis' },
+                    id: '123456',
+                    relationships: {},
+                    type: 'authors'
                 }
-            );
+            });
         });
     }));
 
@@ -80,46 +78,42 @@ describe('ClonedResource save', () => {
         let book_clone = new ClonedResource(book);
         test_response_subject.next(new HttpResponse({ body: book_clone.toObject() }));
         book_clone.save().subscribe(author_data => {
-            expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject(
-                {
+            expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
+                data: {
+                    attributes: {},
+                    id: '123456',
+                    relationships: {},
+                    type: 'books'
+                }
+            });
+            let new_author = authors_service.new();
+            new_author.id = '2';
+            new_author.attributes.name = 'Luis';
+            book_clone.addRelationship(new_author, 'author');
+            book_clone.save({ include: ['author'] }).subscribe(() => {
+                expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
                     data: {
                         attributes: {},
                         id: '123456',
-                        relationships: {},
-                        type: 'books'
-                    }
-                }
-            );
-            let new_author = authors_service.new();
-            new_author.id = '2'
-            new_author.attributes.name = 'Luis';
-            book_clone.addRelationship(new_author, 'author');
-            book_clone.save({include: ['author']}).subscribe(() => {
-                expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject(
-                    {
-                        data: {
-                            attributes: {},
-                            id: '123456',
-                            relationships: {
-                                author: {
-                                    data: {
-                                        id: '2',
-                                        type: 'authors'
-                                    }
+                        relationships: {
+                            author: {
+                                data: {
+                                    id: '2',
+                                    type: 'authors'
                                 }
-                            },
-                            type: 'books'
-                        },
-                        included: [
-                            {
-                                id: '2',
-                                attributes: {name: 'Luis'},
-                                type: 'authors',
-                                relationships: {}
                             }
-                        ]
-                    }
-                );
+                        },
+                        type: 'books'
+                    },
+                    included: [
+                        {
+                            id: '2',
+                            attributes: { name: 'Luis' },
+                            type: 'authors',
+                            relationships: {}
+                        }
+                    ]
+                });
             });
         });
     }));
@@ -140,47 +134,40 @@ describe('ClonedResource save', () => {
         test_response_subject.next(new HttpResponse({ body: author_clone.toObject() }));
         author_clone.attributes.name = 'Luis';
         author_clone.save().subscribe(author_data => {
-            expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject(
-                {
-                    data: {
-                        attributes: {name: 'Luis'},
-                        id: '123456',
-                        relationships: {},
-                        type: 'authors'
-                    }
+            expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
+                data: {
+                    attributes: { name: 'Luis' },
+                    id: '123456',
+                    relationships: {},
+                    type: 'authors'
                 }
-            );
+            });
 
             let new_book = books_service.new();
             new_book.id = '2';
             new_book.attributes.title = 'new book';
             author_clone.addRelationships([new_book], 'books');
             author_clone.save({ include: ['books'] }).subscribe(() => {
-                expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject(
-                    {
-                        data: {
-                            attributes: {name: 'Luis'},
-                            id: '123456',
-                            relationships: {
-                                books: {
-                                    data: [
-                                        {id: '1', type: 'books'},
-                                        {id: '2', type: 'books'}
-                                    ]
-                                }
-                            },
-                            type: 'authors'
-                        },
-                        included: [
-                            {
-                                id: '2',
-                                attributes: {title: 'new book'},
-                                type: 'books',
-                                relationships: {}
+                expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
+                    data: {
+                        attributes: { name: 'Luis' },
+                        id: '123456',
+                        relationships: {
+                            books: {
+                                data: [{ id: '1', type: 'books' }, { id: '2', type: 'books' }]
                             }
-                        ]
-                    }
-                );
+                        },
+                        type: 'authors'
+                    },
+                    included: [
+                        {
+                            id: '2',
+                            attributes: { title: 'new book' },
+                            type: 'books',
+                            relationships: {}
+                        }
+                    ]
+                });
             });
         });
     }));
@@ -208,7 +195,7 @@ describe('CloneResource properties changes', () => {
         books_service.register();
     });
 
-    it ('Changing clone attributes', () => {
+    it('Changing clone attributes', () => {
         let author = authors_service.new();
         author.id = '123456';
         author.attributes.created_at = new Date();
@@ -221,7 +208,7 @@ describe('CloneResource properties changes', () => {
         expect(author.attributes.name).not.toBe(author_clone.attributes.name);
     });
 
-    it ('Changing clone HAS ONE relationships', () => {
+    it('Changing clone HAS ONE relationships', () => {
         let book = books_service.new();
         book.id = '123456';
         book.attributes.created_at = new Date();
@@ -233,7 +220,7 @@ describe('CloneResource properties changes', () => {
 
         let book_clone = new ClonedResource(book);
         let new_author = authors_service.new();
-        new_author.id = '2'
+        new_author.id = '2';
         new_author.attributes.name = 'Luis';
         book_clone.addRelationship(new_author, 'author');
 
@@ -241,7 +228,7 @@ describe('CloneResource properties changes', () => {
         expect(book.relationships.author.data.attributes.name).not.toBe(book_clone.relationships.author.data.attributes.name);
     });
 
-    it ('Changing clone HAS MANY relationships', () => {
+    it('Changing clone HAS MANY relationships', () => {
         let author = authors_service.new();
         author.id = '123456';
         author.attributes.created_at = new Date();

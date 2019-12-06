@@ -12,8 +12,8 @@ export class ClonedDocumentResource {
     private parent_resource_object: IDocumentResource;
 
     public constructor(
-        cloned_resource: IClonedResource|IDataResource,
-        parent_resource: Resource|IDataResource,
+        cloned_resource: IClonedResource | IDataResource,
+        parent_resource: Resource | IDataResource,
         params?: IParamsResource
     ) {
         // calling toObject two times because we need different objects
@@ -43,18 +43,16 @@ export class ClonedDocumentResource {
         this.resource_object.included = this.resource_object.included.filter(included_resource => {
             return !isEqual(included_resource, this.parent_resource_object.included.find(include => include.id === included_resource.id));
         });
-        this.resource_object.included = this.resource_object.included.map(
-            included => {
-                if (!this.parent_resource_object.included.find(include => include.id === included.id)) {
-                    return included;
-                }
-
-                return new ClonedDocumentResource(
-                    included,
-                    this.parent_resource_object.included.find(include => include.id === included.id)
-                ).getResourceObject().data;
+        this.resource_object.included = this.resource_object.included.map(included => {
+            if (!this.parent_resource_object.included.find(include => include.id === included.id)) {
+                return included;
             }
-        );
+
+            return new ClonedDocumentResource(
+                included,
+                this.parent_resource_object.included.find(include => include.id === included.id)
+            ).getResourceObject().data;
+        });
 
         return this;
     }
@@ -64,7 +62,9 @@ export class ClonedDocumentResource {
             return this;
         }
         for (let relationship in this.resource_object.data.relationships) {
-            if (isEqual(this.resource_object.data.relationships[relationship], this.parent_resource_object.data.relationships[relationship])) {
+            if (
+                isEqual(this.resource_object.data.relationships[relationship], this.parent_resource_object.data.relationships[relationship])
+            ) {
                 delete this.resource_object.data.relationships[relationship];
             }
         }

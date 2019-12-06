@@ -69,13 +69,12 @@ export class Service<R extends Resource = Resource> {
     }
 
     public getClone(id: string, params: IParamsResource = {}): Observable<ClonedResource<R>> {
-        return this.get(id, params)
-            .pipe(
-                map((resource: Resource) => {
-                    // return resource.clone();
-                    return new ClonedResource(resource);
-                })
-            );
+        return this.get(id, params).pipe(
+            map((resource: Resource) => {
+                // return resource.clone();
+                return new ClonedResource(resource);
+            })
+        );
     }
 
     // if you change this logic, maybe you need to change all()

@@ -802,7 +802,7 @@ describe('service.get()', () => {
         // @TODO: should clear CacheMemory before each it
     });
 
-    it ('getClone should return a clone of the requested resource', async () => {
+    it('getClone should return a clone of the requested resource', async () => {
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
         let book_clone = await booksService.getClone('1').toPromise();
         let original_book = await booksService.get('1').toPromise();

@@ -8,9 +8,5 @@ export interface IClonedResource extends Resource {
 }
 
 export function isClonedResource(arg: any): arg is IClonedResource {
-    return arg
-        && arg.toObject
-        && typeof(arg.toObject) === 'function'
-        && arg.superToObject
-        && typeof(arg.superToObject) === 'function';
+    return arg && arg.toObject && typeof arg.toObject === 'function' && arg.superToObject && typeof arg.superToObject === 'function';
 }
