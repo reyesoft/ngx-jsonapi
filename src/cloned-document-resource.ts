@@ -49,10 +49,8 @@ export class ClonedDocumentResource {
                 return included;
             }
 
-            return new ClonedDocumentResource(
-                included,
-                parent_included.find(include => include.id === included.id)
-            ).getResourceObject().data;
+            return new ClonedDocumentResource(included, parent_included.find(include => include.id === included.id)).getResourceObject()
+                .data;
         });
 
         return this;
