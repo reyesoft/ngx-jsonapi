@@ -45,11 +45,14 @@ describe('Resource full path', () => {
 
     it('delete method', async () => {
         let httpClientDeleteSpy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: { data: null }}));
+        test_response_subject.next(new HttpResponse({ body: { data: null } }));
         let book = TestFactory.getBook('1');
-        await book.delete().toPromise().then((data) => {
-            console.log('data ...', data);
-            expect(httpClientDeleteSpy.calls.mostRecent().args[0]).toBe('DELETE');
-        });
+        await book
+            .delete()
+            .toPromise()
+            .then(data => {
+                console.log('data ...', data);
+                expect(httpClientDeleteSpy.calls.mostRecent().args[0]).toBe('DELETE');
+            });
     });
 });
