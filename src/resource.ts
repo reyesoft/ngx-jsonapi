@@ -267,6 +267,10 @@ export class Resource implements ICacheable {
         return Converter.getServiceOrFail(this.type);
     }
 
+    public delete(): Observable<void> {
+        return this.getService().delete(this.id);
+    }
+
     public save<T extends Resource>(params?: IParamsResource): Observable<object> {
         params = { ...Base.ParamsResource, ...params };
         if (this.is_saving || !this.loaded) {
