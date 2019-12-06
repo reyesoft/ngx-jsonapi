@@ -40,17 +40,18 @@ export class ClonedDocumentResource {
         if (!this.resource_object.included || !this.parent_resource_object.included) {
             return this;
         }
+        let parent_included = this.parent_resource_object.included;
         this.resource_object.included = this.resource_object.included.filter(included_resource => {
-            return !isEqual(included_resource, this.parent_resource_object.included.find(include => include.id === included_resource.id));
+            return !isEqual(included_resource, parent_included.find(include => include.id === included_resource.id));
         });
         this.resource_object.included = this.resource_object.included.map(included => {
-            if (!this.parent_resource_object.included.find(include => include.id === included.id)) {
+            if (!parent_included.find(include => include.id === included.id)) {
                 return included;
             }
 
             return new ClonedDocumentResource(
                 included,
-                this.parent_resource_object.included.find(include => include.id === included.id)
+                parent_included.find(include => include.id === included.id)
             ).getResourceObject().data;
         });
 
