@@ -67,7 +67,7 @@ describe('service basic methods', () => {
     // });
 });
 
-let store_cache_methods: Array<'individual'|'compact'> = ['compact', 'individual'];
+let store_cache_methods: Array<'individual' | 'compact'> = ['compact', 'individual'];
 for (let store_cache_method of store_cache_methods) {
     describe(`service.all() with ${store_cache_method} storage cache method: `, () => {
         let core: Core;
@@ -96,16 +96,16 @@ for (let store_cache_method of store_cache_methods) {
 
         it(`without cached collection emits source ^new-server|`, async () => {
             let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-            test_response_subject.next(new HttpResponse({body: TestFactory.getCollectionDocumentData(Book)}));
+            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
 
             let expected = [
                 // expected emits
-                {builded: false, loaded: false, source: 'new'},
-                {builded: true, loaded: true, source: 'server'}
+                { builded: false, loaded: false, source: 'new' },
+                { builded: true, loaded: true, source: 'server' }
             ];
 
             let emits = await booksService
-                .all({store_cache_method: store_cache_method})
+                .all({ store_cache_method: store_cache_method })
                 .pipe(
                     tap(emit => {
                         if (emit.data.length > 0) {
@@ -114,7 +114,7 @@ for (let store_cache_method of store_cache_methods) {
                         }
                     }),
                     map(emit => {
-                        return {builded: emit.builded, loaded: emit.loaded, source: emit.source};
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
                 )
@@ -125,21 +125,21 @@ for (let store_cache_method of store_cache_methods) {
 
         it(`with cached on memory (live) collection emits source ^memory|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({body: TestFactory.getCollectionDocumentData(Book)}));
+            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
             booksService.collections_ttl = 5; // live
             await booksService.all().toPromise();
 
             let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
             let expected = [
                 // expected emits
-                {builded: true, loaded: true, source: 'memory'}
+                { builded: true, loaded: true, source: 'memory' }
             ];
 
             let emits = await booksService
-                .all({store_cache_method: store_cache_method})
+                .all({ store_cache_method: store_cache_method })
                 .pipe(
                     map(emit => {
-                        return {builded: emit.builded, loaded: emit.loaded, source: emit.source};
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
                 )
@@ -150,19 +150,19 @@ for (let store_cache_method of store_cache_methods) {
 
         it(`with cached on memory (dead) collection emits source ^memory-server|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({body: TestFactory.getCollectionDocumentData(Book)}));
+            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
             booksService.collections_ttl = 0; // dead
-            await booksService.all({store_cache_method: store_cache_method}).toPromise();
+            await booksService.all({ store_cache_method: store_cache_method }).toPromise();
 
             let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
             let expected = [
                 // expected emits
-                {builded: true, loaded: false, source: 'memory'},
-                {builded: true, loaded: true, source: 'server'}
+                { builded: true, loaded: false, source: 'memory' },
+                { builded: true, loaded: true, source: 'server' }
             ];
 
             let emits = await booksService
-                .all({store_cache_method: store_cache_method})
+                .all({ store_cache_method: store_cache_method })
                 .pipe(
                     tap(emit => {
                         if (emit.data.length > 0) {
@@ -171,7 +171,7 @@ for (let store_cache_method of store_cache_methods) {
                         }
                     }),
                     map(emit => {
-                        return {builded: emit.builded, loaded: emit.loaded, source: emit.source};
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
                 )
@@ -182,9 +182,9 @@ for (let store_cache_method of store_cache_methods) {
 
         it(`with cached on store (live) collection emits source ^new-store|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({body: TestFactory.getCollectionDocumentData(Book)}));
+            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
             booksService.collections_ttl = 5; // live
-            await booksService.all({store_cache_method: store_cache_method}).toPromise();
+            await booksService.all({ store_cache_method: store_cache_method }).toPromise();
             let cachememory = CacheMemory.getInstance(); // kill only memory cache
             (cachememory as any).resources = {}; // kill memory cache
             (cachememory as any).collections = {}; // kill memory cache
@@ -192,12 +192,12 @@ for (let store_cache_method of store_cache_methods) {
             let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
             let expected = [
                 // expected emits
-                {builded: false, loaded: false, source: 'new', source_resource: undefined},
-                {builded: true, loaded: true, source: 'store', source_resource: 'store'}
+                { builded: false, loaded: false, source: 'new', source_resource: undefined },
+                { builded: true, loaded: true, source: 'store', source_resource: 'store' }
             ];
 
             let emits = await booksService
-                .all({store_cache_method: store_cache_method})
+                .all({ store_cache_method: store_cache_method })
                 .pipe(
                     tap(emit => {
                         if (emit.data.length > 0) {
@@ -207,9 +207,14 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     map(emit => {
                         if (emit.data.length > 0) {
-                            return {builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: emit.data[0].source};
+                            return {
+                                builded: emit.builded,
+                                loaded: emit.loaded,
+                                source: emit.source,
+                                source_resource: emit.data[0].source
+                            };
                         } else {
-                            return {builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: undefined};
+                            return { builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: undefined };
                         }
                     }),
                     toArray()
@@ -221,9 +226,9 @@ for (let store_cache_method of store_cache_methods) {
 
         it(`with cached on store (live) collection wihtout includes emits source ^new-store|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({body: TestFactory.getCollectionDocumentData(Book)}));
+            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
             booksService.collections_ttl = 5; // live
-            await booksService.all({store_cache_method: store_cache_method, include: ['author']}).toPromise();
+            await booksService.all({ store_cache_method: store_cache_method, include: ['author'] }).toPromise();
             let cachememory = CacheMemory.getInstance(); // kill only memory cache
             (cachememory as any).resources = {}; // kill memory cache
             (cachememory as any).collections = {}; // kill memory cache
@@ -231,18 +236,23 @@ for (let store_cache_method of store_cache_methods) {
             let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
             let expected = [
                 // expected emits
-                {builded: false, loaded: false, source: 'new', source_resource: undefined},
-                {builded: true, loaded: true, source: 'store', source_resource: 'store'}
+                { builded: false, loaded: false, source: 'new', source_resource: undefined },
+                { builded: true, loaded: true, source: 'store', source_resource: 'store' }
             ];
 
             let emits = await booksService
-                .all({store_cache_method: store_cache_method})
+                .all({ store_cache_method: store_cache_method })
                 .pipe(
                     map(emit => {
                         if (emit.data.length > 0) {
-                            return {builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: emit.data[0].source};
+                            return {
+                                builded: emit.builded,
+                                loaded: emit.loaded,
+                                source: emit.source,
+                                source_resource: emit.data[0].source
+                            };
                         } else {
-                            return {builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: undefined};
+                            return { builded: emit.builded, loaded: emit.loaded, source: emit.source, source_resource: undefined };
                         }
                     }),
                     toArray()
@@ -254,23 +264,23 @@ for (let store_cache_method of store_cache_methods) {
 
         it(`with cached on store (dead) collection emits source ^new-store-server|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({body: TestFactory.getCollectionDocumentData(Book)}));
+            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
             booksService.collections_ttl = 0; // dead
-            await booksService.all({store_cache_method: store_cache_method}).toPromise();
+            await booksService.all({ store_cache_method: store_cache_method }).toPromise();
             CacheMemory.getInstance().deprecateCollections('');
 
             let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
             let expected = [
                 // expected emits
-                {builded: true, loaded: false, source: 'new'}, // @TODO: builded should be false
-                {builded: true, loaded: true, source: 'server'}
+                { builded: true, loaded: false, source: 'new' }, // @TODO: builded should be false
+                { builded: true, loaded: true, source: 'server' }
             ];
 
             let emits = await booksService
-                .all({store_cache_method: store_cache_method})
+                .all({ store_cache_method: store_cache_method })
                 .pipe(
                     map(emit => {
-                        return {builded: emit.builded, loaded: emit.loaded, source: emit.source};
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
                 )
@@ -281,23 +291,23 @@ for (let store_cache_method of store_cache_methods) {
 
         it(`with cached on store (dead, no collection_ttl defined) collection emits source ^new-store-server|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({body: TestFactory.getCollectionDocumentData(Book)}));
+            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
             delete booksService.collections_ttl; // dead
-            await booksService.all({store_cache_method: store_cache_method}).toPromise();
+            await booksService.all({ store_cache_method: store_cache_method }).toPromise();
             CacheMemory.getInstance().deprecateCollections('');
 
             let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
             let expected = [
                 // expected emits
-                {builded: true, loaded: false, source: 'new'}, // @TODO: builded should be false
-                {builded: true, loaded: true, source: 'server'}
+                { builded: true, loaded: false, source: 'new' }, // @TODO: builded should be false
+                { builded: true, loaded: true, source: 'server' }
             ];
 
             let emits = await booksService
-                .all({store_cache_method: store_cache_method})
+                .all({ store_cache_method: store_cache_method })
                 .pipe(
                     map(emit => {
-                        return {builded: emit.builded, loaded: emit.loaded, source: emit.source};
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
                 )
