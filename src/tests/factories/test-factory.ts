@@ -188,8 +188,10 @@ export class TestFactory {
 
     private static includeHasOneFromService(resource: Resource, relationship_alias: string, class_to_add: typeof Resource) {
         let resource_to_add: Resource = new class_to_add();
-        let relationship = (<DocumentResource>resource.relationships[relationship_alias]);
-        if (!relationship || !relationship.data) { return; }
+        let relationship = <DocumentResource>resource.relationships[relationship_alias];
+        if (!relationship || !relationship.data) {
+            return;
+        }
         resource_to_add.id = relationship.data.id;
         let fill_method = `fill${class_to_add.name}Attributes`;
         this[fill_method](resource_to_add);
@@ -239,7 +241,7 @@ export class TestFactory {
         if (relationship_content instanceof DocumentResource || 'type' in relationship_content.data) {
             let relation_data = (<DocumentResource | IDocumentResource>relationship_content).data;
             if (!relation_data) {
-                console.warn('relationship content is empty')
+                console.warn('relationship content is empty');
 
                 return;
             }
