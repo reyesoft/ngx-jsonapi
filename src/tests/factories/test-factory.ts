@@ -125,7 +125,7 @@ export class TestFactory {
     }
 
     public static getCollection(resources_class: typeof Resource, size: number = 2, include: Array<string> = []): DocumentCollection {
-        let collection: DocumentCollection<Resource> = new DocumentCollection();
+        let collection: DocumentCollection = new DocumentCollection();
         for (let index = 0; index < size; index++) {
             let factory_name = `get${resources_class.name}`;
             let resource = this[factory_name](undefined, include);
@@ -188,7 +188,11 @@ export class TestFactory {
 
     private static includeHasOneFromService(resource: Resource, relationship_alias: string, class_to_add: typeof Resource) {
         let resource_to_add: Resource = new class_to_add();
-        resource_to_add.id = (<DocumentResource>resource.relationships[relationship_alias]).data.id;
+        let relationship = <DocumentResource>resource.relationships[relationship_alias];
+        if (!relationship || !relationship.data) {
+            return;
+        }
+        resource_to_add.id = relationship.data.id;
         let fill_method = `fill${class_to_add.name}Attributes`;
         this[fill_method](resource_to_add);
         resource.addRelationship(resource_to_add, relationship_alias);
@@ -235,14 +239,21 @@ export class TestFactory {
 
         // @NOTE: cannot check IDocumentResource interface with instanceof
         if (relationship_content instanceof DocumentResource || 'type' in relationship_content.data) {
-            if (!relationship_content.data) {
+            let relation_data = (<DocumentResource | IDocumentResource>relationship_content).data;
+            if (!relation_data) {
+                console.warn('relationship content is empty');
+
+                return;
+            }
+            let resource_class = this.resource_classes_by_type[relation_data.type];
+            if (resource_class) {
+                console.warn(`cannot find the required class for type ${relation_data.type}`);
+
                 return;
             }
             document_data.included.push(
-                // @TODO: improve this code... should avoind forced types and ts errors...
-                this[`get${this.resource_classes_by_type[(<DocumentResource | IDocumentResource>relationship_content).data.type].name}`](
-                    (<DocumentResource | IDocumentResource>relationship_content).data.id
-                )
+                // @TODO: improve this code... should avoid forced types and ts errors...
+                this[`get${resource_class.name}`](relation_data.id)
             );
             // @NOTE: cannot check IDataResource interface with instanceof
         } else if (relationship_content instanceof DocumentCollection || relationship_content.data instanceof Array) {
