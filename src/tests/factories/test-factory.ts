@@ -125,7 +125,7 @@ export class TestFactory {
     }
 
     public static getCollection(resources_class: typeof Resource, size: number = 2, include: Array<string> = []): DocumentCollection {
-        let collection: DocumentCollection<Resource> = new DocumentCollection();
+        let collection: DocumentCollection = new DocumentCollection();
         for (let index = 0; index < size; index++) {
             let factory_name = `get${resources_class.name}`;
             let resource = this[factory_name](undefined, include);
