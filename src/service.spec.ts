@@ -790,3 +790,39 @@ describe('service.get()', () => {
         expect(http_request_spy).toHaveBeenCalledTimes(1);
     });
 });
+
+describe('service.get()', () => {
+    let core: Core;
+    let booksService: BooksService;
+    let authorsService: AuthorsService;
+    let photosService: PhotosService;
+    beforeEach(async () => {
+        core = new Core(
+            new JsonapiConfig(),
+            new JsonapiStore(),
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+        );
+        booksService = new BooksService();
+        booksService.register();
+        await booksService.clearCache();
+        authorsService = new AuthorsService();
+        authorsService.register();
+        photosService = new PhotosService();
+        photosService.register();
+        await authorsService.clearCache();
+        test_response_subject.complete();
+        test_response_subject = new BehaviorSubject(new HttpResponse());
+        // @TODO: should clear CacheMemory before each it
+    });
+
+    it('getClone should return a clone of the requested resource', async () => {
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
+        let book_clone = await booksService.getClone('1').toPromise();
+        let original_book = await booksService.get('1').toPromise();
+        expect(book_clone.source).toBe(original_book.source);
+        expect(book_clone.loaded).toBe(original_book.loaded);
+        expect(book_clone.attributes).toMatchObject(original_book.attributes);
+        expect(book_clone.relationships.author.data.id).toBe(original_book.relationships.author.data.id);
+        expect(book_clone.relationships.author.loaded).toBe(original_book.relationships.author.loaded);
+    });
+});

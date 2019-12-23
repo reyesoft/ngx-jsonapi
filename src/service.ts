@@ -1,4 +1,4 @@
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { Core } from './core';
 import { IBuildedParamsCollection } from './interfaces/params-collection';
 import { Base } from './services/base';
@@ -15,6 +15,7 @@ import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
 import { JsonRipper } from './services/json-ripper';
 import { DexieDataProvider } from './data-providers/dexie-data-provider';
+import { ClonedResource } from './cloned-resource';
 
 export class Service<R extends Resource = Resource> {
     public type: string;
@@ -65,6 +66,15 @@ export class Service<R extends Resource = Resource> {
 
     public getPath(): string {
         return this.path || this.type;
+    }
+
+    public getClone(id: string, params: IParamsResource = {}): Observable<ClonedResource<R>> {
+        return this.get(id, params).pipe(
+            map((resource: Resource) => {
+                // return resource.clone();
+                return new ClonedResource(resource);
+            })
+        );
     }
 
     // if you change this logic, maybe you need to change all()
