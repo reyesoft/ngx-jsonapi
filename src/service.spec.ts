@@ -321,7 +321,7 @@ for (let store_cache_method of store_cache_methods) {
             let http_response = {
                 body: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
             };
-            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books'}];
+            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books' }];
             let nested_book = TestFactory.getBook();
             delete nested_book.relationships;
             nested_book.id = 'book_123';
@@ -356,7 +356,7 @@ for (let store_cache_method of store_cache_methods) {
             let http_response = {
                 body: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
             };
-            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books'}];
+            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books' }];
             let nested_book = TestFactory.getBook();
             delete nested_book.relationships;
             nested_book.id = 'book_123';
@@ -395,7 +395,7 @@ for (let store_cache_method of store_cache_methods) {
             let http_response = {
                 body: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
             };
-            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books'}];
+            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books' }];
             let nested_book = TestFactory.getBook();
             delete nested_book.relationships;
             nested_book.id = 'book_123';
