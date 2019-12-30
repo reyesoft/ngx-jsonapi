@@ -175,14 +175,15 @@ export class TestFactory {
     }
 
     private static includeFromService(resource: Resource, relationship_alias: string, class_to_add: typeof Resource) {
-        if (resource.relationships[relationship_alias] && 'id' in resource.relationships[relationship_alias].data) {
+        let relationship = resource.relationships[relationship_alias];
+        if (!relationship) {
+            console.error(`${relationship_alias} relationship doesn't exist in ${resource.type}`);
+
+            return;
+        } else if (relationship.data && 'id' in relationship.data) {
             this.includeHasOneFromService(resource, relationship_alias, class_to_add);
-        } else if (resource.relationships[relationship_alias] instanceof DocumentCollection) {
+        } else if (relationship instanceof DocumentCollection) {
             this.includeHasManyFromService(resource, relationship_alias, class_to_add);
-        } else {
-            console.error(
-                `includeFromService cannot include relatioship ${relationship_alias} in resource ${resource.type} because it doesn't exist`
-            );
         }
     }
 
