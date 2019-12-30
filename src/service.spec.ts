@@ -315,6 +315,119 @@ for (let store_cache_method of store_cache_methods) {
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(1);
         });
+
+        it(`with nested include (collection -> hasone -> hasMany)`, async () => {
+            // caching collection
+            let http_response = {
+                body: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
+            };
+            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books'}];
+            let nested_book = TestFactory.getBook();
+            delete nested_book.relationships;
+            nested_book.id = 'book_123';
+            nested_book.attributes.title = 'The Nested Book';
+            http_response.body.included.push(nested_book);
+            test_response_subject.next(new HttpResponse(http_response));
+            delete booksService.collections_ttl; // dead
+            CacheMemory.getInstance().deprecateCollections('');
+
+            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            let expected = [
+                // expected emits
+                { builded: false, loaded: false, source: 'new' },
+                { builded: true, loaded: true, source: 'server' }
+            ];
+
+            let emits = await booksService
+                .all({ include: ['author', 'author.books'], store_cache_method: store_cache_method })
+                .pipe(
+                    map(emit => {
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise();
+            expect(emits).toMatchObject(expected);
+            expect(http_request_spy).toHaveBeenCalledTimes(1);
+        });
+
+        it(`cached on store (dead) with nested include (collection -> hasone -> hasMany)`, async () => {
+            // caching collection
+            let http_response = {
+                body: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
+            };
+            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books'}];
+            let nested_book = TestFactory.getBook();
+            delete nested_book.relationships;
+            nested_book.id = 'book_123';
+            nested_book.attributes.title = 'The Nested Book';
+            http_response.body.included.push(nested_book);
+            test_response_subject.next(new HttpResponse(http_response));
+            delete booksService.collections_ttl; // dead
+            await booksService.all({ include: ['author', 'author.books'], store_cache_method: store_cache_method }).toPromise();
+            CacheMemory.getInstance().deprecateCollections('');
+
+            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            let expected = [
+                // expected emits
+                { builded: true, loaded: false, source: 'new' },
+                { builded: true, loaded: true, source: 'server' }
+            ];
+
+            let emits = await booksService
+                .all({ include: ['author', 'author.books'], store_cache_method: store_cache_method })
+                .pipe(
+                    map(emit => {
+                        expect(emit.data[0].relationships.author.data.relationships.books.data[0].id).toBe('book_123');
+                        expect(emit.data[0].relationships.author.data.relationships.books.data[0].attributes.title).toBe('The Nested Book');
+
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise();
+            expect(emits).toMatchObject(expected);
+            expect(http_request_spy).toHaveBeenCalledTimes(1);
+        });
+
+        it(`cached on memory (dead) with nested include (collection -> hasone -> hasMany)`, async () => {
+            // caching collection
+            let http_response = {
+                body: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
+            };
+            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books'}];
+            let nested_book = TestFactory.getBook();
+            delete nested_book.relationships;
+            nested_book.id = 'book_123';
+            nested_book.attributes.title = 'The Nested Book';
+            http_response.body.included.push(nested_book);
+            test_response_subject.next(new HttpResponse(http_response));
+            delete booksService.collections_ttl; // dead
+            await booksService.all({ include: ['author', 'author.books'], store_cache_method: store_cache_method }).toPromise();
+            // CacheMemory.getInstance().deprecateCollections('');
+
+            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            let expected = [
+                // expected emits
+                { builded: true, loaded: false, source: 'memory' },
+                { builded: true, loaded: true, source: 'server' }
+            ];
+
+            let emits = await booksService
+                .all({ include: ['author', 'author.books'], store_cache_method: store_cache_method })
+                .pipe(
+                    map(emit => {
+                        expect(emit.data[0].relationships.author.data.relationships.books.data[0].id).toBe('book_123');
+                        expect(emit.data[0].relationships.author.data.relationships.books.data[0].attributes.title).toBe('The Nested Book');
+
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise();
+            expect(emits).toMatchObject(expected);
+            expect(http_request_spy).toHaveBeenCalledTimes(1);
+        });
     });
 }
 
