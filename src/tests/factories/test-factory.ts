@@ -175,7 +175,7 @@ export class TestFactory {
     }
 
     private static includeFromService(resource: Resource, relationship_alias: string, class_to_add: typeof Resource) {
-        if ('id' in resource.relationships[relationship_alias].data) {
+        if (resource.relationships[relationship_alias] && 'id' in resource.relationships[relationship_alias].data) {
             this.includeHasOneFromService(resource, relationship_alias, class_to_add);
         } else if (resource.relationships[relationship_alias] instanceof DocumentCollection) {
             this.includeHasManyFromService(resource, relationship_alias, class_to_add);
