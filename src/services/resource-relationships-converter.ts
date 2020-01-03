@@ -87,9 +87,9 @@ export class ResourceRelationshipsConverter {
         }
 
         if (
-            (<Resource>this.relationships_dest[relation_alias].data).id !== relation_data_from.data.id
-            || !(<Resource>this.relationships_dest[relation_alias].data).attributes
-            || Object.keys((<Resource>this.relationships_dest[relation_alias].data).attributes).length === 0
+            (<Resource>this.relationships_dest[relation_alias].data).id !== relation_data_from.data.id ||
+            !(<Resource>this.relationships_dest[relation_alias].data).attributes ||
+            Object.keys((<Resource>this.relationships_dest[relation_alias].data).attributes).length === 0
         ) {
             let resource_data = this.__buildRelationship(relation_data_from.data);
             if (resource_data) {

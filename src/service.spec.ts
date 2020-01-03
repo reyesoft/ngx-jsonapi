@@ -600,7 +600,7 @@ describe('service.all() and next service.get()', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request');
 
         let book_emits = await booksService
-            .get('1', { include: ['author'], ttl: 1000})
+            .get('1', { include: ['author'], ttl: 1000 })
             .pipe(
                 map(emit => {
                     expect(http_request_spy).not.toHaveBeenCalled();
@@ -639,7 +639,7 @@ describe('service.all() and next service.get()', () => {
         test_response_subject.next(new HttpResponse({ body: books_api }));
 
         let books_emits = await booksService
-            .all({ include: ['author'], ttl: 1000})
+            .all({ include: ['author'], ttl: 1000 })
             .pipe(
                 map(emit => {
                     if (emit.loaded) {
@@ -819,7 +819,7 @@ describe('service.get()', () => {
         let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Book, ['author']);
         test_response_subject.next(new HttpResponse({ body: body_resource }));
         // caching resource
-        await booksService.get('1', {include: ['author']}).toPromise();
+        await booksService.get('1', { include: ['author'] }).toPromise();
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
 
@@ -843,45 +843,43 @@ describe('service.get()', () => {
         expect(http_request_spy).toHaveBeenCalledTimes(0);
     });
 
-    it(`with cached on store (live) resource + include cached has-one-relationship emits source ^new-store|`,
-        async () => {
-            let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Book, ['author']);
-            // body_resource.data.relationships = { author: { data: [] } };
-            body_resource.data.id = '1';
-            test_response_subject.next(new HttpResponse({ body: body_resource }));
-            // caching resource
-            await booksService.get('1', {include: ['author']}).toPromise();
-            test_response_subject.complete();
+    it(`with cached on store (live) resource + include cached has-one-relationship emits source ^new-store|`, async () => {
+        let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Book, ['author']);
+        // body_resource.data.relationships = { author: { data: [] } };
+        body_resource.data.id = '1';
+        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        // caching resource
+        await booksService.get('1', { include: ['author'] }).toPromise();
+        test_response_subject.complete();
 
-            let cachememory = CacheMemory.getInstance(); // kill only memory cache
-            (cachememory as any).resources = {}; // kill memory cache
-            (cachememory as any).collections = {}; // kill memory cache
+        let cachememory = CacheMemory.getInstance(); // kill only memory cache
+        (cachememory as any).resources = {}; // kill memory cache
+        (cachememory as any).collections = {}; // kill memory cache
 
-            let http_request_spy = spyOn(HttpClient.prototype, 'request');
+        let http_request_spy = spyOn(HttpClient.prototype, 'request');
 
-            let expected = [
-                // expected emits
-                { loaded: false, source: 'new' },
-                { loaded: true, source: 'store' }
-            ];
+        let expected = [
+            // expected emits
+            { loaded: false, source: 'new' },
+            { loaded: true, source: 'store' }
+        ];
 
-            let emits = await booksService
-                .get('1', { ttl: 1000, include: ['author'] })
-                .pipe(
-                    map(emit => {
-                        if (emit.source !== 'new') {
-                            expect(emit.relationships.author.data.attributes.name).toBeTruthy();
-                        }
+        let emits = await booksService
+            .get('1', { ttl: 1000, include: ['author'] })
+            .pipe(
+                map(emit => {
+                    if (emit.source !== 'new') {
+                        expect(emit.relationships.author.data.attributes.name).toBeTruthy();
+                    }
 
-                        return { loaded: emit.loaded, source: emit.source };
-                    }),
-                    toArray()
-                )
-                .toPromise();
-            expect(emits).toMatchObject(expected);
-            expect(http_request_spy).not.toHaveBeenCalled();
-        }
-    );
+                    return { loaded: emit.loaded, source: emit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+        expect(emits).toMatchObject(expected);
+        expect(http_request_spy).not.toHaveBeenCalled();
+    });
 
     it(`with cached on memory (live) resource + include empty has-many-relationship emits source ^memory|`, async () => {
         let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Author);

@@ -275,7 +275,7 @@ export class TestFactory {
                 if (!(<Resource>document_data.data).relationships[included_alias].data) {
                     continue;
                 }
-                TestFactory.fillResourceRelationshipsInDocumentData(document_data, (<Resource>document_data.data), included_alias);
+                TestFactory.fillResourceRelationshipsInDocumentData(document_data, <Resource>document_data.data, included_alias);
 
                 return;
             }
