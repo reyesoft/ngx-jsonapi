@@ -52,6 +52,10 @@ export class Resource implements ICacheable {
         let relationships = {};
         let included: Array<IDataResource> = [];
         let included_ids: Array<string> = []; // just for control don't repeat any resource
+        let included_relationships: Array<string> = params.include;
+        if (params.include_save) {
+            included_relationships = included_relationships.concat(params.include_save);
+        }
 
         // REALTIONSHIPS
         for (const relation_alias in this.relationships) {
@@ -73,7 +77,7 @@ export class Resource implements ICacheable {
 
                     // no se agregó aún a included && se ha pedido incluir con el parms.include
                     let temporal_id = resource.type + '_' + resource.id;
-                    if (included_ids.indexOf(temporal_id) === -1 && params.include && params.include.indexOf(relation_alias) !== -1) {
+                    if (included_ids.indexOf(temporal_id) === -1 && included_relationships && included_relationships.indexOf(relation_alias) !== -1) {
                         included_ids.push(temporal_id);
                         included.push(resource.toObject({}).data);
                     }
@@ -110,7 +114,7 @@ export class Resource implements ICacheable {
 
                 // no se agregó aún a included && se ha pedido incluir con el parms.include
                 let temporal_id = relationship_data.type + '_' + relationship_data.id;
-                if (included_ids.indexOf(temporal_id) === -1 && params.include && params.include.indexOf(relation_alias) !== -1) {
+                if (included_ids.indexOf(temporal_id) === -1 && included_relationships && included_relationships.indexOf(relation_alias) !== -1) {
                     included_ids.push(temporal_id);
                     included.push(relationship_data.toObject({}).data);
                 }
