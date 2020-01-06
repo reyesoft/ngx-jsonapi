@@ -8,11 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added include_get and include_save to IResourceParams
+-   Added include_get and include_save to IResourceParams
 
 ### Changed
 
-- Resource's save methods uses is_new instead of ID property to select between POST and PATCH
+-   Resource's save methods uses is_new instead of ID property to select between POST and PATCH
 
 ## [2.1.14] - 2019-10-24
 
