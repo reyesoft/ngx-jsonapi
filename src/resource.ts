@@ -77,7 +77,11 @@ export class Resource implements ICacheable {
 
                     // no se agregó aún a included && se ha pedido incluir con el parms.include
                     let temporal_id = resource.type + '_' + resource.id;
-                    if (included_ids.indexOf(temporal_id) === -1 && included_relationships && included_relationships.indexOf(relation_alias) !== -1) {
+                    if (
+                        included_ids.indexOf(temporal_id) === -1 &&
+                        included_relationships &&
+                        included_relationships.indexOf(relation_alias) !== -1
+                    ) {
                         included_ids.push(temporal_id);
                         included.push(resource.toObject({}).data);
                     }
@@ -114,7 +118,11 @@ export class Resource implements ICacheable {
 
                 // no se agregó aún a included && se ha pedido incluir con el parms.include
                 let temporal_id = relationship_data.type + '_' + relationship_data.id;
-                if (included_ids.indexOf(temporal_id) === -1 && included_relationships && included_relationships.indexOf(relation_alias) !== -1) {
+                if (
+                    included_ids.indexOf(temporal_id) === -1 &&
+                    included_relationships &&
+                    included_relationships.indexOf(relation_alias) !== -1
+                ) {
                     included_ids.push(temporal_id);
                     included.push(relationship_data.toObject({}).data);
                 }

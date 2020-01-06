@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import {Book, BooksService} from './tests/factories/books.service';
+import { Book, BooksService } from './tests/factories/books.service';
 import { AuthorsService } from './tests/factories/authors.service';
 import { PhotosService } from './tests/factories/photos.service';
 import { JsonapiConfig } from './jsonapi-config';
@@ -86,7 +86,7 @@ describe('Resource save', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
 
-        await resource.save({include_get: ['author']});
+        await resource.save({ include_get: ['author'] });
         expect(http_request_spy.calls.mostRecent().args[1]).toBe('http://yourdomain/api/v1/books/book_1?include=author');
         expect(http_request_spy.calls.mostRecent().args[2].body.include).toBeFalsy();
     });
@@ -97,7 +97,7 @@ describe('Resource save', () => {
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
 
-        await resource.save({include_save: ['author']});
+        await resource.save({ include_save: ['author'] });
         expect(http_request_spy.calls.mostRecent().args[1]).toBe('http://yourdomain/api/v1/books/book_1');
         expect(http_request_spy.calls.mostRecent().args[2].body.included).toBeTruthy();
         expect(http_request_spy.calls.mostRecent().args[2].body.included.length).toBe(1);
