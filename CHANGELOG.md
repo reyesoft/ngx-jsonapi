@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added include_get and include_save to IResourceParams
+-   Added include_get and include_save to IResourceParams
 
 ## [2.1.14] - 2019-10-24
 
