@@ -7,7 +7,9 @@ export interface IParamsResource extends IParams {
 }
 
 export function implementsIParamsResource(params: IParams): params is IParamsResource {
-    return (<IParamsResource>params).id !== undefined
-        || (<IParamsResource>params).include_get !== undefined
-        || (<IParamsResource>params).include_save !== undefined;
+    return (
+        (<IParamsResource>params).id !== undefined ||
+        (<IParamsResource>params).include_get !== undefined ||
+        (<IParamsResource>params).include_save !== undefined
+    );
 }
