@@ -1,4 +1,5 @@
-import { implementsIParamsResource, IParamsCollection, IParamsResource } from '../interfaces';
+import { IParamsCollection, IParamsResource } from '../interfaces';
+import { implementsIParamsResource } from '../interfaces/type-checks';
 import { Core } from '../core';
 import { Service } from '../service';
 
