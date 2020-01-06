@@ -52,7 +52,7 @@ export class Resource implements ICacheable {
         let relationships = {};
         let included: Array<IDataResource> = [];
         let included_ids: Array<string> = []; // just for control don't repeat any resource
-        let included_relationships: Array<string> = params.include;
+        let included_relationships: Array<string> = params.include || [];
         if (params.include_save) {
             included_relationships = included_relationships.concat(params.include_save);
         }
