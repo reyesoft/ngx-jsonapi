@@ -100,7 +100,7 @@ describe('core methods', () => {
         });
     });
 
-    it(`resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources,
+    it(`resource should have the correct hasOne and hasMany relationships corresponding to the back end response's included resources,
         including nested relationships`, async () => {
         let test_resource = new TestResource();
         test_resource.type = 'test_resources';
@@ -161,7 +161,7 @@ describe('core methods', () => {
             });
     });
 
-    it(`resource should have the correct hasOne and hasMany relationships correspondig to the back end response's included resources`, async () => {
+    it(`resource should have the correct hasOne and hasMany relationships corresponding to the back end response's included resources`, async () => {
         let test_resource = new TestResource();
         test_resource.type = 'test_resources';
         test_resource.id = '1';
@@ -219,7 +219,7 @@ describe('core methods', () => {
             });
     });
 
-    it(`if the back end sends a hasOne relatiohsip with a null data property, it should be set as null in the resulting resource`, async () => {
+    it(`if the back end sends a hasOne relationship with a null data property, it should be set as null in the resulting resource`, async () => {
         let test_resource = new TestResource();
         test_resource.type = 'test_resources';
         test_resource.id = '1';

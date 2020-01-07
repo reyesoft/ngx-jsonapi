@@ -91,7 +91,7 @@ export class Service<R extends Resource = Resource> {
         let subject = new BehaviorSubject<R>(resource);
 
         if (Object.keys(params.fields || []).length > 0) {
-            // memory/store cache dont suppont fields
+            // memory/store cache doesnt support fields
             this.getGetFromServer(path, resource, subject);
         } else if (isLive(resource, params.ttl) && relationshipsAreBuilded(resource, params.include || [])) {
             // data on memory and its live

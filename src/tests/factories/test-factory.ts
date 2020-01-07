@@ -22,7 +22,7 @@ export class TestFactory {
         let main_resource: Resource = this[`get${document_class.name}`](id, include);
 
         let document_data: IDocumentData = main_resource.toObject();
-        this.fillDocumentDataIncludedRelatioships(document_data, include);
+        TestFactory.fillDocumentDataIncludedRelatioships(document_data, include);
 
         return document_data;
     }
@@ -31,7 +31,7 @@ export class TestFactory {
         let main_collection: DocumentCollection = this.getCollection(document_class, size, include);
 
         let document_data: IDocumentData = main_collection.toObject();
-        this.fillDocumentDataIncludedRelatioships(document_data, include);
+        TestFactory.fillDocumentDataIncludedRelatioships(document_data, include);
 
         return document_data;
     }
@@ -71,7 +71,7 @@ export class TestFactory {
         let book: Book = new Book();
         book.id = this.getId(id);
         book.ttl = ttl;
-        this.fillBookAttributes(book);
+        TestFactory.fillBookAttributes(book);
 
         // NOTE: add author
         (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('authors');
@@ -93,7 +93,7 @@ export class TestFactory {
         let author: Author = new Author();
         author.id = this.getId(id);
         author.ttl = ttl;
-        this.fillAuthorAttirbutes(author);
+        TestFactory.fillAuthorAttributes(author);
 
         // NOTE: add books
         author.relationships.books.data = author.relationships.books.data.concat(<Array<Book>>this.getDataResourcesWithType('books', 2));
@@ -119,7 +119,7 @@ export class TestFactory {
         let photo: Photo = new Photo();
         photo.id = this.getId(id);
         photo.ttl = ttl;
-        this.fillPhotoAttirbutes(photo);
+        TestFactory.fillPhotoAttirbutes(photo);
 
         return photo;
     }
@@ -139,7 +139,7 @@ export class TestFactory {
     }
 
     // TODO: create a dynamic attribute filler by data type and merge 3 methods in 1
-    private static fillAuthorAttirbutes(author: Author): Author {
+    private static fillAuthorAttributes(author: Author): Author {
         author.attributes.name = faker.name.firstName();
         author.attributes.date_of_birth = faker.date.past();
         author.attributes.date_of_death = faker.date.past();
@@ -175,14 +175,15 @@ export class TestFactory {
     }
 
     private static includeFromService(resource: Resource, relationship_alias: string, class_to_add: typeof Resource) {
-        if ('id' in resource.relationships[relationship_alias]) {
+        let relationship = resource.relationships[relationship_alias];
+        if (!relationship) {
+            console.error(`${relationship_alias} relationship doesn't exist in ${resource.type}`);
+
+            return;
+        } else if (relationship.data && 'id' in relationship.data) {
             this.includeHasOneFromService(resource, relationship_alias, class_to_add);
-        } else if (resource.relationships[relationship_alias] instanceof DocumentCollection) {
+        } else if (relationship instanceof DocumentCollection) {
             this.includeHasManyFromService(resource, relationship_alias, class_to_add);
-        } else {
-            console.error(
-                `includeFromService cannot include relatioship ${relationship_alias} in resource ${resource.type} because it doesn't exist`
-            );
         }
     }
 
@@ -194,7 +195,7 @@ export class TestFactory {
         }
         resource_to_add.id = relationship.data.id;
         let fill_method = `fill${class_to_add.name}Attributes`;
-        this[fill_method](resource_to_add);
+        TestFactory[fill_method](resource_to_add);
         resource.addRelationship(resource_to_add, relationship_alias);
     }
 
@@ -204,7 +205,7 @@ export class TestFactory {
             let resource_to_add: Resource = new class_to_add();
             resource_to_add.id = resource_relatioship.id;
             let fill_method = `fill${class_to_add.name}Attributes`;
-            this[fill_method](resource_to_add);
+            TestFactory[fill_method](resource_to_add);
             resources_to_add.push(resource_to_add);
         }
         // @TODO: cannot use addRelationships because its not working here... SHOULD BE FIXED
@@ -245,8 +246,8 @@ export class TestFactory {
 
                 return;
             }
-            let resource_class = this.resource_classes_by_type[relation_data.type];
-            if (resource_class) {
+            let resource_class = TestFactory.resource_classes_by_type[relation_data.type];
+            if (!resource_class) {
                 console.warn(`cannot find the required class for type ${relation_data.type}`);
 
                 return;
@@ -259,7 +260,7 @@ export class TestFactory {
         } else if (relationship_content instanceof DocumentCollection || relationship_content.data instanceof Array) {
             for (let has_many_relationship of (<DocumentCollection>resource.relationships[included_alias]).data) {
                 document_data.included.push(
-                    this[`get${this.resource_classes_by_type[has_many_relationship.type].name}`](has_many_relationship.id)
+                    this[`get${TestFactory.resource_classes_by_type[has_many_relationship.type].name}`](has_many_relationship.id)
                 );
             }
         }
@@ -270,14 +271,16 @@ export class TestFactory {
             if (!document_data.included) {
                 document_data.included = [];
             }
-            if (document_data.data instanceof Resource) {
-                if (!document_data.data.relationships[included_alias].data) {
+            if ((<Resource>document_data.data).id) {
+                if (!(<Resource>document_data.data).relationships[included_alias].data) {
                     continue;
                 }
-                this.fillResourceRelationshipsInDocumentData(document_data, document_data.data, included_alias);
+                TestFactory.fillResourceRelationshipsInDocumentData(document_data, <Resource>document_data.data, included_alias);
+
+                return;
             }
             for (let resource of <Array<Resource>>document_data.data) {
-                this.fillResourceRelationshipsInDocumentData(document_data, resource, included_alias);
+                TestFactory.fillResourceRelationshipsInDocumentData(document_data, resource, included_alias);
             }
         }
     }

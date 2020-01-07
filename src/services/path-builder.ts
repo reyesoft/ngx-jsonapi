@@ -1,4 +1,5 @@
 import { IParamsCollection, IParamsResource } from '../interfaces';
+import { implementsIParamsResource } from '../interfaces/type-checks';
 import { Core } from '../core';
 import { Service } from '../service';
 
@@ -15,6 +16,9 @@ export class PathBuilder {
         this.appendPath(service.getPath());
         if (params.include) {
             this.setInclude(params.include);
+        }
+        if (implementsIParamsResource(params) && params.include_get) {
+            this.setInclude([...this.includes, ...params.include_get]);
         }
         if (params.fields && Object.keys(params.fields).length > 0) {
             for (let resource_type in params.fields) {
