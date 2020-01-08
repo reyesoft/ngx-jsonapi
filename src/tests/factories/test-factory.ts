@@ -271,11 +271,13 @@ export class TestFactory {
             if (!document_data.included) {
                 document_data.included = [];
             }
-            if (document_data.data instanceof Resource) {
-                if (!document_data.data.relationships[included_alias].data) {
+            if ((<Resource>document_data.data).id) {
+                if (!(<Resource>document_data.data).relationships[included_alias].data) {
                     continue;
                 }
-                TestFactory.fillResourceRelationshipsInDocumentData(document_data, document_data.data, included_alias);
+                TestFactory.fillResourceRelationshipsInDocumentData(document_data, <Resource>document_data.data, included_alias);
+
+                return;
             }
             for (let resource of <Array<Resource>>document_data.data) {
                 TestFactory.fillResourceRelationshipsInDocumentData(document_data, resource, included_alias);
