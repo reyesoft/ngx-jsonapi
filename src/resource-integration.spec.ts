@@ -104,7 +104,6 @@ describe('Resource save', () => {
         expect(http_request_spy.calls.mostRecent().args[2].body.included.length).toBe(1);
         expect(http_request_spy.calls.mostRecent().args[2].body.included[0].id).toBe('author_1');
     });
-
     it('should use POST if is_new is truthy', async () => {
         let resource = TestFactory.getBook('book_1');
         resource.is_new = true;
