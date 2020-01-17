@@ -303,7 +303,7 @@ export class Resource implements ICacheable {
             path.appendPath(this.id);
         }
 
-        Core.exec(path.get(), this.id ? 'PATCH' : 'POST', object, true).subscribe(
+        Core.exec(path.get(), this.is_new ? 'POST' : 'PATCH', object, true).subscribe(
             success => {
                 this.is_saving = false;
 

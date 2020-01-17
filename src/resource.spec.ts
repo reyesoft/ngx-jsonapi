@@ -40,7 +40,7 @@ describe('resource', () => {
             has_many_relationship: new DocumentCollection()
         };
         resource.links = {};
-        resource.is_new = true;
+        resource.is_new = false;
         resource.is_saving = false;
         resource.is_loading = false;
         resource.loaded = true;
@@ -339,7 +339,7 @@ describe('resource.save() method', () => {
                 meta: { some_data: 'some_data' }
             }
         };
-        expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', expected_resource_in_save, true);
+        expect(exec_spy).toHaveBeenCalledWith('1234', 'POST', expected_resource_in_save, true);
     });
 
     it('top level meta object should be included in the request if available', async () => {
@@ -373,7 +373,7 @@ describe('resource.save() method', () => {
             },
             meta: { restore: true }
         };
-        expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', expected_resource_in_save, true);
+        expect(exec_spy).toHaveBeenCalledWith('1234', 'POST', expected_resource_in_save, true);
     });
 
     it('restore method should set top level meta to restore the resource (according to Reyesoft specification extension)', async () => {
@@ -407,7 +407,7 @@ describe('resource.save() method', () => {
             },
             meta: { restore: true }
         };
-        expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', expected_resource_in_save, true);
+        expect(exec_spy).toHaveBeenCalledWith('1234', 'POST', expected_resource_in_save, true);
     });
 
     // @todo fill from store to more new version of resource
