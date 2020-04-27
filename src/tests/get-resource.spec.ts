@@ -107,7 +107,10 @@ describe('core methods', () => {
         test_resource.id = '1';
         test_resource.attributes = { name: 'test_name' };
         test_resource.relationships.test_resource.data = { id: '2', type: 'test_resources' };
-        test_resource.relationships.test_resources.data = [{ id: '3', type: 'test_resources' }, { id: '4', type: 'test_resources' }];
+        test_resource.relationships.test_resources.data = [
+            { id: '3', type: 'test_resources' },
+            { id: '4', type: 'test_resources' }
+        ];
 
         // nested relationship
         let test_resource_nested_relationship = new TestResource();
@@ -167,7 +170,10 @@ describe('core methods', () => {
         test_resource.id = '1';
         test_resource.attributes = { name: 'test_name' };
         test_resource.relationships.test_resource.data = { id: '2', type: 'test_resources' };
-        test_resource.relationships.test_resources.data = [{ id: '3', type: 'test_resources' }, { id: '4', type: 'test_resources' }];
+        test_resource.relationships.test_resources.data = [
+            { id: '3', type: 'test_resources' },
+            { id: '4', type: 'test_resources' }
+        ];
 
         // format has_one relationship to include
         let test_resource_has_one_relationship = new TestResource();

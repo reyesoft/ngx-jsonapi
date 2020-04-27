@@ -154,7 +154,10 @@ describe('ClonedResource save', () => {
                         id: '123456',
                         relationships: {
                             books: {
-                                data: [{ id: '1', type: 'books' }, { id: '2', type: 'books' }]
+                                data: [
+                                    { id: '1', type: 'books' },
+                                    { id: '2', type: 'books' }
+                                ]
                             }
                         },
                         type: 'authors'
