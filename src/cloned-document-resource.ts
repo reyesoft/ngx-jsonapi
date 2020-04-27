@@ -42,15 +42,20 @@ export class ClonedDocumentResource {
         }
         let parent_included = this.parent_resource_object.included;
         this.resource_object.included = this.resource_object.included.filter(included_resource => {
-            return !isEqual(included_resource, parent_included.find(include => include.id === included_resource.id));
+            return !isEqual(
+                included_resource,
+                parent_included.find(include => include.id === included_resource.id)
+            );
         });
         this.resource_object.included = this.resource_object.included.map(included => {
             if (!parent_included.find(include => include.id === included.id)) {
                 return included;
             }
 
-            return new ClonedDocumentResource(included, parent_included.find(include => include.id === included.id)).getResourceObject()
-                .data;
+            return new ClonedDocumentResource(
+                included,
+                parent_included.find(include => include.id === included.id)
+            ).getResourceObject().data;
         });
 
         return this;

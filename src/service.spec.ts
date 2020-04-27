@@ -686,7 +686,10 @@ describe('service.get()', () => {
     });
 
     it(`no cached resource emits source ^new-server|`, async () => {
-        let expected = [{ loaded: false, source: 'new' }, { loaded: true, source: 'server' }];
+        let expected = [
+            { loaded: false, source: 'new' },
+            { loaded: true, source: 'server' }
+        ];
 
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
         let book_emits = await booksService
