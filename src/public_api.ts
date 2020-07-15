@@ -8,7 +8,3 @@ export { Resource } from './resource';
 export { DocumentResource } from './document-resource';
 export { DocumentCollection } from './document-collection';
 export { Service } from './service';
-export { Author, AuthorsService } from './tests/factories/authors.service';
-export { Book, BooksService } from './tests/factories/books.service';
-export { Photo, PhotosService } from './tests/factories/photos.service';
-export { TestFactory } from './tests/factories/test-factory';
