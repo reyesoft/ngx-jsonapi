@@ -1,5 +1,6 @@
 {
     "name": "ngx-jsonapi-demo",
+    "version": "2.1.15",
     "description": "Demo app for JSON API library for Angular",
     "scripts": {
         "build": "ts-node ./build/index.ts",
