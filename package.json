@@ -1,7 +1,7 @@
 {
-    "name": "ngx-jsonapi-demo",
+    "name": "ngx-jsonapi",
     "version": "2.1.15",
-    "description": "Demo app for JSON API library for Angular",
+    "description": "JSON API library for Angular",
     "scripts": {
         "build": "ts-node ./build/index.ts",
         "postbuild": "rimraf **/dist/**/*.ngsummary.json",
