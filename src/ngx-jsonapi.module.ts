@@ -35,7 +35,7 @@ export class NgxJsonapiModule {
         }
     }
 
-    public static forRoot(config: JsonapiConfig): ModuleWithProviders {
+    public static forRoot(config: JsonapiConfig): ModuleWithProviders<NgxJsonapiModule> {
         return {
             ngModule: NgxJsonapiModule,
             providers: [{ provide: JsonapiConfig, useValue: config }]
