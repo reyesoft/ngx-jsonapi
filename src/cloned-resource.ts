@@ -2,7 +2,7 @@ import { Resource } from './resource';
 import { IParamsResource } from './interfaces';
 import { IDocumentResource } from './interfaces/data-object';
 import { ClonedDocumentResource } from './cloned-document-resource';
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import { IClonedResource } from './interfaces/cloned-resource';
 
 export class ClonedResource<T extends Resource> extends Resource implements IClonedResource {

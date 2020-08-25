@@ -17,10 +17,12 @@ module.exports = {
       'json'
   ],
   moduleNameMapper: {
-      '^ngx-jsonapi/(?!db)(.*)': '<rootDir>/src/$1'
+      '^ngx-jsonapi/(?!db)(.*)': '<rootDir>/src/$1',
+      '^lodash-es$': 'lodash'
   },
   transformIgnorePatterns: [
       'node_modules/(?!ngx-jsonapi)'
+
   ],
   modulePathIgnorePatterns: [
       'dist',
