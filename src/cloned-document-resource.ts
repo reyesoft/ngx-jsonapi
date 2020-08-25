@@ -1,7 +1,7 @@
 import { IDocumentResource } from './interfaces/data-object';
 import { Resource } from './resource';
 import { IClonedResource, isClonedResource } from './interfaces/cloned-resource';
-import { isEqual } from 'lodash';
+import { isEqual } from 'lodash-es';
 import { IParamsResource } from './interfaces';
 import { IDataResource } from './interfaces/data-resource';
 
