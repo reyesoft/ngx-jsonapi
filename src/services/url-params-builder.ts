@@ -12,7 +12,7 @@ export class UrlParamsBuilder {
 
     private toparamsarray(params, add): string {
         let ret = '';
-        if (Array.isArray(params) || (params instanceof Object)) {
+        if (Array.isArray(params) || params instanceof Object) {
             Base.forEach(params, (value, key) => {
                 ret += this.toparamsarray(value, add + '[' + key + ']');
             });
