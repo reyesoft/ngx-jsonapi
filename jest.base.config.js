@@ -17,8 +17,8 @@ module.exports = {
       'json'
   ],
   moduleNameMapper: {
-      '^ngx-jsonapi/(?!db)(.*)': '<rootDir>/src/$1',
-      '^lodash-es$': 'lodash'
+      '^lodash-es$': 'lodash',
+      '^ngx-jsonapi/(?!db)(.*)': '<rootDir>/src/$1'
   },
   transformIgnorePatterns: [
       'node_modules/(?!ngx-jsonapi)'
