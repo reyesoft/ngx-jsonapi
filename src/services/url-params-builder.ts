@@ -1,5 +1,4 @@
 import { Base } from './base';
-import { isObject } from 'util';
 
 export class UrlParamsBuilder {
     public toparams(params): string {
@@ -13,7 +12,7 @@ export class UrlParamsBuilder {
 
     private toparamsarray(params, add): string {
         let ret = '';
-        if (Array.isArray(params) || isObject(params)) {
+        if (Array.isArray(params) || params instanceof Object) {
             Base.forEach(params, (value, key) => {
                 ret += this.toparamsarray(value, add + '[' + key + ']');
             });
