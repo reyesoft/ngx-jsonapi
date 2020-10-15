@@ -2,7 +2,6 @@ import { ICacheableDataCollection } from './../interfaces/data-collection';
 import { ICacheableDataResource } from './../interfaces/data-resource';
 import Dexie from 'dexie';
 import { IDataResource } from '../interfaces/data-resource';
-import { IDataCollection } from '../interfaces/data-collection';
 import { IObjectsById } from '../interfaces';
 
 interface IStoreElement {

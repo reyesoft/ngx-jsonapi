@@ -1,4 +1,4 @@
-import { first, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Core } from './core';
 import { IBuildedParamsCollection } from './interfaces/params-collection';
 import { Base } from './services/base';
@@ -14,7 +14,6 @@ import { IDocumentResource } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
 import { JsonRipper } from './services/json-ripper';
-import { DexieDataProvider } from './data-providers/dexie-data-provider';
 import { ClonedResource } from './cloned-resource';
 
 export class Service<R extends Resource = Resource> {
