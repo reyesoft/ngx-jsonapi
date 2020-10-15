@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.1.20] - 2020-10-15
+
+### Changed
+
+-   Only used lodash functions are included on base script. 69.44 KB to 7.5 KB, 89% saved!
+
 ## [2.1.19] - 2020-08-25
 
 ### Fixed
