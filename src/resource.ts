@@ -1,9 +1,7 @@
 import { CacheMemory } from './services/cachememory';
 import { IDataResource } from './interfaces/data-resource';
-import { JsonRipper } from './services/json-ripper';
 import { CacheableHelper } from './services/cacheable-helper.';
 import { Core } from './core';
-import { IResourcesByType } from './interfaces/resources-by-type';
 import { Service } from './service';
 import { Base } from './services/base';
 import { PathBuilder } from './services/path-builder';
@@ -13,7 +11,6 @@ import { IAttributes, IParamsResource, ILinks } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { DocumentResource } from './document-resource';
 import { ICacheable } from './interfaces/cacheable';
-import { isArray } from 'util';
 import { Observable, Subject, of } from 'rxjs';
 import { ResourceRelationshipsConverter } from './services/resource-relationships-converter';
 import { IRelationships } from './interfaces/relationship';
@@ -310,8 +307,7 @@ export class Resource implements ICacheable {
                 // force reload collections cache (example: we add a new element)
                 if (!this.id) {
                     CacheMemory.getInstance().deprecateCollections(path.get());
-                    let jsonripper = new JsonRipper();
-                    jsonripper.deprecateCollection(path.get());
+                    Core.injectedServices.json_ripper.deprecateCollection(path.get());
                 }
 
                 // is a resource?

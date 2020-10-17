@@ -1,15 +1,16 @@
+import { StoreService } from './sources/store.service';
+import { JsonRipper } from './services/json-ripper';
+import { ReflectiveInjector } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Book, BooksService } from './tests/factories/books.service';
 import { AuthorsService } from './tests/factories/authors.service';
 import { PhotosService } from './tests/factories/photos.service';
 import { JsonapiConfig } from './jsonapi-config';
-import { StoreService as JsonapiStore } from './sources/store.service';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { delay } from 'rxjs/operators';
-import { Core } from './core';
+import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { TestFactory } from './tests/factories/test-factory';
-import { async } from '@angular/core/testing';
 
 // @todo: create HttpHandlerMock class file and import it in tests to avoid duplication
 class HttpHandlerMock implements HttpHandler {
@@ -18,6 +19,16 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 let test_response_subject = new BehaviorSubject(new HttpResponse());
+let injector = ReflectiveInjector.resolveAndCreate([
+    {
+        provide: JSONAPI_RIPPER_SERVICE,
+        useClass: JsonRipper
+    },
+    {
+        provide: JSONAPI_STORE_SERVICE,
+        useClass: StoreService
+    }
+]);
 
 // @todo: find a way to reuse this test initialization... it's duplicated in other tests
 describe('Resource delete', () => {
@@ -27,11 +38,7 @@ describe('Resource delete', () => {
     let photosService: PhotosService;
 
     beforeEach(async () => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         booksService = new BooksService();
         booksService.register();
         await booksService.clearCache();
@@ -65,11 +72,7 @@ describe('Resource save', () => {
     let photosService: PhotosService;
 
     beforeEach(async () => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         booksService = new BooksService();
         booksService.register();
         await booksService.clearCache();

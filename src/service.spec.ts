@@ -1,10 +1,11 @@
+import { StoreService } from './sources/store.service';
+import { JsonRipper } from './services/json-ripper';
+import { ReflectiveInjector } from '@angular/core';
+import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { IDocumentResource } from './interfaces/data-object';
 import { PhotosService } from './tests/factories/photos.service';
-import { JsonRipper } from './services/json-ripper';
 import { IDataResource } from './interfaces/data-resource';
 import { CacheMemory } from './services/cachememory';
-import { Core } from './core';
-import { StoreService as JsonapiStore } from './sources/store.service';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { JsonapiConfig } from './jsonapi-config';
@@ -24,15 +25,22 @@ class HttpHandlerMock implements HttpHandler {
 }
 let test_response_subject = new BehaviorSubject(new HttpResponse());
 
+let injector = ReflectiveInjector.resolveAndCreate([
+    {
+        provide: JSONAPI_RIPPER_SERVICE,
+        useClass: JsonRipper
+    },
+    {
+        provide: JSONAPI_STORE_SERVICE,
+        useClass: StoreService
+    }
+]);
+
 describe('service basic methods', () => {
     let core: Core;
     let service: AuthorsService;
     beforeAll(async () => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         service = new AuthorsService();
     });
 
@@ -75,8 +83,8 @@ for (let store_cache_method of store_cache_methods) {
         beforeEach(async () => {
             core = new Core(
                 new JsonapiConfig(),
-                new JsonapiStore(),
-                new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+                new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
+                injector
             );
             booksService = new BooksService();
             booksService.register();
@@ -436,11 +444,7 @@ describe('service.all() and next service.get()', () => {
     let authorsService: AuthorsService;
     let booksService: BooksService;
     beforeEach(async () => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         authorsService = new AuthorsService();
         authorsService.register();
         booksService = new BooksService();
@@ -667,11 +671,7 @@ describe('service.get()', () => {
     let authorsService: AuthorsService;
     let photosService: PhotosService;
     beforeEach(async () => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         booksService = new BooksService();
         booksService.register();
         await booksService.clearCache();
@@ -1052,11 +1052,7 @@ describe('service.get()', () => {
     let authorsService: AuthorsService;
     let photosService: PhotosService;
     beforeEach(async () => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         booksService = new BooksService();
         booksService.register();
         await booksService.clearCache();

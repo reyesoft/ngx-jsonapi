@@ -1,7 +1,10 @@
+import { JsonRipper } from './services/json-ripper';
+import { ReflectiveInjector } from '@angular/core';
+import { StoreService } from './sources/store.service';
+import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { DocumentResource } from './document-resource';
 import { Resource } from './resource';
 import { Page } from './services/page';
-import { Core } from './core';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
@@ -19,15 +22,22 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 
+let injector = ReflectiveInjector.resolveAndCreate([
+    {
+        provide: JSONAPI_RIPPER_SERVICE,
+        useClass: JsonRipper
+    },
+    {
+        provide: JSONAPI_STORE_SERVICE,
+        useClass: StoreService
+    }
+]);
+
 describe('resource basic methods', () => {
     let core: Core;
     let service: AuthorsService;
     beforeAll(async () => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         service = new AuthorsService();
     });
 

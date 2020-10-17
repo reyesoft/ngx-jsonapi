@@ -1,25 +1,29 @@
-import { JsonRipper } from './services/json-ripper';
+import { IStoreService } from './sources/store-service.interface';
+import { IRipper } from './services/json-ripper.interface';
+import { Injector, Injectable, Optional, isDevMode } from '@angular/core';
 import { CacheMemory } from './services/cachememory';
-import { Injectable, Optional, isDevMode } from '@angular/core';
 import { serviceIsRegistered } from './common';
 import { PathBuilder } from './services/path-builder';
 import { Service } from './service';
 import { Resource } from './resource';
 import { JsonapiConfig } from './jsonapi-config';
 import { Http as JsonapiHttpImported } from './sources/http.service';
-import { StoreService as JsonapiStore } from './sources/store.service';
 import { IDocumentResource } from './interfaces/data-object';
 import { noop } from 'rxjs/internal/util/noop';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { IDocumentData } from './interfaces/document';
 
+export const JSONAPI_RIPPER_SERVICE = 'jsonapi_ripper_service';
+export const JSONAPI_STORE_SERVICE = 'jsonapi_store_service';
+
 @Injectable()
 export class Core {
     public static me: Core;
     public static injectedServices: {
-        JsonapiStoreService: JsonapiStore;
+        JsonapiStoreService: IStoreService;
         JsonapiHttp: JsonapiHttpImported;
+        json_ripper: IRipper;
         rsJsonapiConfig: JsonapiConfig;
     };
     public loadingsCounter: number = 0;
@@ -31,7 +35,7 @@ export class Core {
 
     private resourceServices: { [type: string]: Service } = {};
 
-    public constructor(@Optional() user_config: JsonapiConfig, jsonapiStoreService: JsonapiStore, jsonapiHttp: JsonapiHttpImported) {
+    public constructor(@Optional() user_config: JsonapiConfig, jsonapiHttp: JsonapiHttpImported, injector: Injector) {
         this.config = new JsonapiConfig();
         for (let k in this.config) {
             (<any>this.config)[k] = user_config[k] !== undefined ? user_config[k] : (<any>this.config)[k];
@@ -39,8 +43,9 @@ export class Core {
 
         Core.me = this;
         Core.injectedServices = {
-            JsonapiStoreService: jsonapiStoreService,
+            JsonapiStoreService: injector.get<IStoreService>(<any>JSONAPI_STORE_SERVICE),
             JsonapiHttp: jsonapiHttp,
+            json_ripper: injector.get<IRipper>(<any>JSONAPI_RIPPER_SERVICE),
             rsJsonapiConfig: this.config
         };
     }
@@ -110,17 +115,13 @@ export class Core {
     @serviceIsRegistered
     public static removeCachedResource(resource_type: string, resource_id: string): void {
         CacheMemory.getInstance().removeResource(resource_type, resource_id);
-        if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            // TODO: FE-85 ---> add method on JsonRipper
-        }
+        // TODO: FE-85 ---> add method on JsonRipper, if store is enabled
     }
 
     @serviceIsRegistered
     public static setCachedResource(resource: Resource): void {
         CacheMemory.getInstance().setResource(resource, true);
-        if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            // TODO: FE-85 ---> add method on JsonRipper
-        }
+        // TODO: FE-85 ---> add method on JsonRipper, if store is enabled
     }
 
     @serviceIsRegistered
@@ -129,9 +130,7 @@ export class Core {
         let path = new PathBuilder();
         path.applyParams(service);
         CacheMemory.getInstance().deprecateCollections(path.getForCache());
-        if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-            // TODO: FE-85 ---> add method on JsonRipper
-        }
+        // TODO: FE-85 ---> add method on JsonRipper, if store is enabled
     }
 
     public refreshLoadings(factor: number): void {
@@ -146,9 +145,8 @@ export class Core {
     public async clearCache(): Promise<boolean> {
         Core.injectedServices.JsonapiStoreService.clearCache();
         CacheMemory.getInstance().clearCache();
-        let json_ripper = new JsonRipper();
 
-        return json_ripper.deprecateCollection('').then(() => true);
+        return Core.injectedServices.json_ripper.deprecateCollection('').then(() => true);
     }
 
     // just an helper

@@ -1,13 +1,15 @@
 // WARNING: this test is not isolated
 
+import { StoreService } from './../sources/store.service';
+import { JsonRipper } from '../services/json-ripper';
+import { ReflectiveInjector } from '@angular/core';
+import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
 import { DocumentCollection } from '../document-collection';
 import { DocumentResource } from '../document-resource';
 import { Resource } from '../resource';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { JsonapiConfig } from '../jsonapi-config';
-import { StoreService as JsonapiStore } from '../sources/store.service';
-import { Core } from '../core';
 import { Observable, BehaviorSubject, of as observableOf } from 'rxjs';
 import { Service } from '../service';
 
@@ -19,16 +21,6 @@ class TestResource extends Resource {
         test_resource: new DocumentResource<TestResource>(),
         test_resources: new DocumentCollection<TestResource>()
     };
-}
-
-class TestService extends Service {
-    public constructor() {
-        super();
-        this.register();
-    }
-    public type = 'test_resources';
-    public resource = TestResource;
-    public ttl = 10000;
 }
 
 class HttpHandlerMock implements HttpHandler {
@@ -61,16 +53,30 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 
+let injector = ReflectiveInjector.resolveAndCreate([
+    {
+        provide: JSONAPI_RIPPER_SERVICE,
+        useClass: JsonRipper
+    },
+    {
+        provide: JSONAPI_STORE_SERVICE,
+        useClass: StoreService
+    }
+]);
+
+let core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+
+class TestService extends Service {
+    public constructor() {
+        super();
+        this.register();
+    }
+    public type = 'test_resources';
+    public resource = TestResource;
+    public ttl = 10000;
+}
+
 describe('core methods', () => {
-    let core: Core;
-    it('should create core service instance', () => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
-        expect(core).toBeTruthy();
-    });
     it(`service's get method should return a stream with the requested resource including the requested attributes (fields)`, async () => {
         let test_service = new TestService();
         let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
@@ -98,10 +104,10 @@ describe('core methods', () => {
 
     it(`when requesting a resource with optional attributes, the incoming attributes should be merged with cached ones`, async () => {
         // TODO: fix library error: clearCache and clearCacheMemory are not droping localForage allstore instance correctly while testing
-        core = new Core(
+        let core = new Core(
             new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
+            injector
         );
         Core.injectedServices.JsonapiStoreService.clearCache();
         let test_service = new TestService();

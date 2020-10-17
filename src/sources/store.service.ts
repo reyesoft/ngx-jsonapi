@@ -1,15 +1,13 @@
+import { IStoreService } from './store-service.interface';
 import { ICacheableDataCollection } from './../interfaces/data-collection';
 import { ICacheableDataResource } from './../interfaces/data-resource';
 import Dexie from 'dexie';
 import { IDataResource } from '../interfaces/data-resource';
-import { IDataCollection } from '../interfaces/data-collection';
 import { IObjectsById } from '../interfaces';
+import { Injectable } from '@angular/core';
 
-interface IStoreElement {
-    time: number;
-}
-
-export class StoreService /* implements IStoreService */ {
+@Injectable()
+export class StoreService implements IStoreService {
     private db: Dexie;
 
     public constructor() {
@@ -21,9 +19,7 @@ export class StoreService /* implements IStoreService */ {
         this.checkIfIsTimeToClean();
     }
 
-    public async getDataObject(type: 'collection', url: string): Promise<ICacheableDataCollection>;
-    public async getDataObject(type: string, id: string): Promise<ICacheableDataResource>;
-    public async getDataObject(type: 'collection' | string, id_or_url: string): Promise<ICacheableDataCollection | ICacheableDataResource> {
+    public async getDataObject(type: 'collection' | string, id_or_url: string) {
         // we use different tables for resources and collections
         const table_name = type === 'collection' ? 'collections' : 'elements';
 
