@@ -142,7 +142,6 @@ describe('core methods', () => {
 
         let test_service = new TestService();
         await test_service.clearCache();
-        console.log(Core.injectedServices.JsonapiStoreService);
         Core.injectedServices.JsonapiStoreService.clearCache();
         test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));
 

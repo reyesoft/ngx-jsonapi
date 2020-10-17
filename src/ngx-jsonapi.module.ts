@@ -11,7 +11,8 @@ import { Http as JsonapiHttp } from './sources/http.service';
 // testing
 import { JsonapiConfig } from './jsonapi-config';
 
-// usssssinggggggxz
+// DO NOT REMOVE THIS. With this, typescript create interfaces and source code on build.
+// If its removed, it's impossible to use local store.
 import { JsonRipper } from './services/json-ripper';
 import { StoreService } from './sources/store.service';
 
