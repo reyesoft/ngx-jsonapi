@@ -1,5 +1,3 @@
-import { IRipper } from './../dist/services/json-ripper.interface.d';
-import { IStoreService } from './../dist/sources/store-service.interface.d';
 import { IStoreService } from './sources/store-service.interface';
 import { IRipper } from './services/json-ripper.interface';
 import { Injector, Injectable, Optional, isDevMode } from '@angular/core';
