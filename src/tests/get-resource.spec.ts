@@ -1,13 +1,15 @@
 // WARNING: this test is not isolated
 
+import { StoreService } from '../sources/store.service';
+import { JsonRipper } from '../services/json-ripper';
+import { ReflectiveInjector } from '@angular/core';
+import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
 import { DocumentCollection } from '../document-collection';
 import { DocumentResource } from '../document-resource';
 import { Resource } from '../resource';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { JsonapiConfig } from '../jsonapi-config';
-import { StoreService as JsonapiStore } from '../sources/store.service';
-import { Core } from '../core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { Service } from '../service';
 import { map, toArray, tap } from 'rxjs/operators';
@@ -41,14 +43,21 @@ class TestService extends Service {
     public ttl = 0;
 }
 
+let injector = ReflectiveInjector.resolveAndCreate([
+    {
+        provide: JSONAPI_RIPPER_SERVICE,
+        useClass: JsonRipper
+    },
+    {
+        provide: JSONAPI_STORE_SERVICE,
+        useClass: StoreService
+    }
+]);
+
 describe('core methods', () => {
     let core: Core;
     beforeEach(() => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         expect(core).toBeTruthy();
     });
     it('registered services should be stored in resourceServices object with their type as key', () => {
@@ -133,6 +142,7 @@ describe('core methods', () => {
 
         let test_service = new TestService();
         await test_service.clearCache();
+        console.log(Core.injectedServices.JsonapiStoreService);
         Core.injectedServices.JsonapiStoreService.clearCache();
         test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));
 

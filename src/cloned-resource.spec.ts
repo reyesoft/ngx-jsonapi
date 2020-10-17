@@ -1,8 +1,7 @@
+import { ReflectiveInjector } from '@angular/core';
+import { StoreService } from './sources/store.service';
+import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { JsonRipper } from './services/json-ripper';
-import { IDataResource } from './interfaces/data-resource';
-import { CacheMemory } from './services/cachememory';
-import { Core } from './core';
-import { StoreService as JsonapiStore } from './sources/store.service';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { HttpClient, HttpEvent, HttpHandler, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { JsonapiConfig } from './jsonapi-config';
@@ -20,6 +19,16 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 let test_response_subject = new BehaviorSubject(new HttpResponse());
+let injector = ReflectiveInjector.resolveAndCreate([
+    {
+        provide: JSONAPI_RIPPER_SERVICE,
+        useClass: JsonRipper
+    },
+    {
+        provide: JSONAPI_STORE_SERVICE,
+        useClass: StoreService
+    }
+]);
 
 describe('ClonedResource save', () => {
     let core: Core;
@@ -28,11 +37,7 @@ describe('ClonedResource save', () => {
     let books_service: BooksService;
 
     beforeAll(async () => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         authors_service = new AuthorsService();
         authors_service.register();
 
@@ -180,11 +185,7 @@ describe('CloneResource properties changes', () => {
     let books_service: BooksService;
 
     beforeAll(async () => {
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         authors_service = new AuthorsService();
         authors_service.register();
 

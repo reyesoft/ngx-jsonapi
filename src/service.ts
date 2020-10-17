@@ -1,4 +1,4 @@
-import { first, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Core } from './core';
 import { IBuildedParamsCollection } from './interfaces/params-collection';
 import { Base } from './services/base';
@@ -13,8 +13,6 @@ import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDocumentResource } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
-import { JsonRipper } from './services/json-ripper';
-import { DexieDataProvider } from './data-providers/dexie-data-provider';
 import { ClonedResource } from './cloned-resource';
 
 export class Service<R extends Resource = Resource> {
@@ -118,15 +116,14 @@ export class Service<R extends Resource = Resource> {
     // if you change this logic, maybe you need to change getAllFromLocal()
     private async getGetFromLocal(params: IParamsCollection = {}, path: PathBuilder, resource: R): Promise<void> {
         // STORE
-        if (!Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+        if (!Core.injectedServices.json_ripper.enabled) {
             throw new Error('We cant handle this request');
         }
 
         resource.setLoaded(false);
 
         // STORE (individual)
-        let json_ripper = new JsonRipper();
-        let success = await json_ripper.getResource(JsonRipper.getResourceKey(resource), path.includes);
+        let success = await Core.injectedServices.json_ripper.getResourceByResource(resource, path.includes);
 
         resource.fill(success);
         resource.setSource('store');
@@ -152,10 +149,7 @@ export class Service<R extends Resource = Resource> {
                 resource.setSourceAndPropagate('server');
 
                 // this.getService().cachememory.setResource(resource, true);
-                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    let json_ripper = new JsonRipper();
-                    json_ripper.saveResource(resource, path.includes);
-                }
+                Core.injectedServices.json_ripper.saveResource(resource, path.includes);
                 subject.next(resource);
                 setTimeout(() => subject.complete(), 0);
             },
@@ -223,9 +217,7 @@ export class Service<R extends Resource = Resource> {
         // @todo this code is repeated on core.clearCache()
         CacheMemory.getInstance().deprecateCollections(path.getForCache());
 
-        let json_ripper = new JsonRipper();
-
-        return json_ripper.deprecateCollection(path.getForCache()).then(() => true);
+        return Core.injectedServices.json_ripper.deprecateCollection(path.getForCache()).then(() => true);
     }
 
     public parseToServer(attributes: IAttributes): void {
@@ -310,7 +302,7 @@ export class Service<R extends Resource = Resource> {
         temporary_collection: DocumentCollection<R>
     ): Promise<void> {
         // STORE
-        if (!Core.injectedServices.rsJsonapiConfig.cachestore_support) {
+        if (!Core.injectedServices.json_ripper.enabled) {
             throw new Error('We cant handle this request');
         }
 
@@ -322,8 +314,7 @@ export class Service<R extends Resource = Resource> {
             success = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact');
         } else {
             // STORE (individual)
-            let json_ripper = new JsonRipper();
-            success = await json_ripper.getCollection(path.getForCache(), path.includes);
+            success = await Core.injectedServices.json_ripper.getCollection(path.getForCache(), path.includes);
         }
         temporary_collection.fill(success);
         temporary_collection.setSourceAndPropagate('store');
@@ -366,9 +357,8 @@ export class Service<R extends Resource = Resource> {
                 temporary_collection.setLoadedAndPropagate(true);
 
                 // this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
-                if (Core.injectedServices.rsJsonapiConfig.cachestore_support) {
-                    let json_ripper = new JsonRipper();
-                    json_ripper.saveCollection(path.getForCache(), temporary_collection, path.includes);
+                if (Core.injectedServices.json_ripper.enabled) {
+                    Core.injectedServices.json_ripper.saveCollection(path.getForCache(), temporary_collection, path.includes);
                     if (params.store_cache_method === 'compact') {
                         // @todo migrate to dexie
                         Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <

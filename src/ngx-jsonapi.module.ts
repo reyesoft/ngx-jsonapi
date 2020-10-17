@@ -1,14 +1,19 @@
+import { StoreFakeService } from './sources/store-fake.service';
+import { JsonRipperFake } from './services/json-ripper-fake';
 import { NgModule, ModuleWithProviders, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 // import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
-import { Core as JsonapiCore } from './core';
+import { Core as JsonapiCore, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { Http as JsonapiHttp } from './sources/http.service';
-import { StoreService as JsonapiStore } from './sources/store.service';
 
 // testing
 import { JsonapiConfig } from './jsonapi-config';
+
+// usssssinggggggxz
+import { JsonRipper } from './services/json-ripper';
+import { StoreService } from './sources/store.service';
 
 @NgModule({
     imports: [CommonModule],
@@ -18,7 +23,14 @@ import { JsonapiConfig } from './jsonapi-config';
     ],
     providers: [
         JsonapiCore,
-        JsonapiStore,
+        {
+            provide: JSONAPI_RIPPER_SERVICE,
+            useClass: JsonRipperFake
+        },
+        {
+            provide: JSONAPI_STORE_SERVICE,
+            useClass: StoreFakeService
+        },
         JsonapiConfig, // Need this here for testing
         JsonapiHttp
     ]

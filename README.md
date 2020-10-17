@@ -55,7 +55,7 @@ yarn add ngx-jsonapi@2.0.0-rc.4 --save
 3.  Inject JsonapiCore somewhere before you extend any class from `Jsonapi.Resource`.
 
 ```typescript
-import { NgModule } from '@angular/core';
+/* .. */
 import { NgxJsonapiModule } from 'ngx-jsonapi';
 
 @NgModule({
@@ -63,6 +63,37 @@ import { NgxJsonapiModule } from 'ngx-jsonapi';
         NgxJsonapiModule.forRoot({
             url: '//jsonapiplayground.reyesoft.com/v2/'
         })
+    ]
+})
+export class AppModule {}
+```
+
+### Enable Local Cache
+
+Library cache anything memory. With Local Store, also store all on IndexDb on browser. Faster apps when we reuse a lot of data.
+
+```typescript
+/* .. */
+import { NgxJsonapiModule } from 'ngx-jsonapi';
+import { JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
+import { StoreService } from 'ngx-jsonapi/sources/store.service';
+import { JsonRipper } from 'ngx-jsonapi/services/json-ripper';
+
+@NgModule({
+    imports: [
+        NgxJsonapiModule.forRoot({
+            url: '//jsonapiplayground.reyesoft.com/v2/'
+        })
+    ],
+    providers: [
+        {
+            provide: JSONAPI_RIPPER_SERVICE,
+            useClass: JsonRipperFake
+        },
+        {
+            provide: JSONAPI_STORE_SERVICE,
+            useClass: StoreFakeService
+        }
     ]
 })
 export class AppModule {}

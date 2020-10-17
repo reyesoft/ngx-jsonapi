@@ -1,5 +1,9 @@
 // WARNING: this test is not correctly isolated
 
+import { StoreService } from './sources/store.service';
+import { JsonRipper } from './services/json-ripper';
+import { ReflectiveInjector } from '@angular/core';
+import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
 import { DocumentCollection } from './document-collection';
 import { DocumentResource } from './document-resource';
@@ -8,7 +12,6 @@ import { Service } from './service';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { JsonapiConfig } from './jsonapi-config';
 import { StoreService as JsonapiStore } from './sources/store.service';
-import { Core } from './core';
 import { Observable, BehaviorSubject } from 'rxjs';
 
 class HttpHandlerMock implements HttpHandler {
@@ -39,15 +42,22 @@ class CustomResourceService extends Service<CustomResource> {
     }
 }
 
+let injector = ReflectiveInjector.resolveAndCreate([
+    {
+        provide: JSONAPI_RIPPER_SERVICE,
+        useClass: JsonRipper
+    },
+    {
+        provide: JSONAPI_STORE_SERVICE,
+        useClass: StoreService
+    }
+]);
+
 describe('core methods', () => {
     let core: Core;
     it('should crete core service instance', () => {
         spyOn<any>(JsonapiStore.prototype, 'constructor');
-        core = new Core(
-            new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-        );
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         expect(core).toBeTruthy();
     });
     it('when exec method s response is an error, it should return a correctly formatted jsonapi error', () => {
