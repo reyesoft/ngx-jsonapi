@@ -6,7 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [2.2.0] - 2020-10-15
+## [2.2.1] - 2020-10-17
+
+### Fixed
+
+-   Warning: Entry point 'ngx-jsonapi' contains deep imports into 'node_modules/rxjs/internal/util/noop'. This is probably not a problem, but may cause the compilation of entry points to be out of order.
+-   lodash dependency missing.
+
+## [2.2.0] - 2020-10-17
 
 ### Changed
 
