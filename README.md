@@ -153,6 +153,9 @@ export class AuthorsComponent {
         authorsService
             .all({
                 // include: ['books', 'photos'],
+                // fields: {
+                //    authors: ['name']                   
+                // }
             })
             .subscribe(authors => (this.authors = authors));
     }
