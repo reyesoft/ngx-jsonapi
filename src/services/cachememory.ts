@@ -108,12 +108,12 @@ export class CacheMemory<R extends Resource = Resource> {
             return;
         }
         Base.forEach(this.collections, (value, url) => {
-            value.data.splice(
-                value.data.findIndex(
-                    (resource_on_collection: Resource) => resource_on_collection.type === type && resource_on_collection.id === id
-                ),
-                1
+            let resourceIndex = value.data.findIndex(
+                (resource_on_collection: Resource) => resource_on_collection.type === type && resource_on_collection.id === id
             );
+            if (resourceIndex > -1) {
+                value.data.splice(resourceIndex, 1);
+            }
         });
         resource.attributes = {}; // just for confirm deletion on view
 
