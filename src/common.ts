@@ -7,7 +7,7 @@ import { Resource } from './resource';
 export function isLive(cacheable: ICacheable, ttl?: number): boolean {
     let ttl_in_seconds = typeof ttl === 'number' ? ttl : cacheable.ttl || 0;
 
-    return Date.now() <= cacheable.cache_last_update + ttl_in_seconds * 1000;
+    return Date.now() < cacheable.cache_last_update + ttl_in_seconds * 1000;
 }
 
 // @todo test required for hasMany and hasOne
