@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "rootDir": "../",
     "paths": {
-      "ngx-jsonapi": [ "../src" ]
+      "ngx-jsonapi": [ "../src" ],
+      "ngx-jsonapi/*": [ "../src/*" ]
     }
   },
   "exclude": [

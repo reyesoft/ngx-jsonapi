@@ -1,5 +1,8 @@
+import { StoreService } from '../sources/store.service';
+import { JsonRipper } from '../services/json-ripper';
+import { ReflectiveInjector } from '@angular/core';
+import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
 import { Converter } from './converter';
-import { Core } from '../core';
 import { JsonapiConfig } from '../jsonapi-config';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
@@ -14,11 +17,18 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 
-let core = new Core(
-    new JsonapiConfig(),
-    new JsonapiStore(),
-    new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-);
+let injector = ReflectiveInjector.resolveAndCreate([
+    {
+        provide: JSONAPI_RIPPER_SERVICE,
+        useClass: JsonRipper
+    },
+    {
+        provide: JSONAPI_STORE_SERVICE,
+        useClass: StoreService
+    }
+]);
+
+let core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
 
 describe('Converter', () => {
     it('json_array2resources_array_by_type(array) should be converted to IResourcesByType', () => {

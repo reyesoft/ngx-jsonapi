@@ -9,6 +9,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 -   when ttl 0 was set, a request to the server was not made again, it brought it from memory, it was corrected in the isLive function of common.
+## [2.2.1] - 2020-10-17
+
+### Fixed
+
+-   Warning: Entry point 'ngx-jsonapi' contains deep imports into 'node_modules/rxjs/internal/util/noop'. This is probably not a problem, but may cause the compilation of entry points to be out of order.
+-   lodash dependency missing.
+
+## [2.2.0] - 2020-10-17
+
+### Changed
+
+-   Local cache store is disabled by default.
+-   Only used lodash functions are included on base script. 69.44 KB to 7.5 KB, 89% saved!
+-   Store support is optional.
+
+![image](https://user-images.githubusercontent.com/938894/96340064-d58a7500-106e-11eb-9181-464186f9e2f1.png)
+
+### Removed
+
+-   config.cachestore_support
 
 ## [2.1.19] - 2020-08-25
 

@@ -3,7 +3,6 @@ export class JsonapiConfig {
     public params_separator? = '?';
     public unify_concurrency? = true;
     public cache_prerequests? = true;
-    public cachestore_support? = true;
     public parameters? = {
         page: {
             number: 'page[number]',

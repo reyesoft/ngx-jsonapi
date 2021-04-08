@@ -16,6 +16,7 @@
     "target": "es2015",
     "lib": ["es2017", "dom"],
     "skipLibCheck": true,
+    "esModuleInterop": true,
     "strict": false
   },
   "files": [

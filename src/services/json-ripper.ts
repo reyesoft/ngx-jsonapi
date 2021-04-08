@@ -1,16 +1,20 @@
+import { IRipper } from './json-ripper.interface';
 import { ICacheableDataCollection } from './../interfaces/data-collection';
 import { ICacheableDocumentResource } from './../interfaces/data-object';
 import { Resource } from './../resource';
-import { DocumentResource } from './../document-resource';
 import { DexieDataProvider } from '../data-providers/dexie-data-provider';
 import { IDataProvider, IElement } from './../data-providers/data-provider';
 import { DocumentCollection } from '../document-collection';
+import { Injectable } from '@angular/core';
 
 interface IStoredCollection {
     updated_at: number;
     keys: Array<string>;
 }
-export class JsonRipper {
+
+@Injectable()
+export class JsonRipper implements IRipper {
+    public readonly enabled = true;
     private dataProvider: IDataProvider;
 
     public constructor() {
@@ -52,6 +56,10 @@ export class JsonRipper {
             ...stored_resource,
             included: included_resources.map(document_resource => document_resource.data)
         };
+    }
+
+    public async getResourceByResource(resource: Resource, include: Array<string> = []): Promise<ICacheableDocumentResource> {
+        return this.getResource(JsonRipper.getResourceKey(resource), include);
     }
 
     public async getCollection(url: string, include: Array<string> = []): Promise<ICacheableDataCollection> {
@@ -147,11 +155,14 @@ export class JsonRipper {
 
         include.forEach(relationship_alias => {
             const relationship = resource.relationships[relationship_alias];
-            if (relationship instanceof DocumentCollection) {
+            if (!relationship) {
+                return;
+            }
+            if (relationship.content === 'collection') {
                 relationship.data.forEach(related_resource => {
                     elements.push(JsonRipper.getElement(related_resource));
                 });
-            } else if (relationship instanceof DocumentResource) {
+            } else if (['id', 'resource'].includes(relationship.content)) {
                 if (relationship.data === null || relationship.data === undefined) {
                     return;
                 }

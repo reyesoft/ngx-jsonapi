@@ -1,4 +1,7 @@
-import { Core } from '../core';
+import { StoreService } from '../sources/store.service';
+import { JsonRipper } from '../services/json-ripper';
+import { ReflectiveInjector } from '@angular/core';
+import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
 import { Service } from '../service';
 import { PathBuilder } from './path-builder';
 import { JsonapiConfig } from '../jsonapi-config';
@@ -15,11 +18,18 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 
-let core = new Core(
-    new JsonapiConfig(),
-    new JsonapiStore(),
-    new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
-);
+let injector = ReflectiveInjector.resolveAndCreate([
+    {
+        provide: JSONAPI_RIPPER_SERVICE,
+        useClass: JsonRipper
+    },
+    {
+        provide: JSONAPI_STORE_SERVICE,
+        useClass: StoreService
+    }
+]);
+
+let core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
 
 const testService = new Service();
 testService.getPrePath = (): string => {

@@ -1,8 +1,11 @@
+import { StoreService } from '../sources/store.service';
+import { JsonRipper } from '../services/json-ripper';
+import { ReflectiveInjector } from '@angular/core';
+import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
 import { Author, AuthorsService } from './../tests/factories/authors.service';
 import { CacheMemory } from './cachememory';
 import { TestFactory } from '../tests/factories/test-factory';
 
-import { Core } from '../core';
 import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
@@ -17,6 +20,17 @@ class HttpHandlerMock implements HttpHandler {
         return subject.asObservable();
     }
 }
+
+let injector = ReflectiveInjector.resolveAndCreate([
+    {
+        provide: JSONAPI_RIPPER_SERVICE,
+        useClass: JsonRipper
+    },
+    {
+        provide: JSONAPI_STORE_SERVICE,
+        useClass: StoreService
+    }
+]);
 
 describe('Cache Memory deprecation and live conditions', () => {
     it('clearCache', () => {
@@ -131,8 +145,8 @@ describe('Cache Memory deprecation and live conditions', () => {
     it('getOrCreateResource() should throw an error if the requested service does not exist', () => {
         let core = new Core(
             new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
+            injector
         );
         // let service = new AuthorsService();
 
@@ -149,8 +163,8 @@ describe('Cache Memory deprecation and live conditions', () => {
     it('getOrCreateResource() should return a new resource when the requested resource does not exist', () => {
         let core = new Core(
             new JsonapiConfig(),
-            new JsonapiStore(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig())
+            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
+            injector
         );
         let service = new AuthorsService();
 
