@@ -156,6 +156,32 @@ for (let store_cache_method of store_cache_methods) {
             expect(http_request_spy).toHaveBeenCalledTimes(0);
         });
 
+        it(`with cached on memory (live) collection emits source ^memory-server| when force ttl = 0 on call`, async () => {
+            // caching collection
+            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+            booksService.collections_ttl = 5; // live
+            await booksService.all({ store_cache_method: store_cache_method }).toPromise();
+
+            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            let expected = [
+                // expected emits
+                { builded: true, loaded: false, source: 'memory' },
+                { builded: true, loaded: true, source: 'server' }
+            ];
+
+            let emits = await booksService
+                .all({ ttl: 0, store_cache_method: store_cache_method })
+                .pipe(
+                    map(emit => {
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise();
+            expect(emits).toMatchObject(expected);
+            expect(http_request_spy).toHaveBeenCalledTimes(1);
+        });
+
         it(`with cached on memory (dead) collection emits source ^memory-server|`, async () => {
             // caching collection
             test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
