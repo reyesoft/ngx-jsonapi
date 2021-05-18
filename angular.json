@@ -110,9 +110,9 @@
       "inlineStyle": true,
       "inlineTemplate": true,
       "flat": true,
-      "spec": false,
+      "skipTests": true,
       "prefix": "bc",
-      "styleext": "css"
+      "style": "css"
     },
     "@schematics/angular:directive": {
       "prefix": "bc"
