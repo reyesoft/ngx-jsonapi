@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "importHelpers": true,
         "strictNullChecks": true,
         "sourceMap": true,
         "declaration": false,
