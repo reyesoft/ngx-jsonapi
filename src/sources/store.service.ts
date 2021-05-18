@@ -4,11 +4,13 @@ import Dexie from 'dexie';
 import { IDataResource } from '../interfaces/data-resource';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IObjectsById } from '../interfaces';
+import { Injectable } from "@angular/core";
 
 interface IStoreElement {
     time: number;
 }
 
+@Injectable()
 export class StoreService /* implements IStoreService */ {
     private db: Dexie;
 
