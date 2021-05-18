@@ -1,5 +1,3 @@
-import { Injectable } from "@angular/core";
-@Injectable()
 export class JsonapiConfig {
     public url: string = 'http://yourdomain/api/v1/';
     public params_separator? = '?';
