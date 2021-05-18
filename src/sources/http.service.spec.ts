@@ -26,7 +26,7 @@ describe('Http service', () => {
         }).compileComponents();
     }));
     it('should create Http service', () => {
-        service = TestBed.get(Http);
+        service = TestBed.inject(Http);
         expect(service).toBeTruthy();
     });
     it('exec should return an observable with the http request', async () => {
