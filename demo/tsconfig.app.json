@@ -20,9 +20,11 @@
       "ngx-jsonapi": [ "../src" ]
     }
   },
-  "exclude": [
-    "../node_modules",
-    "test.ts",
-    "**/*.spec.ts"
+  "files": [
+    "main.ts",
+    "polyfills.ts"
+  ],
+  "include": [
+    "demo/**/*.d.ts"
   ]
 }
