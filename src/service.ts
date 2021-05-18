@@ -16,7 +16,9 @@ import { IDataCollection, ICacheableDataCollection } from './interfaces/data-col
 import { JsonRipper } from './services/json-ripper';
 import { DexieDataProvider } from './data-providers/dexie-data-provider';
 import { ClonedResource } from './cloned-resource';
+import { Injectable } from "@angular/core";
 
+@Injectable()
 export class Service<R extends Resource = Resource> {
     public type: string;
     public resource = Resource;
