@@ -19,11 +19,11 @@ const appRoutes: Routes = [
     },
     {
         path: 'authors',
-        loadChildren: './authors/authors.module#AuthorsModule'
+        loadChildren: () => import('./authors/authors.module').then(m => m.AuthorsModule)
     },
     {
         path: 'books',
-        loadChildren: './books/books.module#BooksModule'
+        loadChildren: () => import('./books/books.module').then(m => m.BooksModule)
     }
 ];
 

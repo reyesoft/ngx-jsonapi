@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+    "downlevelIteration": true,
         "importHelpers": true,
         "strictNullChecks": true,
         "sourceMap": true,
@@ -13,8 +14,8 @@
             "dom"
         ],
         "outDir": "../out-tsc/app",
-        "target": "es5",
-        "module": "commonjs",
+        "target": "es2015",
+        "module": "esnext",
         "baseUrl": "",
         "rootDir": "./",
         "paths": {
