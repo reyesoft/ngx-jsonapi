@@ -11,7 +11,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 -   when ttl 0 was set, a request to the server was not made again, it brought it from memory, it was corrected in the isLive function of common.
-
 -   when the value of a remote filter contained "&", the generated url did not keep the "&"
 
 ## [2.1.19] - 2020-08-25
