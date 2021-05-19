@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.2] - 2021-05-19
+## [Unreleased]
+
+## [2.1.20] - 2021-05-19
 
 ### Fixed
 
 -   when ttl 0 was set, a request to the server was not made again, it brought it from memory, it was corrected in the isLive function of common.
-
 -   when the value of a remote filter contained "&", the generated url did not keep the "&"
 
 ## [2.1.19] - 2020-08-25
