@@ -13,6 +13,8 @@ import { SharedModule } from './shared/shared.module';
 
 import { StoreService } from 'ngx-jsonapi/sources/store.service';
 import { JsonRipper } from 'ngx-jsonapi/services/json-ripper';
+import { AuthorsModule } from './authors/authors.module';
+import { BooksModule } from './books/books.module';
 
 const appRoutes: Routes = [
     {
@@ -22,11 +24,11 @@ const appRoutes: Routes = [
     },
     {
         path: 'authors',
-        loadChildren: './authors/authors.module#AuthorsModule'
+        loadChildren: (): Promise<AuthorsModule> => import('./authors/authors.module').then((m): AuthorsModule => m.AuthorsModule)
     },
     {
         path: 'books',
-        loadChildren: './books/books.module#BooksModule'
+        loadChildren: (): Promise<BooksModule> => import('./books/books.module').then((m): BooksModule => m.BooksModule)
     }
 ];
 
