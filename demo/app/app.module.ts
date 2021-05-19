@@ -10,6 +10,8 @@ import { AuthorsService } from './authors/authors.service';
 import { BooksService } from './books/books.service';
 import { PhotosService } from './photos/photos.service';
 import { SharedModule } from './shared/shared.module';
+import { AuthorsModule } from './authors/authors.module';
+import { BooksModule } from './books/books.module';
 
 const appRoutes: Routes = [
     {
@@ -19,11 +21,11 @@ const appRoutes: Routes = [
     },
     {
         path: 'authors',
-        loadChildren: () => import('./authors/authors.module').then(m => m.AuthorsModule)
+        loadChildren: (): Promise<AuthorsModule> => import('./authors/authors.module').then((m): AuthorsModule => m.AuthorsModule)
     },
     {
         path: 'books',
-        loadChildren: () => import('./books/books.module').then(m => m.BooksModule)
+        loadChildren: (): Promise<BooksModule> => import('./books/books.module').then((m): BooksModule => m.BooksModule)
     }
 ];
 

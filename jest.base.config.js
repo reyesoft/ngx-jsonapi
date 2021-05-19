@@ -1,6 +1,11 @@
 module.exports = {
   testURL: 'http://localhost/',
   preset: 'jest-preset-angular',
+  globals: {
+    "ts-jest": {
+        diagnostics: false,
+    }
+  },
   setupFilesAfterEnv: [
       '<rootDir>/setup-jest.ts'
   ],

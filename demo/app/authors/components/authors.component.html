@@ -24,7 +24,7 @@
         <td *ngIf="author.relationships.books.data.length > 0">
             <a [routerLink]="['/books', author.relationships.books.data[0].id]">{{ author.relationships.books.data[0].attributes.title }}</a>
             <span *ngIf="author.relationships.books.data.length > 1">
-                and {{ author.relationships.books.data.length}} more...
+                and {{ author.relationships.books.data.length }} more...
             </span>
         </td>
         <td>
