@@ -77,6 +77,11 @@ describe('Path Builder', () => {
         expect(path_collection_builder.get().includes('fields[authors]=name,address&fields[books]=title')).toBeTruthy();
     });
 
+    it('if filter with characters such as "&" are provided, they must be formatted and included in get_params', () => {
+        path_collection_builder.applyParams(testService, { remotefilter: { field: 'foo&bar' } });
+        expect(path_collection_builder.get().includes('filter[field]=foo%26bar')).toBeTruthy();
+    });
+
     it('if page params are provided, applyParams should call addParam one or two times with the page number and size', () => {
         Core.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
         Core.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
