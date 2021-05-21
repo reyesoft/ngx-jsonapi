@@ -1,6 +1,7 @@
 {
-    "name": "ngx-jsonapi-demo",
-    "description": "Demo app for JSON API library for Angular",
+    "name": "ngx-jsonapi",
+    "version": "2.1.15",
+    "description": "JSON API library for Angular",
     "scripts": {
         "build": "ts-node ./build/index.ts",
         "postbuild": "rimraf **/dist/**/*.ngsummary.json",
@@ -33,7 +34,8 @@
         "prettier-md:show": "prettier --parser markdown --single-quote es5 --tab-width 4 --print-width 140 --single-quote true --prose-wrap never \"**/*.md\"",
         "prettier-scss": "yarn prettier-scss:show --write",
         "prettier-scss:show": "prettier --parser scss --single-quote es5 --tab-width 4 --print-width 140 --single-quote true \"**/*.scss\"",
-        "precommit": "lint-staged"
+        "precommit": "lint-staged",
+        "prepare": "npm run build"
     },
     "lint-staged": {
         "*.ts": [
