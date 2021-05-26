@@ -15,6 +15,7 @@
             "trace"
         ],
         "no-void-expression": [true, "ignore-arrow-function-shorthand"],
+        "promise-function-async": false,
 
         "rxjs-ban-observables": true,
         "rxjs-ban-operators": true,
