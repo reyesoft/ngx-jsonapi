@@ -17,7 +17,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
     public ttl = 0;
     public content: 'ids' | 'collection' = 'ids';
 
-    public trackBy(iterated_resource: Resource): string {
+    public trackBy(index: number, iterated_resource: Resource): string {
         return iterated_resource.id;
     }
 
