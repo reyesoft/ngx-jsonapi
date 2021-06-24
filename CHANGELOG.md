@@ -6,11 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [2.2.3] - 2021-06-03
+## [2.2.3] - 2021-06-24
 
-### Added
+### Fixed
 
--   Changelog and package version adedd
+-   Fix trackBy params of document-collection.ts . #299
 
 ## [2.2.2] - 2021-05-19
 
