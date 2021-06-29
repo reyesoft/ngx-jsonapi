@@ -10,7 +10,7 @@ jobs:
       - checkout
       - restore_cache:
           key: *cache_key
-      - run: yarn
+      - run: yarn --ignore-scripts --frozen-lockfile
       - run: yarn prettier-ts:show --list-different
       - run: yarn prettier-md:show --list-different
       - run: yarn prettier-scss:show --list-different
