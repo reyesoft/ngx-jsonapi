@@ -361,9 +361,10 @@ export class Service<R extends Resource = Resource> {
                     Core.injectedServices.json_ripper.saveCollection(path.getForCache(), temporary_collection, path.includes);
                     if (params.store_cache_method === 'compact') {
                         // @todo migrate to dexie
-                        Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <
-                            ICacheableDataCollection
-                        >success);
+                        Core.injectedServices.JsonapiStoreService.saveCollection(
+                            path.getForCache() + '.compact',
+                            <ICacheableDataCollection>success
+                        );
                     }
                 }
                 subject.next(temporary_collection);
