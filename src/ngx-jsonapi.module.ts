@@ -17,11 +17,7 @@ import { JsonRipper } from './services/json-ripper';
 import { StoreService } from './sources/store.service';
 
 @NgModule({
-    imports: [CommonModule],
-    exports: [
-        // BrowserModule,  // needed by HttpClientModule?
-        HttpClientModule
-    ],
+    imports: [CommonModule, HttpClientModule],
     providers: [
         JsonapiCore,
         {
