@@ -14,10 +14,10 @@ export class UrlParamsBuilder {
         let ret = '';
         if (Array.isArray(params) || params instanceof Object) {
             Base.forEach(params, (value, key) => {
-                ret += this.toparamsarray(encodeURIComponent(value), add + '[' + key + ']');
+                ret += this.toparamsarray(value, add + '[' + key + ']');
             });
         } else {
-            ret += add + '=' + params;
+            ret += add + '=' + encodeURIComponent(params);
         }
 
         return ret;
