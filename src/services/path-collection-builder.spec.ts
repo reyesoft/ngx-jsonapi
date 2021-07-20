@@ -82,6 +82,18 @@ describe('Path Builder', () => {
         expect(path_collection_builder.get().includes('filter[field]=foo%26bar')).toBeTruthy();
     });
 
+    it('I must be able to filter by two parameter within another parameter', () => {
+        path_collection_builder.applyParams(testService, {
+            remotefilter: {
+                date: {
+                    since: '2021-07-10',
+                    until: '2021-08-10'
+                }
+            }
+        });
+        expect(path_collection_builder.get().includes('filter[date][since]=2021-07-10&filter[date][until]=2021-08-10')).toBeTruthy();
+    });
+
     it('if page params are provided, applyParams should call addParam one or two times with the page number and size', () => {
         Core.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
         Core.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
