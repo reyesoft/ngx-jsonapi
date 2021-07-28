@@ -1,29 +1,27 @@
 import { IStoreService } from './sources/store-service.interface';
 import { IRipper } from './services/json-ripper.interface';
-import { Injector, Injectable, Optional, isDevMode } from '@angular/core';
 import { CacheMemory } from './services/cachememory';
 import { serviceIsRegistered } from './common';
 import { PathBuilder } from './services/path-builder';
 import { Service } from './service';
 import { Resource } from './resource';
 import { JsonapiConfig } from './jsonapi-config';
-import { Http as JsonapiHttpImported } from './sources/http.service';
 import { IDocumentResource } from './interfaces/data-object';
 import { Observable, throwError, noop } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { IDocumentData } from './interfaces/document';
+import { IHttp } from './interfaces/http';
 
 export const JSONAPI_RIPPER_SERVICE = 'jsonapi_ripper_service';
 export const JSONAPI_STORE_SERVICE = 'jsonapi_store_service';
 
-@Injectable()
 export class Core {
     public static me: Core;
-    public static injectedServices: {
-        JsonapiStoreService: IStoreService;
-        JsonapiHttp: JsonapiHttpImported;
-        json_ripper: IRipper;
-        rsJsonapiConfig: JsonapiConfig;
+    public injectedServices: {
+        JsonapiStoreService?: IStoreService;
+        JsonapiHttp?: IHttp;
+        json_ripper?: IRipper;
+        rsJsonapiConfig?: JsonapiConfig;
     };
     public loadingsCounter: number = 0;
     public loadingsStart: Function = noop;
@@ -31,22 +29,18 @@ export class Core {
     public loadingsError: Function = noop;
     public loadingsOffline: Function = noop;
     public config: JsonapiConfig;
+    public isDevMode: () => boolean = () => false;
 
     private resourceServices: { [type: string]: Service } = {};
 
-    public constructor(@Optional() user_config: JsonapiConfig, jsonapiHttp: JsonapiHttpImported, injector: Injector) {
-        this.config = new JsonapiConfig();
-        for (let k in this.config) {
-            (<any>this.config)[k] = user_config[k] !== undefined ? user_config[k] : (<any>this.config)[k];
+    private constructor() {}
+
+    public static getInstance(): Core {
+        if (!Core.me) {
+            Core.me = new Core();
         }
 
-        Core.me = this;
-        Core.injectedServices = {
-            JsonapiStoreService: injector.get<IStoreService>(<any>JSONAPI_STORE_SERVICE),
-            JsonapiHttp: jsonapiHttp,
-            json_ripper: injector.get<IRipper>(<any>JSONAPI_RIPPER_SERVICE),
-            rsJsonapiConfig: this.config
-        };
+        return Core.me;
     }
 
     public static delete(path: string): Observable<IDocumentData> {
@@ -65,7 +59,7 @@ export class Core {
     ): Observable<IDocumentData> {
         Core.me.refreshLoadings(1);
 
-        return Core.injectedServices.JsonapiHttp.exec(path, method, data).pipe(
+        return Core.getInstance().injectedServices.JsonapiHttp.exec(path, method, data).pipe(
             // map(data => { return data.body }),
             tap(() => Core.me.refreshLoadings(-1)),
             catchError(error => {
@@ -74,10 +68,10 @@ export class Core {
 
                 if (error.status <= 0) {
                     // offline?
-                    if (!Core.me.loadingsOffline(error) && isDevMode()) {
+                    if (!Core.me.loadingsOffline(error) && Core.me.isDevMode()) {
                         console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>', error);
                     }
-                } else if (call_loadings_error && !Core.me.loadingsError(error) && isDevMode()) {
+                } else if (call_loadings_error && !Core.me.loadingsError(error) && Core.me.isDevMode()) {
                     console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
                 }
 
@@ -142,10 +136,10 @@ export class Core {
     }
 
     public async clearCache(): Promise<boolean> {
-        Core.injectedServices.JsonapiStoreService.clearCache();
+        Core.getInstance().injectedServices.JsonapiStoreService.clearCache();
         CacheMemory.getInstance().clearCache();
 
-        return Core.injectedServices.json_ripper.deprecateCollection('').then(() => true);
+        return Core.getInstance().injectedServices.json_ripper.deprecateCollection('').then(() => true);
     }
 
     // just an helper

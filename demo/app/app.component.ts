@@ -9,19 +9,17 @@ import { JsonapiCore } from 'ngx-jsonapi';
 export class AppComponent /* implements OnInit */ {
     public loading = '';
 
-    public constructor(
-        private jsonapiCore: JsonapiCore
-    ) {
-        jsonapiCore.loadingsStart = (): void => {
+    public constructor() {
+        JsonapiCore.getInstance().loadingsStart = (): void => {
             this.loading = 'LOADING...';
         };
-        jsonapiCore.loadingsDone = (): void => {
+        JsonapiCore.getInstance().loadingsDone = (): void => {
             this.loading = '';
         };
-        jsonapiCore.loadingsOffline = (error): void => {
+        JsonapiCore.getInstance().loadingsOffline = (error): void => {
             this.loading = 'No connection!!!';
         };
-        jsonapiCore.loadingsError = (error): void => {
+        JsonapiCore.getInstance().loadingsError = (error): void => {
             this.loading = 'No connection 2!!!';
         };
     }

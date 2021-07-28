@@ -5,9 +5,10 @@ import { JsonapiConfig } from '../jsonapi-config';
 import { share, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { IDocumentData } from '../interfaces/document';
+import { IHttp } from '../interfaces/http';
 
 @Injectable()
-export class Http {
+export class Http implements IHttp {
     // NOTE: GET requests are stored in a this object to prevent duplicate requests
     public get_requests: { [key: string]: Observable<IDocumentData> } = {};
 

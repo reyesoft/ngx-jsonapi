@@ -7,7 +7,7 @@ import { ICacheable } from './interfaces/cacheable';
 import { Converter } from './services/converter';
 import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
 import { IDataResource, IBasicDataResource } from './interfaces/data-resource';
-import { isDevMode } from '@angular/core';
+import { Core } from './core';
 
 // used for collections on relationships, for parent document use DocumentCollection
 export class RelatedDocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
@@ -94,7 +94,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         // remove when getService return null or catch errors
         // this prvent a fill on undefinied service :/
         if (!service) {
-            if (isDevMode()) {
+            if (Core.getInstance().isDevMode()) {
                 console.warn(
                     'The relationship ' +
                         'relation_alias?' +

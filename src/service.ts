@@ -116,14 +116,14 @@ export class Service<R extends Resource = Resource> {
     // if you change this logic, maybe you need to change getAllFromLocal()
     private async getGetFromLocal(params: IParamsCollection = {}, path: PathBuilder, resource: R): Promise<void> {
         // STORE
-        if (!Core.injectedServices.json_ripper.enabled) {
+        if (!Core.getInstance().injectedServices.json_ripper.enabled) {
             throw new Error('We cant handle this request');
         }
 
         resource.setLoaded(false);
 
         // STORE (individual)
-        let success = await Core.injectedServices.json_ripper.getResourceByResource(resource, path.includes);
+        let success = await Core.getInstance().injectedServices.json_ripper.getResourceByResource(resource, path.includes);
 
         resource.fill(success);
         resource.setSource('store');
@@ -149,7 +149,7 @@ export class Service<R extends Resource = Resource> {
                 resource.setSourceAndPropagate('server');
 
                 // this.getService().cachememory.setResource(resource, true);
-                Core.injectedServices.json_ripper.saveResource(resource, path.includes);
+                Core.getInstance().injectedServices.json_ripper.saveResource(resource, path.includes);
                 subject.next(resource);
                 setTimeout(() => subject.complete(), 0);
             },
@@ -217,7 +217,7 @@ export class Service<R extends Resource = Resource> {
         // @todo this code is repeated on core.clearCache()
         CacheMemory.getInstance().deprecateCollections(path.getForCache());
 
-        return Core.injectedServices.json_ripper.deprecateCollection(path.getForCache()).then(() => true);
+        return Core.getInstance().injectedServices.json_ripper.deprecateCollection(path.getForCache()).then(() => true);
     }
 
     public parseToServer(attributes: IAttributes): void {
@@ -302,7 +302,7 @@ export class Service<R extends Resource = Resource> {
         temporary_collection: DocumentCollection<R>
     ): Promise<void> {
         // STORE
-        if (!Core.injectedServices.json_ripper.enabled) {
+        if (!Core.getInstance().injectedServices.json_ripper.enabled) {
             throw new Error('We cant handle this request');
         }
 
@@ -311,10 +311,10 @@ export class Service<R extends Resource = Resource> {
         let success: ICacheableDataCollection;
         if (params.store_cache_method === 'compact') {
             // STORE (compact)
-            success = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact');
+            success = await Core.getInstance().injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact');
         } else {
             // STORE (individual)
-            success = await Core.injectedServices.json_ripper.getCollection(path.getForCache(), path.includes);
+            success = await Core.getInstance().injectedServices.json_ripper.getCollection(path.getForCache(), path.includes);
         }
         temporary_collection.fill(success);
         temporary_collection.setSourceAndPropagate('store');
@@ -357,11 +357,11 @@ export class Service<R extends Resource = Resource> {
                 temporary_collection.setLoadedAndPropagate(true);
 
                 // this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
-                if (Core.injectedServices.json_ripper.enabled) {
-                    Core.injectedServices.json_ripper.saveCollection(path.getForCache(), temporary_collection, path.includes);
+                if (Core.getInstance().injectedServices.json_ripper.enabled) {
+                    Core.getInstance().injectedServices.json_ripper.saveCollection(path.getForCache(), temporary_collection, path.includes);
                     if (params.store_cache_method === 'compact') {
                         // @todo migrate to dexie
-                        Core.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <
+                        Core.getInstance().injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <
                             ICacheableDataCollection
                         >success);
                     }

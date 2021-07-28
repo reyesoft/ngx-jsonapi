@@ -30,7 +30,7 @@ export class PathCollectionBuilder extends PathBuilder {
 
     private getPageConfig(): { number: string; size: string } {
         return (
-            (Core.injectedServices.rsJsonapiConfig.parameters && Core.injectedServices.rsJsonapiConfig.parameters.page) || {
+            (Core.getInstance().injectedServices.rsJsonapiConfig.parameters && Core.getInstance().injectedServices.rsJsonapiConfig.parameters.page) || {
                 number: 'number',
                 size: 'size'
             }
