@@ -1,0 +1,1 @@
+{"version":3,"file":"resources-by-type.js","sourceRoot":"","sources":["../../src/interfaces/resources-by-type.ts"],"names":[],"mappings":"","sourcesContent":["import { Resource } from '../resource';\nimport { IObjectsById } from './objects-by-id';\n\nexport interface IResourcesByType {\n    [type: string]: IObjectsById<Resource>;\n}\n"]}

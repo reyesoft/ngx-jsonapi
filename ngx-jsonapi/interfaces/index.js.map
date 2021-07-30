@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/interfaces/index.ts"],"names":[],"mappings":"","sourcesContent":["export * from './attributes';\nexport * from './links';\nexport * from './params-collection';\nexport * from './params-resource';\nexport * from './objects-by-id';\nexport * from './resources-by-type';\n"]}

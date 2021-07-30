@@ -1,37 +1,43 @@
-import { Injectable } from '@angular/core';
 import { IDocumentResource } from '../interfaces/data-object';
-import { HttpClient, HttpHeaders, HttpEvent } from '@angular/common/http';
-import { JsonapiConfig } from '../jsonapi-config';
 import { share, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 import { IDocumentData } from '../interfaces/document';
 import { IHttp } from '../interfaces/http';
+import { Core } from '../core';
+import axios, { AxiosRequestConfig, Method } from 'axios';
 
-@Injectable()
 export class Http implements IHttp {
     // NOTE: GET requests are stored in a this object to prevent duplicate requests
     public get_requests: { [key: string]: Observable<IDocumentData> } = {};
 
-    public constructor(private http: HttpClient, private rsJsonapiConfig: JsonapiConfig) {}
-
-    public exec(path: string, method: string, data?: IDocumentResource): Observable<IDocumentData> {
-        let req = {
-            body: data || null,
-            headers: new HttpHeaders({
+    public exec(path: string, method: Method, data?: IDocumentResource): Observable<IDocumentData> {
+        let config: AxiosRequestConfig = {
+            url: Core.me.injectedServices.rsJsonapiConfig.url + path,
+            method: method,
+            data: data || null,
+            headers: {
                 'Content-Type': 'application/vnd.api+json',
                 Accept: 'application/vnd.api+json'
-            })
+            }
         };
 
-        // NOTE: prevent duplicate GET requests
         if (method === 'get') {
             if (!this.get_requests[path]) {
-                let obs = this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
-                    tap(() => {
-                        delete this.get_requests[path];
-                    }),
-                    share()
-                );
+                let obs = new Observable((observer: Observer<IDocumentData>) => {
+                        axios.request(config)
+                            .then((response: any) => {
+                                observer.next(response.data as IDocumentData);
+                                observer.complete();
+                            })
+                            .catch((error) => {
+                                observer.error(error);
+                            })
+                    }).pipe(
+                        tap(() => {
+                            delete this.get_requests[path];
+                        }),
+                        share()
+                    );
                 this.get_requests[path] = obs;
 
                 return obs;
@@ -40,11 +46,20 @@ export class Http implements IHttp {
             return this.get_requests[path];
         }
 
-        return this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
-            tap(() => {
-                delete this.get_requests[path];
-            }),
-            share()
-        );
+        return new Observable((observer: Observer<IDocumentData>) => {
+                axios.request(config)
+                    .then((response) => {
+                        observer.next(response.data as IDocumentData);
+                        observer.complete();
+                    })
+                    .catch((error) => {
+                        observer.error(error);
+                    })
+            }).pipe(
+                tap(() => {
+                    delete this.get_requests[path];
+                }),
+                share()
+            );
     }
 }

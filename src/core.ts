@@ -18,10 +18,10 @@ export const JSONAPI_STORE_SERVICE = 'jsonapi_store_service';
 export class Core {
     public static me: Core;
     public injectedServices: {
-        JsonapiStoreService?: IStoreService;
-        JsonapiHttp?: IHttp;
-        json_ripper?: IRipper;
-        rsJsonapiConfig?: JsonapiConfig;
+        JsonapiStoreService: IStoreService;
+        JsonapiHttp: IHttp;
+        json_ripper: IRipper;
+        rsJsonapiConfig: JsonapiConfig;
     };
     public loadingsCounter: number = 0;
     public loadingsStart: Function = noop;

@@ -6,10 +6,7 @@ import { Resource } from '../resource';
 import { DocumentResource } from '../document-resource';
 import { IDataProvider, IElement } from '../data-providers/data-provider';
 import { DocumentCollection } from '../document-collection';
-import { Injectable } from '@angular/core';
 
-/* tslint:disable:no-empty */
-@Injectable()
 export class JsonRipperFake implements IRipper {
     public readonly enabled = false;
 

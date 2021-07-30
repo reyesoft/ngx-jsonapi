@@ -1,12 +1,13 @@
-import { Injector, Optional } from '@angular/core';
-import { IHttp } from '../interfaces/http';
-import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
+import { Core } from '../core';
 import { JsonapiConfig } from '../jsonapi-config';
 import { IRipper } from '../services/json-ripper.interface';
 import { IStoreService } from '../sources/store-service.interface';
+import { Http } from '../sources/http.service';
+import { StoreFakeService } from '../sources/store-fake.service';
+import { JsonRipperFake } from '../services/json-ripper-fake';
 
 export class AngularBootstrap {
-    public static bootstrap(@Optional() user_config: JsonapiConfig, jsonapiHttp: IHttp, injector: Injector): void {
+    public static bootstrap(user_config: JsonapiConfig, jsonapiStore?: IStoreService, jsonRipper?: IRipper): void {
         let config = new JsonapiConfig();
 
         for (let k in config) {
@@ -14,9 +15,9 @@ export class AngularBootstrap {
         }
 
         Core.getInstance().injectedServices = {
-            JsonapiStoreService: injector.get<IStoreService>(<any>JSONAPI_STORE_SERVICE),
-            JsonapiHttp: jsonapiHttp,
-            json_ripper: injector.get<IRipper>(<any>JSONAPI_RIPPER_SERVICE),
+            JsonapiStoreService: jsonapiStore ? jsonapiStore : new StoreFakeService(),
+            JsonapiHttp: new Http(),
+            json_ripper: jsonRipper ? jsonRipper : new JsonRipperFake(),
             rsJsonapiConfig: config
         };
     }

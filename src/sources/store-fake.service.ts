@@ -2,10 +2,8 @@ import { IStoreService } from './store-service.interface';
 import { ICacheableDataCollection } from '../interfaces/data-collection';
 import { ICacheableDataResource, IDataResource } from '../interfaces/data-resource';
 import { IObjectsById } from '../interfaces';
-import { Injectable } from '@angular/core';
 
 /* tslint:disable:no-empty */
-@Injectable()
 export class StoreFakeService implements IStoreService {
     public async getDataObject(type: 'collection' | string, id_or_url: string) {
         if (type === 'collection') {

@@ -1,0 +1,1 @@
+{"version":3,"file":"autoregister.js","sourceRoot":"","sources":["../../src/decorators/autoregister.ts"],"names":[],"mappings":";;;;;;;;AAGA,MAAM;IACF,OAAO,CAAC,MAAM,EAAO,EAAE;;KAEtB,CAAC;CACL","sourcesContent":["/**\n * @deprecated since version 3.0.0\n */\nexport function Autoregister() {\n    return (target): any => {\n        /**/\n    };\n}\n"]}

@@ -1,0 +1,1 @@
+{"version":3,"file":"relationship.js","sourceRoot":"","sources":["../../src/interfaces/relationship.ts"],"names":[],"mappings":"","sourcesContent":["import { DocumentCollection } from '../document-collection';\nimport { DocumentResource } from '../document-resource';\n\nexport interface IRelationships {\n    [key: string]: DocumentCollection | DocumentResource;\n}\n"]}

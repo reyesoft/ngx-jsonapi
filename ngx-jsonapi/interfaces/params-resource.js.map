@@ -1,0 +1,1 @@
+{"version":3,"file":"params-resource.js","sourceRoot":"","sources":["../../src/interfaces/params-resource.ts"],"names":[],"mappings":"","sourcesContent":["import { IParams } from './params';\n\nexport interface IParamsResource extends IParams {\n    id?: string;\n    include_get?: Array<string>;\n    include_save?: Array<string>;\n}\n"]}

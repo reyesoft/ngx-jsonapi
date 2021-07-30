@@ -1,0 +1,42 @@
+import { IStoreService } from './sources/store-service.interface';
+import { IRipper } from './services/json-ripper.interface';
+import { Service } from './service';
+import { Resource } from './resource';
+import { JsonapiConfig } from './jsonapi-config';
+import { IDocumentResource } from './interfaces/data-object';
+import { Observable } from 'rxjs';
+import { IDocumentData } from './interfaces/document';
+import { IHttp } from './interfaces/http';
+export declare const JSONAPI_RIPPER_SERVICE = "jsonapi_ripper_service";
+export declare const JSONAPI_STORE_SERVICE = "jsonapi_store_service";
+export declare class Core {
+    static me: Core;
+    injectedServices: {
+        JsonapiStoreService: IStoreService;
+        JsonapiHttp: IHttp;
+        json_ripper: IRipper;
+        rsJsonapiConfig: JsonapiConfig;
+    };
+    loadingsCounter: number;
+    loadingsStart: Function;
+    loadingsDone: Function;
+    loadingsError: Function;
+    loadingsOffline: Function;
+    config: JsonapiConfig;
+    isDevMode: () => boolean;
+    private resourceServices;
+    private constructor();
+    static getInstance(): Core;
+    static delete(path: string): Observable<IDocumentData>;
+    static get(path: string): Observable<IDocumentData>;
+    static exec(path: string, method: string, data?: IDocumentResource, call_loadings_error?: boolean): Observable<IDocumentData>;
+    registerService<R extends Resource>(clase: Service): Service<R> | false;
+    getResourceService(type: string): Service | undefined;
+    getResourceServiceOrFail(type: string): Service;
+    static removeCachedResource(resource_type: string, resource_id: string): void;
+    static setCachedResource(resource: Resource): void;
+    static deprecateCachedCollections(type: string): void;
+    refreshLoadings(factor: number): void;
+    clearCache(): Promise<boolean>;
+    duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: Array<string>): R;
+}

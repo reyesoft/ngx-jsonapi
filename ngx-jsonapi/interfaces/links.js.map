@@ -1,0 +1,1 @@
+{"version":3,"file":"links.js","sourceRoot":"","sources":["../../src/interfaces/links.ts"],"names":[],"mappings":"","sourcesContent":["// http://org/format/#document-links\nexport interface ILinks {\n    self?: string;\n    related?: {\n        href: string;\n        meta: object;\n    };\n}\n"]}

@@ -1,0 +1,1 @@
+{"version":3,"file":"react-bootstrap.js","sourceRoot":"","sources":["../../src/bootstraps/react-bootstrap.ts"],"names":[],"mappings":";;;;AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,qBAAqB,CAAC;AAEvD,MAAM,qBAAsB,SAAQ,gBAAgB;CAAG","sourcesContent":["import { AngularBootstrap } from './angular-bootstrap';\n\nexport class ReactBootstrap extends AngularBootstrap {}\n"]}

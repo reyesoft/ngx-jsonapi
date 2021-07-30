@@ -1,0 +1,1 @@
+{"version":3,"file":"objects-by-id.js","sourceRoot":"","sources":["../../src/interfaces/objects-by-id.ts"],"names":[],"mappings":"","sourcesContent":["export interface IObjectsById<R> {\n    [resource_id: string]: R;\n}\n"]}
