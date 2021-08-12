@@ -57,7 +57,7 @@ let injector = ReflectiveInjector.resolveAndCreate([
 describe('core methods', () => {
     let core: Core;
     beforeEach(() => {
-        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+        core = Core.getInstance();
         expect(core).toBeTruthy();
     });
     it('registered services should be stored in resourceServices object with their type as key', () => {
@@ -142,7 +142,7 @@ describe('core methods', () => {
 
         let test_service = new TestService();
         await test_service.clearCache();
-        Core.injectedServices.JsonapiStoreService.clearCache();
+        Core.me.injectedServices.JsonapiStoreService.clearCache();
         test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));
 
         await test_service

@@ -49,6 +49,7 @@ export class Http implements IHttp {
         return new Observable((observer: Observer<IDocumentData>) => {
                 axios.request(config)
                     .then((response) => {
+
                         observer.next(response.data as IDocumentData);
                         observer.complete();
                     })
