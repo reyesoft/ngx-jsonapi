@@ -15,7 +15,7 @@ describe('Store service', () => {
         TestBed.configureTestingModule({
             providers: [StoreService]
         }).compileComponents();
-        store_service = TestBed.get(StoreService);
+        store_service = TestBed.inject(StoreService);
     }));
 
     it('should create Store service', () => {

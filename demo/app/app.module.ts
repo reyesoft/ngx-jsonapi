@@ -11,6 +11,8 @@ import { PhotosService } from './photos/photos.service';
 import { SharedModule } from './shared/shared.module';
 
 import { JsonapiBootstrap } from 'ngx-jsonapi';
+import { AuthorsModule } from './authors/authors.module';
+import { BooksModule } from './books/books.module';
 
 const appRoutes: Routes = [
     {
@@ -20,11 +22,11 @@ const appRoutes: Routes = [
     },
     {
         path: 'authors',
-        loadChildren: './authors/authors.module#AuthorsModule'
+        loadChildren: (): Promise<AuthorsModule> => import('./authors/authors.module').then((m): AuthorsModule => m.AuthorsModule)
     },
     {
         path: 'books',
-        loadChildren: './books/books.module#BooksModule'
+        loadChildren: (): Promise<BooksModule> => import('./books/books.module').then((m): BooksModule => m.BooksModule)
     }
 ];
 

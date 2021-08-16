@@ -1,5 +1,5 @@
 /* tslint:disable:file-name-casing */
-export * from './interfaces';
+export * from './interfaces/index';
 export { Autoregister } from './decorators/autoregister';
 export { Core as JsonapiCore, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 export { Resource } from './resource';
