@@ -307,7 +307,7 @@ export class Resource implements ICacheable {
                 // force reload collections cache (example: we add a new element)
                 if (!this.id) {
                     CacheMemory.getInstance().deprecateCollections(path.get());
-                    Core.injectedServices.json_ripper.deprecateCollection(path.get());
+                    Core.getInstance().injectedServices.json_ripper.deprecateCollection(path.get());
                 }
 
                 // is a resource?

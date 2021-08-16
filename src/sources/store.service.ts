@@ -4,9 +4,7 @@ import { ICacheableDataResource } from './../interfaces/data-resource';
 import Dexie from 'dexie';
 import { IDataResource } from '../interfaces/data-resource';
 import { IObjectsById } from '../interfaces';
-import { Injectable } from '@angular/core';
 
-@Injectable()
 export class StoreService implements IStoreService {
     private db: Dexie;
 

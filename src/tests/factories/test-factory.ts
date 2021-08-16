@@ -105,9 +105,9 @@ export class TestFactory {
         }
 
         // NOTE: add photos
-        author.relationships.photos.data = author.relationships.photos.data.concat(
-            <Array<Photo>>this.getDataResourcesWithType('photos', 2)
-        );
+        author.relationships.photos.data = author.relationships.photos.data.concat(<Array<Photo>>(
+            this.getDataResourcesWithType('photos', 2)
+        ));
         if (include.includes('photos')) {
             this.includeFromService(author, 'photos', Photo);
         }
@@ -257,7 +257,7 @@ export class TestFactory {
                 this[`get${resource_class.name}`](relation_data.id)
             );
             // @NOTE: cannot check IDataResource interface with instanceof
-        } else if (relationship_content instanceof DocumentCollection || relationship_content.data instanceof Array) {
+        } else if (relationship_content instanceof DocumentCollection) {
             for (let has_many_relationship of (<DocumentCollection>resource.relationships[included_alias]).data) {
                 document_data.included.push(
                     this[`get${TestFactory.resource_classes_by_type[has_many_relationship.type].name}`](has_many_relationship.id)

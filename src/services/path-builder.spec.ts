@@ -1,35 +1,7 @@
-import { StoreService } from '../sources/store.service';
-import { JsonRipper } from '../services/json-ripper';
-import { ReflectiveInjector } from '@angular/core';
-import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
+import { JsonapiBootstrap } from '../bootstraps/jsonapi-bootstrap';
+import { Core } from '../core';
 import { Service } from '../service';
 import { PathBuilder } from './path-builder';
-import { JsonapiConfig } from '../jsonapi-config';
-import { StoreService as JsonapiStore } from '../sources/store.service';
-import { Http as JsonapiHttpImported } from '../sources/http.service';
-import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-
-class HttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject = new BehaviorSubject(new HttpResponse());
-
-        return subject.asObservable();
-    }
-}
-
-let injector = ReflectiveInjector.resolveAndCreate([
-    {
-        provide: JSONAPI_RIPPER_SERVICE,
-        useClass: JsonRipper
-    },
-    {
-        provide: JSONAPI_STORE_SERVICE,
-        useClass: StoreService
-    }
-]);
-
-let core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
 
 const testService = new Service();
 testService.getPrePath = (): string => {
@@ -43,6 +15,7 @@ describe('Path Builder', () => {
     let path_builder: PathBuilder;
     beforeEach(async () => {
         path_builder = new PathBuilder();
+        JsonapiBootstrap.bootstrap({ user_config: { url: 'http://yourdomain/api/v1/' } });
     });
 
     it('applyParams method should call appendPath two to four times: with service s pre-path, params.beforepath (if exists),\
@@ -90,7 +63,7 @@ describe('Path Builder', () => {
         path_builder.paths = ['test', 'path'];
         (path_builder as any).get_params = ['and', 'test', 'params'];
         path_builder.includes = [];
-        Core.injectedServices.rsJsonapiConfig.params_separator = '?';
+        Core.me.injectedServices.rsJsonapiConfig.params_separator = '?';
         let url_string = path_builder.get();
         expect(url_string).toBe('test/path?and&test&params');
     });
@@ -98,7 +71,7 @@ describe('Path Builder', () => {
         path_builder.paths = ['test', 'path'];
         (path_builder as any).get_params = [];
         path_builder.includes = [];
-        Core.injectedServices.rsJsonapiConfig.params_separator = '?';
+        Core.me.injectedServices.rsJsonapiConfig.params_separator = '?';
         let url_string = path_builder.get();
         expect(url_string).toBe('test/path');
     });
@@ -106,7 +79,7 @@ describe('Path Builder', () => {
         path_builder.paths = ['test', 'path'];
         (path_builder as any).get_params = ['and', 'test', 'params'];
         path_builder.includes = ['test', 'includes'];
-        Core.injectedServices.rsJsonapiConfig.params_separator = '?';
+        Core.me.injectedServices.rsJsonapiConfig.params_separator = '?';
         let url_string = path_builder.get();
         expect(url_string).toBe('test/path?and&test&params&include=test,includes');
     });

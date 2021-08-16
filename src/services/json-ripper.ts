@@ -5,14 +5,12 @@ import { Resource } from './../resource';
 import { DexieDataProvider } from '../data-providers/dexie-data-provider';
 import { IDataProvider, IElement } from './../data-providers/data-provider';
 import { DocumentCollection } from '../document-collection';
-import { Injectable } from '@angular/core';
 
 interface IStoredCollection {
     updated_at: number;
     keys: Array<string>;
 }
 
-@Injectable()
 export class JsonRipper implements IRipper {
     public readonly enabled = true;
     private dataProvider: IDataProvider;

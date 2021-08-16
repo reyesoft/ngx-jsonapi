@@ -1,38 +1,13 @@
-import { StoreService } from '../sources/store.service';
-import { JsonRipper } from '../services/json-ripper';
-import { ReflectiveInjector } from '@angular/core';
-import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
 import { Author, AuthorsService } from './../tests/factories/authors.service';
 import { CacheMemory } from './cachememory';
 import { TestFactory } from '../tests/factories/test-factory';
-
-import { StoreService as JsonapiStore } from '../sources/store.service';
-import { Http as JsonapiHttpImported } from '../sources/http.service';
-import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
-import { JsonapiConfig } from '../jsonapi-config';
-
-import { BehaviorSubject, Observable } from 'rxjs';
-
-class HttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject = new BehaviorSubject(new HttpResponse());
-
-        return subject.asObservable();
-    }
-}
-
-let injector = ReflectiveInjector.resolveAndCreate([
-    {
-        provide: JSONAPI_RIPPER_SERVICE,
-        useClass: JsonRipper
-    },
-    {
-        provide: JSONAPI_STORE_SERVICE,
-        useClass: StoreService
-    }
-]);
+import { JsonapiBootstrap } from '../bootstraps/jsonapi-bootstrap';
 
 describe('Cache Memory deprecation and live conditions', () => {
+    beforeAll(() => {
+        JsonapiBootstrap.bootstrap({ user_config: { url: 'http://yourdomain/api/v1/' } });
+    });
+
     it('clearCache', () => {
         let cachememory = CacheMemory.getInstance();
         let collection = TestFactory.getCollection(Author);
@@ -143,11 +118,6 @@ describe('Cache Memory deprecation and live conditions', () => {
     });
 
     it('getOrCreateResource() should throw an error if the requested service does not exist', () => {
-        let core = new Core(
-            new JsonapiConfig(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
-            injector
-        );
         // let service = new AuthorsService();
 
         let cachememory = CacheMemory.getInstance();
@@ -161,11 +131,6 @@ describe('Cache Memory deprecation and live conditions', () => {
     });
 
     it('getOrCreateResource() should return a new resource when the requested resource does not exist', () => {
-        let core = new Core(
-            new JsonapiConfig(),
-            new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
-            injector
-        );
         let service = new AuthorsService();
 
         let cachememory = CacheMemory.getInstance();

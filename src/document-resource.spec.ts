@@ -1,43 +1,13 @@
-import { JsonRipper } from './services/json-ripper';
-import { ReflectiveInjector } from '@angular/core';
-import { StoreService } from './sources/store.service';
-import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { DocumentResource } from './document-resource';
 import { Resource } from './resource';
-import { Page } from './services/page';
-import { StoreService as JsonapiStore } from './sources/store.service';
-import { Http as JsonapiHttpImported } from './sources/http.service';
-import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
-import { JsonapiConfig } from './jsonapi-config';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { Author, AuthorsService } from './tests/factories/authors.service';
 import { Book, BooksService } from './tests/factories/books.service';
-import { delay, map, toArray, tap } from 'rxjs/operators';
-
-class HttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject = new BehaviorSubject(new HttpResponse());
-
-        return subject.asObservable();
-    }
-}
-
-let injector = ReflectiveInjector.resolveAndCreate([
-    {
-        provide: JSONAPI_RIPPER_SERVICE,
-        useClass: JsonRipper
-    },
-    {
-        provide: JSONAPI_STORE_SERVICE,
-        useClass: StoreService
-    }
-]);
+import { JsonapiBootstrap } from './bootstraps/jsonapi-bootstrap';
 
 describe('resource basic methods', () => {
-    let core: Core;
     let service: AuthorsService;
     beforeAll(async () => {
-        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+        JsonapiBootstrap.bootstrap({ user_config: { url: 'http://yourdomain/api/v1/' } });
         service = new AuthorsService();
     });
 
@@ -55,12 +25,6 @@ describe('resource basic methods', () => {
     });
 });
 
-let test_response_subject = new BehaviorSubject(new HttpResponse());
-class DynamicHttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        return test_response_subject.asObservable().pipe(delay(0));
-    }
-}
 describe('document resource general', () => {
     let document_resource = new DocumentResource();
     it('should be created', () => {

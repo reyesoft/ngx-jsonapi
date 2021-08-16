@@ -6,11 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [3.0.0] - 2021-08-17
+
+### Added
+
+-   Compatibility with other frameworks in addition to angular was added to the library. The behavior of the http.service.ts file was changed, it stopped using http client by axios to give compatibility with other libraries. It changed the way the library is initialized, a bootstrap was created that is found in the jsonapi-bootstrap file ([#326](https://github.com/reyesoft/ngx-jsonapi/pull/326))
+
 ## [2.3.0] - 2021-05-19
 
 ### Changed
 
 -   Angular version upgraded to 10, and vulnerabilities updated. ([#306](https://github.com/reyesoft/ngx-jsonapi/pull/306))
+
+## [2.2.3] - 2021-06-24
+
+### Fixed
+
+-   Fix trackBy params of document-collection.ts. ([#299](https://github.com/reyesoft/ngx-jsonapi/pull/299))
 
 ## [2.2.2] - 2021-05-19
 

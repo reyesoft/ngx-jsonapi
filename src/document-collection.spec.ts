@@ -11,7 +11,7 @@ describe('document-collection', () => {
     it('should be work with trackBy', () => {
         let resource = new Resource();
         resource.id = '5';
-        expect(collection.trackBy(resource)).toBe('5');
+        expect(collection.trackBy(1, resource)).toBe('5');
     });
 
     it('should be find resources with find() method', () => {

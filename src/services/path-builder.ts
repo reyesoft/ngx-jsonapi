@@ -45,7 +45,10 @@ export class PathBuilder {
             params.push('include=' + this.includes.join(','));
         }
 
-        return this.paths.join('/') + (params.length > 0 ? Core.injectedServices.rsJsonapiConfig.params_separator + params.join('&') : '');
+        return (
+            this.paths.join('/') +
+            (params.length > 0 ? Core.getInstance().injectedServices.rsJsonapiConfig.params_separator + params.join('&') : '')
+        );
     }
 
     private setInclude(strings_array: Array<string>) {

@@ -34,6 +34,7 @@ Data is obtained from [Json Api Playground](https://jsonapiplayground.reyesoft.c
 ## Migration
 
 -   [Migration v1 to v2 update guide](https://github.com/reyesoft/ngx-jsonapi/blob/v2.0/docs/migration.md)
+-   [Migration v2 to v3 Angular update guide](https://github.com/reyesoft/ngx-jsonapi/blob/v2.0/docs/migration-v2-to-v3.md)
 
 ## Usage
 
@@ -52,51 +53,75 @@ yarn add ngx-jsonapi@2.0.0-rc.4 --save
 
 1.  Add Jsonapi dependency.
 2.  Configure your url and other paramemeters.
-3.  Inject JsonapiCore somewhere before you extend any class from `Jsonapi.Resource`.
+
+-   Angular
 
 ```typescript
 /* .. */
 import { NgxJsonapiModule } from 'ngx-jsonapi';
 
-@NgModule({
-    imports: [
-        NgxJsonapiModule.forRoot({
-            url: '//jsonapiplayground.reyesoft.com/v2/'
-        })
-    ]
-})
-export class AppModule {}
+@NgModule()
+export class AppModule {
+    public constructor() {
+        JsonapiBootstrap({
+            user_config: { url: '//jsonapiplayground.reyesoft.com/v2/' }
+        });
+    }
+}
+```
+
+-   React
+
+```typescript
+import { NgxJsonapiModule } from 'ngx-jsonapi';
+
+const App = () => {
+    JsonapiBootstrap({
+        user_config: { url: '//jsonapiplayground.reyesoft.com/v2/' }
+    });
+
+    return <div>Hello world</div>;
+};
 ```
 
 ### Enable Local Cache
 
 Library cache anything memory. With Local Store, also store all on IndexDb on browser. Faster apps when we reuse a lot of data.
 
+-   Angular
+
 ```typescript
 /* .. */
 import { NgxJsonapiModule } from 'ngx-jsonapi';
-import { JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { StoreService } from 'ngx-jsonapi/sources/store.service';
 import { JsonRipper } from 'ngx-jsonapi/services/json-ripper';
 
-@NgModule({
-    imports: [
-        NgxJsonapiModule.forRoot({
-            url: '//jsonapiplayground.reyesoft.com/v2/'
-        })
-    ],
-    providers: [
-        {
-            provide: JSONAPI_RIPPER_SERVICE,
-            useClass: JsonRipperFake
-        },
-        {
-            provide: JSONAPI_STORE_SERVICE,
-            useClass: StoreFakeService
-        }
-    ]
-})
-export class AppModule {}
+@NgModule()
+export class AppModule {
+    public constructor() {
+        JsonapiBootstrap({
+            user_config: { url: '//jsonapiplayground.reyesoft.com/v2/' },
+            jsonapiStore: new StoreFakeService(),
+            jsonRipper: new JsonRipperFake()
+        });
+    }
+}
+```
+
+-   React
+
+```typescript
+import { NgxJsonapiModule } from 'ngx-jsonapi';
+
+const App = () => {
+    JsonapiBootstrap({
+        user_config: { url: '//jsonapiplayground.reyesoft.com/v2/' },
+        jsonapiStore: new StoreFakeService(),
+        jsonRipper: new JsonRipperFake()
+    });
+
+    return <div>Hello world</div>;
+};
 ```
 
 ## Examples
@@ -153,6 +178,9 @@ export class AuthorsComponent {
         authorsService
             .all({
                 // include: ['books', 'photos'],
+                // fields: {
+                //     authors: ['name']
+                // }
             })
             .subscribe(authors => (this.authors = authors));
     }

@@ -1,46 +1,26 @@
-import { StoreService } from './sources/store.service';
 import { JsonRipper } from './services/json-ripper';
-import { ReflectiveInjector } from '@angular/core';
-import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
-import { IDocumentResource } from './interfaces/data-object';
 import { PhotosService } from './tests/factories/photos.service';
-import { IDataResource } from './interfaces/data-resource';
 import { CacheMemory } from './services/cachememory';
-import { Http as JsonapiHttpImported } from './sources/http.service';
-import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
-import { JsonapiConfig } from './jsonapi-config';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { TestFactory } from './tests/factories/test-factory';
 import { Author, AuthorsService } from './tests/factories/authors.service';
 import { Book, BooksService } from './tests/factories/books.service';
-import { delay, map, toArray, tap } from 'rxjs/operators';
+import { map, toArray, tap } from 'rxjs/operators';
+import axios from 'axios';
+import { StoreService } from './sources/store.service';
+import { IDataResource } from './interfaces/data-resource';
+import { IDocumentResource } from './interfaces/data-object';
+import { JsonapiBootstrap } from './bootstraps/jsonapi-bootstrap';
 
 // @todo disable PhotoService
 // @TODO: fix error in toObject when relationship's service is not injected
 
-class HttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        return test_response_subject.asObservable().pipe(delay(0));
-    }
-}
-let test_response_subject = new BehaviorSubject(new HttpResponse());
-
-let injector = ReflectiveInjector.resolveAndCreate([
-    {
-        provide: JSONAPI_RIPPER_SERVICE,
-        useClass: JsonRipper
-    },
-    {
-        provide: JSONAPI_STORE_SERVICE,
-        useClass: StoreService
-    }
-]);
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('service basic methods', () => {
-    let core: Core;
     let service: AuthorsService;
     beforeAll(async () => {
-        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+        JsonapiBootstrap.bootstrap({ user_config: { url: 'http://yourdomain/api/v1/' } });
         service = new AuthorsService();
     });
 
@@ -78,14 +58,14 @@ describe('service basic methods', () => {
 let store_cache_methods: Array<'individual' | 'compact'> = ['compact', 'individual'];
 for (let store_cache_method of store_cache_methods) {
     describe(`service.all() with ${store_cache_method} storage cache method: `, () => {
-        let core: Core;
         let booksService: BooksService;
         beforeEach(async () => {
-            core = new Core(
-                new JsonapiConfig(),
-                new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
-                injector
-            );
+            JsonapiBootstrap.bootstrap({
+                user_config: { url: 'http://yourdomain/api/v1/' },
+                jsonapiStore: new StoreService(),
+                jsonRipper: new JsonRipper()
+            });
+            mockedAxios.request.mockResolvedValue({});
             booksService = new BooksService();
             booksService.register();
             let photosService = new PhotosService();
@@ -93,8 +73,6 @@ for (let store_cache_method of store_cache_methods) {
             let authorsService = new AuthorsService();
             authorsService.register();
             await booksService.clearCache();
-            test_response_subject.complete();
-            test_response_subject = new BehaviorSubject(new HttpResponse());
 
             // clear cachememory on every test
             let cachememory = CacheMemory.getInstance();
@@ -103,8 +81,8 @@ for (let store_cache_method of store_cache_methods) {
         });
 
         it(`without cached collection emits source ^new-server|`, async () => {
-            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
 
             let expected = [
                 // expected emits
@@ -128,16 +106,17 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(http_request_spy).toHaveBeenCalledTimes(1);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(1);
         });
 
         it(`with cached on memory (live) collection emits source ^memory|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             booksService.collections_ttl = 5; // live
             await booksService.all().toPromise();
-
-            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             let expected = [
                 // expected emits
                 { builded: true, loaded: true, source: 'memory' }
@@ -153,16 +132,17 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(http_request_spy).toHaveBeenCalledTimes(0);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(0);
         });
 
         it(`with cached on memory (live) collection emits source ^memory-server| when force ttl = 0 on call`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             booksService.collections_ttl = 5; // live
             await booksService.all({ store_cache_method: store_cache_method }).toPromise();
-
-            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             let expected = [
                 // expected emits
                 { builded: true, loaded: false, source: 'memory' },
@@ -179,16 +159,17 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(http_request_spy).toHaveBeenCalledTimes(1);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(1);
         });
 
         it(`with cached on memory (dead) collection emits source ^memory-server|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             booksService.collections_ttl = 0; // dead
             await booksService.all({ store_cache_method: store_cache_method }).toPromise();
-
-            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             let expected = [
                 // expected emits
                 { builded: true, loaded: false, source: 'memory' },
@@ -211,19 +192,21 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(http_request_spy).toHaveBeenCalledTimes(1);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(1);
         });
 
         it(`with cached on store (live) collection emits source ^new-store|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             booksService.collections_ttl = 5; // live
             await booksService.all({ store_cache_method: store_cache_method }).toPromise();
             let cachememory = CacheMemory.getInstance(); // kill only memory cache
             (cachememory as any).resources = {}; // kill memory cache
             (cachememory as any).collections = {}; // kill memory cache
 
-            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             let expected = [
                 // expected emits
                 { builded: false, loaded: false, source: 'new', source_resource: undefined },
@@ -255,19 +238,21 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(http_request_spy).toHaveBeenCalledTimes(0);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(0);
         });
 
         it(`with cached on store (live) collection wihtout includes emits source ^new-store|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             booksService.collections_ttl = 5; // live
             await booksService.all({ store_cache_method: store_cache_method, include: ['author'] }).toPromise();
             let cachememory = CacheMemory.getInstance(); // kill only memory cache
             (cachememory as any).resources = {}; // kill memory cache
             (cachememory as any).collections = {}; // kill memory cache
 
-            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             let expected = [
                 // expected emits
                 { builded: false, loaded: false, source: 'new', source_resource: undefined },
@@ -293,17 +278,19 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(http_request_spy).toHaveBeenCalledTimes(0);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(0);
         });
 
         it(`with cached on store (dead) collection emits source ^new-store-server|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             booksService.collections_ttl = 0; // dead
             await booksService.all({ store_cache_method: store_cache_method }).toPromise();
             CacheMemory.getInstance().deprecateCollections('');
 
-            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             let expected = [
                 // expected emits
                 { builded: true, loaded: false, source: 'new' }, // @TODO: builded should be false
@@ -320,17 +307,19 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(http_request_spy).toHaveBeenCalledTimes(1);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(1);
         });
 
         it(`with cached on store (dead, no collection_ttl defined) collection emits source ^new-store-server|`, async () => {
             // caching collection
-            test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Book) }));
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             delete booksService.collections_ttl; // dead
             await booksService.all({ store_cache_method: store_cache_method }).toPromise();
             CacheMemory.getInstance().deprecateCollections('');
 
-            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             let expected = [
                 // expected emits
                 { builded: true, loaded: false, source: 'new' }, // @TODO: builded should be false
@@ -347,25 +336,27 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(http_request_spy).toHaveBeenCalledTimes(1);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(1);
         });
 
         it(`with nested include (collection -> hasone -> hasMany)`, async () => {
             // caching collection
             let http_response = {
-                body: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
+                data: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
             };
-            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books' }];
+            http_response.data.included[0].relationships.books.data = [{ id: 'book_123', type: 'books' }];
             let nested_book = TestFactory.getBook();
             delete nested_book.relationships;
             nested_book.id = 'book_123';
             nested_book.attributes.title = 'The Nested Book';
-            http_response.body.included.push(nested_book);
-            test_response_subject.next(new HttpResponse(http_response));
+            http_response.data.included.push(nested_book);
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue(http_response);
             delete booksService.collections_ttl; // dead
             CacheMemory.getInstance().deprecateCollections('');
 
-            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue(http_response);
             let expected = [
                 // expected emits
                 { builded: false, loaded: false, source: 'new' },
@@ -382,26 +373,28 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(http_request_spy).toHaveBeenCalledTimes(1);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(1);
         });
 
         it(`cached on store (dead) with nested include (collection -> hasone -> hasMany)`, async () => {
             // caching collection
             let http_response = {
-                body: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
+                data: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
             };
-            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books' }];
+            http_response.data.included[0].relationships.books.data = [{ id: 'book_123', type: 'books' }];
             let nested_book = TestFactory.getBook();
             delete nested_book.relationships;
             nested_book.id = 'book_123';
             nested_book.attributes.title = 'The Nested Book';
-            http_response.body.included.push(nested_book);
-            test_response_subject.next(new HttpResponse(http_response));
+            http_response.data.included.push(nested_book);
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue(http_response);
             delete booksService.collections_ttl; // dead
             await booksService.all({ include: ['author', 'author.books'], store_cache_method: store_cache_method }).toPromise();
             CacheMemory.getInstance().deprecateCollections('');
 
-            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue(http_response);
             let expected = [
                 // expected emits
                 { builded: true, loaded: false, source: 'new' },
@@ -421,26 +414,28 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(http_request_spy).toHaveBeenCalledTimes(1);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(1);
         });
 
         it(`cached on memory (dead) with nested include (collection -> hasone -> hasMany)`, async () => {
             // caching collection
             let http_response = {
-                body: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
+                data: TestFactory.getCollectionDocumentData(Book, 1, ['author'])
             };
-            http_response.body.included[0].relationships.books.data = [{ id: 'book_123', type: 'books' }];
+            http_response.data.included[0].relationships.books.data = [{ id: 'book_123', type: 'books' }];
             let nested_book = TestFactory.getBook();
             delete nested_book.relationships;
             nested_book.id = 'book_123';
             nested_book.attributes.title = 'The Nested Book';
-            http_response.body.included.push(nested_book);
-            test_response_subject.next(new HttpResponse(http_response));
+            http_response.data.included.push(nested_book);
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue(http_response);
             delete booksService.collections_ttl; // dead
             await booksService.all({ include: ['author', 'author.books'], store_cache_method: store_cache_method }).toPromise();
             // CacheMemory.getInstance().deprecateCollections('');
 
-            let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+            mockedAxios.request.mockRestore();
+            mockedAxios.request.mockResolvedValue(http_response);
             let expected = [
                 // expected emits
                 { builded: true, loaded: false, source: 'memory' },
@@ -460,17 +455,20 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(http_request_spy).toHaveBeenCalledTimes(1);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(1);
         });
     });
 }
 
 describe('service.all() and next service.get()', () => {
-    let core: Core;
     let authorsService: AuthorsService;
     let booksService: BooksService;
     beforeEach(async () => {
-        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+        JsonapiBootstrap.bootstrap({
+            user_config: { url: 'http://yourdomain/api/v1/' },
+            jsonapiStore: new StoreService(),
+            jsonRipper: new JsonRipper()
+        });
         authorsService = new AuthorsService();
         authorsService.register();
         booksService = new BooksService();
@@ -479,14 +477,11 @@ describe('service.all() and next service.get()', () => {
         photosService.register();
         await authorsService.clearCache();
         await booksService.clearCache();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
     });
 
     it(`with cached collection on memory and next request get() with new include`, async () => {
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
-
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Author) });
         let expected = [
             // expected emits
             { loaded: false, source: 'memory' }, // emits with data stored in memory
@@ -494,9 +489,7 @@ describe('service.all() and next service.get()', () => {
         ];
 
         let authors = await authorsService.all({ include: ['books'] }).toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Author) }));
+        mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Author) });
         let author_emits = await authorsService
             .get(authors.data[0].id, { include: ['photos', 'books'] })
             .pipe(
@@ -508,12 +501,12 @@ describe('service.all() and next service.get()', () => {
             .toPromise();
 
         expect(author_emits).toMatchObject(expected);
-        expect(http_request_spy).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.request).toHaveBeenCalledTimes(2);
     });
 
     it(`with cached collection on store and next request get() with new include`, async () => {
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Author) });
 
         let expected = [
             { loaded: false, source: 'new' },
@@ -521,15 +514,13 @@ describe('service.all() and next service.get()', () => {
         ];
 
         let authors = await authorsService.all({ include: ['books'] }).toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
         let cachememory = CacheMemory.getInstance();
         let removed_author_id = authors.data[0].id;
         cachememory.removeResource('authors', removed_author_id); // kill only memory cache
         let removed_author = cachememory.getResource('authors', removed_author_id);
         expect(removed_author).toBe(null);
 
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Author) }));
+        mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Author) });
         let author_emits = await authorsService
             .get(removed_author_id, { include: ['photos', 'books'] })
             .pipe(
@@ -541,14 +532,14 @@ describe('service.all() and next service.get()', () => {
             .toPromise();
 
         expect(author_emits).toMatchObject(expected);
-        expect(http_request_spy).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.request).toHaveBeenCalledTimes(2);
     });
 
     it(`with cached collection on memory and next request get() without include`, async () => {
         Author.test_ttl = 100000;
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let all_authors_body = TestFactory.getCollectionDocumentData(Author, 1, ['books']);
-        test_response_subject.next(new HttpResponse({ body: all_authors_body }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: all_authors_body });
 
         let expected = [
             // expected emits
@@ -557,8 +548,6 @@ describe('service.all() and next service.get()', () => {
         let received_author: Author;
 
         let authors = await authorsService.all({ include: ['books'] }).toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
         expect(authors.data[0].relationships.books.data[0].attributes).toBeTruthy();
 
         let author_emits = await authorsService
@@ -574,13 +563,13 @@ describe('service.all() and next service.get()', () => {
 
         expect(author_emits).toMatchObject(expected);
         // expect(received_author.relationships.books.data[0].attributes).toBeFalsy(); // ERROR!!!
-        expect(http_request_spy).toHaveBeenCalledTimes(1); // on all() request
+        expect(mockedAxios.request).toHaveBeenCalledTimes(1); // on all() request
     });
 
     it(`with cached collection on store and next request get() without include`, async () => {
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let all_authors_body = TestFactory.getCollectionDocumentData(Author, 1, ['books']);
-        test_response_subject.next(new HttpResponse({ body: all_authors_body }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: all_authors_body });
 
         let expected = [
             // expected emits
@@ -590,10 +579,9 @@ describe('service.all() and next service.get()', () => {
         let received_author: Author;
 
         let authors = await authorsService.all({ include: ['books'] }).toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
         expect(authors.data[0].relationships.books.data[0].attributes).toBeTruthy();
 
+        mockedAxios.request.mockResolvedValue({ data: all_authors_body });
         let cachememory = CacheMemory.getInstance();
         let removed_author_id = authors.data[0].id;
         cachememory.removeResource('authors', removed_author_id); // kill only memory cache
@@ -612,13 +600,14 @@ describe('service.all() and next service.get()', () => {
         // @TODO: fix this error!!!
         expect(author_emits).toMatchObject(expected);
         // expect(received_author.relationships.books.data[0].attributes).toBeFalsy(); // ERROR!!!
-        expect(http_request_spy).toHaveBeenCalledTimes(1); // on all() request
+        expect(mockedAxios.request).toHaveBeenCalledTimes(1); // on all() request
     });
 
     it(`with cached collection and next request get() with cached include`, async () => {
         let books_api = TestFactory.getCollectionDocumentData(Book, 1, ['author']);
         books_api.data[0].id = '1';
-        test_response_subject.next(new HttpResponse({ body: books_api }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: books_api });
 
         let expected = [
             { loaded: true, source: 'memory' } // emits with data received from server
@@ -626,14 +615,14 @@ describe('service.all() and next service.get()', () => {
 
         let books = await booksService.all({ include: ['author'] }).toPromise();
         expect(books.data[0].id).toBe('1');
-        test_response_subject.complete();
-        let http_request_spy = spyOn(HttpClient.prototype, 'request');
 
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: books_api });
         let book_emits = await booksService
             .get('1', { include: ['author'], ttl: 1000 })
             .pipe(
                 map(emit => {
-                    expect(http_request_spy).not.toHaveBeenCalled();
+                    expect(mockedAxios.request).not.toHaveBeenCalled();
                     expect(emit.relationships.author.data.attributes.name).toBeTruthy();
                     return { loaded: emit.loaded, source: emit.source };
                 }),
@@ -652,7 +641,8 @@ describe('service.all() and next service.get()', () => {
     it(`get resource and request all()`, async () => {
         let book_api = TestFactory.getResourceDocumentData(Book, ['author']);
         (<IDataResource>book_api.data).id = '1';
-        test_response_subject.next(new HttpResponse({ body: book_api }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: book_api });
 
         let expected = [
             { loaded: false, source: 'new' }, // emits with data received from server
@@ -661,12 +651,11 @@ describe('service.all() and next service.get()', () => {
 
         let book = await booksService.get('1', { include: ['author'] }).toPromise();
         expect(book.id).toBe('1');
-        test_response_subject.complete();
 
         let books_api = TestFactory.getCollectionDocumentData(Book, 1, ['author']);
         books_api.data[0].id = '1';
-        test_response_subject = new BehaviorSubject(new HttpResponse());
-        test_response_subject.next(new HttpResponse({ body: books_api }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: books_api });
 
         let books_emits = await booksService
             .all({ include: ['author'], ttl: 1000 })
@@ -680,7 +669,6 @@ describe('service.all() and next service.get()', () => {
                 toArray()
             )
             .toPromise();
-        test_response_subject.complete();
 
         expect(books_emits).toMatchObject(expected);
 
@@ -692,12 +680,15 @@ describe('service.all() and next service.get()', () => {
 });
 
 describe('service.get()', () => {
-    let core: Core;
     let booksService: BooksService;
     let authorsService: AuthorsService;
     let photosService: PhotosService;
     beforeEach(async () => {
-        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+        JsonapiBootstrap.bootstrap({
+            user_config: { url: 'http://yourdomain/api/v1/' },
+            jsonapiStore: new StoreService(),
+            jsonRipper: new JsonRipper()
+        });
         booksService = new BooksService();
         booksService.register();
         await booksService.clearCache();
@@ -706,18 +697,14 @@ describe('service.get()', () => {
         photosService = new PhotosService();
         photosService.register();
         await authorsService.clearCache();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
         // @TODO: should clear CacheMemory before each it
     });
 
     it(`no cached resource emits source ^new-server|`, async () => {
-        let expected = [
-            { loaded: false, source: 'new' },
-            { loaded: true, source: 'server' }
-        ];
+        let expected = [{ loaded: false, source: 'new' }, { loaded: true, source: 'server' }];
 
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: TestFactory.getResourceDocumentData(Book) });
         let book_emits = await booksService
             .get('1')
             .pipe(
@@ -732,13 +719,13 @@ describe('service.get()', () => {
     });
 
     it(`memory cached (live) resource emits source ^memory|`, async () => {
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: TestFactory.getResourceDocumentData(Book) });
         // caching resource
         await booksService.get('1').toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
 
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: TestFactory.getResourceDocumentData(Book) });
         let expected = [
             // expected emits
             { loaded: true, source: 'memory' }
@@ -753,20 +740,19 @@ describe('service.get()', () => {
             )
             .toPromise();
         expect(emits).toMatchObject(expected);
-        expect(http_request_spy).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.request).toHaveBeenCalledTimes(0);
     });
 
     it(`on memory (live) resource + include new has-one-relationship emits source ^memory-server|`, async () => {
         let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Book);
         body_resource.data.relationships = { author: { data: { id: '1', type: 'authors' } } };
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
         await booksService.get('1').toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
 
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         let expected = [
             // expected emits
             { loaded: false, source: 'memory' },
@@ -783,19 +769,17 @@ describe('service.get()', () => {
             .toPromise();
         // TODO: fix library
         expect(emits).toMatchObject(expected); // ERROR!!! [{ loaded: true, source: 'memory' }, { loaded: true, source: 'server' }]
-        expect(http_request_spy).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.request).toHaveBeenCalledTimes(1);
     });
 
     it(`on memory (live) resource + include existent has-many-relationship emits source ^memory-server|`, async () => {
         let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Author);
         body_resource.data.id = '555';
         body_resource.data.relationships = { books: { data: [{ id: '555', type: 'books' }] } };
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
         await authorsService.get('555').toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
 
         let expected = [
             // expected emits
@@ -817,13 +801,13 @@ describe('service.get()', () => {
     it(`with cached on memory (live) resource + include empty has-one-relationship emits source ^memory|`, async () => {
         let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Book);
         body_resource.data.relationships = { author: { data: null } };
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
         await booksService.get('1').toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
 
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         let expected = [
             // expected emits
             { loaded: true, source: 'memory' }
@@ -841,18 +825,18 @@ describe('service.get()', () => {
             )
             .toPromise();
         expect(emits).toMatchObject(expected);
-        expect(http_request_spy).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.request).toHaveBeenCalledTimes(0);
     });
 
     it(`with cached on memory (live) resource + include cached has-one-relationship emits source ^memory|`, async () => {
         let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Book, ['author']);
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
         await booksService.get('1', { include: ['author'] }).toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
 
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         let expected = [
             // expected emits
             { loaded: true, source: 'memory' }
@@ -869,24 +853,24 @@ describe('service.get()', () => {
             )
             .toPromise();
         expect(emits).toMatchObject(expected);
-        expect(http_request_spy).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.request).toHaveBeenCalledTimes(0);
     });
 
     it(`with cached on store (live) resource + include cached has-one-relationship emits source ^new-store|`, async () => {
         let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Book, ['author']);
         // body_resource.data.relationships = { author: { data: [] } };
         body_resource.data.id = '1';
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
         await booksService.get('1', { include: ['author'] }).toPromise();
-        test_response_subject.complete();
 
         let cachememory = CacheMemory.getInstance(); // kill only memory cache
         (cachememory as any).resources = {}; // kill memory cache
         (cachememory as any).collections = {}; // kill memory cache
 
-        let http_request_spy = spyOn(HttpClient.prototype, 'request');
-
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         let expected = [
             // expected emits
             { loaded: false, source: 'new' },
@@ -907,18 +891,17 @@ describe('service.get()', () => {
             )
             .toPromise();
         expect(emits).toMatchObject(expected);
-        expect(http_request_spy).not.toHaveBeenCalled();
+        expect(mockedAxios.request).not.toHaveBeenCalled();
     });
 
     it(`with cached on memory (live) resource + include empty has-many-relationship emits source ^memory|`, async () => {
         let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Author);
         body_resource.data.id = '556';
         body_resource.data.relationships = { books: { data: [] } };
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
         await authorsService.get('556').toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
 
         let expected = [
             // expected emits
@@ -939,18 +922,17 @@ describe('service.get()', () => {
     it(`with cached on memory (dead) resource emits source ^memory-server|`, async () => {
         let body_resource = TestFactory.getResourceDocumentData(Book);
         (<IDataResource>body_resource.data).id = '1';
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
         await booksService.get('1').toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
 
         let cachememory = CacheMemory.getInstance();
         let book = cachememory.getResourceOrFail('books', '1');
         book.ttl = 0;
 
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         let expected = [
             // expected emits
             { loaded: false, source: 'memory' },
@@ -966,24 +948,23 @@ describe('service.get()', () => {
             )
             .toPromise();
         expect(emits).toMatchObject(expected);
-        expect(http_request_spy).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.request).toHaveBeenCalledTimes(1);
     });
 
     it(`with cached on store (live) resource emits source ^new-store|`, async () => {
         let body_resource = TestFactory.getResourceDocumentData(Book);
         (<IDataResource>body_resource.data).id = '1';
 
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
         await booksService.get('1').toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
 
         let cachememory = CacheMemory.getInstance();
         cachememory.removeResource('books', '1'); // kill only memory cache
 
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         let expected = [
             // expected emits
             { loaded: false, source: 'new' },
@@ -999,24 +980,23 @@ describe('service.get()', () => {
             )
             .toPromise();
         expect(emits).toMatchObject(expected);
-        expect(http_request_spy).toHaveBeenCalledTimes(0);
+        expect(mockedAxios.request).toHaveBeenCalledTimes(0);
     });
 
     it(`with cached on store (live) resource but with new include emits source ^store-server|`, async () => {
         let body_resource = TestFactory.getResourceDocumentData(Book);
         (<IDataResource>body_resource.data).id = '1';
 
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
         await booksService.get('1').toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
 
         let cachememory = CacheMemory.getInstance();
         cachememory.removeResource('books', '1'); // kill only memory cache
 
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         let expected = [
             // expected emits
             { loaded: false, source: 'store' },
@@ -1033,19 +1013,17 @@ describe('service.get()', () => {
             .toPromise();
         // @TODO: fix library
         // expect(emits).toMatchObject(expected); // ERROR!!! [{ loaded: false, source: 'new' }, { loaded: true, source: 'server' }]
-        expect(http_request_spy).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.request).toHaveBeenCalledTimes(1);
     });
 
     it(`with cached on store (dead) resource emits source ^new-store-server|`, async () => {
         let body_resource = TestFactory.getResourceDocumentData(Book);
         (<IDataResource>body_resource.data).id = '1';
 
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
         let book = await booksService.get('1').toPromise();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
-        test_response_subject.next(new HttpResponse({ body: body_resource }));
 
         book.ttl = 0;
         let json_ripper = new JsonRipper();
@@ -1053,7 +1031,8 @@ describe('service.get()', () => {
         let cachememory = CacheMemory.getInstance();
         cachememory.removeResource('books', '1'); // kill only memory cache
 
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: body_resource });
         let expected = [
             // expected emits
             { loaded: false, source: 'new' },
@@ -1071,17 +1050,20 @@ describe('service.get()', () => {
             .toPromise();
         // @TODO: fix library
         // expect(emits).toMatchObject(expected); // ERROR!!! [{ loaded: false, source: 'new' }, { loaded: true, source: 'server' }]
-        expect(http_request_spy).toHaveBeenCalledTimes(1);
+        expect(mockedAxios.request).toHaveBeenCalledTimes(1);
     });
 });
 
 describe('service.get()', () => {
-    let core: Core;
     let booksService: BooksService;
     let authorsService: AuthorsService;
     let photosService: PhotosService;
     beforeEach(async () => {
-        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+        JsonapiBootstrap.bootstrap({
+            user_config: { url: 'http://yourdomain/api/v1/' },
+            jsonapiStore: new StoreService(),
+            jsonRipper: new JsonRipper()
+        });
         booksService = new BooksService();
         booksService.register();
         await booksService.clearCache();
@@ -1090,13 +1072,12 @@ describe('service.get()', () => {
         photosService = new PhotosService();
         photosService.register();
         await authorsService.clearCache();
-        test_response_subject.complete();
-        test_response_subject = new BehaviorSubject(new HttpResponse());
         // @TODO: should clear CacheMemory before each it
     });
 
     it('getClone should return a clone of the requested resource', async () => {
-        test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: TestFactory.getResourceDocumentData(Book) });
         let book_clone = await booksService.getClone('1').toPromise();
         let original_book = await booksService.get('1').toPromise();
         expect(book_clone.source).toBe(original_book.source);

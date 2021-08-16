@@ -7,7 +7,6 @@ import { IResourcesByType, IObjectsById } from '../interfaces';
 import { IDocumentResource } from '../interfaces/data-object';
 import { IDataCollection } from '../interfaces/data-collection';
 import { IDataResource } from '../interfaces/data-resource';
-import { isDevMode } from '@angular/core';
 
 export class Converter<R extends Resource> {
     /*
@@ -35,7 +34,7 @@ export class Converter<R extends Resource> {
         if (resource_service) {
             return Converter.procreate(json_resource);
         } else {
-            if (isDevMode()) {
+            if (Core.getInstance().isDevMode()) {
                 console.warn(
                     '`' + json_resource.type + '`',
                     'service not found on json2resource().',

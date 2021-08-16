@@ -7,7 +7,6 @@ import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
 import { IRelationships } from '../interfaces/relationship';
 import { DocumentResource } from '../document-resource';
-import { isDevMode } from '@angular/core';
 
 export class ResourceRelationshipsConverter {
     private getService: Function;

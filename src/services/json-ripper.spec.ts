@@ -195,10 +195,7 @@ describe('JsonRipper for collections', () => {
             type: 'authors',
             relationships: {
                 books: {
-                    data: [
-                        { id: '1', type: 'books' },
-                        { id: '2', type: 'books' }
-                    ]
+                    data: [{ id: '1', type: 'books' }, { id: '2', type: 'books' }]
                 }
             }
         });
