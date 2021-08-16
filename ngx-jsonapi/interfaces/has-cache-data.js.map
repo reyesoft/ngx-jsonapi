@@ -1,1 +1,0 @@
-{"version":3,"file":"has-cache-data.js","sourceRoot":"","sources":["../../src/interfaces/has-cache-data.ts"],"names":[],"mappings":"","sourcesContent":["export interface IHasCacheData {\n    cache_last_update: number;\n}\n"]}
