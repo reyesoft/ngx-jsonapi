@@ -80,8 +80,8 @@ const App = () => {
         user_config: { url: '//jsonapiplayground.reyesoft.com/v2/' }
     });
 
-    return <div>Hello world</div>
-}
+    return <div>Hello world</div>;
+};
 ```
 
 ### Enable Local Cache
@@ -120,8 +120,8 @@ const App = () => {
         jsonRipper: new JsonRipperFake()
     });
 
-    return <div>Hello world</div>
-}
+    return <div>Hello world</div>;
+};
 ```
 
 ## Examples
