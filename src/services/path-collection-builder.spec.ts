@@ -1,37 +1,9 @@
-import { StoreService } from '../sources/store.service';
-import { JsonRipper } from '../services/json-ripper';
-import { ReflectiveInjector } from '@angular/core';
-import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
+import { Core } from '../core';
 import { Service } from '../service';
 import { PathBuilder } from './path-builder';
 import { PathCollectionBuilder } from './path-collection-builder';
 import { UrlParamsBuilder } from './url-params-builder';
-import { JsonapiConfig } from '../jsonapi-config';
-import { StoreService as JsonapiStore } from '../sources/store.service';
-import { Http as JsonapiHttpImported } from '../sources/http.service';
-import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-
-class HttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject = new BehaviorSubject(new HttpResponse());
-
-        return subject.asObservable();
-    }
-}
-
-let injector = ReflectiveInjector.resolveAndCreate([
-    {
-        provide: JSONAPI_RIPPER_SERVICE,
-        useClass: JsonRipper
-    },
-    {
-        provide: JSONAPI_STORE_SERVICE,
-        useClass: StoreService
-    }
-]);
-
-let core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+import { JsonapiBootstrap } from '../bootstraps/jsonapi-bootstrap';
 
 const testService = new Service();
 testService.getPrePath = (): string => {
@@ -43,6 +15,10 @@ testService.getPath = (): string => {
 
 describe('Path Builder', () => {
     let path_collection_builder = new PathCollectionBuilder();
+
+    beforeAll(() => {
+        JsonapiBootstrap.bootstrap({ user_config: { url: 'http://yourdomain/api/v1/' } });
+    });
     it('should create', () => {
         expect(path_collection_builder).toBeTruthy();
     });
@@ -83,8 +59,8 @@ describe('Path Builder', () => {
     });
 
     it('if page params are provided, applyParams should call addParam one or two times with the page number and size', () => {
-        Core.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
-        Core.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
+        Core.me.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
+        Core.me.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
         let addParam_parent_spy = spyOn<any>(path_collection_builder, 'addParam');
         path_collection_builder.applyParams(testService, { page: { number: 2 } });
         expect(addParam_parent_spy).toHaveBeenCalledTimes(1);
@@ -95,8 +71,8 @@ describe('Path Builder', () => {
         expect(addParam_parent_spy).toHaveBeenCalledWith('page_size=10');
     });
     it('if page number param is 1, applyParams should not call addParam with page number', () => {
-        Core.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
-        Core.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
+        Core.me.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
+        Core.me.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
         let addParam_parent_spy = spyOn<any>(path_collection_builder, 'addParam');
         path_collection_builder.applyParams(testService, { page: { number: 1 } });
         expect(addParam_parent_spy).not.toHaveBeenCalled();
@@ -117,8 +93,8 @@ describe('Path Builder', () => {
         expect((path_collection_builder as any).get_params).toEqual(['test_string']);
     });
     it('applyParams method should add the provided params to get_params array', () => {
-        Core.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
-        Core.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
+        Core.me.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
+        Core.me.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
         (path_collection_builder as any).get_params = [];
         path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' }, page: { number: 2, size: 10 } });
         expect((path_collection_builder as any).get_params.length).toBe(3);

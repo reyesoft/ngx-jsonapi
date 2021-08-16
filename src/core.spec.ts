@@ -4,15 +4,14 @@ import { StoreService } from './sources/store.service';
 import { JsonRipper } from './services/json-ripper';
 import { ReflectiveInjector } from '@angular/core';
 import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
-import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
+import { HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
 import { DocumentCollection } from './document-collection';
 import { DocumentResource } from './document-resource';
 import { Resource } from './resource';
 import { Service } from './service';
-import { Http as JsonapiHttpImported } from './sources/http.service';
-import { JsonapiConfig } from './jsonapi-config';
 import { StoreService as JsonapiStore } from './sources/store.service';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { JsonapiBootstrap } from './bootstraps/jsonapi-bootstrap';
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
@@ -54,18 +53,19 @@ let injector = ReflectiveInjector.resolveAndCreate([
 ]);
 
 describe('core methods', () => {
-    let core: Core;
+    beforeAll(() => {
+        JsonapiBootstrap.bootstrap({ user_config: { url: 'http://yourdomain/api/v1/' } });
+    });
     it('should crete core service instance', () => {
         spyOn<any>(JsonapiStore.prototype, 'constructor');
-        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
-        expect(core).toBeTruthy();
+        expect(Core.me).toBeTruthy();
     });
     it('when exec method s response is an error, it should return a correctly formatted jsonapi error', () => {
         let data_resource = {
             type: 'data',
             id: '1'
         };
-        spyOn(Core.injectedServices.JsonapiHttp, 'exec').and.returnValue(
+        spyOn(Core.me.injectedServices.JsonapiHttp, 'exec').and.returnValue(
             Observable.create(observer => {
                 observer.next('data1');
                 observer.next(observer.error({ errors: ['error'] }));
@@ -99,7 +99,7 @@ describe('core methods', () => {
         original_resource.addRelationship(has_one_relationship_resource, 'has_one');
         original_resource.addRelationships([has_many_relationship_resource, has_many_relationship_resource_2], 'has_many');
 
-        let resource_copy = core.duplicateResource(original_resource);
+        let resource_copy = Core.me.duplicateResource(original_resource);
         expect(resource_copy.id.includes('new_')).toBeTruthy();
         expect(resource_copy.attributes.data).toBe('this is a resource');
         expect((<DocumentResource>resource_copy.relationships.has_one).data.id).toBe('2');
@@ -109,7 +109,7 @@ describe('core methods', () => {
         expect(resource_copy.relationships.has_many.data[1].id).toBe('4');
         expect(resource_copy.relationships.has_many.data[1].attributes.data).toBe('this is a has MANY relationship');
 
-        let resource_copy_with_duplicated_relationships = core.duplicateResource(original_resource, 'has_one', 'has_many');
+        let resource_copy_with_duplicated_relationships = Core.me.duplicateResource(original_resource, 'has_one', 'has_many');
         expect(resource_copy_with_duplicated_relationships.id.includes('new_')).toBeTruthy();
         expect(resource_copy_with_duplicated_relationships.attributes.data).toBe('this is a resource');
         expect((<DocumentResource>resource_copy_with_duplicated_relationships.relationships.has_one).data.id.includes('new_')).toBeTruthy();

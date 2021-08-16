@@ -143,7 +143,6 @@ export class Service<R extends Resource = Resource> {
     protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
         Core.get(path.get()).subscribe(
             success => {
-                console.log(success)
                 resource.fill(<IDocumentResource>success);
                 resource.cache_last_update = Date.now();
                 resource.setLoadedAndPropagate(true);
@@ -218,7 +217,9 @@ export class Service<R extends Resource = Resource> {
         // @todo this code is repeated on core.clearCache()
         CacheMemory.getInstance().deprecateCollections(path.getForCache());
 
-        return Core.getInstance().injectedServices.json_ripper.deprecateCollection(path.getForCache()).then(() => true);
+        return Core.getInstance()
+            .injectedServices.json_ripper.deprecateCollection(path.getForCache())
+            .then(() => true);
     }
 
     public parseToServer(attributes: IAttributes): void {

@@ -1,14 +1,13 @@
 // WARNING: this test is not isolated
 
 import { Core } from '../core';
-import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
 import { DocumentCollection } from '../document-collection';
 import { DocumentResource } from '../document-resource';
 import { Resource } from '../resource';
-import { Observable, BehaviorSubject } from 'rxjs';
 import { Service } from '../service';
 import axios from 'axios';
-import { AngularBootstrap } from '../bootstraps/angular-bootstrap';
+import { filter } from 'rxjs/operators';
+import { JsonapiBootstrap } from '../bootstraps/jsonapi-bootstrap';
 
 class TestResource extends Resource {
     public type = 'test_resources';
@@ -46,14 +45,13 @@ class HttpHandlerMock {
     }
 }
 
-let axiosResponseFactory = (response) => {
+let axiosResponseFactory = response => {
     return {
         data: {
             data: response
         }
-    }
-}
-
+    };
+};
 
 class TestService extends Service {
     public constructor() {
@@ -65,78 +63,86 @@ class TestService extends Service {
     public ttl = 10000;
 }
 
-jest.mock('axios')
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+jest.mock('axios');
 
 describe('core methods', () => {
     beforeAll(() => {
-        AngularBootstrap.bootstrap({ url: 'http://yourdomain/api/v1/' })
-    })
-    it(`service's get method should return a stream with the requested resource including the requested attributes (fields)`, (done) => {
+        JsonapiBootstrap.bootstrap({ user_config: { url: 'http://yourdomain/api/v1/' } });
+    });
+    it(`service's get method should return a stream with the requested resource including the requested attributes (fields)`, done => {
+        const mockedAxios = axios as jest.Mocked<typeof axios>;
         let test_service = new TestService();
-        let response = axiosResponseFactory(new HttpHandlerMock().handle('http://yourdomain/api/v1/test_resources/1?fields[test_resources]=optional'))
+        let response = axiosResponseFactory(
+            new HttpHandlerMock().handle('http://yourdomain/api/v1/test_resources/1?fields[test_resources]=optional')
+        );
         mockedAxios.request.mockResolvedValue(response);
 
         test_service
             .get('1', { fields: { test_resources: ['optional'] }, ttl: 0 })
+            .pipe(filter(resource => resource.source === 'server'))
             .subscribe(resource => {
                 expect(resource.type).toBe('test_resources');
                 expect(resource.id).toBe('1');
-                expect(resource.attributes.name).toBeFalsy();
                 expect(resource.attributes.optional).toBe('optional attribute value');
+                expect(resource.attributes.name).toBeFalsy();
 
                 let request = {
-                    body: null,
-                    headers: expect.any(Object)
+                    data: null,
+                    headers: {
+                        Accept: 'application/vnd.api+json',
+                        'Content-Type': 'application/vnd.api+json'
+                    },
+                    method: 'get',
+                    url: 'http://yourdomain/api/v1/test_resources/1?fields[test_resources]=optional'
                 };
-                expect(mockedAxios.request).toHaveBeenCalledWith(
-                    'get',
-                    'http://yourdomain/api/v1/test_resources/1?fields[test_resources]=optional',
-                    request
-                );
+                expect(mockedAxios.request).toHaveBeenCalledWith(request);
 
                 done();
             });
     });
 
-    // it(`when requesting a resource with optional attributes, the incoming attributes should be merged with cached ones`, async () => {
-    //     // TODO: fix library error: clearCache and clearCacheMemory are not droping localForage allstore instance correctly while testing
+    it(`when requesting a resource with optional attributes, the incoming attributes should be merged with cached ones`, async () => {
+        // TODO: fix library error: clearCache and clearCacheMemory are not droping localForage allstore instance correctly while testing
 
-    //     Core.getInstance().injectedServices.JsonapiStoreService.clearCache();
-    //     let test_service = new TestService();
-    //     let http_request_spy = spyOn(axios, 'request').and.callThrough();
+        Core.getInstance().injectedServices.JsonapiStoreService.clearCache();
+        let test_service = new TestService();
+        const mockedAxios = axios as jest.Mocked<typeof axios>;
+        let response = axiosResponseFactory(new HttpHandlerMock().handle(''));
+        mockedAxios.request.mockResolvedValue(response);
 
-    //     await test_service
-    //         .get('1')
-    //         .toPromise()
-    //         .then(async resource => {
-    //             expect(resource.type).toBe('test_resources');
-    //             expect(resource.id).toBe('1');
-    //             expect(resource.attributes.name).toBe('test_name');
-    //             // @todo why? memory will not remove attributes if are not sent by server
-    //             // for example two different requests with different list of fields (one request remove attributes of the another resource)
-    //             // expect(resource.attributes.optional).toBeFalsy();
+        await test_service
+            .get('1')
+            .toPromise()
+            .then(async resource => {
+                expect(resource.type).toBe('test_resources');
+                expect(resource.id).toBe('1');
+                expect(resource.attributes.name).toBe('test_name');
+                // @todo why? memory will not remove attributes if are not sent by server
+                // for example two different requests with different list of fields (one request remove attributes of the another resource)
+                // expect(resource.attributes.optional).toBeFalsy();
 
-    //             let request = {
-    //                 body: null,
-    //                 headers: expect.any(Object)
-    //             };
-    //             expect(http_request_spy).toHaveBeenCalledWith('get', 'http://yourdomain/api/v1/test_resources/1', request);
-    //             await test_service
-    //                 .get('1', { fields: { test_resources: ['optional'] } })
-    //                 .toPromise()
-    //                 .then(resource_with_optional_attribute => {
-    //                     expect(resource_with_optional_attribute.type).toBe('test_resources');
-    //                     expect(resource_with_optional_attribute.id).toBe('1');
-    //                     expect(resource_with_optional_attribute.attributes.name).toBe('test_name');
-    //                     expect(resource_with_optional_attribute.attributes.optional).toBe('optional attribute value');
+                let requestOne = {
+                    data: null,
+                    headers: {
+                        Accept: 'application/vnd.api+json',
+                        'Content-Type': 'application/vnd.api+json'
+                    },
+                    method: 'get',
+                    url: 'http://yourdomain/api/v1/test_resources/1'
+                };
+                expect(mockedAxios.request).toHaveBeenCalledWith(requestOne);
 
-    //                     expect(http_request_spy).toHaveBeenCalledWith(
-    //                         'get',
-    //                         'http://yourdomain/api/v1/test_resources/1?fields[test_resources]=optional',
-    //                         request
-    //                     );
-    //                 });
-    //         });
-    // });
+                await test_service
+                    .get('1', { fields: { test_resources: ['optional'] } })
+                    .toPromise()
+                    .then(resource_with_optional_attribute => {
+                        expect(resource_with_optional_attribute.type).toBe('test_resources');
+                        expect(resource_with_optional_attribute.id).toBe('1');
+                        expect(resource_with_optional_attribute.attributes.name).toBe('test_name');
+                        expect(resource_with_optional_attribute.attributes.optional).toBe('optional attribute value');
+                        requestOne.url = 'http://yourdomain/api/v1/test_resources/1?fields[test_resources]=optional';
+                        expect(mockedAxios.request).toHaveBeenCalledWith(requestOne);
+                    });
+            });
+    });
 });

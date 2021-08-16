@@ -1,43 +1,20 @@
-import { ReflectiveInjector } from '@angular/core';
-import { StoreService } from './sources/store.service';
-import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
-import { JsonRipper } from './services/json-ripper';
-import { Http as JsonapiHttpImported } from './sources/http.service';
-import { HttpClient, HttpEvent, HttpHandler, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
-import { JsonapiConfig } from './jsonapi-config';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { delay } from 'rxjs/operators';
 import { AuthorsService } from './tests/factories/authors.service';
 import { PhotosService } from './tests/factories/photos.service';
 import { ClonedResource } from './cloned-resource';
-import { async } from '@angular/core/testing';
 import { BooksService } from './tests/factories/books.service';
+import axios from 'axios';
+import { JsonapiBootstrap } from './bootstraps/jsonapi-bootstrap';
 
-class HttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        return test_response_subject.asObservable().pipe(delay(0));
-    }
-}
-let test_response_subject = new BehaviorSubject(new HttpResponse());
-let injector = ReflectiveInjector.resolveAndCreate([
-    {
-        provide: JSONAPI_RIPPER_SERVICE,
-        useClass: JsonRipper
-    },
-    {
-        provide: JSONAPI_STORE_SERVICE,
-        useClass: StoreService
-    }
-]);
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('ClonedResource save', () => {
-    let core: Core;
     let authors_service: AuthorsService;
     let photos_service: PhotosService;
     let books_service: BooksService;
 
     beforeAll(async () => {
-        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+        JsonapiBootstrap.bootstrap({ user_config: { url: 'some-url/' } });
         authors_service = new AuthorsService();
         authors_service.register();
 
@@ -48,17 +25,16 @@ describe('ClonedResource save', () => {
         books_service.register();
     });
 
-    it('should save only dirty attributes', async(() => {
-        let http_client_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+    it('should save only dirty attributes', done => {
         let author = authors_service.new();
         author.id = '123456';
         author.attributes.created_at = new Date();
         author.attributes.name = 'Juan';
         let author_clone = new ClonedResource(author);
-        test_response_subject.next(new HttpResponse({ body: author_clone.toObject() }));
         author_clone.attributes.name = 'Luis';
+        mockedAxios.request.mockResolvedValue({ data: author_clone.toObject() });
         author_clone.save().subscribe(author_data => {
-            expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
+            expect(author_data).toEqual({
                 data: {
                     attributes: { name: 'Luis' },
                     id: '123456',
@@ -66,11 +42,12 @@ describe('ClonedResource save', () => {
                     type: 'authors'
                 }
             });
+            done();
         });
-    }));
+    });
 
-    it('should save only dirty HAS ONE relationships', async(() => {
-        let http_client_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+    it('should save only dirty HAS ONE relationships', done => {
+        mockedAxios.request.mockRestore();
         let book = books_service.new();
         book.id = '123456';
         book.attributes.created_at = new Date();
@@ -81,22 +58,32 @@ describe('ClonedResource save', () => {
         book.addRelationship(author, 'author');
 
         let book_clone = new ClonedResource(book);
-        test_response_subject.next(new HttpResponse({ body: book_clone.toObject() }));
-        book_clone.save().subscribe(author_data => {
-            expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
+        mockedAxios.request.mockResolvedValue({ data: book_clone.toObject() });
+        let requestOne = {
+            data: {
                 data: {
                     attributes: {},
                     id: '123456',
                     relationships: {},
                     type: 'books'
                 }
-            });
+            },
+            headers: {
+                Accept: 'application/vnd.api+json',
+                'Content-Type': 'application/vnd.api+json'
+            },
+            method: 'PATCH',
+            url: 'some-url/books/123456'
+        };
+        book_clone.save().subscribe(author_data => {
+            expect(mockedAxios.request).toHaveBeenCalledWith(requestOne);
             let new_author = authors_service.new();
             new_author.id = '2';
             new_author.attributes.name = 'Luis';
             book_clone.addRelationship(new_author, 'author');
-            book_clone.save({ include: ['author'] }).subscribe(() => {
-                expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
+
+            let requestTwo = {
+                data: {
                     data: {
                         attributes: {},
                         id: '123456',
@@ -118,13 +105,23 @@ describe('ClonedResource save', () => {
                             relationships: {}
                         }
                     ]
-                });
+                },
+                headers: {
+                    Accept: 'application/vnd.api+json',
+                    'Content-Type': 'application/vnd.api+json'
+                },
+                method: 'PATCH',
+                url: 'some-url/books/123456?include=author'
+            };
+            book_clone.save({ include: ['author'] }).subscribe(() => {
+                expect(mockedAxios.request).toHaveBeenCalledWith(requestTwo);
+                done();
             });
         });
-    }));
+    });
 
-    it('should save only dirty HAS MANY relationships', async(() => {
-        let http_client_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+    it('should save only dirty HAS MANY relationships', done => {
+        mockedAxios.request.mockRestore();
         let author = authors_service.new();
         author.id = '123456';
         author.attributes.created_at = new Date();
@@ -136,24 +133,34 @@ describe('ClonedResource save', () => {
 
         let author_clone = new ClonedResource(author);
         // console.log(author_clone.relationships);
-        test_response_subject.next(new HttpResponse({ body: author_clone.toObject() }));
         author_clone.attributes.name = 'Luis';
-        author_clone.save().subscribe(author_data => {
-            expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
+        mockedAxios.request.mockResolvedValue({ data: author_clone.toObject() });
+
+        let requestOne = {
+            data: {
                 data: {
                     attributes: { name: 'Luis' },
                     id: '123456',
                     relationships: {},
                     type: 'authors'
                 }
-            });
-
+            },
+            headers: {
+                Accept: 'application/vnd.api+json',
+                'Content-Type': 'application/vnd.api+json'
+            },
+            method: 'PATCH',
+            url: 'some-url/authors/123456'
+        };
+        author_clone.save().subscribe(author_data => {
+            expect(mockedAxios.request).toHaveBeenCalledWith(requestOne);
             let new_book = books_service.new();
             new_book.id = '2';
             new_book.attributes.title = 'new book';
             author_clone.addRelationships([new_book], 'books');
-            author_clone.save({ include: ['books'] }).subscribe(() => {
-                expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
+
+            let requestTwo = {
+                data: {
                     data: {
                         attributes: { name: 'Luis' },
                         id: '123456',
@@ -172,20 +179,29 @@ describe('ClonedResource save', () => {
                             relationships: {}
                         }
                     ]
-                });
+                },
+                headers: {
+                    Accept: 'application/vnd.api+json',
+                    'Content-Type': 'application/vnd.api+json'
+                },
+                method: 'PATCH',
+                url: 'some-url/authors/123456?include=books'
+            };
+            author_clone.save({ include: ['books'] }).subscribe(() => {
+                expect(mockedAxios.request).toHaveBeenCalledWith(requestTwo);
+                done();
             });
         });
-    }));
+    });
 });
 
 describe('CloneResource properties changes', () => {
-    let core: Core;
     let authors_service: AuthorsService;
     let photos_service: PhotosService;
     let books_service: BooksService;
 
     beforeAll(async () => {
-        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+        JsonapiBootstrap.bootstrap({ user_config: { url: 'some-url/' } });
         authors_service = new AuthorsService();
         authors_service.register();
 

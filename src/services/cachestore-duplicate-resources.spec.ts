@@ -3,10 +3,12 @@ import { Converter } from '../services/converter';
 import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
 import { IDataCollection } from '../interfaces/data-collection';
-import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
+import { HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { JsonapiConfig } from '../jsonapi-config';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
+import { async } from '@angular/core/testing';
+import { JsonapiBootstrap } from '../bootstraps/jsonapi-bootstrap';
 // import { StoreService } from '../sources/store.service';
 
 // @deprecated ?
@@ -28,11 +30,15 @@ export class StoreService {
 }
 
 describe('Cachestore filler', () => {
+    beforeEach(async(() => {
+        JsonapiBootstrap.bootstrap({ user_config: { url: 'http://yourdomain/api/v1/' } });
+    }));
+
     it('fillCollectionWithArrrayAndResourcesOnStore should fill resources data on collection', async () => {
         // spyOn(StoreService.prototype, 'constructor');
-        (Core.injectedServices as any) = {
+        (Core.me.injectedServices as any) = {
             JsonapiStoreService: new StoreService(),
-            JsonapiHttp: new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
+            JsonapiHttp: new JsonapiHttpImported(),
             rsJsonapiConfig: new JsonapiConfig()
         };
 

@@ -1,4 +1,4 @@
-import { Injector, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -10,7 +10,7 @@ import { BooksService } from './books/books.service';
 import { PhotosService } from './photos/photos.service';
 import { SharedModule } from './shared/shared.module';
 
-import { AngularBootstrap } from 'ngx-jsonapi';
+import { JsonapiBootstrap } from 'ngx-jsonapi';
 
 const appRoutes: Routes = [
     {
@@ -38,13 +38,13 @@ const appRoutes: Routes = [
         BrowserModule,
         HttpClientModule,
         SharedModule,
-        RouterModule.forRoot(appRoutes, { useHash: true }),
+        RouterModule.forRoot(appRoutes, { useHash: true })
     ],
     declarations: [AppComponent],
     bootstrap: [AppComponent]
 })
 export class AppModule {
     public constructor() {
-        AngularBootstrap.bootstrap({ url: environment.jsonapi_url });
+        JsonapiBootstrap.bootstrap({ user_config: { url: environment.jsonapi_url } });
     }
 }

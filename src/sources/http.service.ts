@@ -23,21 +23,22 @@ export class Http implements IHttp {
 
         if (method === 'get') {
             if (!this.get_requests[path]) {
-                let obs = new Observable((observer: Observer<IDocumentData>) => {
-                        axios.request(config)
-                            .then((response: any) => {
-                                observer.next(response.data as IDocumentData);
-                                observer.complete();
-                            })
-                            .catch((error) => {
-                                observer.error(error);
-                            })
-                    }).pipe(
-                        tap(() => {
-                            delete this.get_requests[path];
-                        }),
-                        share()
-                    );
+                let obs = new Observable((observer: Observer<IDocumentData>): void => {
+                    axios
+                        .request(config)
+                        .then((response: any) => {
+                            observer.next(response.data as IDocumentData);
+                            observer.complete();
+                        })
+                        .catch(error => {
+                            observer.error(error);
+                        });
+                }).pipe(
+                    tap(() => {
+                        delete this.get_requests[path];
+                    }),
+                    share()
+                );
                 this.get_requests[path] = obs;
 
                 return obs;
@@ -46,21 +47,21 @@ export class Http implements IHttp {
             return this.get_requests[path];
         }
 
-        return new Observable((observer: Observer<IDocumentData>) => {
-                axios.request(config)
-                    .then((response) => {
-
-                        observer.next(response.data as IDocumentData);
-                        observer.complete();
-                    })
-                    .catch((error) => {
-                        observer.error(error);
-                    })
-            }).pipe(
-                tap(() => {
-                    delete this.get_requests[path];
-                }),
-                share()
-            );
+        return new Observable((observer: Observer<IDocumentData>): void => {
+            axios
+                .request(config)
+                .then(response => {
+                    observer.next(response.data as IDocumentData);
+                    observer.complete();
+                })
+                .catch(error => {
+                    observer.error(error);
+                });
+        }).pipe(
+            tap(() => {
+                delete this.get_requests[path];
+            }),
+            share()
+        );
     }
 }

@@ -22,13 +22,19 @@ export class JsonRipperFake implements IRipper {
         return { data: <Array<ICacheableDataResource>>[], cache_last_update: 0 };
     }
 
-    public saveCollection(url: string, collection: DocumentCollection, include: Array<string> = []): void {}
+    public saveCollection(url: string, collection: DocumentCollection, include: Array<string> = []): void {
+        /*  */
+    }
 
-    public async saveResource(resource: Resource, include = []): Promise<void> {}
+    public async saveResource(resource: Resource, include = []): Promise<void> {
+        /*  */
+    }
 
     public static toResourceElements(key: string, resource: Resource, include: Array<string> = []): Array<IElement> {
         return [];
     }
 
-    public async deprecateCollection(key_start_with: string): Promise<void> {}
+    public async deprecateCollection(key_start_with: string): Promise<void> {
+        /*  */
+    }
 }

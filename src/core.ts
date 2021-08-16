@@ -59,25 +59,27 @@ export class Core {
     ): Observable<IDocumentData> {
         Core.me.refreshLoadings(1);
 
-        return Core.getInstance().injectedServices.JsonapiHttp.exec(path, method, data).pipe(
-            // map(data => { return data.body }),
-            tap(() => Core.me.refreshLoadings(-1)),
-            catchError(error => {
-                error = error.error || error;
-                Core.me.refreshLoadings(-1);
+        return Core.getInstance()
+            .injectedServices.JsonapiHttp.exec(path, method, data)
+            .pipe(
+                // map(data => { return data.body }),
+                tap(() => Core.me.refreshLoadings(-1)),
+                catchError(error => {
+                    error = error.error || error;
+                    Core.me.refreshLoadings(-1);
 
-                if (error.status <= 0) {
-                    // offline?
-                    if (!Core.me.loadingsOffline(error) && Core.me.isDevMode()) {
-                        console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>', error);
+                    if (error.status <= 0) {
+                        // offline?
+                        if (!Core.me.loadingsOffline(error) && Core.me.isDevMode()) {
+                            console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>', error);
+                        }
+                    } else if (call_loadings_error && !Core.me.loadingsError(error) && Core.me.isDevMode()) {
+                        console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
                     }
-                } else if (call_loadings_error && !Core.me.loadingsError(error) && Core.me.isDevMode()) {
-                    console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
-                }
 
-                return throwError(error);
-            })
-        );
+                    return throwError(error);
+                })
+            );
     }
 
     public registerService<R extends Resource>(clase: Service): Service<R> | false {
@@ -139,7 +141,9 @@ export class Core {
         Core.getInstance().injectedServices.JsonapiStoreService.clearCache();
         CacheMemory.getInstance().clearCache();
 
-        return Core.getInstance().injectedServices.json_ripper.deprecateCollection('').then(() => true);
+        return Core.getInstance()
+            .injectedServices.json_ripper.deprecateCollection('')
+            .then(() => true);
     }
 
     // just an helper

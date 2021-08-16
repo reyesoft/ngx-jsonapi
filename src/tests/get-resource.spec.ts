@@ -1,26 +1,13 @@
 // WARNING: this test is not isolated
 
-import { StoreService } from '../sources/store.service';
-import { JsonRipper } from '../services/json-ripper';
-import { ReflectiveInjector } from '@angular/core';
-import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
-import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
+import { Core } from '../core';
 import { DocumentCollection } from '../document-collection';
 import { DocumentResource } from '../document-resource';
 import { Resource } from '../resource';
-import { Http as JsonapiHttpImported } from '../sources/http.service';
-import { JsonapiConfig } from '../jsonapi-config';
-import { Observable, BehaviorSubject } from 'rxjs';
 import { Service } from '../service';
 import { map, toArray, tap } from 'rxjs/operators';
-
-let test_response_subject = new BehaviorSubject(new HttpResponse());
-
-class HttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        return test_response_subject.asObservable();
-    }
-}
+import axios from 'axios';
+import { JsonapiBootstrap } from '../bootstraps/jsonapi-bootstrap';
 
 class TestResource extends Resource {
     public type = 'test_resources';
@@ -43,20 +30,13 @@ class TestService extends Service {
     public ttl = 0;
 }
 
-let injector = ReflectiveInjector.resolveAndCreate([
-    {
-        provide: JSONAPI_RIPPER_SERVICE,
-        useClass: JsonRipper
-    },
-    {
-        provide: JSONAPI_STORE_SERVICE,
-        useClass: StoreService
-    }
-]);
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('core methods', () => {
     let core: Core;
     beforeEach(() => {
+        JsonapiBootstrap.bootstrap({ user_config: { url: 'http://yourdomain/api/v1/' } });
         core = Core.getInstance();
         expect(core).toBeTruthy();
     });
@@ -78,15 +58,23 @@ describe('core methods', () => {
         test_resource.id = '1';
         test_resource.attributes = { name: 'test_name' };
         let test_service = new TestService();
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        test_response_subject.next(new HttpResponse({ body: test_resource.toObject() }));
+        test_service.collections_ttl = 0;
+        let http_request_spy = spyOn(axios, 'request').and.callThrough();
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: test_resource.toObject() });
 
+        let expected = [
+            // expected emits
+            { loaded: false, source: 'new' },
+            { loaded: true, source: 'server' }
+        ];
         let resource: Resource;
         let emmits = await test_service
             .get('1')
             .pipe(
                 tap(emmit => {
                     resource = emmit;
+                    expect(emmit.relationships).toBeTruthy();
                 }),
                 map(emmit => {
                     return { loaded: emmit.loaded, source: emmit.source };
@@ -94,19 +82,15 @@ describe('core methods', () => {
                 toArray()
             )
             .toPromise();
-        expect(emmits).toMatchObject([
-            // expected emits
-            { loaded: false, source: 'new' },
-            { loaded: true, source: 'server' }
-        ]);
+        expect(emmits).toMatchObject(expected);
         expect(resource.type).toBe('test_resources');
         expect(resource.id).toBe('1');
         expect(resource.attributes.name).toBe('test_name');
         expect(http_request_spy).toHaveBeenCalledTimes(1);
-        expect(http_request_spy).toHaveBeenCalledWith('get', 'http://yourdomain/api/v1/test_resources/1', {
-            body: null,
-            headers: expect.any(Object)
-        });
+        expect(http_request_spy.calls.mostRecent().args[0].method).toBe('get');
+        expect(http_request_spy.calls.mostRecent().args[0].url).toBe('http://yourdomain/api/v1/test_resources/1');
+        expect(http_request_spy.calls.mostRecent().args[0].headers).toMatchObject(expect.any(Object));
+        expect(http_request_spy.calls.mostRecent().args[0].data).toBeNull();
     });
 
     it(`resource should have the correct hasOne and hasMany relationships corresponding to the back end response's included resources,
@@ -143,7 +127,8 @@ describe('core methods', () => {
         let test_service = new TestService();
         await test_service.clearCache();
         Core.me.injectedServices.JsonapiStoreService.clearCache();
-        test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: { data: test_resource, included: included } });
 
         await test_service
             .get('1', { include: ['test_resource.test_resource'] })
@@ -198,7 +183,8 @@ describe('core methods', () => {
         let included = [test_resource_has_one_relationship, test_resource_has_many_relationship_1, test_resource_has_many_relationship_2];
 
         let test_service = new TestService();
-        test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: { data: test_resource, included: included } });
 
         await test_service
             .get('1', { include: ['test_resource', 'test_resources'] })
@@ -236,7 +222,8 @@ describe('core methods', () => {
         test_resource.relationships.test_resource.data = null;
 
         let test_service = new TestService();
-        test_response_subject.next(new HttpResponse({ body: { data: test_resource } }));
+        mockedAxios.request.mockRestore();
+        mockedAxios.request.mockResolvedValue({ data: { data: test_resource } });
 
         await test_service
             .get('1')
