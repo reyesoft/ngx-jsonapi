@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
--   Compatibility with other frameworks in addition to angular was added to the library. ([#326](https://github.com/reyesoft/ngx-jsonapi/pull/326))
+-   Compatibility with other frameworks in addition to angular was added to the library. The behavior of the http.service.ts file was changed, it stopped using http client by axios to give compatibility with other libraries. It changed the way the library is initialized, a bootstrap was created that is found in the jsonapi-bootstrap file ([#326](https://github.com/reyesoft/ngx-jsonapi/pull/326))
 
 ## [2.3.0] - 2021-05-19
 
