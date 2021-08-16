@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
--   Compatibility with other frameworks in addition to angular was added to the library. ([#299](https://github.com/reyesoft/ngx-jsonapi/pull/299))
+-   Compatibility with other frameworks in addition to angular was added to the library. ([#326](https://github.com/reyesoft/ngx-jsonapi/pull/326))
 
 ## [2.3.0] - 2021-05-19
 
