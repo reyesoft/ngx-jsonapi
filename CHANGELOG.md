@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
--   Migrated tslint to eslint. ([#306](https://github.com/reyesoft/ngx-jsonapi/pull/306))
+-   Migrated tslint to eslint. ([#331](https://github.com/reyesoft/ngx-jsonapi/pull/331))
 
 ## [2.3.0] - 2021-05-19
 
