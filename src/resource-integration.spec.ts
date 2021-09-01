@@ -18,8 +18,8 @@ class HttpHandlerMock implements HttpHandler {
         return test_response_subject.asObservable().pipe(delay(0));
     }
 }
-let test_response_subject = new BehaviorSubject(new HttpResponse());
-let injector = ReflectiveInjector.resolveAndCreate([
+let test_response_subject: BehaviorSubject<HttpResponse<unknown>> = new BehaviorSubject(new HttpResponse());
+let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
     {
         provide: JSONAPI_RIPPER_SERVICE,
         useClass: JsonRipper
@@ -52,9 +52,9 @@ describe('Resource delete', () => {
     });
 
     it('should send a DELETE request', async () => {
-        let httpClientDeleteSpy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let httpClientDeleteSpy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: { data: null } }));
-        let book = TestFactory.getBook('1');
+        let book: Book = TestFactory.getBook('1');
         await book
             .delete()
             .toPromise()
@@ -86,8 +86,8 @@ describe('Resource save', () => {
     });
 
     it('include_get should be included in the URL, but not in the request data', async () => {
-        let resource = TestFactory.getBook('book_1', ['author']);
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let resource: Book = TestFactory.getBook('book_1', ['author']);
+        let http_request_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
 
         await resource.save({ include_get: ['author'] });
@@ -96,9 +96,9 @@ describe('Resource save', () => {
     });
 
     it('include_get should be included in the request data, but not in the URL', async () => {
-        let resource = TestFactory.getBook('book_1', ['author']);
+        let resource: Book = TestFactory.getBook('book_1', ['author']);
         resource.relationships.author.data.id = 'author_1';
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let http_request_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
 
         await resource.save({ include_save: ['author'] });
@@ -108,9 +108,9 @@ describe('Resource save', () => {
         expect(http_request_spy.calls.mostRecent().args[2].body.included[0].id).toBe('author_1');
     });
     it('should use POST if is_new is truthy', async () => {
-        let resource = TestFactory.getBook('book_1');
+        let resource: Book = TestFactory.getBook('book_1');
         resource.is_new = true;
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let http_request_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
 
         await resource.save();
@@ -118,9 +118,9 @@ describe('Resource save', () => {
     });
 
     it('should use PATCH if is_new is falsy', async () => {
-        let resource = TestFactory.getBook('book_1');
+        let resource: Book = TestFactory.getBook('book_1');
         resource.is_new = false;
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let http_request_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
 
         await resource.save();

@@ -12,7 +12,7 @@ import { Http as JsonapiHttpImported } from '../sources/http.service';
 // @deprecated ?
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject = new BehaviorSubject(new HttpResponse());
+        let subject: BehaviorSubject<HttpResponse<any>> = new BehaviorSubject(new HttpResponse());
 
         return subject.asObservable();
     }
@@ -22,13 +22,13 @@ export class StoreService {
     public constructor() {
         /**/
     }
-    public getDataResources(something) {
+    public getDataResources(): void {
         return;
     }
 }
 
 describe('Cachestore filler', () => {
-    it('fillCollectionWithArrrayAndResourcesOnStore should fill resources data on collection', async () => {
+    it('fillCollectionWithArrrayAndResourcesOnStore should fill resources data on collection', () => {
         // spyOn(StoreService.prototype, 'constructor');
         (Core.injectedServices as any) = {
             JsonapiStoreService: new StoreService(),
@@ -48,14 +48,14 @@ describe('Cachestore filler', () => {
                 }
             ]
         };
-        let resource = new Resource();
+        let resource: Resource = new Resource();
         resource.id = '1';
         resource.type = 'authors';
         resource.attributes = {
             name: 'Cool name'
         };
 
-        let collection = new DocumentCollection();
+        let collection: DocumentCollection = new DocumentCollection();
         collection.data = [resource];
 
         spyOn(Converter, 'getService').and.returnValue({

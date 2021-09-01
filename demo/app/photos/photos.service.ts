@@ -4,11 +4,17 @@ import { Service, Resource, Autoregister } from 'ngx-jsonapi';
 @Injectable()
 export class PhotosService extends Service {
     // public resource = Photo;
-    public type = 'photos';
+    public type: string = 'photos';
 }
 
 export class Photo extends Resource {
-    public attributes = {
+    public attributes: {
+        title: string;
+        uri: string;
+        imageable_id: string;
+        created_at: string;
+        updated_at: string;
+    } = {
         title: '',
         uri: '',
         imageable_id: '',

@@ -40,7 +40,7 @@ export class ClonedDocumentResource {
         if (!this.resource_object.included || !this.parent_resource_object.included) {
             return this;
         }
-        let parent_included = this.parent_resource_object.included;
+        let parent_included: Array<any> = this.parent_resource_object.included;
         this.resource_object.included = this.resource_object.included.filter(included_resource => {
             return !isEqual(
                 included_resource,

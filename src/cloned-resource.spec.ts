@@ -7,19 +7,19 @@ import { HttpClient, HttpEvent, HttpHandler, HttpHeaders, HttpRequest, HttpRespo
 import { JsonapiConfig } from './jsonapi-config';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { delay } from 'rxjs/operators';
-import { AuthorsService } from './tests/factories/authors.service';
+import { Author, AuthorsService } from './tests/factories/authors.service';
 import { PhotosService } from './tests/factories/photos.service';
 import { ClonedResource } from './cloned-resource';
 import { async } from '@angular/core/testing';
-import { BooksService } from './tests/factories/books.service';
+import { Book, BooksService } from './tests/factories/books.service';
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
         return test_response_subject.asObservable().pipe(delay(0));
     }
 }
-let test_response_subject = new BehaviorSubject(new HttpResponse());
-let injector = ReflectiveInjector.resolveAndCreate([
+let test_response_subject: BehaviorSubject<HttpResponse<unknown>> = new BehaviorSubject(new HttpResponse());
+let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
     {
         provide: JSONAPI_RIPPER_SERVICE,
         useClass: JsonRipper
@@ -36,7 +36,7 @@ describe('ClonedResource save', () => {
     let photos_service: PhotosService;
     let books_service: BooksService;
 
-    beforeAll(async () => {
+    beforeAll(() => {
         core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         authors_service = new AuthorsService();
         authors_service.register();
@@ -49,12 +49,12 @@ describe('ClonedResource save', () => {
     });
 
     it('should save only dirty attributes', async(() => {
-        let http_client_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        let author = authors_service.new();
+        let http_client_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let author: Author = authors_service.new();
         author.id = '123456';
         author.attributes.created_at = new Date();
         author.attributes.name = 'Juan';
-        let author_clone = new ClonedResource(author);
+        let author_clone: ClonedResource<Author> = new ClonedResource(author);
         test_response_subject.next(new HttpResponse({ body: author_clone.toObject() }));
         author_clone.attributes.name = 'Luis';
         author_clone.save().subscribe(author_data => {
@@ -70,17 +70,17 @@ describe('ClonedResource save', () => {
     }));
 
     it('should save only dirty HAS ONE relationships', async(() => {
-        let http_client_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        let book = books_service.new();
+        let http_client_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let book: Book = books_service.new();
         book.id = '123456';
         book.attributes.created_at = new Date();
         book.attributes.title = 'Así habló Zaratustra';
-        let author = authors_service.new();
+        let author: Author = authors_service.new();
         author.id = '1';
         author.attributes.name = 'José';
         book.addRelationship(author, 'author');
 
-        let book_clone = new ClonedResource(book);
+        let book_clone: ClonedResource<Book> = new ClonedResource(book);
         test_response_subject.next(new HttpResponse({ body: book_clone.toObject() }));
         book_clone.save().subscribe(author_data => {
             expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
@@ -91,7 +91,7 @@ describe('ClonedResource save', () => {
                     type: 'books'
                 }
             });
-            let new_author = authors_service.new();
+            let new_author: Author = authors_service.new();
             new_author.id = '2';
             new_author.attributes.name = 'Luis';
             book_clone.addRelationship(new_author, 'author');
@@ -124,17 +124,17 @@ describe('ClonedResource save', () => {
     }));
 
     it('should save only dirty HAS MANY relationships', async(() => {
-        let http_client_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
-        let author = authors_service.new();
+        let http_client_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let author: Author = authors_service.new();
         author.id = '123456';
         author.attributes.created_at = new Date();
         author.attributes.name = 'Juan';
-        let book = books_service.new();
+        let book: Book = books_service.new();
         book.id = '1';
         book.attributes.title = 'some book';
         author.addRelationships([book], 'books');
 
-        let author_clone = new ClonedResource(author);
+        let author_clone: ClonedResource<Author> = new ClonedResource(author);
         // console.log(author_clone.relationships);
         test_response_subject.next(new HttpResponse({ body: author_clone.toObject() }));
         author_clone.attributes.name = 'Luis';
@@ -148,7 +148,7 @@ describe('ClonedResource save', () => {
                 }
             });
 
-            let new_book = books_service.new();
+            let new_book: Book = books_service.new();
             new_book.id = '2';
             new_book.attributes.title = 'new book';
             author_clone.addRelationships([new_book], 'books');
@@ -187,7 +187,7 @@ describe('CloneResource properties changes', () => {
     let photos_service: PhotosService;
     let books_service: BooksService;
 
-    beforeAll(async () => {
+    beforeAll(() => {
         core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         authors_service = new AuthorsService();
         authors_service.register();
@@ -200,12 +200,12 @@ describe('CloneResource properties changes', () => {
     });
 
     it('Changing clone attributes', () => {
-        let author = authors_service.new();
+        let author: Author = authors_service.new();
         author.id = '123456';
         author.attributes.created_at = new Date();
         author.attributes.name = 'Juan';
 
-        let author_clone = new ClonedResource(author);
+        let author_clone: ClonedResource<Author> = new ClonedResource(author);
         author_clone.attributes.name = 'Luis';
 
         expect(author.attributes.name).toBe('Juan');
@@ -213,17 +213,17 @@ describe('CloneResource properties changes', () => {
     });
 
     it('Changing clone HAS ONE relationships', () => {
-        let book = books_service.new();
+        let book: Book = books_service.new();
         book.id = '123456';
         book.attributes.created_at = new Date();
         book.attributes.title = 'Así habló Zaratustra';
-        let author = authors_service.new();
+        let author: Author = authors_service.new();
         author.id = '1';
         author.attributes.name = 'José';
         book.addRelationship(author, 'author');
 
-        let book_clone = new ClonedResource(book);
-        let new_author = authors_service.new();
+        let book_clone: ClonedResource<Book> = new ClonedResource(book);
+        let new_author: Author = authors_service.new();
         new_author.id = '2';
         new_author.attributes.name = 'Luis';
         book_clone.addRelationship(new_author, 'author');
@@ -233,17 +233,17 @@ describe('CloneResource properties changes', () => {
     });
 
     it('Changing clone HAS MANY relationships', () => {
-        let author = authors_service.new();
+        let author: Author = authors_service.new();
         author.id = '123456';
         author.attributes.created_at = new Date();
         author.attributes.name = 'Juan';
-        let book = books_service.new();
+        let book: Book = books_service.new();
         book.id = '1';
         book.attributes.title = 'some book';
         author.addRelationships([book], 'books');
 
-        let author_clone = new ClonedResource(author);
-        let new_book = books_service.new();
+        let author_clone: ClonedResource<Author> = new ClonedResource(author);
+        let new_book: Book = books_service.new();
         new_book.id = '2';
         new_book.attributes.title = 'new book';
         author_clone.addRelationships([new_book], 'books');

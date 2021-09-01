@@ -30,7 +30,7 @@ export class Base {
         return new DocumentCollection();
     }
 
-    public static isObjectLive(ttl: number, last_update: number) {
+    public static isObjectLive(ttl: number, last_update: number): boolean {
         return ttl >= 0 && Date.now() <= last_update + ttl * 1000;
     }
 

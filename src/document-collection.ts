@@ -8,13 +8,14 @@ import { Converter } from './services/converter';
 import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
 import { IDataResource, IBasicDataResource } from './interfaces/data-resource';
 import { isDevMode } from '@angular/core';
+import { Service } from './service';
 
 // used for collections on relationships, for parent document use DocumentCollection
 export class RelatedDocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
     public data: Array<Resource | IBasicDataResource> = [];
     // public data: Array<Resource | IBasicDataResource> = [];
-    public page = new Page();
-    public ttl = 0;
+    public page: Page = new Page();
+    public ttl: number = 0;
     public content: 'ids' | 'collection' = 'ids';
 
     public trackBy(iterated_resource: Resource): string {
@@ -27,7 +28,8 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         }
 
         // this is the best way: https://jsperf.com/fast-array-foreach
-        for (let i = 0; i < this.data.length; i++) {
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
+        for (let i: number = 0; i < this.data.length; i++) {
             if (this.data[i].id === id) {
                 return <R>this.data[i];
             }
@@ -41,6 +43,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
 
         // sometimes get Cannot set property 'number' of undefined (page)
         if (this.page && data_collection.meta) {
+            // eslint-disable-next-line id-blacklist
             this.page.number = data_collection.meta.page || 1;
             this.page.resources_per_page = data_collection.meta.resources_per_page || null; // @deprecated (v2.0.2)
             this.page.size = data_collection.meta.resources_per_page || null;
@@ -69,7 +72,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
 
         // remove old members of collection (bug, for example, when request something like orders/10/details and has new ids)
         // @todo test with relation.data.filter(resource =>  resource.id != id );
-        for (let i; i < this.data.length; i++) {
+        for (let i: any; i < this.data.length; i++) {
             if (!(this.data[i].id in new_ids)) {
                 delete this.data[i];
             }
@@ -83,13 +86,13 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
     }
 
     private getResourceOrFail(dataresource: IDataResource): Resource {
-        let res = this.find(dataresource.id);
+        let res: R | null = this.find(dataresource.id);
 
         if (res !== null) {
             return res;
         }
 
-        let service = Converter.getService(dataresource.type);
+        let service: Service | undefined = Converter.getService(dataresource.type);
 
         // remove when getService return null or catch errors
         // this prvent a fill on undefinied service :/
@@ -112,7 +115,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
     }
 
     public replaceOrAdd(resource: R): void {
-        let res = this.find(resource.id);
+        let res: R | null = this.find(resource.id);
         if (res === null) {
             (<Array<R>>this.data).push(resource);
         } else {
@@ -125,7 +128,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
             return null;
         }
 
-        let total_resources = this.page.size * (this.page.number - 1) + this.data.length;
+        let total_resources: number = this.page.size * (this.page.number - 1) + this.data.length;
 
         return total_resources < this.page.total_resources;
     }
@@ -174,11 +177,11 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         });
     }
 
-    public setCacheLastUpdate(value = Date.now()) {
+    public setCacheLastUpdate(value: number = Date.now()): void {
         this.cache_last_update = value;
     }
 
-    public setCacheLastUpdateAndPropagate(value = Date.now()) {
+    public setCacheLastUpdateAndPropagate(value: number = Date.now()): void {
         this.setCacheLastUpdate(value);
         this.data.forEach(resource => {
             if (resource instanceof Resource) {
@@ -192,7 +195,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
             return { data: this.data };
         }
 
-        let data = (<Array<R>>this.data).map(resource => {
+        let data: Array<IDataResource> = (<Array<R>>this.data).map(resource => {
             return resource.toObject(params).data;
         });
 

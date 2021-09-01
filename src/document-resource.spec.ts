@@ -5,7 +5,6 @@ import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { DocumentResource } from './document-resource';
 import { Resource } from './resource';
 import { Page } from './services/page';
-import { StoreService as JsonapiStore } from './sources/store.service';
 import { Http as JsonapiHttpImported } from './sources/http.service';
 import { HttpClient, HttpEvent, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { JsonapiConfig } from './jsonapi-config';
@@ -16,13 +15,13 @@ import { delay, map, toArray, tap } from 'rxjs/operators';
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject = new BehaviorSubject(new HttpResponse());
+        let subject: BehaviorSubject<HttpResponse<any>> = new BehaviorSubject(new HttpResponse());
 
         return subject.asObservable();
     }
 }
 
-let injector = ReflectiveInjector.resolveAndCreate([
+let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
     {
         provide: JSONAPI_RIPPER_SERVICE,
         useClass: JsonRipper
@@ -36,45 +35,45 @@ let injector = ReflectiveInjector.resolveAndCreate([
 describe('resource basic methods', () => {
     let core: Core;
     let service: AuthorsService;
-    beforeAll(async () => {
+    beforeAll(() => {
         core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         service = new AuthorsService();
     });
 
     it('a new resource has a type', () => {
-        const resource = service.new();
+        const resource: Author = service.new();
         expect(resource instanceof Author).toBeTruthy();
         expect(resource.type).toEqual('authors');
     });
 
     it('a new resource with id has a type', () => {
-        const resource = service.createResource('31');
+        const resource: Author = service.createResource('31');
         expect(resource instanceof Author).toBeTruthy();
         expect(resource.id).toEqual('31');
         expect(resource.type).toEqual('authors');
     });
 });
 
-let test_response_subject = new BehaviorSubject(new HttpResponse());
+let test_response_subject: BehaviorSubject<HttpResponse<any>> = new BehaviorSubject(new HttpResponse());
 class DynamicHttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
         return test_response_subject.asObservable().pipe(delay(0));
     }
 }
 describe('document resource general', () => {
-    let document_resource = new DocumentResource();
+    let document_resource: DocumentResource = new DocumentResource();
     it('should be created', () => {
         expect(document_resource.builded).toBe(false);
         expect(document_resource.content).toBe('id');
     });
     it('data property should have a new resource instance', () => {
-        let resource = new Resource();
+        let resource: Resource = new Resource();
         expect(document_resource.data).toEqual(resource);
     });
 });
 
 describe('document resource fill() method', () => {
-    let document_resource = new DocumentResource<Book>();
+    let document_resource: DocumentResource = new DocumentResource<Book>();
     let booksService: BooksService;
     beforeEach(async () => {
         booksService = new BooksService();
@@ -125,7 +124,7 @@ describe('document resource fill() method', () => {
 
     it('if passed IDocumentResource has no meta property, fill mehotd should should assign an empty Object', () => {
         delete document_resource.meta;
-        let Resource_fill_spy = spyOn(<Resource>document_resource.data, 'fill');
+        let Resource_fill_spy: jasmine.Spy = spyOn(<Resource>document_resource.data, 'fill');
         document_resource.fill({
             data: {
                 type: 'data',

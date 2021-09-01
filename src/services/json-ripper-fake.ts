@@ -8,10 +8,10 @@ import { IDataProvider, IElement } from '../data-providers/data-provider';
 import { DocumentCollection } from '../document-collection';
 import { Injectable } from '@angular/core';
 
-/* tslint:disable:no-empty */
+/* eslint-disable no-@typescript-eslint/no-empty-function,@typescript-eslint/require-await */
 @Injectable()
 export class JsonRipperFake implements IRipper {
-    public readonly enabled = false;
+    public readonly enabled: boolean = false;
 
     public async getResource(key: string, include: Array<string> = []): Promise<ICacheableDocumentResource> {
         return { data: { id: '', type: '', cache_last_update: 0 } };
@@ -27,7 +27,7 @@ export class JsonRipperFake implements IRipper {
 
     public saveCollection(url: string, collection: DocumentCollection, include: Array<string> = []): void {}
 
-    public async saveResource(resource: Resource, include = []): Promise<void> {}
+    public async saveResource(resource: Resource, include: Array<any> = []): Promise<void> {}
 
     public static toResourceElements(key: string, resource: Resource, include: Array<string> = []): Array<IElement> {
         return [];

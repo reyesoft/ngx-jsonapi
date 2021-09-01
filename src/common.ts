@@ -3,9 +3,10 @@ import { Core } from './core';
 import { DocumentResource } from './document-resource';
 import { DocumentCollection } from './document-collection';
 import { Resource } from './resource';
+import { Service } from './service';
 
 export function isLive(cacheable: ICacheable, ttl?: number): boolean {
-    let ttl_in_seconds = typeof ttl === 'number' ? ttl : cacheable.ttl || 0;
+    let ttl_in_seconds: number = typeof ttl === 'number' ? ttl : cacheable.ttl || 0;
 
     return Date.now() < cacheable.cache_last_update + ttl_in_seconds * 1000;
 }
@@ -16,11 +17,13 @@ export function relationshipsAreBuilded(resource: Resource, includes: Array<stri
         return true;
     }
 
+    /* eslint-disable no-restricted-syntax */
     for (let relationship_alias in resource.relationships) {
         if (includes.includes(relationship_alias) && !resource.relationships[relationship_alias].builded) {
             return false;
         }
     }
+    /* eslint-enable no-restricted-syntax */
 
     return true;
 }
@@ -51,10 +54,10 @@ export function isResource(document: DocumentResource | DocumentCollection): doc
 // changes "PropertyDescriptor | null" type for "any" to avoid typescript error in decorators property decorators
 // (see https://stackoverflow.com/questions/37694322/typescript-ts1241-unable-to-resolve-signature-of-method-decorator-when-called-a)
 export function serviceIsRegistered(target: Object, key: string | symbol, descriptor: PropertyDescriptor): any {
-    const original = descriptor.value;
+    const original: any = descriptor.value;
 
     descriptor.value = function() {
-        let args = Array.prototype.slice.call(arguments);
+        let args: any = Array.prototype.slice.call(arguments);
         let type: string;
         try {
             if (typeof args[0] === 'string') {
@@ -68,14 +71,14 @@ export function serviceIsRegistered(target: Object, key: string | symbol, descri
             return null;
         }
 
-        const service_is_registered = Core.me.getResourceService(type);
+        const service_is_registered: Service | undefined = Core.me.getResourceService(type);
         if (!service_is_registered) {
             console.warn(`ERROR: ${type} service has not been registered.`);
 
             return null;
         }
 
-        const result = original.apply(this, args);
+        const result: any = original.apply(this, args);
 
         return result;
     };

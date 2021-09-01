@@ -33,12 +33,7 @@ import { StoreService } from './sources/store.service';
     ]
 })
 export class NgxJsonapiModule {
-    public constructor(
-        @Optional()
-        @SkipSelf()
-        parentModule: NgxJsonapiModule,
-        jsonapiCore: JsonapiCore
-    ) {
+    public constructor(@Optional() @SkipSelf() parentModule: NgxJsonapiModule, jsonapiCore: JsonapiCore) {
         if (parentModule) {
             throw new Error('NgxJsonapiModule is already loaded. Import it in the AppModule only');
         }

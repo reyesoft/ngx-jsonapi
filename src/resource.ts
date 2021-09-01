@@ -24,29 +24,29 @@ export class Resource implements ICacheable {
     public links: ILinks = {};
     public meta: { [key: string]: any };
 
-    public is_new = true;
-    public is_saving = false;
-    public is_loading = false;
-    public loaded = true;
+    public is_new: boolean = true;
+    public is_saving: boolean = false;
+    public is_loading: boolean = false;
+    public loaded: boolean = true;
     public source: SourceType = 'new';
-    public cache_last_update = 0;
-    public ttl = 0;
+    public cache_last_update: number = 0;
+    public ttl: number = 0;
 
     public reset(): void {
         this.id = '';
         this.attributes = {};
         this.is_new = true;
 
-        for (const key in this.relationships) {
+        Object.keys(this.relationships).forEach((key): void => {
             this.relationships[key] =
                 this.relationships[key] instanceof DocumentCollection ? new DocumentCollection() : new DocumentResource();
-        }
+        });
     }
 
     public toObject(params?: IParamsResource): IDocumentResource {
         params = { ...{}, ...Base.ParamsResource, ...params };
 
-        let relationships = {};
+        let relationships: any = {};
         let included: Array<IDataResource> = [];
         let included_ids: Array<string> = []; // just for control don't repeat any resource
         let included_relationships: Array<string> = params.include || [];
@@ -55,8 +55,9 @@ export class Resource implements ICacheable {
         }
 
         // REALTIONSHIPS
+        // eslint-disable-next-line no-restricted-syntax
         for (const relation_alias in this.relationships) {
-            let relationship = this.relationships[relation_alias];
+            let relationship: DocumentCollection | DocumentResource = this.relationships[relation_alias];
             if (relationship instanceof DocumentCollection) {
                 // @TODO PABLO: definir cuál va a ser la propiedd indispensable para guardar la relación
                 if (!relationship.builded && (!relationship.data || relationship.data.length === 0)) {
@@ -66,14 +67,17 @@ export class Resource implements ICacheable {
                 }
 
                 for (const resource of relationship.data) {
-                    let reational_object = {
+                    let reational_object: {
+                        id: string;
+                        type: string;
+                    } = {
                         id: resource.id,
                         type: resource.type
                     };
                     relationships[relation_alias].data.push(reational_object);
 
                     // no se agregó aún a included && se ha pedido incluir con el parms.include
-                    let temporal_id = resource.type + '_' + resource.id;
+                    let temporal_id: string = resource.type + '_' + resource.id;
                     if (
                         included_ids.indexOf(temporal_id) === -1 &&
                         included_relationships &&
@@ -93,7 +97,7 @@ export class Resource implements ICacheable {
                     console.warn(relationship, ' is not DocumentCollection or DocumentResource');
                 }
 
-                let relationship_data = <Resource>relationship.data;
+                let relationship_data: Resource = <Resource>relationship.data;
                 if (relationship.data && !('id' in relationship.data) && Object.keys(relationship.data).length > 0) {
                     console.warn(relation_alias + ' defined with hasMany:false, but I have a collection');
                 }
@@ -114,7 +118,7 @@ export class Resource implements ICacheable {
                 }
 
                 // no se agregó aún a included && se ha pedido incluir con el parms.include
-                let temporal_id = relationship_data.type + '_' + relationship_data.id;
+                let temporal_id: string = relationship_data.type + '_' + relationship_data.id;
                 if (
                     included_ids.indexOf(temporal_id) === -1 &&
                     included_relationships &&
@@ -127,7 +131,7 @@ export class Resource implements ICacheable {
         }
 
         // just for performance dont copy if not necessary
-        let attributes;
+        let attributes: any;
         if (this.getService() && this.getService().parseToServer) {
             attributes = { ...{}, ...this.attributes };
             this.getService().parseToServer(attributes);
@@ -171,7 +175,7 @@ export class Resource implements ICacheable {
         this.is_new = false;
 
         // NOTE: fix if stored resource has no relationships property
-        let service = Converter.getService(data_object.data.type);
+        let service: Service | undefined = Converter.getService(data_object.data.type);
 
         if (!this.relationships && service) {
             this.relationships = new service.resource().relationships;
@@ -185,7 +189,7 @@ export class Resource implements ICacheable {
         // only ids?
         if (Object.keys(this.attributes).length) {
             // @todo remove this when getResourceService ToDo is fixed
-            let srvc = Converter.getService(this.type);
+            let srvc: Service | undefined = Converter.getService(this.type);
             if (srvc && 'parseFromServer' in srvc) {
                 srvc.parseFromServer(this.attributes);
             }
@@ -205,8 +209,8 @@ export class Resource implements ICacheable {
         return true;
     }
 
-    public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
-        let relation = this.relationships[type_alias || resource.type];
+    public addRelationship<T extends Resource>(resource: T, type_alias?: string): void {
+        let relation: DocumentCollection | DocumentResource = this.relationships[type_alias || resource.type];
         if (relation instanceof DocumentCollection) {
             relation.replaceOrAdd(resource);
         } else {
@@ -219,7 +223,7 @@ export class Resource implements ICacheable {
             return;
         }
 
-        let relation = this.relationships[type_alias];
+        let relation: DocumentCollection | DocumentResource = this.relationships[type_alias];
         if (!(relation instanceof DocumentCollection)) {
             throw new Error('addRelationships require a DocumentCollection (hasMany) relation.');
         }
@@ -237,7 +241,7 @@ export class Resource implements ICacheable {
             return false;
         }
 
-        let relation = this.relationships[type_alias];
+        let relation: DocumentCollection | DocumentResource = this.relationships[type_alias];
         if (relation instanceof DocumentCollection) {
             relation.data = relation.data.filter(resource => resource.id !== id);
             if (relation.data.length === 0) {
@@ -287,14 +291,14 @@ export class Resource implements ICacheable {
         }
         this.is_saving = true;
 
-        let subject = new Subject<object>();
-        let object = this.toObject(params);
+        let subject: Subject<object> = new Subject<object>();
+        let object: IDocumentResource = this.toObject(params);
         if (this.id === '') {
             delete object.data.id;
         }
 
         // http request
-        let path = new PathBuilder();
+        let path: PathBuilder = new PathBuilder();
         path.applyParams(this.getService(), params);
         if (this.id) {
             path.appendPath(this.id);
@@ -348,15 +352,15 @@ export class Resource implements ICacheable {
 
     public setSourceAndPropagate(value: SourceType): void {
         this.setSource(value);
-        for (let relationship_alias in this.relationships) {
-            let relationship = this.relationships[relationship_alias];
+        Object.keys(this.relationships).forEach((relationship_alias): void => {
+            let relationship: DocumentCollection | DocumentResource = this.relationships[relationship_alias];
             if (relationship instanceof DocumentCollection) {
                 relationship.setSource(value);
             }
-        }
+        });
     }
 
-    public setCacheLastUpdate(value = Date.now()) {
+    public setCacheLastUpdate(value = Date.now()): void {
         this.cache_last_update = value;
     }
 }

@@ -12,9 +12,11 @@ import { IDocumentResource } from './interfaces/data-object';
 import { Observable, throwError, noop } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { IDocumentData } from './interfaces/document';
+import { DocumentCollection } from './document-collection';
+import { DocumentResource } from './document-resource';
 
-export const JSONAPI_RIPPER_SERVICE = 'jsonapi_ripper_service';
-export const JSONAPI_STORE_SERVICE = 'jsonapi_store_service';
+export const JSONAPI_RIPPER_SERVICE: string = 'jsonapi_ripper_service';
+export const JSONAPI_STORE_SERVICE: string = 'jsonapi_store_service';
 
 @Injectable()
 export class Core {
@@ -36,9 +38,9 @@ export class Core {
 
     public constructor(@Optional() user_config: JsonapiConfig, jsonapiHttp: JsonapiHttpImported, injector: Injector) {
         this.config = new JsonapiConfig();
-        for (let k in this.config) {
+        Object.keys(this.config).forEach((k): void => {
             (<any>this.config)[k] = user_config[k] !== undefined ? user_config[k] : (<any>this.config)[k];
-        }
+        });
 
         Core.me = this;
         Core.injectedServices = {
@@ -101,7 +103,7 @@ export class Core {
     }
 
     public getResourceServiceOrFail(type: string): Service {
-        let service = this.resourceServices[type];
+        let service: Service = this.resourceServices[type];
         if (!service) {
             throw new Error(
                 `The requested service with type ${type} has not been registered, please use register() method or @Autoregister() decorator`
@@ -125,8 +127,8 @@ export class Core {
 
     @serviceIsRegistered
     public static deprecateCachedCollections(type: string): void {
-        let service = Core.me.getResourceServiceOrFail(type);
-        let path = new PathBuilder();
+        let service: Service = Core.me.getResourceServiceOrFail(type);
+        let path: PathBuilder = new PathBuilder();
         path.applyParams(service);
         CacheMemory.getInstance().deprecateCollections(path.getForCache());
         // TODO: FE-85 ---> add method on JsonRipper, if store is enabled
@@ -150,12 +152,13 @@ export class Core {
 
     // just an helper
     public duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: Array<string>): R {
-        let newresource = <R>this.getResourceServiceOrFail(resource.type).new();
+        let newresource: R = <R>this.getResourceServiceOrFail(resource.type).new();
         newresource.id = 'new_' + Math.floor(Math.random() * 10000).toString();
         newresource.attributes = { ...newresource.attributes, ...resource.attributes };
 
+        // eslint-disable-next-line no-restricted-syntax
         for (const alias in resource.relationships) {
-            let relationship = resource.relationships[alias];
+            let relationship: DocumentCollection | DocumentResource = resource.relationships[alias];
 
             if (!relationship.data) {
                 newresource.relationships[alias] = resource.relationships[alias];

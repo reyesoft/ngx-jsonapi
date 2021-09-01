@@ -7,6 +7,7 @@ import { Core } from './core';
 import { PathBuilder } from './services/path-builder';
 import { Resource } from './resource';
 import { of } from 'rxjs';
+import { Book } from './tests/factories/books.service';
 
 describe('resource', () => {
     // it('should be reset()', () => {
@@ -29,7 +30,7 @@ describe('resource', () => {
     });
 
     it('should save the resource without relationships that dont refer to a resource or mean to remove the relationship', async () => {
-        let resource = new Resource();
+        let resource: Resource = new Resource();
         spyOn(resource, 'getService').and.returnValue(false);
         spyOn(PathBuilder.prototype, 'applyParams');
         resource.id = '1234';
@@ -46,8 +47,8 @@ describe('resource', () => {
         resource.loaded = true;
         resource.source = 'store';
         resource.cache_last_update = 0;
-        let response = Object.create(resource);
-        let exec_spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
+        let response: any = Object.create(resource);
+        let exec_spy: jasmine.Spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
         await resource.save();
         resource.relationships = {};
         let expected_resource_in_save = {
@@ -63,7 +64,7 @@ describe('resource', () => {
         resource.relationships.has_many_relationship.builded = true;
         resource.relationships.has_one_relationship = <any>{ data: null };
         await resource.save();
-        let second_expected_resource_in_save = {
+        let second_expected_resource_in_save: any = {
             data: {
                 type: 'tests',
                 id: '1234',
@@ -112,7 +113,7 @@ describe('resource', () => {
 
 describe('resource.toObject() method', () => {
     it('(toObject) If the service has a parseToServer method, ir should be applied in toObject method', () => {
-        let mocked_service_data = {
+        let mocked_service_data: any = {
             parseToServer: (attr: { [key: string]: any }): { [key: string]: any } => {
                 attr.main_attribute = parseInt(attr.main_attribute, 10);
 
@@ -138,12 +139,12 @@ describe('resource.toObject() method', () => {
             ttl: 0
             // id: '',
         };
-        let to_object_resource = new_resource.toObject(params);
-        expect(to_object_resource.data.attributes.main_attribute).toBe(123456789);
+        let to_object_resource: IDocumentResource = new_resource.toObject(params);
+        expect(to_object_resource.data.attributes?.main_attribute).toBe(123456789);
     });
 
     it('(toObject) If a relationship is not a document resource or document collection instance, a warn should be reaised', () => {
-        let console_warn_spy = spyOn(console, 'warn');
+        let console_warn_spy: jasmine.Spy = spyOn(console, 'warn');
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
         let new_resource: Resource = new Resource();
@@ -172,7 +173,7 @@ describe('resource.toObject() method', () => {
     it('(toObject) If a relationship is not in the include param, it should not be included in the resulting include field', () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let console_warn_spy = spyOn(console, 'warn');
+        let console_warn_spy: jasmine.Spy = spyOn(console, 'warn');
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
@@ -199,7 +200,7 @@ describe('resource.toObject() method', () => {
     it('(toObject) hasMany empty and untouched relationship should be removed from the resulting relationships', () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let book = TestFactory.getBook('5');
+        let book: Book = TestFactory.getBook('5');
         // TODO: revisar test... cómo vamos a eliminar relaciones hasMany cuando haya solo una?
         book.relationships.photos.data = [];
 
@@ -208,7 +209,7 @@ describe('resource.toObject() method', () => {
             include: ['resource_relationships'],
             ttl: 0
         };
-        let book_object = book.toObject(params);
+        let book_object: IDocumentResource = book.toObject(params);
         expect(book_object.data.relationships.photos).toBeUndefined();
         expect(book_object.included).toBeFalsy();
     });
@@ -216,7 +217,7 @@ describe('resource.toObject() method', () => {
     it('(toObject) hasMany empty and builded relationship should return an emtpy relationship', () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let book = TestFactory.getBook('1');
+        let book: Book = TestFactory.getBook('1');
         book.relationships.photos.data = [];
         book.addRelationship(TestFactory.getPhoto('5'), 'photos');
         expect(book.toObject().data.relationships.photos.data[0].id).toBe('5');
@@ -230,12 +231,12 @@ describe('resource.toObject() method', () => {
     it('(toObject) hasMany whith only ids and builded relationship should be return a relationship with ids', () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let book = TestFactory.getBook('1');
+        let book: Book = TestFactory.getBook('1');
         book.relationships.photos.fill({ data: [{ id: '4', type: 'photos' }] });
         expect(book.relationships.photos.builded).toBe(false);
         expect(book.relationships.photos.content).toBe('ids');
-        expect(book.toObject().data.relationships.photos.data.length).toBe(1);
-        expect(book.toObject().data.relationships.photos.data[0]).toMatchObject({ id: '4', type: 'photos' });
+        expect(book.toObject().data.relationships?.photos.data.length).toBe(1);
+        expect(book.toObject().data.relationships?.photos.data[0]).toMatchObject({ id: '4', type: 'photos' });
     });
 
     it('(toObject) hasMany relationships that are OK should be included in  the resulting relationships', () => {
@@ -271,11 +272,11 @@ describe('resource.toObject() method', () => {
     it('(toObject) hasOne empty data and untouched relationship should be removed from the resulting relationships', () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let book = TestFactory.getBook('5');
+        let book: Book = TestFactory.getBook('5');
         // TODO: revisar test...
         book.relationships.author.data = undefined;
 
-        let book_object = book.toObject();
+        let book_object: IDocumentResource = book.toObject();
         // expect(book_object.data.relationships.author).toBeUndefined(); // TODO: fix test or library: is returning data: undefined
         expect(book_object.included).toBeFalsy();
     });
@@ -283,32 +284,32 @@ describe('resource.toObject() method', () => {
     it('(toObject) hasOne data null relationship should be return a data nulled relationship', () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let book = TestFactory.getBook('5');
+        let book: Book = TestFactory.getBook('5');
         book.addRelationship(TestFactory.getAuthor('1'), 'author');
-        expect(book.toObject().data.relationships.author.data.id).toBe('1');
+        expect(book.toObject().data.relationships?.author.data.id).toBe('1');
 
         book.removeRelationship('author', '1');
         expect(book.relationships.author.data).toBeNull();
 
         let book_object = book.toObject();
-        expect(book_object.data.relationships.author.data).toBeNull();
+        expect(book_object.data.relationships?.author.data).toBeNull();
         expect(book_object.included).toBeFalsy();
     });
 
     it('(toObject) hasOne data filled relationship should be return a simple object relationship', () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let book = TestFactory.getBook('5');
+        let book: Book = TestFactory.getBook('5');
         book.addRelationship(TestFactory.getAuthor('1'), 'author');
-        let book_object = book.toObject();
-        expect(book_object.data.relationships.author.data.id).toBe('1');
+        let book_object: IDocumentResource = book.toObject();
+        expect(book_object.data.relationships?.author.data.id).toBe('1');
         expect(book_object.included).toBeFalsy();
     });
 });
 
 describe('resource.save() method', () => {
     it('if set, te save method should send the "meta" property when saving a resource', async () => {
-        let resource = new Resource();
+        let resource: Resource = new Resource();
         spyOn(resource, 'getService').and.returnValue(false);
         spyOn(PathBuilder.prototype, 'applyParams');
         resource.id = '1234';
@@ -327,10 +328,10 @@ describe('resource.save() method', () => {
         resource.cache_last_update = 0;
         resource.relationships = {};
         resource.meta = { some_data: 'some_data' };
-        let response = Object.create(resource);
-        let exec_spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
+        let response: any = Object.create(resource);
+        let exec_spy: jasmine.Spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
         await resource.save();
-        let expected_resource_in_save = {
+        let expected_resource_in_save: any = {
             data: {
                 type: 'tests',
                 id: '1234',
@@ -343,7 +344,7 @@ describe('resource.save() method', () => {
     });
 
     it('top level meta object should be included in the request if available', async () => {
-        let resource = new Resource();
+        let resource: Resource = new Resource();
         spyOn(resource, 'getService').and.returnValue(false);
         spyOn(PathBuilder.prototype, 'applyParams');
         resource.id = '1234';
@@ -361,10 +362,10 @@ describe('resource.save() method', () => {
         resource.source = 'store';
         resource.cache_last_update = 0;
         resource.relationships = {};
-        let response = Object.create(resource);
-        let exec_spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
+        let response: any = Object.create(resource);
+        let exec_spy: jasmine.Spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
         await resource.save({ meta: { restore: true } });
-        let expected_resource_in_save = {
+        let expected_resource_in_save: any = {
             data: {
                 type: 'tests',
                 id: '1234',
@@ -377,7 +378,7 @@ describe('resource.save() method', () => {
     });
 
     it('restore method should set top level meta to restore the resource (according to Reyesoft specification extension)', async () => {
-        let resource = new Resource();
+        let resource: Resource = new Resource();
         spyOn(resource, 'getService').and.returnValue(false);
         spyOn(PathBuilder.prototype, 'applyParams');
         resource.id = '1234';
@@ -395,10 +396,10 @@ describe('resource.save() method', () => {
         resource.source = 'store';
         resource.cache_last_update = 0;
         resource.relationships = {};
-        let response = Object.create(resource);
-        let exec_spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
+        let response: any = Object.create(resource);
+        let exec_spy: jasmine.Spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
         await resource.restore();
-        let expected_resource_in_save = {
+        let expected_resource_in_save: any = {
             data: {
                 type: 'tests',
                 id: '1234',

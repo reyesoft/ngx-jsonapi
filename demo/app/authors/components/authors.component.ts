@@ -18,6 +18,7 @@ export class AuthorsComponent {
                 .all({
                     include: ['books'],
                     sort: ['name'],
+                    // eslint-disable-next-line id-blacklist
                     page: { number: page || 1 },
                     ttl: 3600
                 })

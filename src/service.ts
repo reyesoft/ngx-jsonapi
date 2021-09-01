@@ -10,14 +10,14 @@ import { IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 import { DocumentCollection } from './document-collection';
 import { isLive, relationshipsAreBuilded } from './common';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
-import { IDocumentResource } from './interfaces/data-object';
+import { ICacheableDocumentResource, IDocumentResource } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
 import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
 import { ClonedResource } from './cloned-resource';
 
 export class Service<R extends Resource = Resource> {
     public type: string;
-    public resource = Resource;
+    public resource: typeof Resource = Resource;
     public collections_ttl: number;
     protected path: string; // without slashes
 
@@ -49,7 +49,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     public new(): R {
-        let resource = new this.resource();
+        let resource: Resource = new this.resource();
         resource.type = this.type;
         // issue #36: just if service is not registered yet.
         this.getService();
@@ -79,14 +79,14 @@ export class Service<R extends Resource = Resource> {
     public get(id: string, params: IParamsResource = {}): Observable<R> {
         params = { ...Base.ParamsResource, ...params };
 
-        let path = new PathBuilder();
+        let path: PathBuilder = new PathBuilder();
         path.applyParams(this, params);
         path.appendPath(id);
 
         let resource: R = this.getOrCreateResource(id);
         resource.setLoaded(false);
 
-        let subject = new BehaviorSubject<R>(resource);
+        let subject: BehaviorSubject<R> = new BehaviorSubject<R>(resource);
 
         if (Object.keys(params.fields || []).length > 0) {
             // memory/store cache doesnt support fields
@@ -123,7 +123,7 @@ export class Service<R extends Resource = Resource> {
         resource.setLoaded(false);
 
         // STORE (individual)
-        let success = await Core.injectedServices.json_ripper.getResourceByResource(resource, path.includes);
+        let success: ICacheableDocumentResource = await Core.injectedServices.json_ripper.getResourceByResource(resource, path.includes);
 
         resource.fill(success);
         resource.setSource('store');
@@ -140,7 +140,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     // if you change this logic, maybe you need to change getAllFromServer()
-    protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
+    protected getGetFromServer(path: any, resource: R, subject: Subject<R>): void {
         Core.get(path.get()).subscribe(
             success => {
                 resource.fill(<IDocumentResource>success);
@@ -166,8 +166,10 @@ export class Service<R extends Resource = Resource> {
     }
 
     public getOrCreateCollection(path: PathCollectionBuilder): DocumentCollection<R> {
-        const service = this.getService();
-        const collection = <DocumentCollection<R>>CacheMemory.getInstance().getOrCreateCollection(path.getForCache());
+        const service: Service<R> = this.getService();
+        const collection: DocumentCollection<R> = <DocumentCollection<R>>(
+            CacheMemory.getInstance().getOrCreateCollection(path.getForCache())
+        );
         collection.ttl = service.collections_ttl;
         if (collection.source !== 'new') {
             collection.source = 'memory';
@@ -177,7 +179,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     public getOrCreateResource(id: string): R {
-        let service = Converter.getServiceOrFail(this.type);
+        let service: Service = Converter.getServiceOrFail(this.type);
         let resource: R;
 
         resource = <R>CacheMemory.getInstance().getResource(this.type, id);
@@ -195,8 +197,8 @@ export class Service<R extends Resource = Resource> {
     }
 
     public createResource(id: string): R {
-        let service = Converter.getServiceOrFail(this.type);
-        let resource = service.new();
+        let service: Service = Converter.getServiceOrFail(this.type);
+        let resource: Resource = service.new();
         resource.id = id;
         CacheMemory.getInstance().setResource(resource, false);
 
@@ -211,7 +213,7 @@ export class Service<R extends Resource = Resource> {
     }
 
     public async clearCache(): Promise<boolean> {
-        let path = new PathBuilder();
+        let path: PathBuilder = new PathBuilder();
         path.applyParams(this);
 
         // @todo this code is repeated on core.clearCache()
@@ -232,11 +234,11 @@ export class Service<R extends Resource = Resource> {
         params = { ...{}, ...Base.ParamsResource, ...params };
 
         // http request
-        let path = new PathBuilder();
+        let path: PathBuilder = new PathBuilder();
         path.applyParams(this, params);
         path.appendPath(id);
 
-        let subject = new Subject<void>();
+        let subject: Subject<void> = new Subject<void>();
 
         Core.delete(path.get()).subscribe(
             success => {
@@ -260,13 +262,13 @@ export class Service<R extends Resource = Resource> {
             builded_params.ttl = this.collections_ttl;
         }
 
-        let path = new PathCollectionBuilder();
+        let path: PathCollectionBuilder = new PathCollectionBuilder();
         path.applyParams(this, builded_params);
 
-        let temporary_collection = this.getOrCreateCollection(path);
+        let temporary_collection: DocumentCollection<R> = this.getOrCreateCollection(path);
         temporary_collection.page.number = builded_params.page.number * 1;
 
-        let subject = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
+        let subject: BehaviorSubject<DocumentCollection<R>> = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
         if (Object.keys(builded_params.fields).length > 0) {
             // memory/store cache dont suppont fields
@@ -336,7 +338,7 @@ export class Service<R extends Resource = Resource> {
         params: IParamsCollection,
         temporary_collection: DocumentCollection<R>,
         subject: BehaviorSubject<DocumentCollection<R>>
-    ) {
+    ): void {
         temporary_collection.setLoaded(false);
         Core.get(path.get()).subscribe(
             success => {
@@ -344,11 +346,11 @@ export class Service<R extends Resource = Resource> {
                 // for example, two URL return same objects but with different attributes
                 // tslint:disable-next-line:deprecation
                 if (params.cachehash) {
-                    for (const key in success.data) {
-                        let resource = success.data[key];
-                        // tslint:disable-next-line:deprecation
+                    Object.keys(success.data).forEach((key): void => {
+                        let resource: any = success.data[key];
+                        // eslint-disable-next-line deprecation
                         resource.id = resource.id + params.cachehash;
-                    }
+                    });
                 }
                 temporary_collection.fill(<IDataCollection>success);
                 temporary_collection.cache_last_update = Date.now();

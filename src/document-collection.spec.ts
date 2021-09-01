@@ -2,22 +2,22 @@ import { DocumentCollection } from './document-collection';
 import { Resource } from './resource';
 
 describe('document-collection', () => {
-    let collection = new DocumentCollection();
+    let collection: DocumentCollection = new DocumentCollection();
 
     it('should be can created', () => {
         expect(collection.builded).toBe(false);
     });
 
     it('should be work with trackBy', () => {
-        let resource = new Resource();
+        let resource: Resource = new Resource();
         resource.id = '5';
         expect(collection.trackBy(resource)).toBe('5');
     });
 
     it('should be find resources with find() method', () => {
-        let resource1 = new Resource();
+        let resource1: Resource = new Resource();
         resource1.id = '1';
-        let resource2 = new Resource();
+        let resource2: Resource = new Resource();
         resource2.id = '2';
         collection.data.push(resource1);
         collection.data.push(resource2);
@@ -25,8 +25,8 @@ describe('document-collection', () => {
     });
 
     it('fill method should set collection s builded attribute to true if data_collection.data argument is en empty list', () => {
-        let data_collection = { data: [] };
-        let new_collection = new DocumentCollection();
+        let data_collection: any = { data: [] };
+        let new_collection: DocumentCollection = new DocumentCollection();
         new_collection.fill(data_collection);
         expect(new_collection.builded).toBeTruthy();
     });
