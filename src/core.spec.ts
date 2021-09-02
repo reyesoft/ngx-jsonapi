@@ -1,6 +1,5 @@
 // WARNING: this test is not correctly isolated
 
-import { StoreService } from './sources/store.service';
 import { JsonRipper } from './services/json-ripper';
 import { ReflectiveInjector } from '@angular/core';
 import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
@@ -16,40 +15,43 @@ import { Observable, BehaviorSubject } from 'rxjs';
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject = new BehaviorSubject(new HttpResponse());
+        let subject: BehaviorSubject<HttpResponse<any>> = new BehaviorSubject(new HttpResponse());
 
         return subject.asObservable();
     }
 }
 
 class CustomResource extends Resource {
-    public type = 'original_resource';
+    public type: string = 'original_resource';
 
-    public attributes = { data: 'this is a resource' };
+    public attributes: { data: string } = { data: 'this is a resource' };
 
-    public relationships = {
+    public relationships: {
+        has_one: DocumentResource;
+        has_many: DocumentCollection;
+    } = {
         has_one: new DocumentResource(),
         has_many: new DocumentCollection()
     };
 }
 
 class CustomResourceService extends Service<CustomResource> {
-    public type = 'original_resource';
-    public resource = CustomResource;
+    public type: string = 'original_resource';
+    public resource: typeof CustomResource = CustomResource;
     public constructor() {
         super();
         this.register();
     }
 }
 
-let injector = ReflectiveInjector.resolveAndCreate([
+let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
     {
         provide: JSONAPI_RIPPER_SERVICE,
         useClass: JsonRipper
     },
     {
         provide: JSONAPI_STORE_SERVICE,
-        useClass: StoreService
+        useClass: JsonapiStore
     }
 ]);
 
@@ -61,12 +63,15 @@ describe('core methods', () => {
         expect(core).toBeTruthy();
     });
     it('when exec method s response is an error, it should return a correctly formatted jsonapi error', () => {
-        let data_resource = {
+        let data_resource: {
+            type: string;
+            id: string;
+        } = {
             type: 'data',
             id: '1'
         };
         spyOn(Core.injectedServices.JsonapiHttp, 'exec').and.returnValue(
-            Observable.create(observer => {
+            new Observable(observer => {
                 observer.next('data1');
                 observer.next(observer.error({ errors: ['error'] }));
             })
@@ -82,24 +87,24 @@ describe('core methods', () => {
     });
 
     it('duplicateResource method should duplicate a resource and add the requested relationships (if present in the original reource)', () => {
-        let original_resource_service = new CustomResourceService();
-        let original_resource = new CustomResource();
+        let original_resource_service: CustomResourceService = new CustomResourceService();
+        let original_resource: CustomResource = new CustomResource();
         original_resource.id = '1';
         original_resource.attributes.data = 'this is a resource';
-        let has_one_relationship_resource = new CustomResource();
+        let has_one_relationship_resource: CustomResource = new CustomResource();
         has_one_relationship_resource.id = '2';
         has_one_relationship_resource.attributes.data = 'this is a has ONE relationship';
-        let has_many_relationship_resource = new CustomResource();
+        let has_many_relationship_resource: CustomResource = new CustomResource();
         has_many_relationship_resource.id = '3';
         has_many_relationship_resource.attributes.data = 'this is a has MANY relationship';
-        let has_many_relationship_resource_2 = new CustomResource();
+        let has_many_relationship_resource_2: CustomResource = new CustomResource();
         has_many_relationship_resource_2.id = '4';
         has_many_relationship_resource_2.attributes.data = 'this is a has MANY relationship';
 
         original_resource.addRelationship(has_one_relationship_resource, 'has_one');
         original_resource.addRelationships([has_many_relationship_resource, has_many_relationship_resource_2], 'has_many');
 
-        let resource_copy = core.duplicateResource(original_resource);
+        let resource_copy: CustomResource = core.duplicateResource(original_resource);
         expect(resource_copy.id.includes('new_')).toBeTruthy();
         expect(resource_copy.attributes.data).toBe('this is a resource');
         expect((<DocumentResource>resource_copy.relationships.has_one).data.id).toBe('2');
@@ -109,7 +114,7 @@ describe('core methods', () => {
         expect(resource_copy.relationships.has_many.data[1].id).toBe('4');
         expect(resource_copy.relationships.has_many.data[1].attributes.data).toBe('this is a has MANY relationship');
 
-        let resource_copy_with_duplicated_relationships = core.duplicateResource(original_resource, 'has_one', 'has_many');
+        let resource_copy_with_duplicated_relationships: CustomResource = core.duplicateResource(original_resource, 'has_one', 'has_many');
         expect(resource_copy_with_duplicated_relationships.id.includes('new_')).toBeTruthy();
         expect(resource_copy_with_duplicated_relationships.attributes.data).toBe('this is a resource');
         expect((<DocumentResource>resource_copy_with_duplicated_relationships.relationships.has_one).data.id.includes('new_')).toBeTruthy();

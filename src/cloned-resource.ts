@@ -16,7 +16,7 @@ export class ClonedResource<T extends Resource> extends Resource implements IClo
         this.parent = cloneDeep(resource);
         this.type = this.parent.type; // this line should go to fill method?
         delete this.relationships; // remove empty relationships object so fill method creates them... how can we improve inheritance to remove this?
-        let include = Object.keys(this.parent.relationships);
+        let include: Array<string> = Object.keys(this.parent.relationships);
         this.fill(this.parent.toObject({ include: include }));
         this.copySourceFromParent();
     }
@@ -25,14 +25,14 @@ export class ClonedResource<T extends Resource> extends Resource implements IClo
         return new ClonedDocumentResource(this, this.parent, params).getResourceObject();
     }
 
-    public superToObject(params?: IParamsResource) {
+    public superToObject(params?: IParamsResource): IDocumentResource {
         return super.toObject(params);
     }
 
-    private copySourceFromParent() {
+    private copySourceFromParent(): void {
         this.source = this.parent.source;
-        for (let relationship in this.relationships) {
+        Object.keys(this.relationships).forEach((relationship): void => {
             this.relationships[relationship].source = this.parent.relationships[relationship].source;
-        }
+        });
     }
 }

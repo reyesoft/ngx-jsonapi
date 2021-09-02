@@ -15,9 +15,9 @@ export class DexieDataProvider implements IDataProvider {
         });
     }
 
-    public async getElement(key: string, table_name = 'elements'): Promise<IObject | Array<IObject>> {
+    public async getElement(key: string, table_name: string = 'elements'): Promise<IObject | Array<IObject>> {
         await DexieDataProvider.db.open();
-        const data = await DexieDataProvider.db.table(table_name).get(key);
+        const data: any = await DexieDataProvider.db.table(table_name).get(key);
         if (data === undefined) {
             throw new Error(key + ' not found.');
         }
@@ -25,8 +25,8 @@ export class DexieDataProvider implements IDataProvider {
         return data;
     }
 
-    public async getElements(keys: Array<string>, table_name = 'elements'): Promise<Array<IObject>> {
-        let data = {};
+    public async getElements(keys: Array<string>, table_name: string = 'elements'): Promise<Array<IObject>> {
+        let data: any = {};
         await DexieDataProvider.db
             .table(table_name)
             .where(':id')
@@ -43,7 +43,7 @@ export class DexieDataProvider implements IDataProvider {
 
     // @todo implement dexie.modify(changes)
     // @todo test
-    public async updateElements(key_start_with: string, changes: IObject, table_name = 'elements'): Promise<void> {
+    public async updateElements(key_start_with: string, changes: IObject, table_name: string = 'elements'): Promise<void> {
         return DexieDataProvider.db.open().then(async () => {
             if (key_start_with === '') {
                 return DexieDataProvider.db.table(table_name).clear();
@@ -58,9 +58,9 @@ export class DexieDataProvider implements IDataProvider {
         });
     }
 
-    public async saveElements(elements: Array<IElement>, table_name = 'elements'): Promise<void> {
+    public async saveElements(elements: Array<IElement>, table_name: string = 'elements'): Promise<void> {
         let keys: Array<string> = [];
-        let items = elements.map(element => {
+        let items: Array<IObject> = elements.map(element => {
             keys.push(element.key);
 
             return element.content;

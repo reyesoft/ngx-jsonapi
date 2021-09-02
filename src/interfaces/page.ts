@@ -1,4 +1,5 @@
 export interface IPage {
+    // eslint-disable-next-line id-blacklist
     number: number;
 
     // http://jsonapi.org/format/#fetching-pagination

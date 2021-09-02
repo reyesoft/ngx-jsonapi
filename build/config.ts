@@ -5,11 +5,11 @@ export interface PackageDescription {
 }
 
 export interface Config {
-    packages: PackageDescription[];
+    packages: Array<PackageDescription>;
     scope: string;
 }
 
-export const packages: PackageDescription[] = [
+export const packages: Array<PackageDescription> = [
     {
         name: 'ngx-jsonapi',
         hasTestingModule: false,

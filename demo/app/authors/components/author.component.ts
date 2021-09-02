@@ -29,11 +29,11 @@ export class AuthorComponent {
         });
     }
 
-    /*
+    /*n
     Add a new author
     */
-    public newAuthor() {
-        let author = this.authorsService.new();
+    public newAuthor(): void {
+        let author: Author = this.authorsService.new();
         author.attributes.name = prompt('New author name:', 'John Doe');
         if (!author.attributes.name) {
             return;
@@ -52,7 +52,7 @@ export class AuthorComponent {
     /*
     Update name for actual author
     */
-    public updateAuthor() {
+    public updateAuthor(): void {
         this.author.attributes.name = prompt('Author name:', this.author.attributes.name);
         console.log('author data for save with book include', this.author.toObject({ include: ['books'] }));
         console.log('author data for save without any include', this.author.toObject());
@@ -61,7 +61,7 @@ export class AuthorComponent {
         });
     }
 
-    public removeRelationship() {
+    public removeRelationship(): void {
         this.author.removeRelationship('photos', '1');
         this.author.save();
         console.log('removeRelationship save with photos include', this.author.toObject());

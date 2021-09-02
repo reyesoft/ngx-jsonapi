@@ -4,6 +4,7 @@ import { BooksService, Book } from './../books.service';
 import { AuthorsService } from './../../authors/authors.service';
 import { PhotosService } from '../../photos/photos.service';
 import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'demo-books',
@@ -21,6 +22,7 @@ export class BooksComponent {
         route.queryParams.subscribe(({ page }) => {
             booksService
                 .all({
+                    // eslint-disable-next-line id-blacklist
                     page: { number: page || 1 },
                     include: ['author', 'photos']
                 })
@@ -29,20 +31,21 @@ export class BooksComponent {
                         this.books = books;
                         // console.info('success books controll', this.books);
                     },
-                    (error): void => console.info('error books controll', error)
+                    (error): void => console.log('error books controll', error)
                 );
         });
     }
 
-    public getAll(remotefilter) {
+    public getAll(remotefilter: any): void {
         // we add some remote filter
         remotefilter.date_published = {
             since: '1983-01-01',
             until: '2010-01-01'
         };
 
-        let books$ = this.booksService.all({
+        let books$: Observable<DocumentCollection<Book>> = this.booksService.all({
             remotefilter: remotefilter,
+            // eslint-disable-next-line id-blacklist
             page: { number: 1 },
             include: ['author', 'photos']
         });
@@ -52,12 +55,12 @@ export class BooksComponent {
 
                 console.log('success books controller', this.books);
             },
-            error => console.info('error books controller', error)
+            error => console.log('error books controller', error)
         );
         books$.toPromise().then(success => console.log('books loaded PROMISE'));
     }
 
-    public delete(book: Resource) {
+    public delete(book: Resource): void {
         this.booksService.delete(book.id);
     }
 }

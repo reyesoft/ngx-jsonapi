@@ -23,14 +23,14 @@ interface IDocumentHasResource {
 export /* abstract */ class Document
     implements IDocumentData, IDocumentHasResources, IDocumentHasIds, IDocumentHasId, IDocumentHasResource {
     public data: any;
-    public builded = false;
+    public builded: boolean = false;
     public content: any;
 
     // deprecated since 2.2.0. Use loaded.
-    public is_loading = true;
-    public loaded = false;
+    public is_loading: boolean = true;
+    public loaded: boolean = false;
     public source: SourceType = 'new';
-    public cache_last_update = 0;
+    public cache_last_update: number = 0;
     public meta: {
         [key: string]: any;
     } = {};

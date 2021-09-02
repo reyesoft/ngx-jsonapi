@@ -7,7 +7,7 @@ import { JsonapiCore } from 'ngx-jsonapi';
     templateUrl: './app.component.html'
 })
 export class AppComponent /* implements OnInit */ {
-    public loading = '';
+    public loading: string = '';
 
     public constructor(
         private jsonapiCore: JsonapiCore

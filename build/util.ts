@@ -4,7 +4,7 @@ import * as glob from 'glob';
 import * as fsExtra from 'fs-extra';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
-import { Config } from './config';
+import { Config, PackageDescription } from './config';
 
 export type RunnerFn = (config: Config) => Promise<any>;
 export type TaskDef = [string, RunnerFn];
@@ -28,7 +28,7 @@ export function remove(target: string): Promise<void> {
     });
 }
 
-export function writeFile(target: string, contents: string) {
+export function writeFile(target: string, contents: string): Promise<void> {
     return new Promise((resolve, reject) => {
         fs.writeFile(target, contents, err => {
             if (err) return reject(err);
@@ -40,9 +40,9 @@ export function writeFile(target: string, contents: string) {
 export function getListOfFiles(
     globPath: string,
     exclude?: string
-): Promise<string[]> {
+): Promise<Array<string>> {
     return new Promise((resolve, reject) => {
-        const options = exclude ? { ignore: exclude } : {};
+        const options: { ignore?: string } = exclude ? { ignore: exclude } : {};
 
         glob(globPath, options, (error, matches) => {
             if (error) {
@@ -54,9 +54,9 @@ export function getListOfFiles(
     });
 }
 
-export function removeRecursively(glob: string) {
+export function removeRecursively(globRecursively: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        rimraf(glob, err => {
+        rimraf(globRecursively, err => {
             if (err) {
                 reject(err);
             } else {
@@ -68,7 +68,7 @@ export function removeRecursively(glob: string) {
 
 export function exec(
     command: string,
-    args: string[],
+    args: Array<string>,
     base: BaseFn = fromNpm
 ): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -82,11 +82,12 @@ export function exec(
     });
 }
 
-export function cmd(command: string, args: string[]): Promise<string> {
+export function cmd(command: string, args: Array<string>): Promise<string> {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     return exec(command, args, (command: string) => command);
 }
 
-export function git(args: string[]): Promise<string> {
+export function git(args: Array<string>): Promise<string> {
     return cmd('git', args);
 }
 
@@ -94,23 +95,25 @@ export function ignoreErrors<T>(promise: Promise<T>): Promise<T | null> {
     return promise.catch(() => null);
 }
 
-export function fromNpm(command: string) {
+export function fromNpm(command: string): string {
     return baseDir(`./node_modules/.bin/${command}`);
 }
 
-export function getPackageFilePath(pkg: string, filename: string) {
+export function getPackageFilePath(pkg: string, filename: string): string {
     return baseDir(`./src/${pkg}/${filename}`);
 }
 
-const sorcery = require('sorcery');
-export async function mapSources(file: string) {
-    const chain = await sorcery.load(file);
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const sorcery: any = require('sorcery');
+export async function mapSources(file: string): Promise<void> {
+    const chain: any = await sorcery.load(file);
     chain.write();
 }
 
-const ora = require('ora');
-async function runTask(name: string, taskFn: () => Promise<any>) {
-    const spinner = ora(name);
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const ora: any = require('ora');
+async function runTask(name: string, taskFn: () => Promise<any>): Promise<void> {
+    const spinner: any = ora(name);
 
     try {
         spinner.start();
@@ -125,7 +128,7 @@ async function runTask(name: string, taskFn: () => Promise<any>) {
     }
 }
 
-export function createBuilder(tasks: TaskDef[]) {
+export function createBuilder(tasks: Array<TaskDef>) {
     return async function(config: Config) {
         for (let [name, runner] of tasks) {
             await runTask(name, () => runner(config));
@@ -133,20 +136,20 @@ export function createBuilder(tasks: TaskDef[]) {
     };
 }
 
-export function flatMap<K, J>(list: K[], mapFn: (item: K) => J[]): J[] {
+export function flatMap<K, J>(list: Array<K>, mapFn: (item: K) => Array<J>): Array<J> {
     return list.reduce(
-        function(newList, nextItem) {
+        function(newList: Array<J>, nextItem: K) {
             return [...newList, ...mapFn(nextItem)];
         },
-        [] as J[]
+        [] as Array<J>
     );
 }
 
-export function getTopLevelPackages(config: Config) {
+export function getTopLevelPackages(config: Config): Array<string> {
     return config.packages.map(packageDescription => packageDescription.name);
 }
 
-export function getTestingPackages(config: Config) {
+export function getTestingPackages(config: Config): Array<string> {
     return flatMap(config.packages, ({ name, hasTestingModule }) => {
         if (hasTestingModule) {
             return [`${name}/testing`];
@@ -156,7 +159,7 @@ export function getTestingPackages(config: Config) {
     });
 }
 
-export function getAllPackages(config: Config) {
+export function getAllPackages(config: Config): Array<string> {
     return flatMap(config.packages, ({ name, hasTestingModule }) => {
         if (hasTestingModule) {
             return [name, `${name}/testing`];
@@ -166,24 +169,24 @@ export function getAllPackages(config: Config) {
     });
 }
 
-export function getDestinationName(packageName: string) {
+export function getDestinationName(packageName: string): string {
     return packageName.replace('/testing', '-testing');
 }
 
-export function getTopLevelName(packageName: string) {
+export function getTopLevelName(packageName: string): string {
     return packageName.replace('/testing', '');
 }
 
-export function getBottomLevelName(packageName: string) {
+export function getBottomLevelName(packageName: string): string {
     return packageName.includes('/testing') ? 'testing' : packageName;
 }
 
-export function baseDir(...dirs: string[]): string {
+export function baseDir(...dirs: Array<string>): string {
     return `"${path.resolve(__dirname, '../', ...dirs)}"`;
 }
 
-export function shouldBundle(config: Config, packageName: string) {
-    const pkg = config.packages.find(pkg => pkg.name === packageName);
+export function shouldBundle(config: Config, packageName: string): boolean {
+    const pkg: PackageDescription | undefined = config.packages.find(pkgX => pkgX.name === packageName);
 
     return pkg ? pkg.bundle : false;
 }

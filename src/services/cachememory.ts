@@ -9,7 +9,9 @@ export class CacheMemory<R extends Resource = Resource> {
     private collections: { [url: string]: DocumentCollection<R> } = {};
     private static instance: CacheMemory | null;
 
-    private constructor() {}
+    private constructor() {
+        /*  */
+    }
 
     public static getInstance(): CacheMemory {
         if (!CacheMemory.instance) {
@@ -19,7 +21,7 @@ export class CacheMemory<R extends Resource = Resource> {
         return CacheMemory.instance;
     }
 
-    public clearCache() {
+    public clearCache(): void {
         this.resources = {};
         this.collections = {};
         CacheMemory.instance = null;
@@ -59,6 +61,7 @@ export class CacheMemory<R extends Resource = Resource> {
         if (!(url in this.collections)) {
             this.collections[url] = new DocumentCollection();
         }
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
         for (let i = 0; i < collection.data.length; i++) {
             let resource = collection.data[i];
             // this.collections[url].data.push(resource);
@@ -70,7 +73,7 @@ export class CacheMemory<R extends Resource = Resource> {
     }
 
     public getOrCreateResource(type: string, id: string): Resource {
-        let resource = this.getResource(type, id);
+        let resource: Resource | null = this.getResource(type, id);
         if (resource !== null) {
             return resource;
         }
@@ -93,17 +96,17 @@ export class CacheMemory<R extends Resource = Resource> {
     }
 
     public deprecateCollections(path_includes: string = ''): boolean {
-        for (let collection_key in this.collections) {
+        Object.keys(this.collections).forEach((collection_key): void => {
             if (collection_key.includes(path_includes)) {
                 this.collections[collection_key].cache_last_update = 0;
             }
-        }
+        });
 
         return true;
     }
 
     public removeResource(type: string, id: string): void {
-        let resource = this.getResource(type, id);
+        let resource: Resource | null = this.getResource(type, id);
         if (!resource) {
             return;
         }
@@ -118,6 +121,7 @@ export class CacheMemory<R extends Resource = Resource> {
         resource.attributes = {}; // just for confirm deletion on view
 
         // this.resources[id].relationships = {}; // just for confirm deletion on view
+        // eslint-disable-next-line no-restricted-syntax
         for (let relationship in resource.relationships) {
             if (resource.relationships[relationship].data === null || resource.relationships[relationship].data === undefined) {
                 continue;
@@ -132,7 +136,7 @@ export class CacheMemory<R extends Resource = Resource> {
     }
 
     private fillExistentResource(source: Resource): void {
-        let destination = this.getResourceOrFail(source.type, source.id);
+        let destination: Resource = this.getResourceOrFail(source.type, source.id);
 
         destination.attributes = { ...destination.attributes, ...source.attributes };
 

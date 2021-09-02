@@ -18,7 +18,7 @@ export class PhotosComponent {
         this.makeRequest(5);
     }
 
-    public makeRequest(id) {
+    public makeRequest(id: any): void {
         this.photosService.all().subscribe(succes => {
             console.log('photos success', id, this.photos);
         });

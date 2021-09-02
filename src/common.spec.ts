@@ -17,8 +17,8 @@ describe('common funcions', () => {
         expect(isLive(cacheable, 10000)).toBe(true);
     });
 
-    let resource = new DocumentResource();
-    let collection = new DocumentCollection();
+    let resource: DocumentResource = new DocumentResource();
+    let collection: DocumentCollection = new DocumentCollection();
     it('should be detect DocumentResource with isResource()', () => {
         expect(isResource(resource)).toBe(true);
         expect(isResource(collection)).toBe(false);
