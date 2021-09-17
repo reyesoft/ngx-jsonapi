@@ -12,10 +12,10 @@ export class JsonapiConfig {
               };
           }
         | undefined = {
-        page: {
-            number: 'page[number]',
-            size: 'page[size]'
-        }
-    };
+            page: {
+                number: 'page[number]',
+                size: 'page[size]'
+            }
+        };
     /* eslint-enable id-blacklist */
 }

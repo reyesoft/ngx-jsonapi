@@ -174,7 +174,7 @@ describe('Cache Memory deprecation and live conditions', () => {
         expect(author_on_memory.is_new).toBeTruthy();
     });
 
-    it('resource cache_last_update with update_lastupdate', async () => {
+    it('resource cache_last_update with update_lastupdate', () => {
         let cachememory: CacheMemory = CacheMemory.getInstance();
         let author: Author = TestFactory.getAuthor();
         cachememory.setResource(author, true);
@@ -184,7 +184,7 @@ describe('Cache Memory deprecation and live conditions', () => {
         expect(author_on_memory.cache_last_update).toBe(author.cache_last_update);
     });
 
-    it('resource cache_last_update without update_lastupdate', async () => {
+    it('resource cache_last_update without update_lastupdate', () => {
         let cachememory: CacheMemory = CacheMemory.getInstance();
         let author: Author = TestFactory.getAuthor();
         cachememory.setResource(author);
@@ -194,7 +194,7 @@ describe('Cache Memory deprecation and live conditions', () => {
         expect(author_on_memory.cache_last_update).toBe(author.cache_last_update);
     });
 
-    it('removeResource()', async () => {
+    it('removeResource()', () => {
         let cachememory: CacheMemory = CacheMemory.getInstance();
         let author: Author = TestFactory.getAuthor();
         cachememory.setResource(author, true);
@@ -208,7 +208,7 @@ describe('Cache Memory deprecation and live conditions', () => {
         expect(removed_author).toBe(null);
     });
 
-    it('removeResource() with fake id should not fail', async () => {
+    it('removeResource() with fake id should not fail', () => {
         let cachememory: CacheMemory = CacheMemory.getInstance();
         cachememory.removeResource('authors', 'some fake id');
         expect(true).toBeTruthy();

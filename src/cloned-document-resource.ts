@@ -65,6 +65,7 @@ export class ClonedDocumentResource {
         if (!this.resource_object.data.relationships || !this.parent_resource_object.data.relationships) {
             return this;
         }
+        // eslint-disable-next-line no-restricted-syntax
         for (let relationship in this.resource_object.data.relationships) {
             if (
                 isEqual(this.resource_object.data.relationships[relationship], this.parent_resource_object.data.relationships[relationship])
@@ -80,6 +81,7 @@ export class ClonedDocumentResource {
         if (!this.resource_object.data.attributes || !this.parent_resource_object.data.attributes) {
             return this;
         }
+        // eslint-disable-next-line no-restricted-syntax
         for (let attribute in this.resource_object.data.attributes) {
             if (this.resource_object.data.attributes[attribute] === this.parent_resource_object.data.attributes[attribute]) {
                 delete this.resource_object.data.attributes[attribute];

@@ -766,6 +766,7 @@ describe('service.all() and next service.get()', () => {
                 map(emit => {
                     expect(http_request_spy).not.toHaveBeenCalled();
                     expect(emit.relationships.author.data.attributes.name).toBeTruthy();
+
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -796,8 +797,8 @@ describe('service.all() and next service.get()', () => {
         let book: Book = await booksService.get('1', { include: ['author'] }).toPromise();
         expect(book.id).toBe('1');
         test_response_subject.complete();
-
-        let books_api = TestFactory.getCollectionDocumentData(Book, 1, ['author']);
+        // eslint-disable-next-line
+        let books_api: IDocumentData<Resource> = TestFactory.getCollectionDocumentData(Book, 1, ['author']);
         books_api.data[0].id = '1';
         test_response_subject = new BehaviorSubject(new HttpResponse());
         test_response_subject.next(new HttpResponse({ body: books_api }));
@@ -812,6 +813,7 @@ describe('service.all() and next service.get()', () => {
                     if (emit.loaded) {
                         expect(emit.data[0].relationships.author.data.attributes.name).toBeTruthy();
                     }
+
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -995,6 +997,7 @@ describe('service.get()', () => {
         let emits: Array<{
             loaded: boolean;
             source: SourceType;
+        // eslint-disable-next-line max-lines
         }> = await booksService
             .get('1', { ttl: 1000, include: ['author'] })
             .pipe(
@@ -1251,7 +1254,7 @@ describe('service.get()', () => {
         test_response_subject.next(new HttpResponse({ body: body_resource }));
 
         book.ttl = 0;
-        let json_ripper = new JsonRipper();
+        let json_ripper: JsonRipper = new JsonRipper();
         json_ripper.saveResource(book);
         let cachememory: CacheMemory = CacheMemory.getInstance();
         cachememory.removeResource('books', '1'); // kill only memory cache

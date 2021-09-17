@@ -360,7 +360,7 @@ export class Resource implements ICacheable {
         });
     }
 
-    public setCacheLastUpdate(value = Date.now()): void {
+    public setCacheLastUpdate(value: number = Date.now()): void {
         this.cache_last_update = value;
     }
 }

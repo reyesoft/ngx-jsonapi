@@ -2,9 +2,11 @@ import { Resource } from '../resource';
 import { JsonRipper } from './json-ripper';
 import { DocumentCollection } from '../document-collection';
 import { TestFactory } from '../tests/factories/test-factory';
+import { Book } from 'demo/app/books/books.service';
+import { IElement } from 'src/data-providers/data-provider';
 
 describe('JsonRipper for resources', () => {
-    let book = TestFactory.getBook('5');
+    let book: any = TestFactory.getBook('5');
     book.attributes.title = 'Fahrenheit 451';
     book.addRelationship(TestFactory.getAuthor('2'), 'author');
     // @todo maxi: factory dont work?
@@ -15,7 +17,7 @@ describe('JsonRipper for resources', () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
-        let obj = JsonRipper.toResourceElements('some.key', book);
+        let obj: Array<IElement> = JsonRipper.toResourceElements('some.key', book);
         expect(obj.length).toBe(1);
         expect(obj[0].key).toBe('some.key');
         expect(obj[0].content.data).toMatchObject({
@@ -38,7 +40,7 @@ describe('JsonRipper for resources', () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
-        let obj = JsonRipper.toResourceElements('some.key', book, ['author']);
+        let obj: Array<IElement> = JsonRipper.toResourceElements('some.key', book, ['author']);
         expect(obj.length).toBe(2);
         expect(obj[0].key).toBe('some.key');
         expect(obj[1].content.data).toMatchObject({
@@ -55,9 +57,9 @@ describe('JsonRipper for resources', () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
-        let jsonRipper = new JsonRipper();
+        let jsonRipper: JsonRipper = new JsonRipper();
         await jsonRipper.saveResource(book);
-        let json = await jsonRipper.getResource(JsonRipper.getResourceKey(book));
+        let json: ICacheableDocumentResource = await jsonRipper.getResource(JsonRipper.getResourceKey(book));
         expect(json.data).toMatchObject({
             attributes: { title: /.+/ },
             id: '5',

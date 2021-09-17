@@ -51,7 +51,7 @@ describe('resource', () => {
         let exec_spy: jasmine.Spy = spyOn(Core, 'exec').and.returnValue(of({ data: response }));
         await resource.save();
         resource.relationships = {};
-        let expected_resource_in_save = {
+        let expected_resource_in_save: any = {
             data: {
                 type: 'tests',
                 id: '1234',
@@ -291,7 +291,7 @@ describe('resource.toObject() method', () => {
         book.removeRelationship('author', '1');
         expect(book.relationships.author.data).toBeNull();
 
-        let book_object = book.toObject();
+        let book_object: IDocumentResource = book.toObject();
         expect(book_object.data.relationships?.author.data).toBeNull();
         expect(book_object.included).toBeFalsy();
     });
