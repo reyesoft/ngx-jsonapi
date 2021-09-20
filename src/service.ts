@@ -348,7 +348,7 @@ export class Service<R extends Resource = Resource> {
                 if (params.cachehash) {
                     Object.keys(success.data).forEach((key): void => {
                         let resource: any = success.data[key];
-                        // eslint-disable-next-line 
+                        // eslint-disable-next-line
                         resource.id = resource.id + params.cachehash;
                     });
                 }

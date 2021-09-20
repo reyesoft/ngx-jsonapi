@@ -240,7 +240,8 @@ export class TestFactory {
 
         // @NOTE: cannot check IDocumentResource interface with instanceof
         if (relationship_content instanceof DocumentResource || 'type' in relationship_content.data) {
-            let relation_data: Resource | IDataResource | null | undefined = (<DocumentResource | IDocumentResource>relationship_content).data;
+            let relation_data: Resource | IDataResource | null | undefined = (<DocumentResource | IDocumentResource>relationship_content)
+                .data;
             if (!relation_data) {
                 console.warn('relationship content is empty');
 

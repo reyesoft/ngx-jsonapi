@@ -3,7 +3,7 @@ export class JsonapiConfig {
     public params_separator?: string = '?';
     public unify_concurrency?: boolean = true;
     public cache_prerequests?: boolean = true;
-    /* eslint-disable id-blacklist */
+    /* eslint-disable */
     public parameters?:
         | {
               page: {
@@ -12,10 +12,10 @@ export class JsonapiConfig {
               };
           }
         | undefined = {
-            page: {
-                number: 'page[number]',
-                size: 'page[size]'
-            }
-        };
-    /* eslint-enable id-blacklist */
+        page: {
+            number: 'page[number]',
+            size: 'page[size]'
+        }
+    };
+    /* eslint-enable */
 }

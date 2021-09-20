@@ -30,7 +30,11 @@ let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
     }
 ]);
 
-let core: Core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+let core: Core = new Core(
+    new JsonapiConfig(),
+    new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
+    injector
+);
 
 const testService: any = new Service();
 testService.getPrePath = (): string => {

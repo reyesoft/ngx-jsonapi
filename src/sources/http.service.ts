@@ -11,10 +11,10 @@ export class Http {
     // NOTE: GET requests are stored in a this object to prevent duplicate requests
     public get_requests: { [key: string]: Observable<IDocumentData> } = {};
 
-    public constructor(private http: HttpClient, private rsJsonapiConfig: JsonapiConfig) { }
+    public constructor(private http: HttpClient, private rsJsonapiConfig: JsonapiConfig) {}
 
     public exec(path: string, method: string, data?: IDocumentResource): Observable<IDocumentData> {
-        let req: { body: IDocumentResource | null; headers: HttpHeaders; } = {
+        let req: { body: IDocumentResource | null; headers: HttpHeaders } = {
             body: data || null,
             headers: new HttpHeaders({
                 'Content-Type': 'application/vnd.api+json',

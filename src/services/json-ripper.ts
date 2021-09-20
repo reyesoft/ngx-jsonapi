@@ -51,7 +51,7 @@ export class JsonRipper implements IRipper {
             }
         });
 
-        let included_resources: Array<ICacheableDocumentResource >= await this.getDataResources(included_keys);
+        let included_resources: Array<ICacheableDocumentResource> = await this.getDataResources(included_keys);
 
         return {
             ...stored_resource,
@@ -67,7 +67,7 @@ export class JsonRipper implements IRipper {
         let stored_collection: IStoredCollection = await this.getDataCollection(url);
         let data_resources: Array<ICacheableDocumentResource> = await this.getDataResources(stored_collection.keys);
 
-        let ret: any= {
+        let ret: any = {
             data: data_resources.map(data_resource => data_resource.data),
             cache_last_update: stored_collection.updated_at
         };

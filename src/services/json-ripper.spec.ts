@@ -247,7 +247,7 @@ describe('JsonRipper for collections', () => {
         let jsonRipper: JsonRipper = new JsonRipper();
         jsonRipper.saveCollection('some/url/include', authors, ['books']);
 
-        let json: ICacheableDataCollection= await jsonRipper.getCollection('some/url/include', ['books']);
+        let json: ICacheableDataCollection = await jsonRipper.getCollection('some/url/include', ['books']);
         expect(json.cache_last_update).toBeGreaterThan(0);
 
         // collection.fill responsability to fill, but ripper need to comunicate last update

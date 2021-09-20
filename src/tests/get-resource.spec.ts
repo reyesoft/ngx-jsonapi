@@ -141,7 +141,11 @@ describe('core methods', () => {
         test_resource_has_many_relationship_1.attributes = { name: 'test_name_3' };
         test_resource_has_many_relationship_1.relationships.test_resources.data.push({ id: '4', type: 'test_resources' });
 
-        let included: Array<TestResource> = [test_resource_has_one_relationship, test_resource_has_many_relationship_1, test_resource_nested_relationship];
+        let included: Array<TestResource> = [
+            test_resource_has_one_relationship,
+            test_resource_has_many_relationship_1,
+            test_resource_nested_relationship
+        ];
 
         let test_service: TestService = new TestService();
         await test_service.clearCache();
@@ -201,7 +205,11 @@ describe('core methods', () => {
         test_resource_has_many_relationship_2.id = '4';
         test_resource_has_many_relationship_2.attributes = { name: 'test_name_4' };
 
-        let included: Array<TestResource> = [test_resource_has_one_relationship, test_resource_has_many_relationship_1, test_resource_has_many_relationship_2];
+        let included: Array<TestResource> = [
+            test_resource_has_one_relationship,
+            test_resource_has_many_relationship_1,
+            test_resource_has_many_relationship_2
+        ];
 
         let test_service: TestService = new TestService();
         test_response_subject.next(new HttpResponse({ body: { data: test_resource, included: included } }));

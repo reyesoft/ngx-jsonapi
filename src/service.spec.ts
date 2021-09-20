@@ -997,7 +997,7 @@ describe('service.get()', () => {
         let emits: Array<{
             loaded: boolean;
             source: SourceType;
-        // eslint-disable-next-line max-lines
+            // eslint-disable-next-line max-lines
         }> = await booksService
             .get('1', { ttl: 1000, include: ['author'] })
             .pipe(
