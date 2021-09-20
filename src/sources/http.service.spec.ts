@@ -5,6 +5,8 @@ import { tap, mapTo, share } from 'rxjs/operators';
 import { Observable, of, timer, Subject } from 'rxjs';
 
 import { Http } from './http.service';
+import { IDocumentData } from 'src/interfaces/document';
+import { Resource } from 'ngx-jsonapi';
 
 class JsonapiConfigMock {
     public url: string = 'some-url';
@@ -12,7 +14,7 @@ class JsonapiConfigMock {
 
 describe('Http service', () => {
     let service: Http;
-    let data_object = {
+    let data_object: any = {
         data: {
             type: 'data',
             id: 'id'
@@ -30,17 +32,17 @@ describe('Http service', () => {
         expect(service).toBeTruthy();
     });
     it('exec should return an observable with the http request', async () => {
-        let response = of(data_object);
+        let response: Observable<any> = of(data_object);
         spyOn((service as any).http, 'request').and.returnValue(response);
-        let exec_observable = service.exec('/test', 'patch', data_object);
+        let exec_observable: Observable<IDocumentData> = service.exec('/test', 'patch', data_object);
         await exec_observable.subscribe(data => expect(data).toEqual(data_object));
     });
     it(`when two requests to the same URL, and the second is made before the first has finished,
         exec should return the same observable with the http request without duplicating`, async () => {
-        let subject = new Subject();
-        let request_spy = spyOn((service as any).http, 'request').and.returnValue(subject);
-        let exec_observable = service.exec('/test', 'patch', data_object);
-        let second_exec_observable = service.exec('/test', 'patch', data_object);
+        let subject: Subject<any> = new Subject();
+        let request_spy: jasmine.Spy = spyOn((service as any).http, 'request').and.returnValue(subject);
+        let exec_observable: Observable<IDocumentData> = service.exec('/test', 'patch', data_object);
+        let second_exec_observable: Observable<IDocumentData> = service.exec('/test', 'patch', data_object);
         subject.next(data_object);
         await exec_observable.subscribe(data => expect(data).toEqual(data_object));
         await exec_observable.subscribe(data => {

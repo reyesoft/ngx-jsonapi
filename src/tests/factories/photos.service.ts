@@ -2,7 +2,7 @@ import { Resource } from '../../resource';
 import { Service } from '../../service';
 
 export class Photo extends Resource {
-    public attributes = {
+    public attributes: any = {
         title: '',
         uri: '',
         imageable_id: '',
@@ -10,9 +10,9 @@ export class Photo extends Resource {
         updated_at: new Date()
     };
 
-    public type = 'photos';
-    public ttl = 0;
-    public static test_ttl;
+    public type: string = 'photos';
+    public ttl: number = 0;
+    public static test_ttl: any;
 
     public constructor() {
         super();
@@ -28,6 +28,6 @@ export class PhotosService extends Service<Photo> {
         super();
         this.register();
     }
-    public resource = Photo;
-    public type = 'photos';
+    public resource: typeof Photo = Photo;
+    public type: string = 'photos';
 }

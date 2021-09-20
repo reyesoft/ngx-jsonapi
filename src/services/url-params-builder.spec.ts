@@ -1,10 +1,10 @@
 import { UrlParamsBuilder } from './url-params-builder';
 
 describe('UrlParamsBuilder', () => {
-    let urlparamsbuilder = new UrlParamsBuilder();
+    let urlparamsbuilder: UrlParamsBuilder = new UrlParamsBuilder();
 
     it('toparamsarray(complex_object) should be converted to uri params string', () => {
-        let params = {
+        let params: any = {
             param1: {
                 modif1: 'foo',
                 modif2: true

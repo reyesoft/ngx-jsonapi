@@ -8,9 +8,10 @@ import { Resource } from '../resource';
 import { IResourcesByType } from '../interfaces';
 import { IRelationships } from '../interfaces/relationship';
 
-function clone(obj) {
+function clone(obj: any): any {
     if (obj === null || typeof obj !== 'object') return obj;
-    let copy = new obj.constructor();
+    let copy: any = new obj.constructor();
+    // eslint-disable-next-line no-restricted-syntax
     for (let attr in obj) {
         if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
     }
@@ -19,11 +20,11 @@ function clone(obj) {
 }
 
 export class MockResource extends Resource {
-    public attributes = {
+    public attributes: any = {
         name: '',
         description: ''
     };
-    public type = 'resource';
+    public type: string = 'resource';
 
     public relationships: IRelationships = {
         resource: new DocumentResource<MockResource>(),
@@ -32,29 +33,29 @@ export class MockResource extends Resource {
 }
 
 class MockResourcesService extends Service<MockResource> {
-    public type = 'resource';
-    public resource = MockResource;
+    public type: string = 'resource';
+    public resource: typeof MockResource = MockResource;
 }
 
-const test_services = {
+const test_services: any = {
     resource: new MockResourcesService()
 };
 
-function getService(type: string) {
-    let service = test_services[type];
+function getService(type: string): void {
+    let service: any = test_services[type];
 
     return service;
 }
 
 describe('ResourceRelationshipsConverter', () => {
-    let mock_relationship = new DocumentResource<MockResource>();
+    let mock_relationship: DocumentResource<MockResource> = new DocumentResource<MockResource>();
     mock_relationship.data.type = 'resource';
     mock_relationship.data.id = '1';
 
-    let mock_resource = new MockResource();
+    let mock_resource: MockResource = new MockResource();
     mock_resource.relationships.resource = mock_relationship;
 
-    let resource_relationships_converter = new ResourceRelationshipsConverter(
+    let resource_relationships_converter: ResourceRelationshipsConverter = new ResourceRelationshipsConverter(
         getService,
         mock_resource.relationships,
         new MockResource().relationships,
@@ -76,33 +77,33 @@ describe('ResourceRelationshipsConverter', () => {
         spyOn(Converter, 'getService').and.callFake(getService);
 
         // set up fake dest_resource (rememeber that ids must match with relationships_from resources)
-        let mock_resource_with_relationships = new MockResource();
+        let mock_resource_with_relationships: MockResource = new MockResource();
         mock_resource_with_relationships.relationships.collection = new DocumentCollection<MockResource>();
 
         // create a fake has_one relationship
-        let mock_resource_from = new DocumentResource<MockResource>();
+        let mock_resource_from: DocumentResource<MockResource> = new DocumentResource<MockResource>();
         mock_resource_from.data.type = 'resource';
         mock_resource_from.data.id = '123';
 
         // create a fake has_many relationship
-        let mock_collection_from = new DocumentCollection<MockResource>();
-        let mock_resource_1 = new MockResource();
+        let mock_collection_from: DocumentCollection<MockResource> = new DocumentCollection<MockResource>();
+        let mock_resource_1: MockResource = new MockResource();
         mock_resource_1.id = '1';
-        let mock_resource_2 = new MockResource();
+        let mock_resource_2: MockResource = new MockResource();
         mock_resource_2.id = '2';
         mock_collection_from.data = [mock_resource_1, mock_resource_2];
 
         // add fake included resources
-        let mock_included_resource_has_one = clone(mock_resource_from);
-        let mock_included_resource_1 = clone(mock_resource_1);
-        let mock_included_resource_2 = clone(mock_resource_2);
+        let mock_included_resource_has_one: any = clone(mock_resource_from);
+        let mock_included_resource_1: any = clone(mock_resource_1);
+        let mock_included_resource_2: any = clone(mock_resource_2);
         mock_included_resource_has_one.data.attributes = {
             name: 'has_one relationship name',
             description: 'has_one relationship description'
         };
         mock_included_resource_1.attributes = { name: 'first', description: 'first in collection' };
         mock_included_resource_2.attributes = { name: 'second', description: 'second in collection' };
-        let included_resources = {
+        let included_resources: any = {
             resource: {
                 '123': mock_included_resource_has_one.data,
                 '1': mock_included_resource_1,
@@ -133,10 +134,10 @@ describe('ResourceRelationshipsConverter', () => {
         );
 
         // test has_many relationship
-        let related_collection_first_resource = (resource_relationships_converter as any).relationships_dest.collection.data.find(
+        let related_collection_first_resource: any = (resource_relationships_converter as any).relationships_dest.collection.data.find(
             resource => resource.id === '1'
         );
-        let related_collection_second_resource = (resource_relationships_converter as any).relationships_dest.collection.data.find(
+        let related_collection_second_resource: any = (resource_relationships_converter as any).relationships_dest.collection.data.find(
             resource => resource.id === '2'
         );
         expect((resource_relationships_converter as any).relationships_dest.collection instanceof DocumentCollection).toBeTruthy();

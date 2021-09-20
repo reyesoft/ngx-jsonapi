@@ -4,6 +4,9 @@ import { DocumentCollection } from '../document-collection';
 import { TestFactory } from '../tests/factories/test-factory';
 import { Book } from 'demo/app/books/books.service';
 import { IElement } from 'src/data-providers/data-provider';
+import { ICacheableDocumentResource } from 'src/interfaces/data-object';
+import { ICacheableDataCollection } from 'src/interfaces/data-collection';
+import { Author } from 'demo/app/authors/authors.service';
 
 describe('JsonRipper for resources', () => {
     let book: any = TestFactory.getBook('5');
@@ -78,9 +81,9 @@ describe('JsonRipper for resources', () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
-        let jsonRipper = new JsonRipper();
+        let jsonRipper: JsonRipper = new JsonRipper();
         await jsonRipper.saveResource(book);
-        let json = await jsonRipper.getResource(JsonRipper.getResourceKey(book));
+        let json: ICacheableDocumentResource = await jsonRipper.getResource(JsonRipper.getResourceKey(book));
         expect(json.data.cache_last_update).toBeGreaterThanOrEqual(Date.now() - 100);
     });
 
@@ -88,9 +91,9 @@ describe('JsonRipper for resources', () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
-        let jsonRipper = new JsonRipper();
+        let jsonRipper: any = new JsonRipper();
         await jsonRipper.saveResource(book, ['author']);
-        let json = await jsonRipper.getResource(JsonRipper.getResourceKey(book), ['author']);
+        let json: any = await jsonRipper.getResource(JsonRipper.getResourceKey(book), ['author']);
         expect(json.included.length).toEqual(1);
         expect(json.included[0]).toMatchObject({
             id: '2',
@@ -106,10 +109,10 @@ describe('JsonRipper for resources', () => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
-        let jsonRipper = new JsonRipper();
+        let jsonRipper: any = new JsonRipper();
         book.relationships.author.data = null;
         await jsonRipper.saveResource(book, ['author']);
-        let json = await jsonRipper.getResource(JsonRipper.getResourceKey(book), ['author']);
+        let json: any = await jsonRipper.getResource(JsonRipper.getResourceKey(book), ['author']);
         expect(json.included.length).toEqual(0);
         expect(json.data.relationships.author.data).toEqual(null);
         // expect(json.included[0]).toMatchObject({
@@ -121,7 +124,7 @@ describe('JsonRipper for resources', () => {
     });
 
     it('Requesting DataProvider not cached resource thrown an error', done => {
-        let jsonRipper = new JsonRipper();
+        let jsonRipper: JsonRipper = new JsonRipper();
         jsonRipper
             .getResource('extrange_type.id')
             .then()
@@ -132,15 +135,15 @@ describe('JsonRipper for resources', () => {
 });
 
 describe('JsonRipper for collections', () => {
-    let authors = new DocumentCollection();
+    let authors: DocumentCollection = new DocumentCollection();
     // TODO: remove books include in next line when toObject gets fixed (call jsonripper in non provided service)
     authors.data.push(TestFactory.getAuthor('2', ['books']));
-    let author1 = TestFactory.getAuthor('1', ['books']);
+    let author1: any = TestFactory.getAuthor('1', ['books']);
     author1.attributes.name = 'Ray Bradbury';
     authors.data.push(author1);
     author1.relationships.books.data[0].id = '1';
     author1.relationships.books.data[1].id = '2';
-    let book1 = author1.relationships.books.data[0];
+    let book1: any = author1.relationships.books.data[0];
     book1.addRelationship(author1, 'author');
 
     /* Is private now
@@ -186,10 +189,10 @@ describe('JsonRipper for collections', () => {
     it('A ripped collection saved via DataProvider is converted to a Json', async done => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let jsonRipper = new JsonRipper();
+        let jsonRipper: JsonRipper = new JsonRipper();
         jsonRipper.saveCollection('some/url', authors);
 
-        let json = await jsonRipper.getCollection('some/url');
+        let json: ICacheableDataCollection = await jsonRipper.getCollection('some/url');
         expect(json.data.length).toEqual(2);
         expect(json.data[1]).toMatchObject({
             attributes: { name: 'Ray Bradbury' },
@@ -211,19 +214,19 @@ describe('JsonRipper for collections', () => {
     it('A ripped collection maintain cache_last_update property', async () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let jsonRipper = new JsonRipper();
+        let jsonRipper: JsonRipper = new JsonRipper();
         jsonRipper.saveCollection('some/url', authors);
-        let json = await jsonRipper.getCollection('some/url');
+        let json: ICacheableDataCollection = await jsonRipper.getCollection('some/url');
         expect(json.cache_last_update).toBeGreaterThanOrEqual(Date.now() - 100);
     });
 
     it('A ripped collection with include saved via DataProvider is converted to a Json', async () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let jsonRipper = new JsonRipper();
+        let jsonRipper: JsonRipper = new JsonRipper();
         jsonRipper.saveCollection('some/url/include', authors, ['books']);
 
-        let json = await jsonRipper.getCollection('some/url/include', ['books']);
+        let json: any = await jsonRipper.getCollection('some/url/include', ['books']);
         expect(json.data.length).toEqual(2);
         expect(json.included.length).toEqual(4); // @TODO: equal to 2 when books include is removed in describe's first getAuthor
 
@@ -243,10 +246,10 @@ describe('JsonRipper for collections', () => {
     it('A ripped collection returns cache_last_update on collection and resources property', async () => {
         spyOn(Resource.prototype, 'getService').and.returnValue({});
 
-        let jsonRipper = new JsonRipper();
+        let jsonRipper: JsonRipper = new JsonRipper();
         jsonRipper.saveCollection('some/url/include', authors, ['books']);
 
-        let json = await jsonRipper.getCollection('some/url/include', ['books']);
+        let json: ICacheableDataCollection= await jsonRipper.getCollection('some/url/include', ['books']);
         expect(json.cache_last_update).toBeGreaterThan(0);
 
         // collection.fill responsability to fill, but ripper need to comunicate last update
@@ -254,7 +257,7 @@ describe('JsonRipper for collections', () => {
     }, 50);
 
     it('Requesting a DataProvider not cached collection thrown an error', async done => {
-        let jsonRipper = new JsonRipper();
+        let jsonRipper: JsonRipper = new JsonRipper();
         jsonRipper
             .getCollection('some/bad/url')
             .then()

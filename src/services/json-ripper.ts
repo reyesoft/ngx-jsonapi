@@ -6,6 +6,7 @@ import { DexieDataProvider } from '../data-providers/dexie-data-provider';
 import { IDataProvider, IElement } from './../data-providers/data-provider';
 import { DocumentCollection } from '../document-collection';
 import { Injectable } from '@angular/core';
+import { DocumentResource } from 'ngx-jsonapi';
 
 interface IStoredCollection {
     updated_at: number;
@@ -14,7 +15,7 @@ interface IStoredCollection {
 
 @Injectable()
 export class JsonRipper implements IRipper {
-    public readonly enabled = true;
+    public readonly enabled: boolean = true;
     private dataProvider: IDataProvider;
 
     public constructor() {
@@ -22,7 +23,7 @@ export class JsonRipper implements IRipper {
     }
 
     public async getResource(key: string, include: Array<string> = []): Promise<ICacheableDocumentResource> {
-        let stored_resource = (await this.getDataResources([key])).shift();
+        let stored_resource: ICacheableDocumentResource | undefined = (await this.getDataResources([key])).shift();
 
         if (stored_resource === undefined) {
             throw new Error(`Resource ${key} don't found.`);
@@ -40,7 +41,7 @@ export class JsonRipper implements IRipper {
                 throw new Error('We dont have relation_alias on stored data resource');
             }
 
-            const relationship = stored_resource.data.relationships[relationship_alias].data;
+            const relationship: any = stored_resource.data.relationships[relationship_alias].data;
             if (relationship instanceof Array) {
                 relationship.forEach(related_resource => {
                     included_keys.push(JsonRipper.getResourceKey(related_resource));
@@ -50,7 +51,7 @@ export class JsonRipper implements IRipper {
             }
         });
 
-        let included_resources = await this.getDataResources(included_keys);
+        let included_resources: Array<ICacheableDocumentResource >= await this.getDataResources(included_keys);
 
         return {
             ...stored_resource,
@@ -63,10 +64,10 @@ export class JsonRipper implements IRipper {
     }
 
     public async getCollection(url: string, include: Array<string> = []): Promise<ICacheableDataCollection> {
-        let stored_collection = await this.getDataCollection(url);
-        let data_resources = await this.getDataResources(stored_collection.keys);
+        let stored_collection: IStoredCollection = await this.getDataCollection(url);
+        let data_resources: Array<ICacheableDocumentResource> = await this.getDataResources(stored_collection.keys);
 
-        let ret = {
+        let ret: any= {
             data: data_resources.map(data_resource => data_resource.data),
             cache_last_update: stored_collection.updated_at
         };
@@ -82,7 +83,7 @@ export class JsonRipper implements IRipper {
                     return;
                 }
 
-                const relationship = resource.data.relationships[relationship_alias].data;
+                const relationship: any = resource.data.relationships[relationship_alias].data;
                 if (relationship instanceof Array) {
                     relationship.forEach(related_resource => {
                         included_keys.push(JsonRipper.getResourceKey(related_resource));
@@ -93,7 +94,7 @@ export class JsonRipper implements IRipper {
             });
         });
 
-        let included_resources = await this.getDataResources(included_keys);
+        let included_resources: Array<ICacheableDocumentResource> = await this.getDataResources(included_keys);
 
         return {
             ...ret,
@@ -114,7 +115,7 @@ export class JsonRipper implements IRipper {
         this.dataProvider.saveElements(JsonRipper.collectionResourcesToElements(collection, include), 'elements');
     }
 
-    public async saveResource(resource: Resource, include = []): Promise<void> {
+    public async saveResource(resource: Resource, include: Array<any> = []): Promise<void> {
         return this.dataProvider.saveElements(
             JsonRipper.toResourceElements(JsonRipper.getResourceKey(resource), resource, include),
             'elements'
@@ -122,12 +123,12 @@ export class JsonRipper implements IRipper {
     }
 
     private static collectionToElement(url: string, collection: DocumentCollection): Array<IElement> {
-        let collection_element = {
+        let collection_element: any = {
             key: url,
             content: { updated_at: Date.now(), keys: <Array<string>>[] }
         };
         collection.data.forEach(resource => {
-            let key = JsonRipper.getResourceKey(resource);
+            let key: string = JsonRipper.getResourceKey(resource);
             collection_element.content.keys.push(key);
         });
 
@@ -137,7 +138,7 @@ export class JsonRipper implements IRipper {
     private static collectionResourcesToElements(collection: DocumentCollection, include: Array<string> = []): Array<IElement> {
         let elements: Array<IElement> = [];
         collection.data.forEach(resource => {
-            let key = JsonRipper.getResourceKey(resource);
+            let key: string = JsonRipper.getResourceKey(resource);
             elements.push(...JsonRipper.toResourceElements(key, resource, include));
         });
 
@@ -154,7 +155,7 @@ export class JsonRipper implements IRipper {
         elements[0].content.data.cache_last_update = Date.now();
 
         include.forEach(relationship_alias => {
-            const relationship = resource.relationships[relationship_alias];
+            const relationship: DocumentCollection | DocumentResource = resource.relationships[relationship_alias];
             if (!relationship) {
                 return;
             }

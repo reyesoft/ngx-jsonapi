@@ -5,20 +5,20 @@ import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
 import { Service } from '../service';
 import { PathBuilder } from './path-builder';
 import { JsonapiConfig } from '../jsonapi-config';
-import { StoreService as JsonapiStore } from '../sources/store.service';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Resource } from 'ngx-jsonapi';
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject = new BehaviorSubject(new HttpResponse());
+        let subject: BehaviorSubject<HttpResponse<any>> = new BehaviorSubject(new HttpResponse());
 
         return subject.asObservable();
     }
 }
 
-let injector = ReflectiveInjector.resolveAndCreate([
+let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
     {
         provide: JSONAPI_RIPPER_SERVICE,
         useClass: JsonRipper
@@ -29,9 +29,9 @@ let injector = ReflectiveInjector.resolveAndCreate([
     }
 ]);
 
-let core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+let core: Core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
 
-const testService = new Service();
+const testService: Service = new Service();
 testService.getPrePath = (): string => {
     return 'v1';
 };
@@ -47,7 +47,7 @@ describe('Path Builder', () => {
 
     it('applyParams method should call appendPath two to four times: with service s pre-path, params.beforepath (if exists),\
      and service s path', () => {
-        let appendPath_spy = spyOn(path_builder, 'appendPath');
+        let appendPath_spy: jasmine.Spy = spyOn(path_builder, 'appendPath');
         path_builder.applyParams(testService);
         expect(appendPath_spy).toHaveBeenCalledTimes(2);
         path_builder.applyParams(testService, { beforepath: 'users/1', include: ['include'] });
@@ -76,14 +76,14 @@ describe('Path Builder', () => {
     it('getForCache method should join paths array and get_params array and add them to return the resulting sting', () => {
         path_builder.paths = ['test', 'path'];
         (path_builder as any).get_params = ['and', 'test', 'params'];
-        let path = path_builder.getForCache();
+        let path: string = path_builder.getForCache();
         // this creates test/pathand/tests/params instead of test/path/and/tests/params <= is this on purpose?
         expect(path).toBe(path_builder.paths.join('/') + (path_builder as any).get_params.join('/'));
     });
     it('if get_params length is 0, getForCache shouldn t add them to the resulting string', () => {
         path_builder.paths = ['test', 'path'];
         (path_builder as any).get_params = [];
-        let path = path_builder.getForCache();
+        let path: string = path_builder.getForCache();
         expect(path).toBe(path_builder.paths.join('/'));
     });
     it('get method should join paths array and add params (joined and only if they exist) to return the resulting string', () => {
@@ -91,7 +91,7 @@ describe('Path Builder', () => {
         (path_builder as any).get_params = ['and', 'test', 'params'];
         path_builder.includes = [];
         Core.injectedServices.rsJsonapiConfig.params_separator = '?';
-        let url_string = path_builder.get();
+        let url_string: string = path_builder.get();
         expect(url_string).toBe('test/path?and&test&params');
     });
     it('if get_paramslength is 0, get method should not add the separator to the resulting string', () => {
@@ -99,7 +99,7 @@ describe('Path Builder', () => {
         (path_builder as any).get_params = [];
         path_builder.includes = [];
         Core.injectedServices.rsJsonapiConfig.params_separator = '?';
-        let url_string = path_builder.get();
+        let url_string: string = path_builder.get();
         expect(url_string).toBe('test/path');
     });
     it('get method should add include to the resulting string params (when needed)', () => {
@@ -107,7 +107,7 @@ describe('Path Builder', () => {
         (path_builder as any).get_params = ['and', 'test', 'params'];
         path_builder.includes = ['test', 'includes'];
         Core.injectedServices.rsJsonapiConfig.params_separator = '?';
-        let url_string = path_builder.get();
+        let url_string: string = path_builder.get();
         expect(url_string).toBe('test/path?and&test&params&include=test,includes');
     });
 });

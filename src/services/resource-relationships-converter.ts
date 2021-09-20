@@ -29,6 +29,7 @@ export class ResourceRelationshipsConverter {
 
     public buildRelationships(): void {
         // recorro los relationships levanto el service correspondiente
+        // eslint-disable-next-line no-restricted-syntax
         for (const relation_alias in this.relationships_from) {
             let relation_from_value: IDataCollection & IDocumentResource = this.relationships_from[relation_alias];
 
@@ -55,7 +56,7 @@ export class ResourceRelationshipsConverter {
         }
     }
 
-    private __buildRelationshipHasMany(relation_from_value: IDataCollection, relation_alias: string) {
+    private __buildRelationshipHasMany(relation_from_value: IDataCollection, relation_alias: string): void {
         if (relation_from_value.data.length === 0) {
             this.relationships_dest[relation_alias] = new DocumentCollection();
             this.relationships_dest[relation_alias].builded = true;
@@ -91,7 +92,7 @@ export class ResourceRelationshipsConverter {
             !(<Resource>this.relationships_dest[relation_alias].data).attributes ||
             Object.keys((<Resource>this.relationships_dest[relation_alias].data).attributes).length === 0
         ) {
-            let resource_data = this.__buildRelationship(relation_data_from.data);
+            let resource_data: Resource | undefined = this.__buildRelationship(relation_data_from.data);
             if (resource_data) {
                 this.relationships_dest[relation_alias].data = resource_data;
                 this.relationships_dest[relation_alias].builded = true;
@@ -109,7 +110,7 @@ export class ResourceRelationshipsConverter {
             resource_data_from.id in this.included_resources[resource_data_from.type]
         ) {
             // it's in included
-            let data = this.included_resources[resource_data_from.type][resource_data_from.id];
+            let data: Resource = this.included_resources[resource_data_from.type][resource_data_from.id];
 
             // Store the include in cache
             CacheMemory.getInstance().setResource(data, true);
@@ -118,8 +119,8 @@ export class ResourceRelationshipsConverter {
             return data;
         } else {
             // OPTIONAL: return cached Resource
-            let service = this.getService(resource_data_from.type);
-            let resource = CacheMemory.getInstance().getResource(resource_data_from.type, resource_data_from.id);
+            let service: any = this.getService(resource_data_from.type);
+            let resource: Resource | null = CacheMemory.getInstance().getResource(resource_data_from.type, resource_data_from.id);
             if (resource) {
                 return resource;
             }

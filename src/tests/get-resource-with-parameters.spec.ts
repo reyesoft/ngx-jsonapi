@@ -14,10 +14,10 @@ import { Observable, BehaviorSubject, of as observableOf } from 'rxjs';
 import { Service } from '../service';
 
 class TestResource extends Resource {
-    public type = 'test_resources';
-    public id = '';
+    public type: string = 'test_resources';
+    public id: string = '';
     public attributes: { name?: string; optional?: string } = { name: '' };
-    public relationships = {
+    public relationships: any = {
         test_resource: new DocumentResource<TestResource>(),
         test_resources: new DocumentCollection<TestResource>()
     };
@@ -25,24 +25,24 @@ class TestResource extends Resource {
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let splitted_request_url = req.urlWithParams.split('?');
+        let splitted_request_url: Array<string> = req.urlWithParams.split('?');
         let splitted_params: Array<string> = [];
         if (splitted_request_url.length > 1) {
-            let params = splitted_request_url[1];
+            let params: string = splitted_request_url[1];
             splitted_params = params.split('&');
         }
 
         if (splitted_params.indexOf('fields[test_resources]=optional') > -1) {
-            let test_response_subject = new BehaviorSubject(new HttpResponse());
-            let optional_attributes_only_resource = new TestResource();
+            let test_response_subject: BehaviorSubject<HttpResponse<unknown>> = new BehaviorSubject(new HttpResponse());
+            let optional_attributes_only_resource: TestResource = new TestResource();
             optional_attributes_only_resource.id = '1';
             optional_attributes_only_resource.attributes = { optional: 'optional attribute value' };
             test_response_subject.next(new HttpResponse({ body: { data: optional_attributes_only_resource } }));
 
             return test_response_subject.asObservable();
         } else {
-            let test_response_subject = new BehaviorSubject(new HttpResponse());
-            let test_resource = new TestResource();
+            let test_response_subject: BehaviorSubject<HttpResponse<unknown>> = new BehaviorSubject(new HttpResponse());
+            let test_resource: TestResource = new TestResource();
             test_resource.type = 'test_resources';
             test_resource.id = '1';
             test_resource.attributes = { name: 'test_name' };
@@ -53,7 +53,7 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 
-let injector = ReflectiveInjector.resolveAndCreate([
+let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
     {
         provide: JSONAPI_RIPPER_SERVICE,
         useClass: JsonRipper
@@ -64,22 +64,22 @@ let injector = ReflectiveInjector.resolveAndCreate([
     }
 ]);
 
-let core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+let core: Core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
 
 class TestService extends Service {
     public constructor() {
         super();
         this.register();
     }
-    public type = 'test_resources';
-    public resource = TestResource;
-    public ttl = 10000;
+    public type: string = 'test_resources';
+    public resource: typeof TestResource = TestResource;
+    public ttl: number = 10000;
 }
 
 describe('core methods', () => {
     it(`service's get method should return a stream with the requested resource including the requested attributes (fields)`, async () => {
-        let test_service = new TestService();
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let test_service: TestService = new TestService();
+        let http_request_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
 
         await test_service
             .get('1', { fields: { test_resources: ['optional'] } })
@@ -90,7 +90,7 @@ describe('core methods', () => {
                 expect(resource.attributes.name).toBeFalsy();
                 expect(resource.attributes.optional).toBe('optional attribute value');
 
-                let request = {
+                let request: any = {
                     body: null,
                     headers: expect.any(Object)
                 };
@@ -104,14 +104,15 @@ describe('core methods', () => {
 
     it(`when requesting a resource with optional attributes, the incoming attributes should be merged with cached ones`, async () => {
         // TODO: fix library error: clearCache and clearCacheMemory are not droping localForage allstore instance correctly while testing
-        let core = new Core(
+        // eslint-disable-next-line
+        let core: Core = new Core(
             new JsonapiConfig(),
             new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
             injector
         );
         Core.injectedServices.JsonapiStoreService.clearCache();
-        let test_service = new TestService();
-        let http_request_spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let test_service: TestService = new TestService();
+        let http_request_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
 
         await test_service
             .get('1')
@@ -124,7 +125,7 @@ describe('core methods', () => {
                 // for example two different requests with different list of fields (one request remove attributes of the another resource)
                 // expect(resource.attributes.optional).toBeFalsy();
 
-                let request = {
+                let request: any = {
                     body: null,
                     headers: expect.any(Object)
                 };

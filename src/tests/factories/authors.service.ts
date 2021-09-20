@@ -5,7 +5,7 @@ import { Book } from './books.service';
 import { Photo } from './photos.service';
 
 export class Author extends Resource {
-    public attributes = {
+    public attributes: any = {
         name: '',
         date_of_birth: new Date(),
         date_of_death: new Date(),
@@ -19,9 +19,9 @@ export class Author extends Resource {
         books: new DocumentCollection<Book>(),
         photos: new DocumentCollection<Photo>()
     };
-    public type = 'authors';
-    public ttl = 0;
-    public static test_ttl;
+    public type: string = 'authors';
+    public ttl: number = 0;
+    public static test_ttl: any;
 
     public constructor() {
         super();
@@ -37,7 +37,7 @@ export class AuthorsService extends Service<Author> {
         super();
         this.register();
     }
-    public resource = Author;
-    public type = 'authors';
-    public collections_ttl = 0;
+    public resource: typeof Author = Author;
+    public type: string = 'authors';
+    public collections_ttl: number = 0;
 }
