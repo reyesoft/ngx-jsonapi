@@ -65,7 +65,7 @@ describe('core methods', () => {
         expect(test_service).toBeDefined();
         expect((core as any).resourceServices.test_resources).toBeTruthy();
     });
-    it('getResourceService should return the instantiated service from resourceServices related to the type passed as arument', async () => {
+    it('getResourceService should return the instantiated service from resourceServices related to the type passed as arument', () => {
         let test_service: TestService = new TestService();
         let test_service_instance: Service = core.getResourceServiceOrFail('test_resources');
         expect(test_service_instance).toBeTruthy();

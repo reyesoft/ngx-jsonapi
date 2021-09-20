@@ -8,7 +8,6 @@ import { JsonapiConfig } from '../jsonapi-config';
 import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Resource } from 'ngx-jsonapi';
 
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
@@ -41,7 +40,7 @@ testService.getPath = (): string => {
 
 describe('Path Builder', () => {
     let path_builder: PathBuilder;
-    beforeEach(async () => {
+    beforeEach(() => {
         path_builder = new PathBuilder();
     });
 

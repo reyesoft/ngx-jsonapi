@@ -2,11 +2,9 @@ import { Resource } from '../resource';
 import { JsonRipper } from './json-ripper';
 import { DocumentCollection } from '../document-collection';
 import { TestFactory } from '../tests/factories/test-factory';
-import { Book } from 'demo/app/books/books.service';
-import { IElement } from 'src/data-providers/data-provider';
-import { ICacheableDocumentResource } from 'src/interfaces/data-object';
-import { ICacheableDataCollection } from 'src/interfaces/data-collection';
-import { Author } from 'demo/app/authors/authors.service';
+import { IElement } from '../data-providers/data-provider';
+import { ICacheableDocumentResource } from '../interfaces/data-object';
+import { ICacheableDataCollection } from '../interfaces/data-collection';
 
 describe('JsonRipper for resources', () => {
     let book: any = TestFactory.getBook('5');
@@ -256,7 +254,7 @@ describe('JsonRipper for collections', () => {
         expect(json.data[1].cache_last_update).toBeGreaterThan(0);
     }, 50);
 
-    it('Requesting a DataProvider not cached collection thrown an error', async done => {
+    it('Requesting a DataProvider not cached collection thrown an error', done => {
         let jsonRipper: JsonRipper = new JsonRipper();
         jsonRipper
             .getCollection('some/bad/url')

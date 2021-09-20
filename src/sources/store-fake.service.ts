@@ -12,11 +12,11 @@ export class StoreFakeService implements IStoreService {
             return <any>{ data: [], cache_last_update: 0 };
         }
 
-        return <any>{ cache_last_update: Date.now(), id: '', type: '' };
+        return Promise.resolve(<any>{ cache_last_update: Date.now(), id: '', type: '' });
     }
 
     public async getDataResources(keys: Array<string>): Promise<IObjectsById<ICacheableDataResource>> {
-        return {};
+        return Promise.resolve({});
     }
 
     public saveResource(type: string, url_or_id: string, value: IDataResource): void {

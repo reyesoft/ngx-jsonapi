@@ -6,7 +6,7 @@ import { DexieDataProvider } from '../data-providers/dexie-data-provider';
 import { IDataProvider, IElement } from './../data-providers/data-provider';
 import { DocumentCollection } from '../document-collection';
 import { Injectable } from '@angular/core';
-import { DocumentResource } from 'ngx-jsonapi';
+import { DocumentResource } from '../document-resource';
 
 interface IStoredCollection {
     updated_at: number;

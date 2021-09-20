@@ -5,17 +5,16 @@ import { JsonapiConfig } from '../jsonapi-config';
 import { share, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { IDocumentData } from '../interfaces/document';
-import { Resource } from 'ngx-jsonapi';
 
 @Injectable()
 export class Http {
     // NOTE: GET requests are stored in a this object to prevent duplicate requests
     public get_requests: { [key: string]: Observable<IDocumentData> } = {};
 
-    public constructor(private http: HttpClient, private rsJsonapiConfig: JsonapiConfig) {}
+    public constructor(private http: HttpClient, private rsJsonapiConfig: JsonapiConfig) { }
 
     public exec(path: string, method: string, data?: IDocumentResource): Observable<IDocumentData> {
-        let req: any = {
+        let req: { body: IDocumentResource | null; headers: HttpHeaders; } = {
             body: data || null,
             headers: new HttpHeaders({
                 'Content-Type': 'application/vnd.api+json',
@@ -26,7 +25,7 @@ export class Http {
         // NOTE: prevent duplicate GET requests
         if (method === 'get') {
             if (!this.get_requests[path]) {
-                let obs: Observable<HttpEvent<IDocumentData>> = this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
+                let obs: Observable<IDocumentData> = this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
                     tap(() => {
                         delete this.get_requests[path];
                     }),

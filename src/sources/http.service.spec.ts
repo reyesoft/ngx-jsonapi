@@ -5,8 +5,7 @@ import { tap, mapTo, share } from 'rxjs/operators';
 import { Observable, of, timer, Subject } from 'rxjs';
 
 import { Http } from './http.service';
-import { IDocumentData } from 'src/interfaces/document';
-import { Resource } from 'ngx-jsonapi';
+import { IDocumentData } from '../interfaces/document';
 
 class JsonapiConfigMock {
     public url: string = 'some-url';
