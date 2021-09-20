@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
--   Fixed error lint with eslint ([]())
+-   Fixed error lint with eslint ([#332](https://github.com/reyesoft/ngx-jsonapi/pull/332))
 
 ### Changed
 
