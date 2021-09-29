@@ -8,7 +8,7 @@ export class PathBuilder {
     public includes: Array<string> = [];
     protected get_params: Array<string> = [];
 
-    public applyParams(service: Service, params: IParamsResource | IParamsCollection = {}) {
+    public applyParams(service: Service, params: IParamsResource | IParamsCollection = {}): void {
         this.appendPath(service.getPrePath());
         if (params.beforepath) {
             this.appendPath(params.beforepath);
@@ -21,14 +21,15 @@ export class PathBuilder {
             this.setInclude([...this.includes, ...params.include_get]);
         }
         if (params.fields && Object.keys(params.fields).length > 0) {
+            // eslint-disable-next-line no-restricted-syntax
             for (let resource_type in params.fields) {
-                let fields_param = `fields[${resource_type}]=${params.fields[resource_type].join(',')}`;
+                let fields_param: string = `fields[${resource_type}]=${params.fields[resource_type].join(',')}`;
                 this.get_params.push(fields_param);
             }
         }
     }
 
-    public appendPath(value: string) {
+    public appendPath(value: string): void {
         if (value !== '') {
             this.paths.push(value);
         }
@@ -39,7 +40,7 @@ export class PathBuilder {
     }
 
     public get(): string {
-        let params = [...this.get_params];
+        let params: Array<any> = [...this.get_params];
 
         if (this.includes.length > 0) {
             params.push('include=' + this.includes.join(','));
@@ -48,7 +49,7 @@ export class PathBuilder {
         return this.paths.join('/') + (params.length > 0 ? Core.injectedServices.rsJsonapiConfig.params_separator + params.join('&') : '');
     }
 
-    private setInclude(strings_array: Array<string>) {
+    private setInclude(strings_array: Array<string>): void {
         this.includes = strings_array;
     }
 }

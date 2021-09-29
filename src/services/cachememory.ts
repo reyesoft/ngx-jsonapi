@@ -62,8 +62,8 @@ export class CacheMemory<R extends Resource = Resource> {
             this.collections[url] = new DocumentCollection();
         }
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
-        for (let i = 0; i < collection.data.length; i++) {
-            let resource = collection.data[i];
+        for (let i: number = 0; i < collection.data.length; i++) {
+            let resource: any = collection.data[i];
             // this.collections[url].data.push(resource);
             this.setResource(resource, true);
         }
@@ -86,7 +86,7 @@ export class CacheMemory<R extends Resource = Resource> {
         return resource;
     }
 
-    public setResource(resource: Resource, update_lastupdate = false): void {
+    public setResource(resource: Resource, update_lastupdate: boolean = false): void {
         if (this.getKey(resource.type, resource.id) in this.resources) {
             this.fillExistentResource(resource);
         } else {

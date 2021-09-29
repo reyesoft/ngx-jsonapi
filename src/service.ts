@@ -266,6 +266,7 @@ export class Service<R extends Resource = Resource> {
         path.applyParams(this, builded_params);
 
         let temporary_collection: DocumentCollection<R> = this.getOrCreateCollection(path);
+        // eslint-disable-next-line id-blacklist
         temporary_collection.page.number = builded_params.page.number * 1;
 
         let subject: BehaviorSubject<DocumentCollection<R>> = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
@@ -344,11 +345,10 @@ export class Service<R extends Resource = Resource> {
             success => {
                 // this create a new ID for every resource (for caching proposes)
                 // for example, two URL return same objects but with different attributes
-                // tslint:disable-next-line:deprecation
                 if (params.cachehash) {
                     Object.keys(success.data).forEach((key): void => {
                         let resource: any = success.data[key];
-                        // eslint-disable-next-line deprecation
+                        // eslint-disable-next-line
                         resource.id = resource.id + params.cachehash;
                     });
                 }

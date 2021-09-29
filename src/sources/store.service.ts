@@ -19,12 +19,12 @@ export class StoreService implements IStoreService {
         this.checkIfIsTimeToClean();
     }
 
-    public async getDataObject(type: 'collection' | string, id_or_url: string) {
+    public async getDataObject(type: 'collection' | string, id_or_url: string): Promise<any> {
         // we use different tables for resources and collections
-        const table_name = type === 'collection' ? 'collections' : 'elements';
+        const table_name: any = type === 'collection' ? 'collections' : 'elements';
 
         await this.db.open();
-        let item = await this.db.table(table_name).get(type + '.' + id_or_url);
+        let item: any = await this.db.table(table_name).get(type + '.' + id_or_url);
         if (item === undefined) {
             throw new Error();
         }
@@ -33,12 +33,12 @@ export class StoreService implements IStoreService {
     }
 
     public async getDataResources(keys: Array<string>): Promise<IObjectsById<ICacheableDataResource>> {
-        const collection = this.db
+        const collection: Dexie.Collection<any, any> = this.db
             .table('elements')
             .where(':id')
             .anyOf(keys);
 
-        let resources_by_id = {};
+        let resources_by_id: any = {};
         await collection.each(item => {
             resources_by_id[item.id] = item;
         });
@@ -60,7 +60,7 @@ export class StoreService implements IStoreService {
         });
     }
 
-    public clearCache() {
+    public clearCache(): void {
         this.db.open().then(async () => {
             return this.db
                 .table('elements')
@@ -75,7 +75,7 @@ export class StoreService implements IStoreService {
         });
     }
 
-    public deprecateResource(type: string, id: string) {
+    public deprecateResource(type: string, id: string): void {
         this.db.open().then(async () => {
             return this.db
                 .table('elements')
@@ -85,7 +85,7 @@ export class StoreService implements IStoreService {
         });
     }
 
-    public deprecateCollection(key_start_with: string) {
+    public deprecateCollection(key_start_with: string): void {
         this.db.open().then(async () => {
             return this.db
                 .table('collections')
@@ -95,7 +95,7 @@ export class StoreService implements IStoreService {
         });
     }
 
-    public async removeObjectsWithKey(key: string) {
+    public async removeObjectsWithKey(key: string): Promise<any> {
         /*
         this.allstore.removeItem(key);
         await this.allstore.getItems().then(async result => {
@@ -117,7 +117,7 @@ export class StoreService implements IStoreService {
         */
     }
 
-    private checkIfIsTimeToClean() {
+    private checkIfIsTimeToClean(): void {
         // check if is time to check cachestore
         /*
         this.globalstore
@@ -139,7 +139,7 @@ export class StoreService implements IStoreService {
         */
     }
 
-    private checkAndDeleteOldElements() {
+    private checkAndDeleteOldElements(): void {
         /*
         this.allstore
             .keys()

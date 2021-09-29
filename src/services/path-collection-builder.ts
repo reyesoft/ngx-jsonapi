@@ -5,10 +5,10 @@ import { UrlParamsBuilder } from './url-params-builder';
 import { Core } from '../core';
 
 export class PathCollectionBuilder extends PathBuilder {
-    public applyParams(service: Service, params: IParamsCollection = {}) {
+    public applyParams(service: Service, params: IParamsCollection = {}): void {
         super.applyParams(service, params);
 
-        let paramsurl = new UrlParamsBuilder();
+        let paramsurl: UrlParamsBuilder = new UrlParamsBuilder();
         if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
             if (service.parseToServer) {
                 service.parseToServer(params.remotefilter);
@@ -27,10 +27,11 @@ export class PathCollectionBuilder extends PathBuilder {
             this.addParam('sort=' + params.sort.join(','));
         }
     }
-
+    // eslint-disable-next-line id-blacklist
     private getPageConfig(): { number: string; size: string } {
         return (
             (Core.injectedServices.rsJsonapiConfig.parameters && Core.injectedServices.rsJsonapiConfig.parameters.page) || {
+                // eslint-disable-next-line id-blacklist
                 number: 'number',
                 size: 'size'
             }

@@ -7,27 +7,39 @@ import { Injectable } from '@angular/core';
 /* tslint:disable:no-empty */
 @Injectable()
 export class StoreFakeService implements IStoreService {
-    public async getDataObject(type: 'collection' | string, id_or_url: string) {
+    public async getDataObject(type: 'collection' | string, id_or_url: string): Promise<any> {
         if (type === 'collection') {
             return <any>{ data: [], cache_last_update: 0 };
         }
 
-        return <any>{ cache_last_update: Date.now(), id: '', type: '' };
+        return Promise.resolve(<any>{ cache_last_update: Date.now(), id: '', type: '' });
     }
 
     public async getDataResources(keys: Array<string>): Promise<IObjectsById<ICacheableDataResource>> {
-        return {};
+        return Promise.resolve({});
     }
 
-    public saveResource(type: string, url_or_id: string, value: IDataResource): void {}
+    public saveResource(type: string, url_or_id: string, value: IDataResource): void {
+        /**/
+    }
 
-    public saveCollection(url_or_id: string, value: ICacheableDataCollection): void {}
+    public saveCollection(url_or_id: string, value: ICacheableDataCollection): void {
+        /**/
+    }
 
-    public clearCache() {}
+    public clearCache(): void {
+        /**/
+    }
 
-    public deprecateResource(type: string, id: string) {}
+    public deprecateResource(type: string, id: string): void {
+        /**/
+    }
 
-    public deprecateCollection(key_start_with: string) {}
+    public deprecateCollection(key_start_with: string): void {
+        /**/
+    }
 
-    public async removeObjectsWithKey(key: string) {}
+    public async removeObjectsWithKey(key: string): Promise<void> {
+        /**/
+    }
 }
