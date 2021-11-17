@@ -14,13 +14,16 @@ jobs:
 
     - name: Install dependencies
       run: yarn 
-
-    - name: Prettier
+    - name: Prettier-ts
       run: yarn prettier-ts:show --list-different
+    - name: Prettier-md
       run: yarn prettier-md:show --list-different
+    - name: Prettier-scss
       run: yarn prettier-scss:show --list-different
+    - name: Yarn run lint
       run: yarn run ng lint
 
     - name: Test
       run: yarn run ci
+    - name: Yarn run demo
       run: yarn run demo:build
