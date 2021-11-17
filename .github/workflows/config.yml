@@ -27,6 +27,7 @@ jobs:
       run: yarn run ng lint
 
     - name: Test
+      #Service not found: Erro 422 && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js 
       run: yarn run ci
     - name: Yarn run demo
       run: yarn run demo:build
