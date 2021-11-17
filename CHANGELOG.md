@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Change CircleCi to GitHub Actions. ([#337](https://github.com/reyesoft/ngx-jsonapi/pull/337))
+-   Change CircleCi to GitHub Actions.([#337](https://github.com/reyesoft/ngx-jsonapi/pull/337))
 
 ## [2.2.4] - 2021-07-20
 
