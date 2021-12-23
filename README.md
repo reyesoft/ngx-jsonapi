@@ -63,7 +63,7 @@ import { NgxJsonapiModule } from 'ngx-jsonapi';
 @NgModule()
 export class AppModule {
     public constructor() {
-        JsonapiBootstrap({
+        JsonapiBootstrap.bootstrap({
             user_config: { url: '//jsonapiplayground.reyesoft.com/v2/' }
         });
     }
@@ -76,7 +76,7 @@ export class AppModule {
 import { NgxJsonapiModule } from 'ngx-jsonapi';
 
 const App = () => {
-    JsonapiBootstrap({
+    JsonapiBootstrap.bootstrap({
         user_config: { url: '//jsonapiplayground.reyesoft.com/v2/' }
     });
 
@@ -92,17 +92,15 @@ Library cache anything memory. With Local Store, also store all on IndexDb on br
 
 ```typescript
 /* .. */
-import { NgxJsonapiModule } from 'ngx-jsonapi';
-import { StoreService } from 'ngx-jsonapi/sources/store.service';
-import { JsonRipper } from 'ngx-jsonapi/services/json-ripper';
+import { NgxJsonapiModule, StoreService, JsonRipper } from 'ngx-jsonapi';
 
 @NgModule()
 export class AppModule {
     public constructor() {
-        JsonapiBootstrap({
+        JsonapiBootstrap.bootstrap({
             user_config: { url: '//jsonapiplayground.reyesoft.com/v2/' },
-            jsonapiStore: new StoreFakeService(),
-            jsonRipper: new JsonRipperFake()
+            jsonapiStore: new StoreService(),
+            jsonRipper: new JsonRipper()
         });
     }
 }
@@ -114,10 +112,10 @@ export class AppModule {
 import { NgxJsonapiModule } from 'ngx-jsonapi';
 
 const App = () => {
-    JsonapiBootstrap({
+    JsonapiBootstrap.bootstrap({
         user_config: { url: '//jsonapiplayground.reyesoft.com/v2/' },
-        jsonapiStore: new StoreFakeService(),
-        jsonRipper: new JsonRipperFake()
+        jsonapiStore: new StoreService(),
+        jsonRipper: new JsonRipper()
     });
 
     return <div>Hello world</div>;
