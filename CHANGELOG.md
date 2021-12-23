@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Changed
 
--   Changed README and StoreService, JsonRipper added to public_api ([]())
+-   Changed README and StoreService, JsonRipper added to public_api ([#341](https://github.com/reyesoft/ngx-jsonapi/pull/341))
 
 ## [3.0.0] - 2021-08-17
 
