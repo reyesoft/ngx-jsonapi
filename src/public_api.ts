@@ -7,3 +7,5 @@ export { JsonapiBootstrap } from './bootstraps/jsonapi-bootstrap';
 export { DocumentResource } from './document-resource';
 export { DocumentCollection } from './document-collection';
 export { Service } from './service';
+export { StoreService } from './sources/store.service';
+export { JsonRipper } from './services/json-ripper';
