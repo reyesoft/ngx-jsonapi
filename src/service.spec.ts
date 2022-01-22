@@ -19,6 +19,7 @@ import { SourceType } from './document';
 import { IDocumentData } from './interfaces/document';
 import { DocumentCollection } from './document-collection';
 import { ClonedResource } from './cloned-resource';
+import arrayContaining = jasmine.arrayContaining;
 
 // @todo disable PhotoService
 // @TODO: fix error in toObject when relationship's service is not injected
@@ -1316,5 +1317,45 @@ describe('service.get()', () => {
         expect(book_clone.attributes).toMatchObject(original_book.attributes);
         expect(book_clone.relationships.author.data.id).toBe(original_book.relationships.author.data.id);
         expect(book_clone.relationships.author.loaded).toBe(original_book.relationships.author.loaded);
+    });
+});
+
+describe('service.delete()', () => {
+    let core: Core;
+    let authorsService: AuthorsService;
+    let booksService: BooksService;
+    beforeEach(async () => {
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+        authorsService = new AuthorsService();
+        authorsService.register();
+        booksService = new BooksService();
+        booksService.register();
+        await authorsService.clearCache();
+        await booksService.clearCache();
+        test_response_subject.complete();
+        test_response_subject = new BehaviorSubject(new HttpResponse());
+    });
+
+    it(`.delete() for relationship does not remove entities from parent's .all()`, async () => {
+        // given
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getCollectionDocumentData(Author) }));
+        let authors = await authorsService.all({ include: ['books'] }).toPromise();
+        test_response_subject.complete();
+
+        let author1 = authors.data[0];
+        let book = author1.relationships.books.data[0];
+        let author2 = authors.data[1];
+
+        expect(author2).toBeTruthy();
+        expect(authors.data).toEqual(arrayContaining([author1, author2]));
+
+        // when
+        test_response_subject = new BehaviorSubject(new HttpResponse());
+        test_response_subject.next(new HttpResponse());
+        await booksService.delete(book.id).toPromise();
+        test_response_subject.complete();
+
+        // then
+        expect(authors.data).toEqual(arrayContaining([author1, author2]));
     });
 });
