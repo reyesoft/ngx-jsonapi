@@ -100,4 +100,9 @@ describe('Path Builder', () => {
         expect((path_collection_builder as any).get_params.length).toBe(3);
         expect((path_collection_builder as any).get_params).toEqual(['filter[status]=test_status', 'page_index=2', 'page_size=10']);
     });
+    it('if custom_http_params params are provided, applyParams method should join the array with "&" and call addParam with the resulting string', () => {
+        let addParam_parent_spy = spyOn<any>(path_collection_builder, 'addParam');
+        path_collection_builder.applyParams(testService, { custom_http_params: ['param1', 'param2'] });
+        expect(addParam_parent_spy).toHaveBeenCalledWith('param1&param2');
+    });
 });
