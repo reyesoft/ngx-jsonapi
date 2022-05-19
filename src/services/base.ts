@@ -23,7 +23,8 @@ export class Base {
         page: new Page(),
         store_cache_method: 'individual',
         storage_ttl: 0,
-        cachehash: ''
+        cachehash: '',
+        custom_http_params: []
     };
 
     public static newCollection<R extends Resource = Resource>(): DocumentCollection<R> {
