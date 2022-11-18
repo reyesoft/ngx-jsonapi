@@ -21,12 +21,14 @@ export class Http {
                 Accept: 'application/vnd.api+json'
             })
         };
+        let old_time = Date.now()
 
         // NOTE: prevent duplicate GET requests
         if (method === 'get') {
             if (!this.get_requests[path]) {
                 let obs: Observable<IDocumentData> = this.http.request<IDocumentData>(method, this.rsJsonapiConfig.url + path, req).pipe(
                     tap(() => {
+                        console.log('El tiempo en el metodo original exec ----->', Date.now() - old_time)
                         delete this.get_requests[path];
                     }),
                     share()

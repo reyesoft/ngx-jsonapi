@@ -341,8 +341,10 @@ export class Service<R extends Resource = Resource> {
         subject: BehaviorSubject<DocumentCollection<R>>
     ): void {
         temporary_collection.setLoaded(false);
+        let old_time = Date.now()
         Core.get(path.get()).subscribe(
             success => {
+                console.log('Tiempo de espera en el metodo all ---->', (Date.now() - old_time))
                 // this create a new ID for every resource (for caching proposes)
                 // for example, two URL return same objects but with different attributes
                 if (params.cachehash) {
