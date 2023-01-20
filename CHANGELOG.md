@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [3.0.2] - 2023-01-20
+
+## Fixed
+
+-   Fixed when filtering with an operator, object is added as a value ([#361](https://github.com/reyesoft/ngx-jsonapi/pull/361))
+
 ## [3.0.0] - 2021-12-23
 
 ## Changed
