@@ -26,6 +26,9 @@ export class PathCollectionBuilder extends PathBuilder {
         if (params.sort && params.sort.length) {
             this.addParam('sort=' + params.sort.join(','));
         }
+        if (params.custom_http_params && params.custom_http_params.length > 0){
+            this.addParam(params.custom_http_params.join('&'));
+        }
     }
 
     private getPageConfig(): { number: string; size: string } {

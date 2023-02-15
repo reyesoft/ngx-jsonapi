@@ -13,6 +13,7 @@ export interface IParamsCollection extends IParams {
     storage_ttl?: number;
     /** @deprecated since 2.2 */
     cachehash?: string; // solution for when we have different resources with a same id
+    custom_http_params?: Array<string>;
 }
 
 export interface IBuildedParamsCollection extends IParams {
@@ -27,4 +28,5 @@ export interface IBuildedParamsCollection extends IParams {
     storage_ttl: number;
     /** @deprecated since 2.2 */
     cachehash: string; // solution for when we have different resources with a same id
+    custom_http_params: Array<string>;
 }
