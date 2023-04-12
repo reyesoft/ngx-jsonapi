@@ -54,6 +54,9 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         for (let dataresource of data_collection.data) {
             try {
                 let res = this.getResourceOrFail(dataresource);
+                if (dataresource.meta) {
+                    res.meta = dataresource.meta;
+                }
                 res.fill({ data: dataresource });
                 new_ids[dataresource.id] = dataresource.id;
                 (<Array<R>>this.data).push(<R>res);
