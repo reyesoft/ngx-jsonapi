@@ -55,7 +55,7 @@ const appRoutes: Routes = [
         BrowserModule,
         HttpClientModule,
         SharedModule,
-        RouterModule.forRoot(appRoutes, { useHash: true, relativeLinkResolution: 'legacy' }),
+        RouterModule.forRoot(appRoutes, { useHash: true }),
         NgxJsonapiModule.forRoot({
             url: environment.api_saldo,
         })

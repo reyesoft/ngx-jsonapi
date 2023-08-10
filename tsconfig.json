@@ -1,26 +1,29 @@
 {
     "compilerOptions": {
-        "downlevelIteration": true,
-        "importHelpers": true,
-        "strictNullChecks": true,
-        "sourceMap": true,
-        "declaration": false,
-        "moduleResolution": "node",
-        "experimentalDecorators": true,
-        "noStrictGenericChecks": true,
-        "lib": [
-            "es2017",
-            "dom"
-        ],
-        "outDir": "../out-tsc/app",
-        "target": "es2020",
-        "module": "commonjs",
-        "baseUrl": "",
-        "rootDir": "./",
-        "paths": {
-            "ngx-jsonapi": [ "./src" ]
-        },
-        "strict": false
+      "downlevelIteration": true,
+      "importHelpers": true,
+      "strictNullChecks": true,
+      "sourceMap": true,
+      "declaration": false,
+      "moduleResolution": "node",
+      "experimentalDecorators": true,
+      "noStrictGenericChecks": true,
+      "lib": [
+        "es2017",
+        "dom"
+      ],
+      "outDir": "../out-tsc/app",
+      "target": "ES2022",
+      "module": "commonjs",
+      "baseUrl": "",
+      "rootDir": "./",
+      "paths": {
+        "ngx-jsonapi": [
+          "./src"
+        ]
+      },
+      "strict": false,
+      "useDefineForClassFields": false
     },
     "exclude": [
         "node_modules",
