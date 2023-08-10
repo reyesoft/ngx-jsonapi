@@ -13,7 +13,7 @@
             "dom"
         ],
         "outDir": "../out-tsc/app",
-        "target": "es2015",
+        "target": "es2020",
         "module": "commonjs",
         "baseUrl": "",
         "rootDir": "./",

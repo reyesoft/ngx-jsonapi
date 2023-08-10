@@ -15,7 +15,6 @@
             "index": "demo/index.html",
             "main": "demo/main.ts",
             "tsConfig": "demo/tsconfig.app.json",
-            "showCircularDependencies": false,
             "polyfills": "demo/polyfills.ts",
             "assets": [
               "demo/assets",
@@ -89,7 +88,6 @@
       }
     }
   },
-  "defaultProject": "ngx-jsonapi",
   "schematics": {
     "@schematics/angular:component": {
       "inlineStyle": true,

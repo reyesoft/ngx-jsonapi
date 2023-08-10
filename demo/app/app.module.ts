@@ -25,15 +25,15 @@ const appRoutes: Routes = [
     },
     {
         path: 'authors',
-        loadChildren: (): Promise<AuthorsModule> => import('./authors/authors.module').then((m): AuthorsModule => m.AuthorsModule)
+        loadChildren: () => import('./authors/authors.module').then((m) => m.AuthorsModule)
     },
     {
         path: 'systems',
-        loadChildren: (): Promise<AuthorsModule> => import('./systems/systems.module').then((m): SystemsModule => m.SystemsModule)
+        loadChildren: () => import('./systems/systems.module').then((m) => m.SystemsModule)
     },
     {
         path: 'books',
-        loadChildren: (): Promise<BooksModule> => import('./books/books.module').then((m): BooksModule => m.BooksModule)
+        loadChildren: () => import('./books/books.module').then((m) => m.BooksModule)
     }
 ];
 
