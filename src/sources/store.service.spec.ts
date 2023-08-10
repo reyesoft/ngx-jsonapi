@@ -1,5 +1,5 @@
 // import 'localforage-getitems';
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { StoreService } from './store.service';
 // import * as localForage from 'localforage';
 // import { extendPrototype as extendGetitems } from 'localforage-getitems';
@@ -11,7 +11,7 @@ import { IObjectsById } from '../interfaces';
 
 describe('Store service', () => {
     let store_service: StoreService;
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             providers: [StoreService]
         }).compileComponents();

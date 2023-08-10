@@ -50,7 +50,7 @@ const appRoutes: Routes = [
         BrowserModule,
         HttpClientModule,
         SharedModule,
-        RouterModule.forRoot(appRoutes, { useHash: true }),
+        RouterModule.forRoot(appRoutes, { useHash: true, relativeLinkResolution: 'legacy' }),
         NgxJsonapiModule.forRoot({
             url: environment.jsonapi_url
         })

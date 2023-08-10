@@ -10,7 +10,7 @@ import { delay } from 'rxjs/operators';
 import { Author, AuthorsService } from './tests/factories/authors.service';
 import { PhotosService } from './tests/factories/photos.service';
 import { ClonedResource } from './cloned-resource';
-import { async } from '@angular/core/testing';
+import { waitForAsync } from '@angular/core/testing';
 import { Book, BooksService } from './tests/factories/books.service';
 
 class HttpHandlerMock implements HttpHandler {
@@ -48,7 +48,7 @@ describe('ClonedResource save', () => {
         books_service.register();
     });
 
-    it('should save only dirty attributes', async(() => {
+    it('should save only dirty attributes', waitForAsync(() => {
         let http_client_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let author: Author = authors_service.new();
         author.id = '123456';
@@ -69,7 +69,7 @@ describe('ClonedResource save', () => {
         });
     }));
 
-    it('should save only dirty HAS ONE relationships', async(() => {
+    it('should save only dirty HAS ONE relationships', waitForAsync(() => {
         let http_client_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let book: Book = books_service.new();
         book.id = '123456';
@@ -123,7 +123,7 @@ describe('ClonedResource save', () => {
         });
     }));
 
-    it('should save only dirty HAS MANY relationships', async(() => {
+    it('should save only dirty HAS MANY relationships', waitForAsync(() => {
         let http_client_spy: jasmine.Spy = spyOn(HttpClient.prototype, 'request').and.callThrough();
         let author: Author = authors_service.new();
         author.id = '123456';

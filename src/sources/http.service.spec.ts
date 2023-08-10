@@ -1,4 +1,4 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { JsonapiConfig } from '../jsonapi-config';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { tap, mapTo, share } from 'rxjs/operators';
@@ -20,7 +20,7 @@ describe('Http service', () => {
         },
         meta: { meta: 'meta' }
     };
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [Http, { provide: JsonapiConfig, useValue: JsonapiConfigMock }]
