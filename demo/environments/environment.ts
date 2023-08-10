@@ -5,5 +5,6 @@
 
 export const environment: { [key: string]: any } = {
     production: false,
-    jsonapi_url: '//jsonapiplayground.reyesoft.com/v2/'
+    jsonapi_url: '//jsonapiplayground.reyesoft.com/v2/',
+    api_saldo: 'https://api.saldo.com.ar/v3/'
 };
