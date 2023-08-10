@@ -4,7 +4,6 @@
     "baseUrl": ".",
     "declaration": true,
     "stripInternal": true,
-    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "es2020",
     "moduleResolution": "node",
