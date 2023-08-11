@@ -1,5 +1,5 @@
 {
-  "name": "ngx-jsonapi-demo",
+  "name": "ngx-jsonapi",
   "description": "Demo app for JSON API library for Angular",
   "scripts": {
     "build": "ts-node ./build/index.ts",
@@ -24,6 +24,7 @@
     "watch:tests": "chokidar 'src/**/*.ts' --initial -c 'nyc --reporter=text --reporter=html yarn test'",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "release": "yarn run build && cd dist && yarn publish",
+    "release-v2": "yarn ng build ngx-jsonapi-lib && cd dist && yarn publish",
     "prettier": "yarn prettier-ts && yarn prettier-md && yarn prettier-scss",
     "prettier-ts": "yarn prettier-ts:show --write",
     "prettier-ts:show": "prettier --parser typescript --print-width 140 --tab-width 4 --use-tabs false --single-quote true --trailing-comma none \"src/**/*.ts\"",
@@ -33,7 +34,6 @@
     "prettier-md:show": "prettier --parser markdown --single-quote --tab-width 4 --print-width 140 --single-quote true --prose-wrap never \"**/*.md\"",
     "prettier-scss": "yarn prettier-scss:show --write",
     "prettier-scss:show": "prettier --parser scss --single-quote --tab-width 4 --print-width 140 --single-quote true \"**/*.scss\"",
-    "postinstall": "ngcc",
     "precommit": "lint-staged"
   },
   "lint-staged": {
@@ -152,6 +152,7 @@
     "lint-staged": "7.2.2",
     "module-alias": "2.0.0",
     "ncp": "2.0.0",
+    "ng-packagr": "^16.2.0",
     "nyc": "14.1.1",
     "ora": "1.3.0",
     "prettier": "1.12.0",
@@ -175,5 +176,6 @@
     "rxjs": "6.6.7",
     "tsickle": "0.39.1",
     "tslib": "2.0.0"
-  }
+  },
+  "version": "2.3.1-dev-test"
 }
