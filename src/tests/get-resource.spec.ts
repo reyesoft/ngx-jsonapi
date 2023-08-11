@@ -2,7 +2,7 @@
 
 import { StoreService } from '../sources/store.service';
 import { JsonRipper } from '../services/json-ripper';
-import { ReflectiveInjector } from '@angular/core';
+import { ClassProvider, Injector } from '@angular/core';
 import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
 import { DocumentCollection } from '../document-collection';
@@ -43,15 +43,15 @@ class TestService extends Service {
     public ttl: number = 0;
 }
 
-let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
+let injector: Injector = Injector.create([
     {
         provide: JSONAPI_RIPPER_SERVICE,
         useClass: JsonRipper
-    },
+    } as ClassProvider,
     {
         provide: JSONAPI_STORE_SERVICE,
         useClass: StoreService
-    }
+    } as ClassProvider
 ]);
 
 describe('core methods', () => {

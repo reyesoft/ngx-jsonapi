@@ -1,5 +1,5 @@
 import { JsonRipper } from './services/json-ripper';
-import { ReflectiveInjector } from '@angular/core';
+import { ClassProvider, Injector } from '@angular/core';
 import { StoreService } from './sources/store.service';
 import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { DocumentResource } from './document-resource';
@@ -21,15 +21,15 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 
-let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
+let injector: Injector = Injector.create([
     {
         provide: JSONAPI_RIPPER_SERVICE,
         useClass: JsonRipper
-    },
+    } as ClassProvider,
     {
         provide: JSONAPI_STORE_SERVICE,
         useClass: StoreService
-    }
+    } as ClassProvider
 ]);
 
 describe('resource basic methods', () => {

@@ -1,4 +1,4 @@
-import { ReflectiveInjector } from '@angular/core';
+import { ClassProvider, Injector } from '@angular/core';
 import { StoreService } from './sources/store.service';
 import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { JsonRipper } from './services/json-ripper';
@@ -19,15 +19,15 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 let test_response_subject: BehaviorSubject<HttpResponse<unknown>> = new BehaviorSubject(new HttpResponse());
-let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
+let injector: Injector = Injector.create([
     {
         provide: JSONAPI_RIPPER_SERVICE,
         useClass: JsonRipper
-    },
+    } as ClassProvider,
     {
         provide: JSONAPI_STORE_SERVICE,
         useClass: StoreService
-    }
+    } as ClassProvider
 ]);
 
 describe('ClonedResource save', () => {

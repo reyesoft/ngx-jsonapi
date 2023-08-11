@@ -91,6 +91,9 @@
       "**/*.ts"
     ]
   },
+  "resolutions": {
+    "jest-environment-jsdom": "27.4.6"
+  },
   "devDependencies": {
     "@angular-devkit/build-angular": "16.2.0",
     "@angular-eslint/builder": "12.3.1",
@@ -143,7 +146,8 @@
     "jasmine-marbles": "0.0.2",
     "jasmine-spec-reporter": "5.0.0",
     "jest": "29.6.2",
-    "jest-preset-angular": "7.1.1",
+    "jest-environment-jsdom": "29.6.2",
+    "jest-preset-angular": "13.1.1",
     "jest-zone-patch": "0.0.10",
     "lint-staged": "7.2.2",
     "module-alias": "2.0.0",
@@ -158,6 +162,7 @@
     "rollup": "0.50.0",
     "rxjs-tslint-rules": "4.7.2",
     "sorcery": "0.10.0",
+    "ts-jest": "29.1.1",
     "ts-mockito": "2.3.1",
     "ts-node": "3.1.0",
     "typescript": "4.9.5",

@@ -2,7 +2,7 @@
 
 import { StoreService } from './../sources/store.service';
 import { JsonRipper } from '../services/json-ripper';
-import { ReflectiveInjector } from '@angular/core';
+// import { Injector } from '@angular/core';
 import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from '../core';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
 import { DocumentCollection } from '../document-collection';
@@ -12,6 +12,7 @@ import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { JsonapiConfig } from '../jsonapi-config';
 import { Observable, BehaviorSubject, of as observableOf } from 'rxjs';
 import { Service } from '../service';
+import { ClassProvider, Injector } from '@angular/core';
 
 class TestResource extends Resource {
     public type: string = 'test_resources';
@@ -53,15 +54,15 @@ class HttpHandlerMock implements HttpHandler {
     }
 }
 
-let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
+let injector: Injector = Injector.create([
     {
         provide: JSONAPI_RIPPER_SERVICE,
         useClass: JsonRipper
-    },
+    } as ClassProvider,
     {
         provide: JSONAPI_STORE_SERVICE,
         useClass: StoreService
-    }
+    } as ClassProvider
 ]);
 
 let core: Core = new Core(

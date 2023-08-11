@@ -13,9 +13,6 @@ import { SharedModule } from './shared/shared.module';
 
 import { StoreService } from 'ngx-jsonapi/sources/store.service';
 import { JsonRipper } from 'ngx-jsonapi/services/json-ripper';
-import { AuthorsModule } from './authors/authors.module';
-import { BooksModule } from './books/books.module';
-import { SystemsModule } from './systems/systems.module';
 
 const appRoutes: Routes = [
     {

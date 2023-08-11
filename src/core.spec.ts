@@ -1,7 +1,7 @@
 // WARNING: this test is not correctly isolated
 
 import { JsonRipper } from './services/json-ripper';
-import { ReflectiveInjector } from '@angular/core';
+import { ClassProvider, Injector } from '@angular/core';
 import { Core, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './core';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
 import { DocumentCollection } from './document-collection';
@@ -44,15 +44,15 @@ class CustomResourceService extends Service<CustomResource> {
     }
 }
 
-let injector: ReflectiveInjector = ReflectiveInjector.resolveAndCreate([
+let injector: Injector = Injector.create([
     {
         provide: JSONAPI_RIPPER_SERVICE,
         useClass: JsonRipper
-    },
+    } as ClassProvider,
     {
         provide: JSONAPI_STORE_SERVICE,
-        useClass: JsonapiStore
-    }
+        useClass: StoreService
+    } as ClassProvider
 ]);
 
 describe('core methods', () => {
