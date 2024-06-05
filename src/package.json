@@ -1,6 +1,6 @@
 {
     "name": "ngx-jsonapi",
-    "version": "3.0.4",
+    "version": "3.0.5",
     "description": "JSON API library for Angular",
     "module": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.es5.js",
     "es2015": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.js",
