@@ -1,0 +1,18 @@
+<h3>systems</h3>
+<demo-collection-info [collection]="systems"></demo-collection-info>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tr *ngFor="let systems of systems.data; trackBy: systems.trackBy">
+        <td>{{ systems.id }}</td>
+        <td>
+            <a [routerLink]="['/systems', systems.id]">{{ systems.attributes.name }}</a>
+            <code><small>{{ systems.source }}</small></code>
+        </td>
+    </tr>
+</table>
+<demo-collection-paginator [collection]="systems"></demo-collection-paginator>

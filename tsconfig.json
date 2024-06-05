@@ -1,27 +1,32 @@
 {
     "compilerOptions": {
-        "downlevelIteration": true,
-        "importHelpers": true,
-        "strictNullChecks": true,
-        "sourceMap": true,
-        "declaration": false,
-        "moduleResolution": "node",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "noStrictGenericChecks": true,
-        "lib": [
-            "es2017",
-            "dom"
+      "downlevelIteration": true,
+      "importHelpers": true,
+      "strictNullChecks": true,
+      "sourceMap": true,
+      "declaration": false,
+      "moduleResolution": "node",
+      "experimentalDecorators": true,
+      "noStrictGenericChecks": true,
+      "lib": [
+        "es2017",
+        "dom"
+      ],
+      "outDir": "../out-tsc/app",
+      "target": "es2015",
+      "module": "esnext",
+      "baseUrl": "",
+      "rootDir": "./",
+      "paths": {
+        "ngx-jsonapi": [
+          "./src"
         ],
-        "outDir": "../out-tsc/app",
-        "target": "es2015",
-        "module": "commonjs",
-        "baseUrl": "",
-        "rootDir": "./",
-        "paths": {
-            "ngx-jsonapi": [ "./src" ]
-        },
-        "strict": false
+        "ngx-jsonapi-lib": [
+          "dist/ngx-jsonapi-lib"
+        ]
+      },
+      "strict": false,
+      "useDefineForClassFields": false
     },
     "exclude": [
         "node_modules",

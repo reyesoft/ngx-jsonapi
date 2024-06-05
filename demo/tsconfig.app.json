@@ -4,22 +4,26 @@
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
       "es2017",
       "dom"
     ],
     "outDir": "../out-tsc/app",
-    "target": "es2015",
+    "target": "ES2022",
     "module": "es2020",
     "types": [],
     "baseUrl": ".",
     "rootDir": "../",
     "paths": {
-      "ngx-jsonapi": [ "../src" ],
-      "ngx-jsonapi/*": [ "../src/*" ]
-    }
+      "ngx-jsonapi": [
+        "../src"
+      ],
+      "ngx-jsonapi/*": [
+        "../src/*"
+      ]
+    },
+    "useDefineForClassFields": false
   },
   "files": [
     "main.ts",

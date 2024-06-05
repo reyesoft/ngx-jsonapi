@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.3.0-dev-test] - 2023-08-11
+
+-   Migrate to angular 16
+
 ### Fixed
 
 -   Fixed error lint with eslint ([#332](https://github.com/reyesoft/ngx-jsonapi/pull/332))

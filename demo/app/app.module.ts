@@ -13,8 +13,6 @@ import { SharedModule } from './shared/shared.module';
 
 import { StoreService } from 'ngx-jsonapi/sources/store.service';
 import { JsonRipper } from 'ngx-jsonapi/services/json-ripper';
-import { AuthorsModule } from './authors/authors.module';
-import { BooksModule } from './books/books.module';
 
 const appRoutes: Routes = [
     {
@@ -24,11 +22,15 @@ const appRoutes: Routes = [
     },
     {
         path: 'authors',
-        loadChildren: (): Promise<AuthorsModule> => import('./authors/authors.module').then((m): AuthorsModule => m.AuthorsModule)
+        loadChildren: () => import('./authors/authors.module').then((m) => m.AuthorsModule)
+    },
+    {
+        path: 'systems',
+        loadChildren: () => import('./systems/systems.module').then((m) => m.SystemsModule)
     },
     {
         path: 'books',
-        loadChildren: (): Promise<BooksModule> => import('./books/books.module').then((m): BooksModule => m.BooksModule)
+        loadChildren: () => import('./books/books.module').then((m) => m.BooksModule)
     }
 ];
 
@@ -52,7 +54,7 @@ const appRoutes: Routes = [
         SharedModule,
         RouterModule.forRoot(appRoutes, { useHash: true }),
         NgxJsonapiModule.forRoot({
-            url: environment.jsonapi_url
+            url: environment.api_saldo,
         })
     ],
     declarations: [AppComponent],
