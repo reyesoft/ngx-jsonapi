@@ -10,7 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Fixed
 
--   Fixed document-collection remove collection elements ([#365](https://github.com/reyesoft/ngx-jsonapi/pull/365))
+-   Fixed clear collection ([#366](https://github.com/reyesoft/ngx-jsonapi/pull/366))
+
+## [3.0.4] - 2024-06-05
+
+## Fixed
+
+-   Fixed document-collection remove collection elements ([#366](https://github.com/reyesoft/ngx-jsonapi/pull/366))
 
 ## [3.0.3] - 2024-06-05
 
