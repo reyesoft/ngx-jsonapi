@@ -26,7 +26,7 @@ export async function compilePackagesWithNgc(config: Config): Promise<void> {
 
 async function _compilePackagesWithNgc(pkg: string): Promise<void> {
     // await util.exec('ngc', [`-p ./src/${pkg}/tsconfig-build.json`]);
-    await util.exec('ngc', [`-p ./src/tsconfig-build.json`]);
+    await util.exec('ng build', [`-p ./src/tsconfig-build.json`]);
 
     /**
      * Test modules are treated differently because nested inside top-level.

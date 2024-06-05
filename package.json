@@ -1,5 +1,5 @@
 {
-  "name": "ngx-jsonapi",
+  "name": "ngx-jsonapi-demo",
   "description": "Demo app for JSON API library for Angular",
   "scripts": {
     "build": "ts-node ./build/index.ts",
@@ -24,7 +24,7 @@
     "watch:tests": "chokidar 'src/**/*.ts' --initial -c 'nyc --reporter=text --reporter=html yarn test'",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "release": "yarn run build && cd dist && yarn publish",
-    "release-v2": "yarn ng build ngx-jsonapi-lib && cd dist && yarn publish",
+    "release-v2": "yarn ng build ngx-jsonapi-lib && cd dist/ngx-jsonapi && yarn publish",
     "prettier": "yarn prettier-ts && yarn prettier-md && yarn prettier-scss",
     "prettier-ts": "yarn prettier-ts:show --write",
     "prettier-ts:show": "prettier --parser typescript --print-width 140 --tab-width 4 --use-tabs false --single-quote true --trailing-comma none \"src/**/*.ts\"",

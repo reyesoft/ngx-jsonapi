@@ -13,13 +13,16 @@
         "dom"
       ],
       "outDir": "../out-tsc/app",
-      "target": "ES2022",
-      "module": "commonjs",
+      "target": "es2015",
+      "module": "esnext",
       "baseUrl": "",
       "rootDir": "./",
       "paths": {
         "ngx-jsonapi": [
           "./src"
+        ],
+        "ngx-jsonapi-lib": [
+          "dist/ngx-jsonapi-lib"
         ]
       },
       "strict": false,

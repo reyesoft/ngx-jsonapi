@@ -34,7 +34,6 @@ module.exports = {
         stringifyContentPathRegex: '\\.(html|svg)$',
     },
 },
-coverageDirectory: '../../coverage/libs/ngx-jsonapi-material',
 transformIgnorePatterns: ['node_modules/(?!.*.mjs$)'],
 transform: { '^.+.(ts|mjs|js|html)$': 'jest-preset-angular' },
 moduleNameMapper: {
