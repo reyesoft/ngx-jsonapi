@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Fixed
 
--   Fixed clear collection ([#366](https://github.com/reyesoft/ngx-jsonapi/pull/366))
+-   Fixed clear collection ([#367](https://github.com/reyesoft/ngx-jsonapi/pull/367))
 
 ## [3.0.4] - 2024-06-05
 
