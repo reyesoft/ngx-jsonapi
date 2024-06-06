@@ -49,20 +49,9 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
 
         // convert and add new dataresoures to final collection
         let new_ids = {};
-        try {
-            // Intenta vaciar el arreglo estableciendo length a 0
-            this.data.length = 0;
-        } catch (error) {
-            // Intenta usar métodos de mutación
-            try {
-                while (this.data.length) {
-                    this.data.shift(); // shift elimina el primer elemento
-                }
-            } catch (shiftError) {
-                // Crea una copia del arreglo vacío y reemplaza el original
-                this.data = [];
-            }
-        }
+        let dataCopy = this.data.slice();
+        dataCopy.length = 0;
+        this.data = dataCopy;
         this.builded = data_collection.data && data_collection.data.length === 0;
         for (let dataresource of data_collection.data) {
             try {
