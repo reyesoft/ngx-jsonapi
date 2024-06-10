@@ -152,7 +152,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "dexie": "^2.0.4",
+    "dexie": "^3.2.2",
     "lodash-es": "^4.17.15",
     "rxjs": "6.6.7",
     "tsickle": "^0.39.1",
