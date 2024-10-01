@@ -93,8 +93,77 @@ describe('core methods', () => {
         expect(http_request_spy.calls.mostRecent().args[0].data).toBeNull();
     });
 
-    it(`resource should have the correct hasOne and hasMany relationships corresponding to the back end response's included resources,
-        including nested relationships`, async () => {
+    it.only(`resource should have the correct hasOne and hasMany relationships corresponding to the back end response's included resources, including nested relationships`, async () => {
+        const response = {
+            data: {
+                type: 'test_resources',
+                id: '1',
+                attributes: { name: 'test_name' },
+                relationships: {
+                    test_resource: {
+                        data: { id: '2', type: 'test_resources' }
+                    },
+                    test_resources: {
+                        data: [{ id: '3', type: 'test_resources' }, { id: '4', type: 'test_resources' }]
+                    }
+                }
+            },
+            included: [
+                {
+                    type: 'test_resources',
+                    id: '2',
+                    attributes: { name: 'test_name_2' },
+                    relationships: {
+                        test_resource: {
+                            data: { id: '4', type: 'test_resources' }
+                        }
+                    }
+                },
+                {
+                    type: 'test_resources',
+                    id: '3',
+                    attributes: { name: 'test_name_3' },
+                    relationships: {
+                        test_resources: {
+                            data: [
+                                { id: '4', type: 'test_resources' }
+                            ]
+                        }
+                    }
+                },
+                {
+                    type: 'test_resources',
+                    id: '4',
+                    attributes: { name: 'test_name_4' },
+                    relationships: {
+                        test_resource: {
+                            data: { id: '5', type: 'test_resources' }
+                        },
+                        test_resources: {
+                            data: [
+                                { id: '5', type: 'test_resources' }
+                            ]
+                        }
+                    }
+                },
+                {
+                    type: 'test_resources',
+                    id: '5',
+                    attributes: { name: 'test_name_5' },
+                    relationships: {
+                        test_resource: {
+                            data: { id: '6', type: 'test_resources' }
+                        }
+                    }
+                },
+                {
+                    type: 'test_resources',
+                    id: '6',
+                    attributes: { name: 'test_name_6' }
+                }
+            ]
+        };
+
         let test_resource = new TestResource();
         test_resource.type = 'test_resources';
         test_resource.id = '1';
@@ -128,30 +197,49 @@ describe('core methods', () => {
         await test_service.clearCache();
         Core.me.injectedServices.JsonapiStoreService.clearCache();
         mockedAxios.request.mockRestore();
-        mockedAxios.request.mockResolvedValue({ data: { data: test_resource, included: included } });
+        mockedAxios.request.mockResolvedValue({ data: response });
 
         await test_service
-            .get('1', { include: ['test_resource.test_resource'] })
+            .get('1', { include: ['test_resource.test_resource', 'test_resources.test_resource'] })
             .toPromise()
             .then(resource => {
-                expect(test_resource.type).toBe('test_resources');
-                expect(test_resource.id).toBe('1');
+                expect(resource.type).toBe('test_resources');
+                expect(resource.id).toBe('1');
                 expect(resource.attributes.name).toBe('test_name');
-                expect(resource.relationships.test_resource instanceof DocumentResource).toBeTruthy();
-                expect(resource.relationships.test_resources instanceof DocumentCollection).toBeTruthy();
-                expect((<DocumentResource>resource.relationships.test_resource).data.id).toBe('2');
-                expect((<DocumentResource>resource.relationships.test_resource).data.attributes.name).toBe('test_name_2');
-                expect(
-                    (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '3')
-                ).toBeTruthy();
-                expect(
-                    (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '3')
-                        .attributes.name
-                ).toBe('test_name_3');
-                let has_one_relationship = (<DocumentResource>resource.relationships.test_resource).data;
-                let has_many_relationship = (<DocumentCollection>resource.relationships.test_resources).data;
-                expect((<TestResource>has_one_relationship.relationships.test_resource.data).id).toBe('4');
-                expect((<TestResource>has_many_relationship[0].relationships.test_resources.data[0]).id).toBe('4');
+                const has_one_relationship = resource.relationships.test_resource;
+                expect(has_one_relationship instanceof DocumentResource).toBeTruthy();
+                expect(has_one_relationship.data instanceof TestResource).toBeTruthy();
+                expect((has_one_relationship.data as TestResource).id).toBe('2');
+                expect((has_one_relationship.data as TestResource).type).toBe('test_resources');
+                expect((has_one_relationship.data as TestResource).attributes.name).toBe('test_name_2');
+
+                const has_many_relationship = resource.relationships.test_resources;
+                expect(has_many_relationship instanceof DocumentCollection).toBeTruthy();
+                expect(has_many_relationship.data[0] instanceof TestResource).toBeTruthy();
+                expect((has_many_relationship.data[0] as TestResource).id).toBe('3');
+                expect((has_many_relationship.data[0] as TestResource).type).toBe('test_resources');
+                expect((has_many_relationship.data[0] as TestResource).attributes.name).toBe('test_name_3');
+
+                const nested_has_many_relationship = has_many_relationship.data[0].relationships.test_resources;
+                expect(nested_has_many_relationship instanceof DocumentCollection).toBeTruthy();
+                expect(nested_has_many_relationship.data[0] instanceof TestResource).toBeTruthy();
+                expect((nested_has_many_relationship.data[0] as TestResource).id).toBe('4');
+                expect((nested_has_many_relationship.data[0] as TestResource).type).toBe('test_resources');
+                expect((nested_has_many_relationship.data[0] as TestResource).attributes.name).toBe('test_name_4');
+
+                const recursively_nested_has_many_relationship = nested_has_many_relationship.data[0].relationships.test_resources;
+                expect(recursively_nested_has_many_relationship instanceof DocumentCollection).toBeTruthy();
+                expect(recursively_nested_has_many_relationship.data[0] instanceof TestResource).toBeTruthy();
+                expect((recursively_nested_has_many_relationship.data[0] as TestResource).id).toBe('5');
+                expect((recursively_nested_has_many_relationship.data[0] as TestResource).type).toBe('test_resources');
+                expect((recursively_nested_has_many_relationship.data[0] as TestResource).attributes.name).toBe('test_name_5');
+
+                const recursively_nested_has_one_relationship = nested_has_many_relationship.data[0].relationships.test_resource;
+                expect(recursively_nested_has_one_relationship instanceof DocumentResource).toBeTruthy();
+                expect(recursively_nested_has_one_relationship.data instanceof TestResource).toBeTruthy();
+                expect((recursively_nested_has_one_relationship.data as TestResource).id).toBe('5');
+                expect((recursively_nested_has_one_relationship.data as TestResource).type).toBe('test_resources');
+                expect((recursively_nested_has_one_relationship.data as TestResource).attributes.name).toBe('test_name_5');
             });
     });
 
