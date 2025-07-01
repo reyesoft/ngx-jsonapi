@@ -6,6 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [3.0.6] - 2024-06-06
+
+## Fixed
+
+-   Fixed clear collection with this.data.length = 0 ([#368](https://github.com/reyesoft/ngx-jsonapi/pull/368))
+
+## [3.0.5] - 2024-06-05
+
+## Fixed
+
+-   Fixed clear collection ([#367](https://github.com/reyesoft/ngx-jsonapi/pull/367))
+
+## [3.0.4] - 2024-06-05
+
+## Fixed
+
+-   Fixed document-collection remove collection elements ([#366](https://github.com/reyesoft/ngx-jsonapi/pull/366))
+
+## [3.0.3] - 2024-06-05
+
+## Fixed
+
+-   Fixed document-collection this.data.length ([#365](https://github.com/reyesoft/ngx-jsonapi/pull/365))
+
+## [3.0.2] - 2023-01-20
+
+## Fixed
+
+-   Fixed when filtering with an operator, object is added as a value ([#361](https://github.com/reyesoft/ngx-jsonapi/pull/361))
+
 ## [3.0.0] - 2021-12-23
 
 ## Changed

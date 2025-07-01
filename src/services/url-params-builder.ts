@@ -14,7 +14,8 @@ export class UrlParamsBuilder {
         let ret = '';
         if (Array.isArray(params) || params instanceof Object) {
             Base.forEach(params, (value, key) => {
-                ret += this.toparamsarray(encodeURIComponent(value), add + '[' + key + ']');
+                let valueEncodeOrNot = value instanceof Object ? value : encodeURIComponent(value);
+                ret += this.toparamsarray(valueEncodeOrNot, add + '[' + key + ']');
             });
         } else {
             ret += add + '=' + params;
