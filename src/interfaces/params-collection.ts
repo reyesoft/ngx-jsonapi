@@ -2,7 +2,7 @@ import { IParams } from './params';
 import { IPage } from './page';
 
 export interface IParamsCollection extends IParams {
-    remotefilter?: object;
+    remotefilter?: Filter;
     /** @deprecated since 2.2, we have rxjs pipes */
     smartfilter?: object;
     sort?: Array<string>;
@@ -17,7 +17,7 @@ export interface IParamsCollection extends IParams {
 }
 
 export interface IBuildedParamsCollection extends IParams {
-    remotefilter: object;
+    remotefilter: Filter;
     /** @deprecated since 2.2, we have rxjs pipes */
     smartfilter: object;
     sort: Array<string>;

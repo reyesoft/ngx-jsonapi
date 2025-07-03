@@ -9,12 +9,12 @@ export class PathCollectionBuilder extends PathBuilder {
         super.applyParams(service, params);
 
         let paramsurl = new UrlParamsBuilder();
-        if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
-            if (service.parseToServer) {
-                service.parseToServer(params.remotefilter);
-            }
-            this.addParam(paramsurl.toparams({ filter: params.remotefilter }));
+        if (params.remotefilter) {
+                let filter = params.remotefilter as Filter;
+                let filterParsed = serializeFilter(filter);
+                this.addParam(paramsurl.toparams({ filter: filterParsed }));
         }
+
         if (params.page) {
             if (params.page.number > 1) {
                 this.addParam(this.getPageConfig().number + '=' + params.page.number);
@@ -26,7 +26,7 @@ export class PathCollectionBuilder extends PathBuilder {
         if (params.sort && params.sort.length) {
             this.addParam('sort=' + params.sort.join(','));
         }
-        if (params.custom_http_params && params.custom_http_params.length > 0){
+        if (params.custom_http_params && params.custom_http_params.length > 0) {
             this.addParam(params.custom_http_params.join('&'));
         }
     }

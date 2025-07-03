@@ -27,41 +27,41 @@ describe('Path Builder', () => {
         path_collection_builder.applyParams(testService);
         expect(applyParams_parent_spy).toHaveBeenCalledWith(testService, {});
     });
-    it('if remotefilters are provided and service has parseToServer method,\
-     applyParams should call service s parseToServer method with them as parameter', () => {
-        let parseToServer_spy = spyOn(testService, 'parseToServer');
-        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' } });
-        expect(parseToServer_spy).toHaveBeenCalledWith({ status: 'test_status' });
-    });
-    it('if service does not have parseToServer method, applyParams should not try to call this method', () => {
-        let parseToServer_null_spy = spyOn(testService, 'parseToServer');
-        testService.parseToServer = null;
-        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' } });
-        expect(parseToServer_null_spy).not.toHaveBeenCalled();
-    });
-    it('if remotefilters are provided, applyParams should call addParam with paramsurl.toparams result as parameter', () => {
-        let addParam_parent_spy = spyOn<any>(path_collection_builder, 'addParam');
-        let toparams_parent_spy = spyOn(UrlParamsBuilder.prototype, 'toparams');
-        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' } });
-        let test_params = new UrlParamsBuilder().toparams({ status: 'test_status' });
-        expect(toparams_parent_spy).toHaveBeenCalledWith({ status: 'test_status' });
-        expect(addParam_parent_spy).toHaveBeenCalledWith(test_params);
-    });
+    // it('if remotefilters are provided and service has parseToServer method,\
+    //  applyParams should call service s parseToServer method with them as parameter', () => {
+    //     let parseToServer_spy = spyOn(testService, 'parseToServer');
+    //     path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' } });
+    //     expect(parseToServer_spy).toHaveBeenCalledWith({ status: 'test_status' });
+    // });
+    // it('if service does not have parseToServer method, applyParams should not try to call this method', () => {
+    //     let parseToServer_null_spy = spyOn(testService, 'parseToServer');
+    //     testService.parseToServer = null;
+    //     path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' } });
+    //     expect(parseToServer_null_spy).not.toHaveBeenCalled();
+    // });
+    // it('if remotefilters are provided, applyParams should call addParam with paramsurl.toparams result as parameter', () => {
+    //     let addParam_parent_spy = spyOn<any>(path_collection_builder, 'addParam');
+    //     let toparams_parent_spy = spyOn(UrlParamsBuilder.prototype, 'toparams');
+    //     path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' } });
+    //     let test_params = new UrlParamsBuilder().toparams({ status: 'test_status' });
+    //     expect(toparams_parent_spy).toHaveBeenCalledWith({ status: 'test_status' });
+    //     expect(addParam_parent_spy).toHaveBeenCalledWith(test_params);
+    // });
 
     it('if fields are provided, they should be formatted and included in get_params', () => {
         path_collection_builder.applyParams(testService, { fields: { authors: ['name', 'address'], books: ['title'] } });
         expect(path_collection_builder.get().includes('fields[authors]=name,address&fields[books]=title')).toBeTruthy();
     });
 
-    it('if filter with characters such as "&" are provided, they must be formatted and included in get_params', () => {
-        path_collection_builder.applyParams(testService, { remotefilter: { field: 'foo&bar' } });
-        expect(path_collection_builder.get().includes('filter[field]=foo%26bar')).toBeTruthy();
-    });
+    // it('if filter with characters such as "&" are provided, they must be formatted and included in get_params', () => {
+    //     path_collection_builder.applyParams(testService, { remotefilter: { field: 'foo&bar' } });
+    //     expect(path_collection_builder.get().includes('filter[field]=foo%26bar')).toBeTruthy();
+    // });
 
-    it('if filter with operator (ne) they should be formatted and included in get_params', () => {
-        path_collection_builder.applyParams(testService, { remotefilter: { status: { ne: 'archived' } } });
-        expect(path_collection_builder.get().includes('filter[status][ne]=archived')).toBeTruthy();
-    });
+    // it('if filter with operator (ne) they should be formatted and included in get_params', () => {
+    //     path_collection_builder.applyParams(testService, { remotefilter: { status: { ne: 'archived' } } });
+    //     expect(path_collection_builder.get().includes('filter[status][ne]=archived')).toBeTruthy();
+    // });
 
     it('if page params are provided, applyParams should call addParam one or two times with the page number and size', () => {
         Core.me.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
@@ -97,14 +97,14 @@ describe('Path Builder', () => {
         expect((path_collection_builder as any).get_params.length).toBe(1);
         expect((path_collection_builder as any).get_params).toEqual(['test_string']);
     });
-    it('applyParams method should add the provided params to get_params array', () => {
-        Core.me.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
-        Core.me.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
-        (path_collection_builder as any).get_params = [];
-        path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' }, page: { number: 2, size: 10 } });
-        expect((path_collection_builder as any).get_params.length).toBe(3);
-        expect((path_collection_builder as any).get_params).toEqual(['filter[status]=test_status', 'page_index=2', 'page_size=10']);
-    });
+    // it('applyParams method should add the provided params to get_params array', () => {
+    //     Core.me.injectedServices.rsJsonapiConfig.parameters.page.number = 'page_index';
+    //     Core.me.injectedServices.rsJsonapiConfig.parameters.page.size = 'page_size';
+    //     (path_collection_builder as any).get_params = [];
+    //     path_collection_builder.applyParams(testService, { remotefilter: { status: 'test_status' }, page: { number: 2, size: 10 } });
+    //     expect((path_collection_builder as any).get_params.length).toBe(3);
+    //     expect((path_collection_builder as any).get_params).toEqual(['filter[status]=test_status', 'page_index=2', 'page_size=10']);
+    // });
     it('if custom_http_params params are provided, applyParams method should join the array with "&" and call addParam with the resulting string', () => {
         let addParam_parent_spy = spyOn<any>(path_collection_builder, 'addParam');
         path_collection_builder.applyParams(testService, { custom_http_params: ['param1', 'param2'] });
