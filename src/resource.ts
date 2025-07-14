@@ -311,10 +311,10 @@ export class Resource implements ICacheable {
                 }
 
                 // is a resource?
-                if ('id' in success.data) {
+                if (!!success && 'id' in success.data) {
                     this.id = success.data.id;
                     this.fill(<IDocumentResource>success);
-                } else if (Array.isArray(success.data)) {
+                } else if (!!success && Array.isArray(success.data)) {
                     console.warn('Server return a collection when we save()', success.data);
                 }
 
