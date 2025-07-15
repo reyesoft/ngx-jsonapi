@@ -1,5 +1,5 @@
-import { DocumentResource } from './../../../src/document-resource';
 import { Component, Input } from '@angular/core';
+import { DocumentResource } from 'ngx-jsonapi';
 @Component({
     selector: 'demo-resource-info',
     templateUrl: './resource-info.component.html'

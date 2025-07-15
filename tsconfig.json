@@ -7,7 +7,7 @@
       "declaration": false,
       "moduleResolution": "node",
       "experimentalDecorators": true,
-      "noStrictGenericChecks": true,
+      "ignoreDeprecations": "5.0",
       "lib": [
         "es2017",
         "dom"

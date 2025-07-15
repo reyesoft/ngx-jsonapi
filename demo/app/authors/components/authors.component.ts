@@ -1,4 +1,3 @@
-import { Photo } from './../../../../src/tests/factories/photos.service';
 import { BooksService } from './../../books/books.service';
 import { Component } from '@angular/core';
 import { DocumentCollection } from 'ngx-jsonapi';
