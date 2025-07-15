@@ -3,9 +3,14 @@ import { Component } from '@angular/core';
 import { DocumentCollection } from 'ngx-jsonapi';
 import { AuthorsService, Author } from './../authors.service';
 import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { CollectionInfoComponent } from '../../shared/collection-info.component';
+import { CollectionPaginatorComponent } from '../../shared/collection-paginator.component';
 
 @Component({
     selector: 'demo-authors',
+    standalone: true,
+    imports: [CommonModule, CollectionInfoComponent, CollectionPaginatorComponent],
     templateUrl: './authors.component.html'
 })
 export class AuthorsComponent {

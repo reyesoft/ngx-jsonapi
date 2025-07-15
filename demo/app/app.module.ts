@@ -51,12 +51,12 @@ const appRoutes: Routes = [
         BrowserModule,
         HttpClientModule,
         SharedModule,
+        AppComponent,
         RouterModule.forRoot(appRoutes, { useHash: true }),
         NgxJsonapiModule.forRoot({
             url: environment.api_saldo,
         })
     ],
-    declarations: [AppComponent],
     bootstrap: [AppComponent]
 })
 export class AppModule {}
