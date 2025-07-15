@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Resource } from 'ngx-jsonapi';
 import { AuthorsService } from '../../authors/authors.service';
 import { BooksService, Book } from './../books.service';
 import { PhotosService } from '../../photos/photos.service';
+import { ResourceInfoComponent } from '../../shared/resource-info.component';
 
 @Component({
     selector: 'demo-book',
+    imports: [CommonModule, ResourceInfoComponent],
+    standalone: true,
     templateUrl: './book.component.html'
 })
 export class BookComponent {

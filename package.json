@@ -95,26 +95,25 @@
     "jest-environment-jsdom": "27.4.6"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "18.0.0",
+    "@angular-devkit/build-angular": "19.2.14",
     "@angular-eslint/builder": "20.1.1",
     "@angular-eslint/eslint-plugin": "20.1.1",
     "@angular-eslint/eslint-plugin-template": "20.1.1",
     "@angular-eslint/schematics": "20.1.1",
     "@angular-eslint/template-parser": "20.1.1",
-    "@angular/animations": "18.0.0",
-    "@angular/cli": "18.0.0",
-    "@angular/common": "18.0.0",
-    "@angular/compiler": "18.0.0",
-    "@angular/compiler-cli": "18.0.0",
-    "@angular/core": "18.0.0",
-    "@angular/forms": "18.0.0",
-    "@angular/platform-browser": "18.0.0",
-    "@angular/platform-browser-dynamic": "18.0.0",
-    "@angular/platform-server": "18.0.0",
-    "@angular/router": "18.0.0",
+    "@angular/animations": "19.2.14",
+    "@angular/cli": "19.2.14",
+    "@angular/common": "19.2.14",
+    "@angular/compiler": "19.2.14",
+    "@angular/compiler-cli": "19.2.14",
+    "@angular/core": "19.2.14",
+    "@angular/forms": "19.2.14",
+    "@angular/platform-browser": "19.2.14",
+    "@angular/platform-browser-dynamic": "19.2.14",
+    "@angular/platform-server": "19.2.14",
+    "@angular/router": "19.2.14",
     "@types/jest": "29.5.12",
     "@types/node": "20.11.30",
-    "codelyzer": "6.0.2",
     "coveralls": "3.1.1",
     "cpy-cli": "4.2.0",
     "deep-freeze": "0.0.1",
@@ -136,7 +135,7 @@
     "lint-staged": "15.2.0",
     "module-alias": "2.2.3",
     "ncp": "2.0.0",
-    "ng-packagr": "20.1.0",
+    "ng-packagr": "19.2.2",
     "nyc": "15.1.0",
     "ora": "7.0.1",
     "prettier": "3.2.5",
@@ -148,8 +147,8 @@
     "ts-jest": "29.1.1",
     "ts-mockito": "2.6.1",
     "ts-node": "10.9.2",
-    "typescript": "5.4.5",
-    "zone.js": "0.15.1"
+    "typescript": "5.8.3",
+    "zone.js": "0.14.0"
   },
   "dependencies": {
     "dexie": "4.0.11",
@@ -158,5 +157,5 @@
     "tsickle": "0.46.3",
     "tslib": "2.6.2"
   },
-  "version": "2.5.0-dev-test"
+  "version": "2.6.0-dev-test"
 }

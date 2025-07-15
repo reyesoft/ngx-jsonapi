@@ -51,90 +51,90 @@
                 }
               ]
             }
-          },
-          "defaultConfiguration": ""
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "ngx-jsonapi:build"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "ngx-jsonapi:build:production"
-            }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "ngx-jsonapi:build"
           }
         }
-      }
-    },
-    "ngx-jsonapi-e2e": {
-      "root": "e2e",
-      "sourceRoot": "e2e",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "ngx-jsonapi:serve"
+      },
+      "serve": {
+        "builder": "@angular-devkit/build-angular:dev-server",
+        "options": {
+          "buildTarget": "ngx-jsonapi:build"
+        },
+        "configurations": {
+          "production": {
+            "buildTarget": "ngx-jsonapi:build:production"
           }
         }
-      }
-    },
-    "ngx-jsonapi-lib": {
-      "projectType": "library",
-      "root": "projects/ngx-jsonapi-lib",
-      "sourceRoot": "projects/ngx-jsonapi-lib/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "projects/ngx-jsonapi-lib/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "projects/ngx-jsonapi-lib/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "projects/ngx-jsonapi-lib/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "projects/ngx-jsonapi-lib/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
-          }
+      },
+      "extract-i18n": {
+        "builder": "@angular-devkit/build-angular:extract-i18n",
+        "options": {
+          "buildTarget": "ngx-jsonapi:build"
         }
       }
     }
   },
-  "schematics": {
-    "@schematics/angular:component": {
-      "inlineStyle": true,
-      "inlineTemplate": true,
-      "flat": true,
-      "skipTests": true,
-      "prefix": "bc",
-      "style": "css"
-    },
-    "@schematics/angular:directive": {
-      "prefix": "bc"
+  "ngx-jsonapi-e2e": {
+    "root": "e2e",
+    "sourceRoot": "e2e",
+    "projectType": "application",
+    "architect": {
+      "e2e": {
+        "builder": "@angular-devkit/build-angular:protractor",
+        "options": {
+          "protractorConfig": "./protractor.conf.js",
+          "devServerTarget": "ngx-jsonapi:serve"
+        }
+      }
     }
   },
-  "cli": {
-    "analytics": false
+  "ngx-jsonapi-lib": {
+    "projectType": "library",
+    "root": "projects/ngx-jsonapi-lib",
+    "sourceRoot": "projects/ngx-jsonapi-lib/src",
+    "prefix": "lib",
+    "architect": {
+      "build": {
+        "builder": "@angular-devkit/build-angular:ng-packagr",
+        "options": {
+          "project": "projects/ngx-jsonapi-lib/ng-package.json"
+        },
+        "configurations": {
+          "production": {
+            "tsConfig": "projects/ngx-jsonapi-lib/tsconfig.lib.prod.json"
+          },
+          "development": {
+            "tsConfig": "projects/ngx-jsonapi-lib/tsconfig.lib.json"
+          }
+        },
+        "defaultConfiguration": "production"
+      },
+      "test": {
+        "builder": "@angular-devkit/build-angular:karma",
+        "options": {
+          "tsConfig": "projects/ngx-jsonapi-lib/tsconfig.spec.json",
+          "polyfills": [
+            "zone.js",
+            "zone.js/testing"
+          ]
+        }
+      }
+    }
   }
+},
+"schematics": {
+  "@schematics/angular:component": {
+    "inlineStyle": true,
+    "inlineTemplate": true,
+    "flat": true,
+    "skipTests": true,
+    "prefix": "bc",
+    "style": "css"
+  },
+  "@schematics/angular:directive": {
+    "prefix": "bc"
+  }
+},
+"cli": {
+  "analytics": false
+}
 }

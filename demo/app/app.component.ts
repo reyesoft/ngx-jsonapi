@@ -1,12 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { JsonapiCore } from 'ngx-jsonapi';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'demo-app',
     styleUrls: ['./app.component.scss'],
+    standalone: true,
+    imports: [RouterModule, CommonModule],
     templateUrl: './app.component.html'
 })
-export class AppComponent /* implements OnInit */ {
+export class AppComponent {
     public loading: string = '';
 
     public constructor(

@@ -4,9 +4,14 @@ import { Resource } from 'ngx-jsonapi';
 import { PhotosService } from '../../photos/photos.service';
 import { AuthorsService, Author } from '../authors.service';
 import { BooksService } from '../../books/books.service';
+import { CommonModule } from '@angular/common';
+import { CollectionInfoComponent } from '../../shared/collection-info.component';
+import { ResourceInfoComponent } from '../../shared/resource-info.component';
 
 @Component({
     selector: 'demo-author',
+    standalone: true,
+    imports: [CommonModule, CollectionInfoComponent, ResourceInfoComponent],
     templateUrl: './author.component.html'
 })
 export class AuthorComponent {

@@ -20,12 +20,10 @@ export class SystemsRoutingModule { }
 
 
 @NgModule({
-    declarations: [
-        SystemsComponent
-    ],
     imports: [
         CommonModule,
         SharedModule,
+        SystemsComponent,
         SystemsRoutingModule
     ],
     providers: [SystemsService]
