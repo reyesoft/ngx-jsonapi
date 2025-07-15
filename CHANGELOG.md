@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.5.0-dev-test] - 2025-07-15
+
+-   Migrate to angular 18
+
 ## [2.4.0-dev-test] - 2025-07-15
 
 -   Migrate to angular 17
