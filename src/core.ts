@@ -43,24 +43,25 @@ export class Core {
         return Core.me;
     }
 
-    public static delete(path: string): Observable<IDocumentData> {
-        return Core.exec(path, 'DELETE');
+    public static delete(path: string, url: string = Core.getInstance().injectedServices.rsJsonapiConfig.url): Observable<IDocumentData> {
+        return Core.exec(url, path, 'DELETE');
     }
 
-    public static get(path: string): Observable<IDocumentData> {
-        return Core.exec(path, 'get');
+    public static get(path: string, url: string = Core.getInstance().injectedServices.rsJsonapiConfig.url): Observable<IDocumentData> {
+        return Core.exec(url, path, 'get');
     }
 
     public static exec(
+        url: string = Core.getInstance().injectedServices.rsJsonapiConfig.url,
         path: string,
         method: string,
         data?: IDocumentResource,
-        call_loadings_error: boolean = true
+        call_loadings_error: boolean = true,
     ): Observable<IDocumentData> {
         Core.me.refreshLoadings(1);
 
         return Core.getInstance()
-            .injectedServices.JsonapiHttp.exec(path, method, data)
+            .injectedServices.JsonapiHttp.exec(url + path, method, data)
             .pipe(
                 // map(data => { return data.body }),
                 tap(() => Core.me.refreshLoadings(-1)),

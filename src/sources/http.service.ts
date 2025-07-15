@@ -10,9 +10,9 @@ export class Http implements IHttp {
     // NOTE: GET requests are stored in a this object to prevent duplicate requests
     public get_requests: { [key: string]: Observable<IDocumentData> } = {};
 
-    public exec(path: string, method: Method, data?: IDocumentResource): Observable<IDocumentData> {
+    public exec(path: string, method: Method, data?: IDocumentResource, url: string = Core.me.injectedServices.rsJsonapiConfig.url): Observable<IDocumentData> {
         let config: AxiosRequestConfig = {
-            url: Core.me.injectedServices.rsJsonapiConfig.url + path,
+            url: url + path,
             method: method,
             data: data || null,
             headers: {

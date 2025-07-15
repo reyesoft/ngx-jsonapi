@@ -20,6 +20,7 @@ export class Service<R extends Resource = Resource> {
     public resource = Resource;
     public collections_ttl: number;
     protected path: string; // without slashes
+    protected url: string;
 
     public constructor() {
         setTimeout(() => this.register());
@@ -64,6 +65,10 @@ export class Service<R extends Resource = Resource> {
 
     public getPath(): string {
         return this.path || this.type;
+    }
+
+    public getUrl(): string {
+        return this.url || Core.getInstance().injectedServices.rsJsonapiConfig.url;
     }
 
     public getClone(id: string, params: IParamsResource = {}): Observable<ClonedResource<R>> {

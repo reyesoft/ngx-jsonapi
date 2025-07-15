@@ -71,7 +71,7 @@ describe('core methods', () => {
                 observer.next(observer.error({ errors: ['error'] }));
             })
         );
-        Core.exec('path', 'method', { data: data_resource }).subscribe(
+        Core.exec('url', 'path', 'method', { data: data_resource }).subscribe(
             data => {
                 expect(data).toBe('data1');
             },
