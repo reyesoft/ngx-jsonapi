@@ -17,7 +17,7 @@
     "rootDir": "../",
     "paths": {
       "ngx-jsonapi": [
-        "../src"
+        "../projects/ngx-jsonapi-lib/src/public_api.ts"
       ],
       "ngx-jsonapi/*": [
         "../src/*"
