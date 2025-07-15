@@ -4,9 +4,9 @@ import { RouterModule } from '@angular/router';
 import { DocumentCollection } from 'ngx-jsonapi';
 @Component({
     selector: 'demo-collection-paginator',
-    templateUrl: './collection-paginator.component.html',
     standalone: true,
-    imports: [CommonModule, RouterModule]
+    imports: [CommonModule, RouterModule],
+    templateUrl: './collection-paginator.component.html'
 })
 export class CollectionPaginatorComponent {
     @Input() public collection: DocumentCollection;
