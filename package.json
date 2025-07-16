@@ -127,6 +127,7 @@
     "eslint-plugin-prefer-arrow": "1.2.3",
     "eslint-plugin-rxjs": "5.0.2",
     "eslint-plugin-unicorn": "51.0.1",
+    "eslint-config-prettier": "9.0.0",
     "fake-indexeddb": "4.0.2",
     "faker": "5.5.3",
     "fs-extra": "11.2.0",

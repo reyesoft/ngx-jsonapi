@@ -10,9 +10,9 @@ export class System extends Resource {
         books: DocumentCollection<Book>;
         photos: DocumentCollection<Photo>;
     } = {
-            books: new DocumentCollection<Book>(),
-            photos: new DocumentCollection<Photo>()
-        };
+        books: new DocumentCollection<Book>(),
+        photos: new DocumentCollection<Photo>()
+    };
 }
 
 @Injectable()

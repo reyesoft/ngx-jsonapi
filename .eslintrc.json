@@ -23,8 +23,8 @@
                 "plugin:@angular-eslint/template/process-inline-templates"
             ],
             "plugins": [
-                "@typescript-eslint",
                 "@angular-eslint",
+                "@typescript-eslint",
                 "eslint-plugin-no-null",
                 "eslint-plugin-unicorn",
                 "eslint-plugin-rxjs"
@@ -149,13 +149,6 @@
                 "curly": [
                     "error",
                     "multi-line"
-                ],
-                "indent": [
-                    "error",
-                    4,
-                    {
-                        "SwitchCase": 1
-                    }
                 ],
                 "default-case": "off",
                 "eol-last": "off",

@@ -15,10 +15,10 @@ export class Photo extends Resource {
         created_at: string;
         updated_at: string;
     } = {
-            title: '',
-            uri: '',
-            imageable_id: '',
-            created_at: '',
-            updated_at: ''
-        };
+        title: '',
+        uri: '',
+        imageable_id: '',
+        created_at: '',
+        updated_at: ''
+    };
 }
