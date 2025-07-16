@@ -4,6 +4,7 @@ import { DocumentCollection } from 'ngx-jsonapi';
 import { System, SystemsService } from './systems.service';
 
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'bc-systems',
     templateUrl: './systems.component.html',
     styles: []
