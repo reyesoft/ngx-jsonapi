@@ -1,0 +1,82 @@
+name: version 3
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Restaurar caché de Yarn
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/yarn
+            node_modules
+          key: yarn-cache-${{ hashFiles('yarn.lock') }}
+
+      - name: Instalar dependencias
+        run: yarn install --frozen-lockfile
+
+      - name: Prettier TS
+        run: yarn prettier-ts:show --list-different
+
+      - name: Prettier MD
+        run: yarn prettier-md:show --list-different
+
+      - name: Prettier SCSS
+        run: yarn prettier-scss:show --list-different
+
+      - name: Lint
+        run: yarn lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+
+      - name: Restaurar caché de Yarn
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/yarn
+            node_modules
+          key: yarn-cache-${{ hashFiles('yarn.lock') }}
+
+      - name: Instalar dependencias
+        run: yarn install --frozen-lockfile
+
+      - name: Ejecutar CI
+        run: yarn run ci
+
+      # - name: Subir reporte de cobertura a Coveralls
+      #   run: |
+      #     if [ ! -z "$COVERALLS_REPO_TOKEN" ]; then
+      #       npx @cedx/coveralls build/logs/clover.xml
+      #     else
+      #       echo 'Skipped'
+      #     fi
+
+      - name: Demo build
+        run: yarn run demo:build
+
+      # - name: Demo test nowatch
+      #   run: yarn run demo:test:nowatch
+
+      # - name: Build (ya lo ejecuta demo:build)
+      #   run: yarn run build
+
+      # - name: Test (ya lo ejecuta yarn run ci)
+      #   run: yarn run test

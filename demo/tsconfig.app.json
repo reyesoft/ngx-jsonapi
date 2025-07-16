@@ -6,7 +6,7 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "lib": [
-      "es2017",
+      "es2020",
       "dom"
     ],
     "outDir": "../out-tsc/app",
@@ -17,7 +17,7 @@
     "rootDir": "../",
     "paths": {
       "ngx-jsonapi": [
-        "../src"
+        "../projects/ngx-jsonapi-lib/src/public_api.ts"
       ],
       "ngx-jsonapi/*": [
         "../src/*"
