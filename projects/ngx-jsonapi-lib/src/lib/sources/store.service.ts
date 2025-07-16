@@ -33,13 +33,10 @@ export class StoreService implements IStoreService {
     }
 
     public async getDataResources(keys: Array<string>): Promise<IObjectsById<ICacheableDataResource>> {
-        const collection: Dexie.Collection<any, any> = this.db
-            .table('elements')
-            .where(':id')
-            .anyOf(keys);
+        const collection: Dexie.Collection<any, any> = this.db.table('elements').where(':id').anyOf(keys);
 
         let resources_by_id: any = {};
-        await collection.each(item => {
+        await collection.each((item) => {
             resources_by_id[item.id] = item;
         });
 
@@ -62,16 +59,10 @@ export class StoreService implements IStoreService {
 
     public clearCache(): void {
         this.db.open().then(async () => {
-            return this.db
-                .table('elements')
-                .toCollection()
-                .delete();
+            return this.db.table('elements').toCollection().delete();
         });
         this.db.open().then(async () => {
-            return this.db
-                .table('collections')
-                .toCollection()
-                .delete();
+            return this.db.table('collections').toCollection().delete();
         });
     }
 
@@ -87,11 +78,7 @@ export class StoreService implements IStoreService {
 
     public deprecateCollection(key_start_with: string): void {
         this.db.open().then(async () => {
-            return this.db
-                .table('collections')
-                .where(':id')
-                .startsWith(key_start_with)
-                .modify({ cache_last_update: 0 });
+            return this.db.table('collections').where(':id').startsWith(key_start_with).modify({ cache_last_update: 0 });
         });
     }
 

@@ -35,7 +35,7 @@ export class Base {
     }
 
     public static forEach<T extends { [keyx: string]: any }>(collection: T, fc: (object: any, key?: string | number) => void): void {
-        Object.keys(collection).forEach(key => {
+        Object.keys(collection).forEach((key) => {
             fc(collection[key], key);
         });
     }

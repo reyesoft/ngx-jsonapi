@@ -12,7 +12,6 @@ import { PhotosService } from './photos/photos.service';
 import { SharedModule } from './shared/shared.module';
 import { JsonRipper, StoreService } from '../../projects/ngx-jsonapi-lib/src/lib/store';
 
-
 const appRoutes: Routes = [
     {
         path: '',
@@ -53,7 +52,7 @@ const appRoutes: Routes = [
         SharedModule,
         RouterModule.forRoot(appRoutes, { useHash: true }),
         NgxJsonapiModule.forRoot({
-            url: environment.api_saldo,
+            url: environment.api_saldo
         })
     ],
     declarations: [AppComponent],

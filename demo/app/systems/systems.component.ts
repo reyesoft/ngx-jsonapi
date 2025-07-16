@@ -6,22 +6,22 @@ import { System, SystemsService } from './systems.service';
 @Component({
     selector: 'bc-systems',
     templateUrl: './systems.component.html',
-    styles: [
-    ]
+    styles: []
 })
 export class SystemsComponent {
     public systems: DocumentCollection<System>;
 
-    public constructor(private route: ActivatedRoute, private authorsService: SystemsService) {
+    public constructor(
+        private route: ActivatedRoute,
+        private authorsService: SystemsService
+    ) {
         route.queryParams.subscribe(({ page }) => {
-            authorsService
-                .all()
-                .subscribe(
-                    systems => {
-                        this.systems = systems;
-                    },
-                    error => console.error('Could not load authors :(', error)
-                );
+            authorsService.all().subscribe(
+                (systems) => {
+                    this.systems = systems;
+                },
+                (error) => console.error('Could not load authors :(', error)
+            );
         });
     }
 }

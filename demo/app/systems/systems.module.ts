@@ -16,18 +16,11 @@ export const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule]
 })
-export class SystemsRoutingModule { }
-
+export class SystemsRoutingModule {}
 
 @NgModule({
-    declarations: [
-        SystemsComponent
-    ],
-    imports: [
-        CommonModule,
-        SharedModule,
-        SystemsRoutingModule
-    ],
+    declarations: [SystemsComponent],
+    imports: [CommonModule, SharedModule, SystemsRoutingModule],
     providers: [SystemsService]
 })
-export class SystemsModule { }
+export class SystemsModule {}

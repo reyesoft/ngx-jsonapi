@@ -9,9 +9,7 @@ import { JsonapiCore } from 'ngx-jsonapi';
 export class AppComponent /* implements OnInit */ {
     public loading: string = '';
 
-    public constructor(
-        private jsonapiCore: JsonapiCore
-    ) {
+    public constructor(private jsonapiCore: JsonapiCore) {
         jsonapiCore.loadingsStart = (): void => {
             this.loading = 'LOADING...';
         };

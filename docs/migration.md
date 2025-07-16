@@ -31,12 +31,12 @@ export class AuthorsService extends Service<Author> {
     public schema: ISchema = {
         relationships: {
             books: {
-                hasMany: true
+                hasMany: true,
             },
             photos: {
-                hasMany: true
-            }
-        }
+                hasMany: true,
+            },
+        },
     };
 }
 export class Author extends Resource {
@@ -61,12 +61,12 @@ import { Photo } from '../photos/photos.service';
 export class Author extends Resource {
     public attributes = {
         name: 'default name',
-        date_of_birth: ''
+        date_of_birth: '',
     };
 
     public relationships = {
         books: new DocumentCollection<Book>(),
-        photo: new DocumentResource<Photo>()
+        photo: new DocumentResource<Photo>(),
     };
 }
 

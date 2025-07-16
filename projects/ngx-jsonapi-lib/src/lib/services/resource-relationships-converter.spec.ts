@@ -135,10 +135,10 @@ describe('ResourceRelationshipsConverter', () => {
 
         // test has_many relationship
         let related_collection_first_resource: any = (resource_relationships_converter as any).relationships_dest.collection.data.find(
-            resource => resource.id === '1'
+            (resource) => resource.id === '1'
         );
         let related_collection_second_resource: any = (resource_relationships_converter as any).relationships_dest.collection.data.find(
-            resource => resource.id === '2'
+            (resource) => resource.id === '2'
         );
         expect((resource_relationships_converter as any).relationships_dest.collection instanceof DocumentCollection).toBeTruthy();
         expect(related_collection_first_resource.id).toBeTruthy();

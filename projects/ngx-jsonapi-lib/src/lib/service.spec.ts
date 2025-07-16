@@ -128,13 +128,13 @@ for (let store_cache_method of store_cache_methods) {
             }> = await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
-                    tap(emit => {
+                    tap((emit) => {
                         if (emit.data.length > 0) {
                             expect(emit.data[0].relationships).toHaveProperty('photos');
                             expect(emit.data[0].relationships).toHaveProperty('author');
                         }
                     }),
-                    map(emit => {
+                    map((emit) => {
                         return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
@@ -167,7 +167,7 @@ for (let store_cache_method of store_cache_methods) {
             }> = await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
-                    map(emit => {
+                    map((emit) => {
                         return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
@@ -201,7 +201,7 @@ for (let store_cache_method of store_cache_methods) {
             }> = await booksService
                 .all({ ttl: 0, store_cache_method: store_cache_method })
                 .pipe(
-                    map(emit => {
+                    map((emit) => {
                         return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
@@ -235,13 +235,13 @@ for (let store_cache_method of store_cache_methods) {
             }> = await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
-                    tap(emit => {
+                    tap((emit) => {
                         if (emit.data.length > 0) {
                             expect(emit.data[0].relationships).toHaveProperty('photos');
                             expect(emit.data[0].relationships).toHaveProperty('author');
                         }
                     }),
-                    map(emit => {
+                    map((emit) => {
                         return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
@@ -279,13 +279,13 @@ for (let store_cache_method of store_cache_methods) {
             }> = await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
-                    tap(emit => {
+                    tap((emit) => {
                         if (emit.data.length > 0) {
                             expect(emit.data[0].relationships).toHaveProperty('photos');
                             expect(emit.data[0].relationships).toHaveProperty('author');
                         }
                     }),
-                    map(emit => {
+                    map((emit) => {
                         if (emit.data.length > 0) {
                             return {
                                 builded: emit.builded,
@@ -332,7 +332,7 @@ for (let store_cache_method of store_cache_methods) {
             }> = await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
-                    map(emit => {
+                    map((emit) => {
                         if (emit.data.length > 0) {
                             return {
                                 builded: emit.builded,
@@ -376,7 +376,7 @@ for (let store_cache_method of store_cache_methods) {
             }> = await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
-                    map(emit => {
+                    map((emit) => {
                         return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
@@ -411,7 +411,7 @@ for (let store_cache_method of store_cache_methods) {
             }> = await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
-                    map(emit => {
+                    map((emit) => {
                         return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
@@ -456,7 +456,7 @@ for (let store_cache_method of store_cache_methods) {
             }> = await booksService
                 .all({ include: ['author', 'author.books'], store_cache_method: store_cache_method })
                 .pipe(
-                    map(emit => {
+                    map((emit) => {
                         return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
                     }),
                     toArray()
@@ -502,7 +502,7 @@ for (let store_cache_method of store_cache_methods) {
             }> = await booksService
                 .all({ include: ['author', 'author.books'], store_cache_method: store_cache_method })
                 .pipe(
-                    map(emit => {
+                    map((emit) => {
                         expect(emit.data[0].relationships.author.data.relationships.books.data[0].id).toBe('book_123');
                         expect(emit.data[0].relationships.author.data.relationships.books.data[0].attributes.title).toBe('The Nested Book');
 
@@ -551,7 +551,7 @@ for (let store_cache_method of store_cache_methods) {
             }> = await booksService
                 .all({ include: ['author', 'author.books'], store_cache_method: store_cache_method })
                 .pipe(
-                    map(emit => {
+                    map((emit) => {
                         expect(emit.data[0].relationships.author.data.relationships.books.data[0].id).toBe('book_123');
                         expect(emit.data[0].relationships.author.data.relationships.books.data[0].attributes.title).toBe('The Nested Book');
 
@@ -607,7 +607,7 @@ describe('service.all() and next service.get()', () => {
         }> = await authorsService
             .get(authors.data[0].id, { include: ['photos', 'books'] })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -646,7 +646,7 @@ describe('service.all() and next service.get()', () => {
         }> = await authorsService
             .get(removed_author_id, { include: ['photos', 'books'] })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -683,8 +683,8 @@ describe('service.all() and next service.get()', () => {
         }> = await authorsService
             .get(authors.data[0].id)
             .pipe(
-                tap(author => (received_author = author)),
-                map(emit => {
+                tap((author) => (received_author = author)),
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -726,8 +726,8 @@ describe('service.all() and next service.get()', () => {
         }> = await authorsService
             .get(removed_author_id)
             .pipe(
-                tap(author => (received_author = author)),
-                map(emit => {
+                tap((author) => (received_author = author)),
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -763,7 +763,7 @@ describe('service.all() and next service.get()', () => {
         }> = await booksService
             .get('1', { include: ['author'], ttl: 1000 })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     expect(http_request_spy).not.toHaveBeenCalled();
                     expect(emit.relationships.author.data.attributes.name).toBeTruthy();
 
@@ -809,7 +809,7 @@ describe('service.all() and next service.get()', () => {
         }> = await booksService
             .all({ include: ['author'], ttl: 1000 })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     if (emit.loaded) {
                         expect(emit.data[0].relationships.author.data.attributes.name).toBeTruthy();
                     }
@@ -866,7 +866,7 @@ describe('service.get()', () => {
         }> = await booksService
             .get('1')
             .pipe(
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -897,7 +897,7 @@ describe('service.get()', () => {
         }> = await booksService
             .get('1', { ttl: 1000 })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -932,7 +932,7 @@ describe('service.get()', () => {
         }> = await booksService
             .get('1', { ttl: 1000, include: ['author'] })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -968,7 +968,7 @@ describe('service.get()', () => {
         }> = await authorsService
             .get('555', { ttl: 1000, include: ['books'] })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -1001,10 +1001,10 @@ describe('service.get()', () => {
         }> = await booksService
             .get('1', { ttl: 1000, include: ['author'] })
             .pipe(
-                tap(emit => {
+                tap((emit) => {
                     // expect(emit.data[0].relationships).toHaveProperty('author');
                 }),
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -1036,7 +1036,7 @@ describe('service.get()', () => {
         }> = await booksService
             .get('1', { ttl: 1000, include: ['author'] })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     expect(emit.relationships.author.data.attributes.name).toBeTruthy();
 
                     return { loaded: emit.loaded, source: emit.source };
@@ -1078,7 +1078,7 @@ describe('service.get()', () => {
         }> = await booksService
             .get('1', { ttl: 1000, include: ['author'] })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     if (emit.source !== 'new') {
                         expect(emit.relationships.author.data.attributes.name).toBeTruthy();
                     }
@@ -1115,7 +1115,7 @@ describe('service.get()', () => {
         }> = await authorsService
             .get('556', { ttl: 1000, include: ['books'] })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -1153,7 +1153,7 @@ describe('service.get()', () => {
         }> = await booksService
             .get('1')
             .pipe(
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -1192,7 +1192,7 @@ describe('service.get()', () => {
         }> = await booksService
             .get('1', { ttl: 1000 })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -1231,7 +1231,7 @@ describe('service.get()', () => {
         }> = await booksService
             .get('1', { ttl: 1000, include: ['books'] })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()
@@ -1275,7 +1275,7 @@ describe('service.get()', () => {
         }> = await booksService
             .get('1', { ttl: 1000, include: ['books'] })
             .pipe(
-                map(emit => {
+                map((emit) => {
                     return { loaded: emit.loaded, source: emit.source };
                 }),
                 toArray()

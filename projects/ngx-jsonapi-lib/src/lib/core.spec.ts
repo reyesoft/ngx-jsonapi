@@ -71,16 +71,16 @@ describe('core methods', () => {
             id: '1'
         };
         jest.spyOn(Core.injectedServices.JsonapiHttp, 'exec').and.returnValue(
-            new Observable(observer => {
+            new Observable((observer) => {
                 observer.next('data1');
                 observer.next(observer.error({ errors: ['error'] }));
             })
         );
         Core.exec('path', 'method', { data: data_resource }).subscribe(
-            data => {
+            (data) => {
                 expect(data).toBe('data1');
             },
-            error => {
+            (error) => {
                 expect(error.errors).toEqual(['error']);
             }
         );

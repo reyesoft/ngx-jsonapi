@@ -142,7 +142,7 @@ export class Service<R extends Resource = Resource> {
     // if you change this logic, maybe you need to change getAllFromServer()
     protected getGetFromServer(path: any, resource: R, subject: Subject<R>): void {
         Core.get(path.get()).subscribe(
-            success => {
+            (success) => {
                 resource.fill(<IDocumentResource>success);
                 resource.cache_last_update = Date.now();
                 resource.setLoadedAndPropagate(true);
@@ -153,7 +153,7 @@ export class Service<R extends Resource = Resource> {
                 subject.next(resource);
                 setTimeout(() => subject.complete(), 0);
             },
-            error => {
+            (error) => {
                 resource.setLoadedAndPropagate(true);
                 subject.next(resource);
                 subject.error(error);
@@ -241,12 +241,12 @@ export class Service<R extends Resource = Resource> {
         let subject: Subject<void> = new Subject<void>();
 
         Core.delete(path.get()).subscribe(
-            success => {
+            (success) => {
                 CacheMemory.getInstance().removeResource(this.type, id);
                 subject.next();
                 subject.complete();
             },
-            error => {
+            (error) => {
                 subject.error(error);
             }
         );
@@ -342,7 +342,7 @@ export class Service<R extends Resource = Resource> {
     ): void {
         temporary_collection.setLoaded(false);
         Core.get(path.get()).subscribe(
-            success => {
+            (success) => {
                 // this create a new ID for every resource (for caching proposes)
                 // for example, two URL return same objects but with different attributes
                 if (params.cachehash) {
@@ -372,7 +372,7 @@ export class Service<R extends Resource = Resource> {
                 subject.next(temporary_collection);
                 setTimeout(() => subject.complete(), 0);
             },
-            error => {
+            (error) => {
                 temporary_collection.setLoadedAndPropagate(true);
                 subject.next(temporary_collection);
                 subject.error(error);

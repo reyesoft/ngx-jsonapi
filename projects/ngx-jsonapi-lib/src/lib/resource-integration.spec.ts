@@ -58,7 +58,7 @@ describe('Resource delete', () => {
         await book
             .delete()
             .toPromise()
-            .then(data => {
+            .then((data) => {
                 expect(httpClientDeleteSpy.calls.mostRecent().args[0]).toBe('DELETE');
             });
     });

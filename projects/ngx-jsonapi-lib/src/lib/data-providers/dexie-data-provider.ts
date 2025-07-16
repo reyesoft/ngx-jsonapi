@@ -31,12 +31,12 @@ export class DexieDataProvider implements IDataProvider {
             .table(table_name)
             .where(':id')
             .anyOf(keys)
-            .each(element => {
+            .each((element) => {
                 data[element.data.type + '.' + element.data.id] = element;
             });
 
         // we need to maintain same order, database return ordered by key
-        return keys.map(key => {
+        return keys.map((key) => {
             return data[key];
         });
     }
@@ -60,7 +60,7 @@ export class DexieDataProvider implements IDataProvider {
 
     public async saveElements(elements: Array<IElement>, table_name: string = 'elements'): Promise<void> {
         let keys: Array<string> = [];
-        let items: Array<IObject> = elements.map(element => {
+        let items: Array<IObject> = elements.map((element) => {
             keys.push(element.key);
 
             return element.content;

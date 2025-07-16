@@ -89,7 +89,7 @@ describe('core methods', () => {
         await test_service
             .get('1', { fields: { test_resources: ['optional'] } })
             .toPromise()
-            .then(resource => {
+            .then((resource) => {
                 expect(resource.type).toBe('test_resources');
                 expect(resource.id).toBe('1');
                 expect(resource.attributes.name).toBeFalsy();
@@ -122,7 +122,7 @@ describe('core methods', () => {
         await test_service
             .get('1')
             .toPromise()
-            .then(async resource => {
+            .then(async (resource) => {
                 expect(resource.type).toBe('test_resources');
                 expect(resource.id).toBe('1');
                 expect(resource.attributes.name).toBe('test_name');
@@ -138,7 +138,7 @@ describe('core methods', () => {
                 await test_service
                     .get('1', { fields: { test_resources: ['optional'] } })
                     .toPromise()
-                    .then(resource_with_optional_attribute => {
+                    .then((resource_with_optional_attribute) => {
                         expect(resource_with_optional_attribute.type).toBe('test_resources');
                         expect(resource_with_optional_attribute.id).toBe('1');
                         expect(resource_with_optional_attribute.attributes.name).toBe('test_name');

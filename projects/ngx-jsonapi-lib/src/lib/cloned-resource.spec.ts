@@ -57,7 +57,7 @@ describe('ClonedResource save', () => {
         let author_clone: ClonedResource<Author> = new ClonedResource(author);
         test_response_subject.next(new HttpResponse({ body: author_clone.toObject() }));
         author_clone.attributes.name = 'Luis';
-        author_clone.save().subscribe(author_data => {
+        author_clone.save().subscribe((author_data) => {
             expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
                 data: {
                     attributes: { name: 'Luis' },
@@ -82,7 +82,7 @@ describe('ClonedResource save', () => {
 
         let book_clone: ClonedResource<Book> = new ClonedResource(book);
         test_response_subject.next(new HttpResponse({ body: book_clone.toObject() }));
-        book_clone.save().subscribe(author_data => {
+        book_clone.save().subscribe((author_data) => {
             expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
                 data: {
                     attributes: {},
@@ -138,7 +138,7 @@ describe('ClonedResource save', () => {
         // console.log(author_clone.relationships);
         test_response_subject.next(new HttpResponse({ body: author_clone.toObject() }));
         author_clone.attributes.name = 'Luis';
-        author_clone.save().subscribe(author_data => {
+        author_clone.save().subscribe((author_data) => {
             expect(http_client_spy.calls.mostRecent().args[2].body).toMatchObject({
                 data: {
                     attributes: { name: 'Luis' },

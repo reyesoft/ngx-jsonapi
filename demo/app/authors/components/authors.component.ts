@@ -11,7 +11,11 @@ import { ActivatedRoute } from '@angular/router';
 export class AuthorsComponent {
     public authors: DocumentCollection<Author>;
 
-    public constructor(private route: ActivatedRoute, private authorsService: AuthorsService, booksService: BooksService) {
+    public constructor(
+        private route: ActivatedRoute,
+        private authorsService: AuthorsService,
+        booksService: BooksService
+    ) {
         route.queryParams.subscribe(({ page }) => {
             authorsService
                 .all({
@@ -22,10 +26,10 @@ export class AuthorsComponent {
                     ttl: 3600
                 })
                 .subscribe(
-                    authors => {
+                    (authors) => {
                         this.authors = authors;
                     },
-                    error => console.error('Could not load authors :(', error)
+                    (error) => console.error('Could not load authors :(', error)
                 );
         });
     }

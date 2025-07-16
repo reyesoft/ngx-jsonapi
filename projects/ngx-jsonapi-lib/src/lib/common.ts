@@ -56,7 +56,7 @@ export function isResource(document: DocumentResource | DocumentCollection): doc
 export function serviceIsRegistered(target: Object, key: string | symbol, descriptor: PropertyDescriptor): any {
     const original: any = descriptor.value;
 
-    descriptor.value = function() {
+    descriptor.value = function () {
         let args: any = Array.prototype.slice.call(arguments);
         let type: string;
         try {

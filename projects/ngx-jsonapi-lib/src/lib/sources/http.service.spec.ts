@@ -34,7 +34,7 @@ describe('Http service', () => {
         let response: Observable<any> = of(data_object);
         jest.spyOn((service as any).http, 'request').and.returnValue(response);
         let exec_observable: Observable<IDocumentData> = service.exec('/test', 'patch', data_object);
-        await exec_observable.subscribe(data => expect(data).toEqual(data_object));
+        await exec_observable.subscribe((data) => expect(data).toEqual(data_object));
     });
     it(`when two requests to the same URL, and the second is made before the first has finished,
         exec should return the same observable with the http request without duplicating`, async () => {
@@ -43,8 +43,8 @@ describe('Http service', () => {
         let exec_observable: Observable<IDocumentData> = service.exec('/test', 'patch', data_object);
         let second_exec_observable: Observable<IDocumentData> = service.exec('/test', 'patch', data_object);
         subject.next(data_object);
-        await exec_observable.subscribe(data => expect(data).toEqual(data_object));
-        await exec_observable.subscribe(data => {
+        await exec_observable.subscribe((data) => expect(data).toEqual(data_object));
+        await exec_observable.subscribe((data) => {
             expect(data).toEqual(data_object);
             expect(request_spy).toHaveBeenCalledTimes(1);
         });

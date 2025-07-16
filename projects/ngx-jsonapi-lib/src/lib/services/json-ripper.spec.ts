@@ -54,7 +54,7 @@ describe('JsonRipper for resources', () => {
         });
     });
 
-    it('A ripped resource saved via DataProvider is converted to a Json', async done => {
+    it('A ripped resource saved via DataProvider is converted to a Json', async (done) => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         jest.spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
@@ -85,7 +85,7 @@ describe('JsonRipper for resources', () => {
         expect(json.data.cache_last_update).toBeGreaterThanOrEqual(Date.now() - 100);
     });
 
-    it('A ripped resource with include saved via DataProvider is converted to a Json', async done => {
+    it('A ripped resource with include saved via DataProvider is converted to a Json', async (done) => {
         let mocked_service_data: { [key: string]: any } = { parseToServer: false };
         jest.spyOn(Resource.prototype, 'getService').and.returnValue(mocked_service_data);
 
@@ -121,12 +121,12 @@ describe('JsonRipper for resources', () => {
         // });
     });
 
-    it('Requesting DataProvider not cached resource thrown an error', done => {
+    it('Requesting DataProvider not cached resource thrown an error', (done) => {
         let jsonRipper: JsonRipper = new JsonRipper();
         jsonRipper
             .getResource('extrange_type.id')
             .then()
-            .catch(data => {
+            .catch((data) => {
                 done();
             });
     }, 50);
@@ -184,7 +184,7 @@ describe('JsonRipper for collections', () => {
     });
     */
 
-    it('A ripped collection saved via DataProvider is converted to a Json', async done => {
+    it('A ripped collection saved via DataProvider is converted to a Json', async (done) => {
         jest.spyOn(Resource.prototype, 'getService').and.returnValue({});
 
         let jsonRipper: JsonRipper = new JsonRipper();
@@ -254,12 +254,12 @@ describe('JsonRipper for collections', () => {
         expect(json.data[1].cache_last_update).toBeGreaterThan(0);
     }, 50);
 
-    it('Requesting a DataProvider not cached collection thrown an error', done => {
+    it('Requesting a DataProvider not cached collection thrown an error', (done) => {
         let jsonRipper: JsonRipper = new JsonRipper();
         jsonRipper
             .getCollection('some/bad/url')
             .then()
-            .catch(data => {
+            .catch((data) => {
                 done();
             });
     });

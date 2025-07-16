@@ -85,10 +85,10 @@ describe('core methods', () => {
         let emmits: any = await test_service
             .get('1')
             .pipe(
-                tap(emmit => {
+                tap((emmit) => {
                     resource = emmit;
                 }),
-                map(emmit => {
+                map((emmit) => {
                     return { loaded: emmit.loaded, source: emmit.source };
                 }),
                 toArray()
@@ -155,7 +155,7 @@ describe('core methods', () => {
         await test_service
             .get('1', { include: ['test_resource.test_resource'] })
             .toPromise()
-            .then(resource => {
+            .then((resource) => {
                 expect(test_resource.type).toBe('test_resources');
                 expect(test_resource.id).toBe('1');
                 expect(resource.attributes.name).toBe('test_name');
@@ -164,10 +164,10 @@ describe('core methods', () => {
                 expect((<DocumentResource>resource.relationships.test_resource).data.id).toBe('2');
                 expect((<DocumentResource>resource.relationships.test_resource).data.attributes.name).toBe('test_name_2');
                 expect(
-                    (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '3')
+                    (<DocumentCollection>resource.relationships.test_resources).data.find((related_resource) => related_resource.id === '3')
                 ).toBeTruthy();
                 expect(
-                    (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '3')
+                    (<DocumentCollection>resource.relationships.test_resources).data.find((related_resource) => related_resource.id === '3')
                         .attributes.name
                 ).toBe('test_name_3');
                 let has_one_relationship: Resource | null | undefined = (<DocumentResource>resource.relationships.test_resource).data;
@@ -217,7 +217,7 @@ describe('core methods', () => {
         await test_service
             .get('1', { include: ['test_resource', 'test_resources'] })
             .toPromise()
-            .then(resource => {
+            .then((resource) => {
                 expect(resource.type).toBe('test_resources');
                 expect(resource.id).toBe('1');
                 expect(resource.attributes.name).toBe('test_name');
@@ -226,17 +226,17 @@ describe('core methods', () => {
                 expect((<DocumentResource>resource.relationships.test_resource).data.id).toBe('2');
                 expect((<DocumentResource>resource.relationships.test_resource).data.attributes.name).toBe('test_name_2');
                 expect(
-                    (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '3')
+                    (<DocumentCollection>resource.relationships.test_resources).data.find((related_resource) => related_resource.id === '3')
                 ).toBeTruthy();
                 expect(
-                    (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '3')
+                    (<DocumentCollection>resource.relationships.test_resources).data.find((related_resource) => related_resource.id === '3')
                         .attributes.name
                 ).toBe('test_name_3');
                 expect(
-                    (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '4')
+                    (<DocumentCollection>resource.relationships.test_resources).data.find((related_resource) => related_resource.id === '4')
                 ).toBeTruthy();
                 expect(
-                    (<DocumentCollection>resource.relationships.test_resources).data.find(related_resource => related_resource.id === '4')
+                    (<DocumentCollection>resource.relationships.test_resources).data.find((related_resource) => related_resource.id === '4')
                         .attributes.name
                 ).toBe('test_name_4');
             });
@@ -255,7 +255,7 @@ describe('core methods', () => {
         await test_service
             .get('1')
             .toPromise()
-            .then(resource => {
+            .then((resource) => {
                 expect(resource.type).toBe('test_resources');
                 expect(resource.id).toBe('1');
                 expect(resource.attributes.name).toBe('test_name');

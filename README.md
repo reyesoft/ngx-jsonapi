@@ -61,9 +61,9 @@ import { NgxJsonapiModule } from 'ngx-jsonapi';
 @NgModule({
     imports: [
         NgxJsonapiModule.forRoot({
-            url: '//jsonapiplayground.reyesoft.com/v2/'
-        })
-    ]
+            url: '//jsonapiplayground.reyesoft.com/v2/',
+        }),
+    ],
 })
 export class AppModule {}
 ```
@@ -82,19 +82,19 @@ import { JsonRipper } from 'ngx-jsonapi/services/json-ripper';
 @NgModule({
     imports: [
         NgxJsonapiModule.forRoot({
-            url: '//jsonapiplayground.reyesoft.com/v2/'
-        })
+            url: '//jsonapiplayground.reyesoft.com/v2/',
+        }),
     ],
     providers: [
         {
             provide: JSONAPI_RIPPER_SERVICE,
-            useClass: JsonRipperFake
+            useClass: JsonRipperFake,
         },
         {
             provide: JSONAPI_STORE_SERVICE,
-            useClass: StoreFakeService
-        }
-    ]
+            useClass: StoreFakeService,
+        },
+    ],
 })
 export class AppModule {}
 ```
@@ -116,12 +116,12 @@ import { Photo } from '../photos/photos.service';
 export class Author extends Resource {
     public attributes = {
         name: 'default name',
-        date_of_birth: ''
+        date_of_birth: '',
     };
 
     public relationships = {
         books: new DocumentCollection<Book>(),
-        photo: new DocumentResource<Photo>()
+        photo: new DocumentResource<Photo>(),
     };
 }
 
@@ -144,7 +144,7 @@ import { AuthorsService, Author } from './../authors.service';
 
 @Component({
     selector: 'demo-authors',
-    templateUrl: './authors.component.html'
+    templateUrl: './authors.component.html',
 })
 export class AuthorsComponent {
     public authors: DocumentCollection<Author>;
@@ -154,7 +154,7 @@ export class AuthorsComponent {
             .all({
                 // include: ['books', 'photos'],
             })
-            .subscribe(authors => (this.authors = authors));
+            .subscribe((authors) => (this.authors = authors));
     }
 }
 ```
@@ -175,7 +175,7 @@ Example: `name` is a authors attribute, and makes a query like `/authors?sort=na
 
 ```typescript
 let authors = authorsService.all({
-    sort: ['name', 'job_title']
+    sort: ['name', 'job_title'],
 });
 ```
 
@@ -185,7 +185,7 @@ Filter resources with `attribute: value` values. Filters are used as 'exact matc
 
 ```typescript
 authorsService.all({
-    remotefilter: { country: 'Argentina' }
+    remotefilter: { country: 'Argentina' },
 });
 ```
 
@@ -241,16 +241,16 @@ let relatedbooks = booksService.all({ beforepath: 'authors/1' });
 // you need get a cached object? you can force ttl on get
 let author$ = authorsService.get(
     'some_author_id',
-    { ttl: 60 } // ttl on seconds (default: 0)
+    { ttl: 60 }, // ttl on seconds (default: 0)
 );
 ```
 
 ### Update a resource
 
 ```typescript
-authorsService.get('some_author_id').suscribe(author => {
+authorsService.get('some_author_id').suscribe((author) => {
     this.author.attributes.name += 'New Name';
-    this.author.save(success => {
+    this.author.save((success) => {
         console.log('author saved!');
     });
 });

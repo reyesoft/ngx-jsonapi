@@ -70,7 +70,7 @@ export class Core {
         return Core.injectedServices.JsonapiHttp.exec(path, method, data).pipe(
             // map(data => { return data.body }),
             tap(() => Core.me.refreshLoadings(-1)),
-            catchError(error => {
+            catchError((error) => {
                 error = error.error || error;
                 Core.me.refreshLoadings(-1);
 
@@ -175,7 +175,7 @@ export class Core {
             } else {
                 // relation hasMany
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
-                    relationship.data.forEach(relationresource => {
+                    relationship.data.forEach((relationresource) => {
                         newresource.addRelationship(this.duplicateResource(<R>relationresource), alias);
                     });
                 } else {
