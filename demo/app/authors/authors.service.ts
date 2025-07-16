@@ -11,20 +11,20 @@ export class Author extends Resource {
         created_at: string;
         updated_at: string;
     } = {
-            name: 'default name',
-            date_of_birth: '',
-            date_of_death: '',
-            created_at: '',
-            updated_at: ''
-        };
+        name: 'default name',
+        date_of_birth: '',
+        date_of_death: '',
+        created_at: '',
+        updated_at: ''
+    };
 
     public relationships: {
         books: DocumentCollection<Book>;
         photos: DocumentCollection<Photo>;
     } = {
-            books: new DocumentCollection<Book>(),
-            photos: new DocumentCollection<Photo>()
-        };
+        books: new DocumentCollection<Book>(),
+        photos: new DocumentCollection<Photo>()
+    };
 }
 
 @Injectable()

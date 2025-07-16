@@ -10,19 +10,19 @@ export class Book extends Resource {
         created_at: string;
         updated_at: string;
     } = {
-            date_published: '',
-            title: '',
-            created_at: '',
-            updated_at: ''
-        };
+        date_published: '',
+        title: '',
+        created_at: '',
+        updated_at: ''
+    };
 
     public relationships: {
         author: DocumentResource<Author>;
         photos: DocumentCollection<Photo>;
     } = {
-            author: new DocumentResource<Author>(),
-            photos: new DocumentCollection<Photo>()
-        };
+        author: new DocumentResource<Author>(),
+        photos: new DocumentCollection<Photo>()
+    };
 }
 
 @Injectable()
