@@ -22,7 +22,7 @@ jobs:
           key: yarn-cache-${{ hashFiles('yarn.lock') }}
 
       - name: Instalar dependencias
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Prettier TS
         run: yarn prettier-ts:show --list-different
