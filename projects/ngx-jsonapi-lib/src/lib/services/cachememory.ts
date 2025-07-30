@@ -1,8 +1,8 @@
-import { Base } from "./base";
-import { Resource } from "../resource";
-import { Converter } from "./converter";
-import { DocumentCollection } from "../document-collection";
-import { IObjectsById } from "../interfaces";
+import { Base } from './base';
+import { Resource } from '../resource';
+import { Converter } from './converter';
+import { DocumentCollection } from '../document-collection';
+import { IObjectsById } from '../interfaces';
 
 export class CacheMemory<R extends Resource = Resource> {
     private resources: IObjectsById<Resource> = {};
@@ -40,19 +40,17 @@ export class CacheMemory<R extends Resource = Resource> {
             return this.resources[this.getKey(type, id)];
         }
 
-        throw new Error(
-            "The requested resource does not exist in cache memory"
-        );
+        throw new Error('The requested resource does not exist in cache memory');
     }
 
     private getKey(type: string, id: string): string {
-        return type + "." + id;
+        return type + '.' + id;
     }
 
     public getOrCreateCollection(url: string): DocumentCollection<R> {
         if (!(url in this.collections)) {
             this.collections[url] = new DocumentCollection();
-            this.collections[url].source = "new";
+            this.collections[url].source = 'new';
         }
 
         return this.collections[url];
@@ -88,21 +86,16 @@ export class CacheMemory<R extends Resource = Resource> {
         return resource;
     }
 
-    public setResource(
-        resource: Resource,
-        update_lastupdate: boolean = false
-    ): void {
+    public setResource(resource: Resource, update_lastupdate: boolean = false): void {
         if (this.getKey(resource.type, resource.id) in this.resources) {
             this.fillExistentResource(resource);
         } else {
             this.resources[this.getKey(resource.type, resource.id)] = resource;
         }
-        this.resources[
-            this.getKey(resource.type, resource.id)
-        ].cache_last_update = update_lastupdate ? Date.now() : 0;
+        this.resources[this.getKey(resource.type, resource.id)].cache_last_update = update_lastupdate ? Date.now() : 0;
     }
 
-    public deprecateCollections(path_includes: string = ""): boolean {
+    public deprecateCollections(path_includes: string = ''): boolean {
         Object.keys(this.collections).forEach((collection_key): void => {
             if (collection_key.includes(path_includes)) {
                 this.collections[collection_key].cache_last_update = 0;
@@ -120,9 +113,7 @@ export class CacheMemory<R extends Resource = Resource> {
         Base.forEach(this.collections, (value, url) => {
             value.data.splice(
                 value.data.findIndex(
-                    (resource_on_collection: Resource) =>
-                        resource_on_collection.type === type &&
-                        resource_on_collection.id === id
+                    (resource_on_collection: Resource) => resource_on_collection.type === type && resource_on_collection.id === id
                 ),
                 1
             );
@@ -132,17 +123,12 @@ export class CacheMemory<R extends Resource = Resource> {
         // this.resources[id].relationships = {}; // just for confirm deletion on view
         // eslint-disable-next-line no-restricted-syntax
         for (let relationship in resource.relationships) {
-            if (
-                resource.relationships[relationship].data === null ||
-                resource.relationships[relationship].data === undefined
-            ) {
+            if (resource.relationships[relationship].data === null || resource.relationships[relationship].data === undefined) {
                 continue;
             }
             if (resource.relationships[relationship].data instanceof Array) {
                 resource.relationships[relationship].data = []; // just in case that there is a for loop using it
-            } else if (
-                resource.relationships[relationship].data instanceof Object
-            ) {
+            } else if (resource.relationships[relationship].data instanceof Object) {
                 delete resource.relationships[relationship].data;
             }
         }
@@ -150,18 +136,14 @@ export class CacheMemory<R extends Resource = Resource> {
     }
 
     private fillExistentResource(source: Resource): void {
-        let destination: Resource = this.getResourceOrFail(
-            source.type,
-            source.id
-        );
+        let destination: Resource = this.getResourceOrFail(source.type, source.id);
 
         destination.attributes = {
             ...destination.attributes,
             ...source.attributes
         };
 
-        destination.relationships =
-            destination.relationships || source.relationships;
+        destination.relationships = destination.relationships || source.relationships;
 
         // remove relationships on destination resource
         // for (let type_alias in destination.relationships) {

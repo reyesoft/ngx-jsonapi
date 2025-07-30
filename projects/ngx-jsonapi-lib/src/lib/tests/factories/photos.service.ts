@@ -1,16 +1,16 @@
-import { Resource } from "../../resource";
-import { Service } from "../../service";
+import { Resource } from '../../resource';
+import { Service } from '../../service';
 
 export class Photo extends Resource {
     public attributes: any = {
-        title: "",
-        uri: "",
-        imageable_id: "",
+        title: '',
+        uri: '',
+        imageable_id: '',
         created_at: new Date(),
         updated_at: new Date()
     };
 
-    public type: string = "photos";
+    public type: string = 'photos';
     public ttl: number = 0;
     public static test_ttl: any;
 
@@ -29,5 +29,5 @@ export class PhotosService extends Service<Photo> {
         this.register();
     }
     public resource: typeof Photo = Photo;
-    public type: string = "photos";
+    public type: string = 'photos';
 }

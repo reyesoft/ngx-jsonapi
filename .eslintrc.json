@@ -20,12 +20,14 @@
             },
             "extends": [
                 "plugin:@angular-eslint/recommended",
-                "plugin:@typescript-eslint/recommended"
+                "plugin:@typescript-eslint/recommended",
+                "prettier"
             ],
             "plugins": [
                 "eslint-plugin-no-null",
                 "eslint-plugin-unicorn",
-                "eslint-plugin-rxjs"
+                "eslint-plugin-rxjs",
+                "prettier"
             ],
             "rules": {
                 "@angular-eslint/component-selector": [
@@ -148,41 +150,15 @@
                     "error",
                     "multi-line"
                 ],
-                "indent": [
-                    "error",
-                    4,
-                    {
-                        "SwitchCase": 1
-                    }
-                ],
-                "default-case": "off",
-                "eol-last": "off",
-                "guard-for-in": "off",
-                "import/no-default-export": "off",
-                "import/no-deprecated": "off",
-                "import/no-extraneous-dependencies": "off",
-                "import/no-internal-modules": "off",
-                "import/no-unassigned-import": "off",
-                "import/order": "off",
-                "jsdoc/no-types": "off",
-                "linebreak-style": "off",
-                "max-len": "off",
                 "max-lines": [
                     "error",
                     1000
                 ],
-                "new-parens": "off",
-                "newline-per-chained-call": "off",
-                "no-cond-assign": "off",
                 "no-duplicate-case": "error",
                 "no-duplicate-imports": "error",
                 "no-empty": "error",
                 "no-extra-bind": "error",
-                "no-extra-semi": "off",
-                "no-irregular-whitespace": "off",
-                "no-magic-numbers": "off",
                 "no-new-func": "error",
-                "no-null/no-null": "off",
                 "no-plusplus": [
                     "error",
                     {
@@ -198,10 +174,7 @@
                 "no-sequences": "error",
                 "no-sparse-arrays": "error",
                 "no-template-curly-in-string": "error",
-                "no-trailing-spaces": "off",
-                "no-useless-constructor": "off",
                 "no-void": "error",
-                "object-shorthand": "off",
                 "padding-line-between-statements": [
                     "error",
                     {
@@ -210,11 +183,7 @@
                         "next": "return"
                     }
                 ],
-                "no-underscore-dangle": "off",
-                "prefer-const": "off",
                 "prefer-object-spread": "error",
-                "prefer-template": "off",
-                "quote-props": "off",
                 "unicorn/filename-case": [
                     "error",
                     {
@@ -229,12 +198,9 @@
                 "rxjs/no-unsafe-switchmap": "error",
                 "rxjs/no-unsafe-takeuntil": "error",
                 "rxjs/throw-error": "error",
-                "space-before-function-paren": "off",
-                "space-in-parens": [
-                    "off",
-                    "never"
-                ],
-                "yoda": "error"
+                "yoda": "error",
+                "@typescript-eslint/no-explicit-any": "off",
+                "indent": "off"
             }
         },
         {

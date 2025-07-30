@@ -1,22 +1,22 @@
-import { IStoreService } from "./sources/store-service.interface";
-import { IRipper } from "./services/json-ripper.interface";
-import { Injector, Injectable, Optional, isDevMode } from "@angular/core";
-import { CacheMemory } from "./services/cachememory";
-import { serviceIsRegistered } from "./common";
-import { PathBuilder } from "./services/path-builder";
-import { Service } from "./service";
-import { Resource } from "./resource";
-import { Http as JsonapiHttpImported } from "./sources/http.service";
-import { IDocumentResource } from "./interfaces/data-object";
-import { Observable, throwError, noop } from "rxjs";
-import { tap, catchError } from "rxjs/operators";
-import { IDocumentData } from "./interfaces/document";
-import { DocumentCollection } from "./document-collection";
-import { DocumentResource } from "./document-resource";
-import { JsonapiConfig } from "./jsonapi-config";
+import { IStoreService } from './sources/store-service.interface';
+import { IRipper } from './services/json-ripper.interface';
+import { Injector, Injectable, Optional, isDevMode } from '@angular/core';
+import { CacheMemory } from './services/cachememory';
+import { serviceIsRegistered } from './common';
+import { PathBuilder } from './services/path-builder';
+import { Service } from './service';
+import { Resource } from './resource';
+import { Http as JsonapiHttpImported } from './sources/http.service';
+import { IDocumentResource } from './interfaces/data-object';
+import { Observable, throwError, noop } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
+import { IDocumentData } from './interfaces/document';
+import { DocumentCollection } from './document-collection';
+import { DocumentResource } from './document-resource';
+import { JsonapiConfig } from './jsonapi-config';
 
-export const JSONAPI_RIPPER_SERVICE: string = "jsonapi_ripper_service";
-export const JSONAPI_STORE_SERVICE: string = "jsonapi_store_service";
+export const JSONAPI_RIPPER_SERVICE: string = 'jsonapi_ripper_service';
+export const JSONAPI_STORE_SERVICE: string = 'jsonapi_store_service';
 
 @Injectable()
 export class Core {
@@ -36,24 +36,15 @@ export class Core {
 
     private resourceServices: { [type: string]: Service } = {};
 
-    public constructor(
-        @Optional() user_config: JsonapiConfig,
-        jsonapiHttp: JsonapiHttpImported,
-        injector: Injector
-    ) {
+    public constructor(@Optional() user_config: JsonapiConfig, jsonapiHttp: JsonapiHttpImported, injector: Injector) {
         this.config = new JsonapiConfig();
         Object.keys(this.config).forEach((k): void => {
-            (<any>this.config)[k] =
-                user_config[k] !== undefined
-                    ? user_config[k]
-                    : (<any>this.config)[k];
+            (<any>this.config)[k] = user_config[k] !== undefined ? user_config[k] : (<any>this.config)[k];
         });
 
         Core.me = this;
         Core.injectedServices = {
-            JsonapiStoreService: injector.get<IStoreService>(
-                <any>JSONAPI_STORE_SERVICE
-            ),
+            JsonapiStoreService: injector.get<IStoreService>(<any>JSONAPI_STORE_SERVICE),
             JsonapiHttp: jsonapiHttp,
             json_ripper: injector.get<IRipper>(<any>JSONAPI_RIPPER_SERVICE),
             rsJsonapiConfig: this.config
@@ -61,11 +52,11 @@ export class Core {
     }
 
     public static delete(path: string): Observable<IDocumentData> {
-        return Core.exec(path, "DELETE");
+        return Core.exec(path, 'DELETE');
     }
 
     public static get(path: string): Observable<IDocumentData> {
-        return Core.exec(path, "get");
+        return Core.exec(path, 'get');
     }
 
     public static exec(
@@ -79,27 +70,17 @@ export class Core {
         return Core.injectedServices.JsonapiHttp.exec(path, method, data).pipe(
             // map(data => { return data.body }),
             tap(() => Core.me.refreshLoadings(-1)),
-            catchError(error => {
+            catchError((error) => {
                 error = error.error || error;
                 Core.me.refreshLoadings(-1);
 
                 if (error.status <= 0) {
                     // offline?
                     if (!Core.me.loadingsOffline(error) && isDevMode()) {
-                        console.warn(
-                            "Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>",
-                            error
-                        );
+                        console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsOffline for catch it) error =>', error);
                     }
-                } else if (
-                    call_loadings_error &&
-                    !Core.me.loadingsError(error) &&
-                    isDevMode()
-                ) {
-                    console.warn(
-                        "Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>",
-                        error
-                    );
+                } else if (call_loadings_error && !Core.me.loadingsError(error) && isDevMode()) {
+                    console.warn('Jsonapi.Http.exec (use JsonapiCore.loadingsError for catch it) error =>', error);
                 }
 
                 return throwError(error);
@@ -107,9 +88,7 @@ export class Core {
         );
     }
 
-    public registerService<R extends Resource>(
-        clase: Service
-    ): Service<R> | false {
+    public registerService<R extends Resource>(clase: Service): Service<R> | false {
         if (clase.type in this.resourceServices) {
             return false;
         }
@@ -135,10 +114,7 @@ export class Core {
     }
 
     @serviceIsRegistered
-    public static removeCachedResource(
-        resource_type: string,
-        resource_id: string
-    ): void {
+    public static removeCachedResource(resource_type: string, resource_id: string): void {
         CacheMemory.getInstance().removeResource(resource_type, resource_id);
         // TODO: FE-85 ---> add method on JsonRipper, if store is enabled
     }
@@ -171,20 +147,13 @@ export class Core {
         Core.injectedServices.JsonapiStoreService.clearCache();
         CacheMemory.getInstance().clearCache();
 
-        return Core.injectedServices.json_ripper
-            .deprecateCollection("")
-            .then(() => true);
+        return Core.injectedServices.json_ripper.deprecateCollection('').then(() => true);
     }
 
     // just an helper
-    public duplicateResource<R extends Resource>(
-        resource: R,
-        ...relations_alias_to_duplicate_too: Array<string>
-    ): R {
-        let newresource: R = <R>this.getResourceServiceOrFail(
-            resource.type
-        ).new();
-        newresource.id = "new_" + Math.floor(Math.random() * 10000).toString();
+    public duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: Array<string>): R {
+        let newresource: R = <R>this.getResourceServiceOrFail(resource.type).new();
+        newresource.id = 'new_' + Math.floor(Math.random() * 10000).toString();
         newresource.attributes = {
             ...newresource.attributes,
             ...resource.attributes
@@ -192,42 +161,28 @@ export class Core {
 
         // eslint-disable-next-line no-restricted-syntax
         for (const alias in resource.relationships) {
-            let relationship: DocumentCollection | DocumentResource =
-                resource.relationships[alias];
+            let relationship: DocumentCollection | DocumentResource = resource.relationships[alias];
 
             if (!relationship.data) {
-                newresource.relationships[alias] =
-                    resource.relationships[alias];
+                newresource.relationships[alias] = resource.relationships[alias];
                 continue;
             }
 
-            if ("id" in relationship.data) {
+            if ('id' in relationship.data) {
                 // relation hasOne
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
-                    newresource.addRelationship(
-                        this.duplicateResource(<Resource>relationship.data),
-                        alias
-                    );
+                    newresource.addRelationship(this.duplicateResource(<Resource>relationship.data), alias);
                 } else {
-                    newresource.addRelationship(
-                        <Resource>relationship.data,
-                        alias
-                    );
+                    newresource.addRelationship(<Resource>relationship.data, alias);
                 }
             } else {
                 // relation hasMany
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
-                    relationship.data.forEach(relationresource => {
-                        newresource.addRelationship(
-                            this.duplicateResource(<R>relationresource),
-                            alias
-                        );
+                    relationship.data.forEach((relationresource) => {
+                        newresource.addRelationship(this.duplicateResource(<R>relationresource), alias);
                     });
                 } else {
-                    newresource.addRelationships(
-                        <Array<Resource>>relationship.data,
-                        alias
-                    );
+                    newresource.addRelationships(<Array<Resource>>relationship.data, alias);
                 }
             }
         }

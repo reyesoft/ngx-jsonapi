@@ -1,32 +1,26 @@
-import { IBasicDataResource } from "./interfaces/data-resource";
-import { IDocumentData } from "./interfaces/document";
-import { Resource } from "./resource";
+import { IBasicDataResource } from './interfaces/data-resource';
+import { IDocumentData } from './interfaces/document';
+import { Resource } from './resource';
 
-export type SourceType = "new" | "memory" | "store" | "server";
+export type SourceType = 'new' | 'memory' | 'store' | 'server';
 
 interface IDocumentHasIds {
     data: Array<IBasicDataResource>;
-    content: "ids";
+    content: 'ids';
 }
 interface IDocumentHasResources {
     data: Array<Resource>;
-    content: "collection";
+    content: 'collection';
 }
 interface IDocumentHasId {
     data: IBasicDataResource;
-    content: "id";
+    content: 'id';
 }
 interface IDocumentHasResource {
     data: Resource;
-    content: "resource";
+    content: 'resource';
 }
-export class Document
-    implements
-        IDocumentData,
-        IDocumentHasResources,
-        IDocumentHasIds,
-        IDocumentHasId,
-        IDocumentHasResource {
+export class Document implements IDocumentData, IDocumentHasResources, IDocumentHasIds, IDocumentHasId, IDocumentHasResource {
     public data: any;
     public builded: boolean = false;
     public content: any;
@@ -34,7 +28,7 @@ export class Document
     // deprecated since 2.2.0. Use loaded.
     public is_loading: boolean = true;
     public loaded: boolean = false;
-    public source: SourceType = "new";
+    public source: SourceType = 'new';
     public cache_last_update: number = 0;
     public meta: {
         [key: string]: any;

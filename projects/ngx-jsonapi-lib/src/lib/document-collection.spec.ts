@@ -1,30 +1,30 @@
-import { DocumentCollection } from "./document-collection";
-import { Resource } from "./resource";
+import { DocumentCollection } from './document-collection';
+import { Resource } from './resource';
 
-describe("document-collection", () => {
+describe('document-collection', () => {
     let collection: DocumentCollection = new DocumentCollection();
 
-    it("should be can created", () => {
+    it('should be can created', () => {
         expect(collection.builded).toBe(false);
     });
 
-    it("should be work with trackBy", () => {
+    it('should be work with trackBy', () => {
         let resource: Resource = new Resource();
-        resource.id = "5";
-        expect(collection.trackBy(resource)).toBe("5");
+        resource.id = '5';
+        expect(collection.trackBy(resource)).toBe('5');
     });
 
-    it("should be find resources with find() method", () => {
+    it('should be find resources with find() method', () => {
         let resource1: Resource = new Resource();
-        resource1.id = "1";
+        resource1.id = '1';
         let resource2: Resource = new Resource();
-        resource2.id = "2";
+        resource2.id = '2';
         collection.data.push(resource1);
         collection.data.push(resource2);
-        expect(collection.find("2").id).toBe("2");
+        expect(collection.find('2').id).toBe('2');
     });
 
-    it("fill method should set collection s builded attribute to true if data_collection.data argument is en empty list", () => {
+    it('fill method should set collection s builded attribute to true if data_collection.data argument is en empty list', () => {
         let data_collection: any = { data: [] };
         let new_collection: DocumentCollection = new DocumentCollection();
         new_collection.fill(data_collection);

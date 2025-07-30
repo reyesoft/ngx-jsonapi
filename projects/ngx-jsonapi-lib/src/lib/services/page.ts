@@ -1,4 +1,4 @@
-import { IPage } from "../interfaces/page";
+import { IPage } from '../interfaces/page';
 
 export class Page implements IPage {
     // eslint-disable-next-line id-blacklist

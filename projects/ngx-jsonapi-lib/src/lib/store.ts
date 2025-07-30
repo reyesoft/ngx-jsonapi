@@ -1,2 +1,2 @@
-export { JsonRipper } from "./services/json-ripper";
-export { StoreService } from "./sources/store.service";
+export { JsonRipper } from './services/json-ripper';
+export { StoreService } from './sources/store.service';

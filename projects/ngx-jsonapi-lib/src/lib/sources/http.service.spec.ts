@@ -1,73 +1,50 @@
-import { TestBed, waitForAsync } from "@angular/core/testing";
-import { JsonapiConfig } from "../jsonapi-config";
-import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { tap, mapTo, share } from "rxjs/operators";
-import { Observable, of, timer, Subject } from "rxjs";
+import { TestBed, waitForAsync } from '@angular/core/testing';
+import { JsonapiConfig } from '../jsonapi-config';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { tap, mapTo, share } from 'rxjs/operators';
+import { Observable, of, timer, Subject } from 'rxjs';
 
-import { Http } from "./http.service";
-import { IDocumentData } from "../interfaces/document";
+import { Http } from './http.service';
+import { IDocumentData } from '../interfaces/document';
 
 class JsonapiConfigMock {
-    public url: string = "some-url";
+    public url: string = 'some-url';
 }
 
-describe("Http service", () => {
+describe('Http service', () => {
     let service: Http;
     let data_object: any = {
         data: {
-            type: "data",
-            id: "id"
+            type: 'data',
+            id: 'id'
         },
-        meta: { meta: "meta" }
+        meta: { meta: 'meta' }
     };
-    beforeEach(
-        waitForAsync(() => {
-            TestBed.configureTestingModule({
-                imports: [HttpClientTestingModule],
-                providers: [
-                    Http,
-                    { provide: JsonapiConfig, useValue: JsonapiConfigMock }
-                ]
-            }).compileComponents();
-        })
-    );
-    it("should create Http service", () => {
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+            providers: [Http, { provide: JsonapiConfig, useValue: JsonapiConfigMock }]
+        }).compileComponents();
+    }));
+    it('should create Http service', () => {
         service = TestBed.inject(Http);
         expect(service).toBeTruthy();
     });
-    it("exec should return an observable with the http request", async () => {
+    it('exec should return an observable with the http request', async () => {
         let response: Observable<any> = of(data_object);
-        jest.spyOn((service as any).http, "request").and.returnValue(response);
-        let exec_observable: Observable<IDocumentData> = service.exec(
-            "/test",
-            "patch",
-            data_object
-        );
-        await exec_observable.subscribe(data =>
-            expect(data).toEqual(data_object)
-        );
+        jest.spyOn((service as any).http, 'request').and.returnValue(response);
+        let exec_observable: Observable<IDocumentData> = service.exec('/test', 'patch', data_object);
+        await exec_observable.subscribe((data) => expect(data).toEqual(data_object));
     });
     it(`when two requests to the same URL, and the second is made before the first has finished,
         exec should return the same observable with the http request without duplicating`, async () => {
         let subject: Subject<any> = new Subject();
-        let request_spy: jasmine.Spy = jest
-            .spyOn((service as any).http, "request")
-            .and.returnValue(subject);
-        let exec_observable: Observable<IDocumentData> = service.exec(
-            "/test",
-            "patch",
-            data_object
-        );
-        let second_exec_observable: Observable<IDocumentData> = service.exec(
-            "/test",
-            "patch",
-            data_object
-        );
+        let request_spy: jasmine.Spy = jest.spyOn((service as any).http, 'request').and.returnValue(subject);
+        let exec_observable: Observable<IDocumentData> = service.exec('/test', 'patch', data_object);
+        let second_exec_observable: Observable<IDocumentData> = service.exec('/test', 'patch', data_object);
         subject.next(data_object);
-        await exec_observable.subscribe(data =>
-            expect(data).toEqual(data_object)
-        );
-        await exec_observable.subscribe(data => {
+        await exec_observable.subscribe((data) => expect(data).toEqual(data_object));
+        await exec_observable.subscribe((data) => {
             expect(data).toEqual(data_object);
             expect(request_spy).toHaveBeenCalledTimes(1);
         });

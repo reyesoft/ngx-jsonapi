@@ -1,7 +1,7 @@
-import { Injectable } from "@angular/core";
-import { Service, Resource, DocumentCollection } from "ngx-jsonapi";
-import { Book } from "../books/books.service";
-import { Photo } from "../photos/photos.service";
+import { Injectable } from '@angular/core';
+import { Service, Resource, DocumentCollection } from 'ngx-jsonapi';
+import { Book } from '../books/books.service';
+import { Photo } from '../photos/photos.service';
 
 export class Author extends Resource {
     public attributes: {
@@ -11,11 +11,11 @@ export class Author extends Resource {
         created_at: string;
         updated_at: string;
     } = {
-        name: "default name",
-        date_of_birth: "",
-        date_of_death: "",
-        created_at: "",
-        updated_at: ""
+        name: 'default name',
+        date_of_birth: '',
+        date_of_death: '',
+        created_at: '',
+        updated_at: ''
     };
 
     public relationships: {
@@ -30,5 +30,5 @@ export class Author extends Resource {
 @Injectable()
 export class AuthorsService extends Service<Author> {
     public resource: typeof Author = Author;
-    public type: string = "authors";
+    public type: string = 'authors';
 }

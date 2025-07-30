@@ -1,13 +1,13 @@
-import { Component } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { Resource } from "ngx-jsonapi";
-import { AuthorsService } from "../../authors/authors.service";
-import { BooksService, Book } from "./../books.service";
-import { PhotosService } from "../../photos/photos.service";
+import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Resource } from 'ngx-jsonapi';
+import { AuthorsService } from '../../authors/authors.service';
+import { BooksService, Book } from './../books.service';
+import { PhotosService } from '../../photos/photos.service';
 
 @Component({
-    selector: "demo-book",
-    templateUrl: "./book.component.html"
+    selector: 'demo-book',
+    templateUrl: './book.component.html'
 })
 export class BookComponent {
     public book: Book;
@@ -19,19 +19,19 @@ export class BookComponent {
         private route: ActivatedRoute
     ) {
         route.params.subscribe(({ id }) => {
-            booksService.get(id, { include: ["author", "photos"] }).subscribe(
-                book => {
+            booksService.get(id, { include: ['author', 'photos'] }).subscribe(
+                (book) => {
                     this.book = book;
-                    console.log("success book", this.book);
+                    console.log('success book', this.book);
                 },
-                error => console.log("error books controll", error)
+                (error) => console.log('error books controll', error)
             );
         });
     }
 
     public getAuthorName(book: Resource): string {
-        let data: Resource = <Resource>book.relationships.author.data;
+        const data: Resource = <Resource>book.relationships.author.data;
 
-        return data.attributes ? data.attributes.name : "";
+        return data.attributes ? data.attributes.name : '';
     }
 }

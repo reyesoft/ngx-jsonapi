@@ -1,26 +1,24 @@
 // import 'localforage-getitems';
-import { TestBed, waitForAsync } from "@angular/core/testing";
-import { StoreService } from "./store.service";
+import { TestBed, waitForAsync } from '@angular/core/testing';
+import { StoreService } from './store.service';
 // import * as localForage from 'localforage';
 // import { extendPrototype as extendGetitems } from 'localforage-getitems';
-import { Base } from "../services/base";
-import { noop, Subject, Observable } from "rxjs";
-import { IDataResource } from "../interfaces/data-resource";
-import { IDataCollection } from "../interfaces/data-collection";
-import { IObjectsById } from "../interfaces";
+import { Base } from '../services/base';
+import { noop, Subject, Observable } from 'rxjs';
+import { IDataResource } from '../interfaces/data-resource';
+import { IDataCollection } from '../interfaces/data-collection';
+import { IObjectsById } from '../interfaces';
 
-describe("Store service", () => {
+describe('Store service', () => {
     let store_service: StoreService;
-    beforeEach(
-        waitForAsync(() => {
-            TestBed.configureTestingModule({
-                providers: [StoreService]
-            }).compileComponents();
-            store_service = TestBed.inject(StoreService);
-        })
-    );
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            providers: [StoreService]
+        }).compileComponents();
+        store_service = TestBed.inject(StoreService);
+    }));
 
-    it("should create Store service", () => {
+    it('should create Store service', () => {
         expect(store_service).toBeTruthy();
     });
 

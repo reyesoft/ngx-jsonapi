@@ -1,23 +1,21 @@
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
-import { RouterTestingModule } from "@angular/router/testing";
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { AuthorsService } from "../authors.service";
-import { AuthorsComponent } from "./authors.component";
-import { NgxJsonapiModule } from "ngx-jsonapi";
+import { AuthorsService } from '../authors.service';
+import { AuthorsComponent } from './authors.component';
+import { NgxJsonapiModule } from 'ngx-jsonapi';
 
-describe("AuthorsComponent", () => {
+describe('AuthorsComponent', () => {
     let component: AuthorsComponent;
     let fixture: ComponentFixture<AuthorsComponent>;
 
-    beforeEach(
-        waitForAsync(() => {
-            TestBed.configureTestingModule({
-                imports: [RouterTestingModule, NgxJsonapiModule],
-                declarations: [AuthorsComponent],
-                providers: [AuthorsService]
-            }).compileComponents();
-        })
-    );
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            imports: [RouterTestingModule, NgxJsonapiModule],
+            declarations: [AuthorsComponent],
+            providers: [AuthorsService]
+        }).compileComponents();
+    }));
 
     beforeEach(() => {
         fixture = TestBed.createComponent(AuthorsComponent);
@@ -25,10 +23,10 @@ describe("AuthorsComponent", () => {
         fixture.detectChanges();
     });
 
-    it("should create", () => {
+    it('should create', () => {
         expect(component).toBeTruthy();
     });
-    it("authors should be filled", () => {
+    it('authors should be filled', () => {
         expect(component.authors).toBeTruthy();
     });
 });

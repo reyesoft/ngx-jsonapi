@@ -1,13 +1,13 @@
-import { NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { SystemsComponent } from "./systems.component";
-import { RouterModule, Routes } from "@angular/router";
-import { SharedModule } from "../shared/shared.module";
-import { SystemsService } from "./systems.service";
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { SystemsComponent } from './systems.component';
+import { RouterModule, Routes } from '@angular/router';
+import { SharedModule } from '../shared/shared.module';
+import { SystemsService } from './systems.service';
 
 export const routes: Routes = [
     {
-        path: "",
+        path: '',
         component: SystemsComponent
     }
 ];

@@ -1,36 +1,30 @@
-import { IStoreService } from "./store-service.interface";
-import { ICacheableDataCollection } from "./../interfaces/data-collection";
-import { ICacheableDataResource } from "./../interfaces/data-resource";
-import Dexie from "dexie";
-import { IDataResource } from "../interfaces/data-resource";
-import { IObjectsById } from "../interfaces";
-import { Injectable } from "@angular/core";
+import { IStoreService } from './store-service.interface';
+import { ICacheableDataCollection } from './../interfaces/data-collection';
+import { ICacheableDataResource } from './../interfaces/data-resource';
+import Dexie from 'dexie';
+import { IDataResource } from '../interfaces/data-resource';
+import { IObjectsById } from '../interfaces';
+import { Injectable } from '@angular/core';
 
 @Injectable()
 export class StoreService implements IStoreService {
     private db: Dexie;
 
     public constructor() {
-        this.db = new Dexie("jsonapi_db");
+        this.db = new Dexie('jsonapi_db');
         this.db.version(1).stores({
-            collections: "",
-            elements: ""
+            collections: '',
+            elements: ''
         });
         this.checkIfIsTimeToClean();
     }
 
-    public async getDataObject(
-        type: "collection" | string,
-        id_or_url: string
-    ): Promise<any> {
+    public async getDataObject(type: 'collection' | string, id_or_url: string): Promise<any> {
         // we use different tables for resources and collections
-        const table_name: any =
-            type === "collection" ? "collections" : "elements";
+        const table_name: any = type === 'collection' ? 'collections' : 'elements';
 
         await this.db.open();
-        let item: any = await this.db
-            .table(table_name)
-            .get(type + "." + id_or_url);
+        let item: any = await this.db.table(table_name).get(type + '.' + id_or_url);
         if (item === undefined) {
             throw new Error();
         }
@@ -38,85 +32,59 @@ export class StoreService implements IStoreService {
         return item;
     }
 
-    public async getDataResources(
-        keys: Array<string>
-    ): Promise<IObjectsById<ICacheableDataResource>> {
-        const collection: Dexie.Collection<any, any> = this.db
-            .table("elements")
-            .where(":id")
-            .anyOf(keys);
+    public async getDataResources(keys: Array<string>): Promise<IObjectsById<ICacheableDataResource>> {
+        const collection: Dexie.Collection<any, any> = this.db.table('elements').where(':id').anyOf(keys);
 
         let resources_by_id: any = {};
-        await collection.each(item => {
+        await collection.each((item) => {
             resources_by_id[item.id] = item;
         });
 
         return resources_by_id;
     }
 
-    public saveResource(
-        type: string,
-        url_or_id: string,
-        value: IDataResource
-    ): void {
+    public saveResource(type: string, url_or_id: string, value: IDataResource): void {
         let data_resource_storage: ICacheableDataResource = {
             ...{ cache_last_update: Date.now() },
             ...value
         };
         this.db.open().then(async () => {
-            return this.db
-                .table("elements")
-                .put(data_resource_storage, type + "." + url_or_id);
+            return this.db.table('elements').put(data_resource_storage, type + '.' + url_or_id);
         });
     }
 
-    public saveCollection(
-        url_or_id: string,
-        value: ICacheableDataCollection
-    ): void {
+    public saveCollection(url_or_id: string, value: ICacheableDataCollection): void {
         let data_collection_storage: ICacheableDataCollection = {
             ...{ cache_last_update: Date.now() },
             ...value
         };
         this.db.open().then(async () => {
-            return this.db
-                .table("collections")
-                .put(data_collection_storage, "collection." + url_or_id);
+            return this.db.table('collections').put(data_collection_storage, 'collection.' + url_or_id);
         });
     }
 
     public clearCache(): void {
         this.db.open().then(async () => {
-            return this.db
-                .table("elements")
-                .toCollection()
-                .delete();
+            return this.db.table('elements').toCollection().delete();
         });
         this.db.open().then(async () => {
-            return this.db
-                .table("collections")
-                .toCollection()
-                .delete();
+            return this.db.table('collections').toCollection().delete();
         });
     }
 
     public deprecateResource(type: string, id: string): void {
         this.db.open().then(async () => {
             return this.db
-                .table("elements")
-                .where(":id")
-                .startsWith(type + "." + id)
+                .table('elements')
+                .where(':id')
+                .startsWith(type + '.' + id)
                 .modify({ cache_last_update: 0 });
         });
     }
 
     public deprecateCollection(key_start_with: string): void {
         this.db.open().then(async () => {
-            return this.db
-                .table("collections")
-                .where(":id")
-                .startsWith(key_start_with)
-                .modify({ cache_last_update: 0 });
+            return this.db.table('collections').where(':id').startsWith(key_start_with).modify({ cache_last_update: 0 });
         });
     }
 

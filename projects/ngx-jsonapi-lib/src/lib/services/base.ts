@@ -1,23 +1,19 @@
-import {
-    IBuildedParamsCollection,
-    IParamsCollection,
-    IParamsResource
-} from "../interfaces";
-import { Page } from "./page";
-import { Resource } from "../resource";
-import { DocumentCollection } from "../document-collection";
+import { IBuildedParamsCollection, IParamsCollection, IParamsResource } from '../interfaces';
+import { Page } from './page';
+import { Resource } from '../resource';
+import { DocumentCollection } from '../document-collection';
 
 export class Base {
     public static ParamsResource: IParamsResource = {
-        beforepath: "",
+        beforepath: '',
         ttl: undefined,
         include: [],
         fields: {},
-        id: ""
+        id: ''
     };
 
     public static ParamsCollection: IBuildedParamsCollection = {
-        beforepath: "",
+        beforepath: '',
         ttl: undefined,
         include: [],
         remotefilter: {},
@@ -25,14 +21,12 @@ export class Base {
         smartfilter: {},
         sort: [],
         page: new Page(),
-        store_cache_method: "individual",
+        store_cache_method: 'individual',
         storage_ttl: 0,
-        cachehash: ""
+        cachehash: ''
     };
 
-    public static newCollection<
-        R extends Resource = Resource
-    >(): DocumentCollection<R> {
+    public static newCollection<R extends Resource = Resource>(): DocumentCollection<R> {
         return new DocumentCollection();
     }
 
@@ -40,11 +34,8 @@ export class Base {
         return ttl >= 0 && Date.now() <= last_update + ttl * 1000;
     }
 
-    public static forEach<T extends { [keyx: string]: any }>(
-        collection: T,
-        fc: (object: any, key?: string | number) => void
-    ): void {
-        Object.keys(collection).forEach(key => {
+    public static forEach<T extends { [keyx: string]: any }>(collection: T, fc: (object: any, key?: string | number) => void): void {
+        Object.keys(collection).forEach((key) => {
             fc(collection[key], key);
         });
     }

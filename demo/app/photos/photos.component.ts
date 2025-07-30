@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewEncapsulation } from "@angular/core";
-import { Service, DocumentResource } from "ngx-jsonapi";
-import { Photo } from "./photos.service";
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Service, DocumentResource } from 'ngx-jsonapi';
+import { Photo } from './photos.service';
 
 @Component({
-    selector: "demo-photos",
-    templateUrl: "./photos.component.html"
+    selector: 'demo-photos',
+    templateUrl: './photos.component.html'
 })
 export class PhotosComponent {
     public photos: DocumentResource<Photo>;
@@ -19,8 +19,8 @@ export class PhotosComponent {
     }
 
     public makeRequest(id: any): void {
-        this.photosService.all().subscribe(succes => {
-            console.log("photos success", id, this.photos);
+        this.photosService.all().subscribe((succes) => {
+            console.log('photos success', id, this.photos);
         });
     }
 }

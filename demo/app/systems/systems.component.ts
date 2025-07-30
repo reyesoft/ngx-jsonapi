@@ -1,11 +1,12 @@
-import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { DocumentCollection } from "ngx-jsonapi";
-import { System, SystemsService } from "./systems.service";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { DocumentCollection } from 'ngx-jsonapi';
+import { System, SystemsService } from './systems.service';
 
 @Component({
-    selector: "bc-systems",
-    templateUrl: "./systems.component.html",
+    // eslint-disable-next-line @angular-eslint/component-selector
+    selector: 'bc-systems',
+    templateUrl: './systems.component.html',
     styles: []
 })
 export class SystemsComponent {
@@ -17,10 +18,10 @@ export class SystemsComponent {
     ) {
         route.queryParams.subscribe(({ page }) => {
             authorsService.all().subscribe(
-                systems => {
+                (systems) => {
                     this.systems = systems;
                 },
-                error => console.error("Could not load authors :(", error)
+                (error) => console.error('Could not load authors :(', error)
             );
         });
     }

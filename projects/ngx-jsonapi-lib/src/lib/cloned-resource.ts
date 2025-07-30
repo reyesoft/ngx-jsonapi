@@ -1,15 +1,14 @@
-import { Resource } from "./resource";
-import { IParamsResource } from "./interfaces";
-import { IDocumentResource } from "./interfaces/data-object";
-import { ClonedDocumentResource } from "./cloned-document-resource";
-import { cloneDeep } from "lodash-es";
-import { IClonedResource } from "./interfaces/cloned-resource";
+import { Resource } from './resource';
+import { IParamsResource } from './interfaces';
+import { IDocumentResource } from './interfaces/data-object';
+import { ClonedDocumentResource } from './cloned-document-resource';
+import { cloneDeep } from 'lodash-es';
+import { IClonedResource } from './interfaces/cloned-resource';
 
-export class ClonedResource<T extends Resource> extends Resource
-    implements IClonedResource {
+export class ClonedResource<T extends Resource> extends Resource implements IClonedResource {
     private parent: Resource;
-    public attributes: T["attributes"];
-    public relationships: T["relationships"];
+    public attributes: T['attributes'];
+    public relationships: T['relationships'];
 
     public constructor(resource: T) {
         super();
@@ -23,11 +22,7 @@ export class ClonedResource<T extends Resource> extends Resource
     }
 
     public toObject(params?: IParamsResource): IDocumentResource {
-        return new ClonedDocumentResource(
-            this,
-            this.parent,
-            params
-        ).getResourceObject();
+        return new ClonedDocumentResource(this, this.parent, params).getResourceObject();
     }
 
     public superToObject(params?: IParamsResource): IDocumentResource {
@@ -37,9 +32,7 @@ export class ClonedResource<T extends Resource> extends Resource
     private copySourceFromParent(): void {
         this.source = this.parent.source;
         Object.keys(this.relationships).forEach((relationship): void => {
-            this.relationships[relationship].source = this.parent.relationships[
-                relationship
-            ].source;
+            this.relationships[relationship].source = this.parent.relationships[relationship].source;
         });
     }
 }

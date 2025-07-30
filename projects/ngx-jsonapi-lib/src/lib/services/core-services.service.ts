@@ -1,5 +1,5 @@
-import "../sources/http.service";
-import "../sources/store.service";
+import '../sources/http.service';
+import '../sources/store.service';
 
 export class CoreServices {
     public constructor(

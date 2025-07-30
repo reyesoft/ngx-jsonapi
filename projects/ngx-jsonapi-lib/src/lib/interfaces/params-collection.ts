@@ -1,5 +1,5 @@
-import { IParams } from "./params";
-import { IPage } from "./page";
+import { IParams } from './params';
+import { IPage } from './page';
 
 export interface IParamsCollection extends IParams {
     remotefilter?: object;
@@ -8,7 +8,7 @@ export interface IParamsCollection extends IParams {
     sort?: Array<string>;
     page?: IPage;
     fields?: object;
-    store_cache_method?: "individual" | "compact"; // solution for big collections
+    store_cache_method?: 'individual' | 'compact'; // solution for big collections
     /** @deprecated since 2.2 */
     storage_ttl?: number;
     /** @deprecated since 2.2 */
@@ -22,7 +22,7 @@ export interface IBuildedParamsCollection extends IParams {
     sort: Array<string>;
     page: IPage;
     fields: object;
-    store_cache_method: "individual" | "compact"; // solution for big collections
+    store_cache_method: 'individual' | 'compact'; // solution for big collections
     /** @deprecated since 2.2 */
     storage_ttl: number;
     /** @deprecated since 2.2 */
