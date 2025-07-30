@@ -1,7 +1,7 @@
-import { Base } from './base';
+import { Base } from "./base";
 
-describe('Base', () => {
-    it('isObjectLive() should be return false', () => {
+describe("Base", () => {
+    it("isObjectLive() should be return false", () => {
         expect(Base.isObjectLive(300, Date.now())).toBe(true);
         expect(Base.isObjectLive(300, Date.now() - 400 * 1000)).toBe(false);
     });

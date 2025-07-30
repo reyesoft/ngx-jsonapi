@@ -1,9 +1,12 @@
-import { IDocumentResource } from './interfaces/data-object';
-import { IClonedResource, isClonedResource } from './interfaces/cloned-resource';
-import { isEqual } from 'lodash-es';
-import { IParamsResource } from './interfaces';
-import { IDataResource } from './interfaces/data-resource';
-import { Resource } from './resource';
+import { IDocumentResource } from "./interfaces/data-object";
+import {
+    IClonedResource,
+    isClonedResource
+} from "./interfaces/cloned-resource";
+import { isEqual } from "lodash-es";
+import { IParamsResource } from "./interfaces";
+import { IDataResource } from "./interfaces/data-resource";
+import { Resource } from "./resource";
 
 export class ClonedDocumentResource {
     // @todo: cannot implement IDocumentResource because toObject returns an object, not an instance,
@@ -37,38 +40,55 @@ export class ClonedDocumentResource {
     }
 
     private removeDuplicatedIncludes(): this {
-        if (!this.resource_object.included || !this.parent_resource_object.included) {
+        if (
+            !this.resource_object.included ||
+            !this.parent_resource_object.included
+        ) {
             return this;
         }
         let parent_included: Array<any> = this.parent_resource_object.included;
-        this.resource_object.included = this.resource_object.included.filter(included_resource => {
-            return !isEqual(
-                included_resource,
-                parent_included.find(include => include.id === included_resource.id)
-            );
-        });
-        this.resource_object.included = this.resource_object.included.map(included => {
-            if (!parent_included.find(include => include.id === included.id)) {
-                return included;
+        this.resource_object.included = this.resource_object.included.filter(
+            included_resource => {
+                return !isEqual(
+                    included_resource,
+                    parent_included.find(
+                        include => include.id === included_resource.id
+                    )
+                );
             }
+        );
+        this.resource_object.included = this.resource_object.included.map(
+            included => {
+                if (
+                    !parent_included.find(include => include.id === included.id)
+                ) {
+                    return included;
+                }
 
-            return new ClonedDocumentResource(
-                included,
-                parent_included.find(include => include.id === included.id)
-            ).getResourceObject().data;
-        });
+                return new ClonedDocumentResource(
+                    included,
+                    parent_included.find(include => include.id === included.id)
+                ).getResourceObject().data;
+            }
+        );
 
         return this;
     }
 
     private removeDuplicatedRelationships(): this {
-        if (!this.resource_object.data.relationships || !this.parent_resource_object.data.relationships) {
+        if (
+            !this.resource_object.data.relationships ||
+            !this.parent_resource_object.data.relationships
+        ) {
             return this;
         }
         // eslint-disable-next-line no-restricted-syntax
         for (let relationship in this.resource_object.data.relationships) {
             if (
-                isEqual(this.resource_object.data.relationships[relationship], this.parent_resource_object.data.relationships[relationship])
+                isEqual(
+                    this.resource_object.data.relationships[relationship],
+                    this.parent_resource_object.data.relationships[relationship]
+                )
             ) {
                 delete this.resource_object.data.relationships[relationship];
             }
@@ -78,12 +98,18 @@ export class ClonedDocumentResource {
     }
 
     private removeDuplicatedAttributes(): this {
-        if (!this.resource_object.data.attributes || !this.parent_resource_object.data.attributes) {
+        if (
+            !this.resource_object.data.attributes ||
+            !this.parent_resource_object.data.attributes
+        ) {
             return this;
         }
         // eslint-disable-next-line no-restricted-syntax
         for (let attribute in this.resource_object.data.attributes) {
-            if (this.resource_object.data.attributes[attribute] === this.parent_resource_object.data.attributes[attribute]) {
+            if (
+                this.resource_object.data.attributes[attribute] ===
+                this.parent_resource_object.data.attributes[attribute]
+            ) {
                 delete this.resource_object.data.attributes[attribute];
             }
         }

@@ -1,15 +1,18 @@
-import { PathBuilder } from './path-builder';
-import { IParamsCollection } from '../interfaces';
-import { Service } from '../service';
-import { UrlParamsBuilder } from './url-params-builder';
-import { Core } from '../core';
+import { PathBuilder } from "./path-builder";
+import { IParamsCollection } from "../interfaces";
+import { Service } from "../service";
+import { UrlParamsBuilder } from "./url-params-builder";
+import { Core } from "../core";
 
 export class PathCollectionBuilder extends PathBuilder {
     public applyParams(service: Service, params: IParamsCollection = {}): void {
         super.applyParams(service, params);
 
         let paramsurl: UrlParamsBuilder = new UrlParamsBuilder();
-        if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
+        if (
+            params.remotefilter &&
+            Object.keys(params.remotefilter).length > 0
+        ) {
             if (service.parseToServer) {
                 service.parseToServer(params.remotefilter);
             }
@@ -17,23 +20,28 @@ export class PathCollectionBuilder extends PathBuilder {
         }
         if (params.page) {
             if (params.page.number > 1) {
-                this.addParam(this.getPageConfig().number + '=' + params.page.number);
+                this.addParam(
+                    this.getPageConfig().number + "=" + params.page.number
+                );
             }
             if (params.page.size) {
-                this.addParam(this.getPageConfig().size + '=' + params.page.size);
+                this.addParam(
+                    this.getPageConfig().size + "=" + params.page.size
+                );
             }
         }
         if (params.sort && params.sort.length) {
-            this.addParam('sort=' + params.sort.join(','));
+            this.addParam("sort=" + params.sort.join(","));
         }
     }
     // eslint-disable-next-line id-blacklist
     private getPageConfig(): { number: string; size: string } {
         return (
-            (Core.injectedServices.rsJsonapiConfig.parameters && Core.injectedServices.rsJsonapiConfig.parameters.page) || {
+            (Core.injectedServices.rsJsonapiConfig.parameters &&
+                Core.injectedServices.rsJsonapiConfig.parameters.page) || {
                 // eslint-disable-next-line id-blacklist
-                number: 'number',
-                size: 'size'
+                number: "number",
+                size: "size"
             }
         );
     }

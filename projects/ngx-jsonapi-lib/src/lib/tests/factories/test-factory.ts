@@ -1,14 +1,14 @@
-import { Resource } from '../../resource';
-import { IDataCollection } from '../../interfaces/data-collection';
-import { IDocumentResource } from '../../interfaces/data-object';
-import { IDocumentData } from '../../interfaces/document';
-import { IDataResource } from '../../interfaces/data-resource';
-import { DocumentCollection } from '../../document-collection';
-import { DocumentResource } from '../../document-resource';
-import { Author } from './authors.service';
-import { Book } from './books.service';
-import { Photo } from './photos.service';
-import * as faker from 'faker';
+import { Resource } from "../../resource";
+import { IDataCollection } from "../../interfaces/data-collection";
+import { IDocumentResource } from "../../interfaces/data-object";
+import { IDocumentData } from "../../interfaces/document";
+import { IDataResource } from "../../interfaces/data-resource";
+import { DocumentCollection } from "../../document-collection";
+import { DocumentResource } from "../../document-resource";
+import { Author } from "./authors.service";
+import { Book } from "./books.service";
+import { Photo } from "./photos.service";
+import * as faker from "faker";
 
 export class TestFactory {
     // NOTE: this is going to be used to merge getAuthor, getBook and getPhoto in 1 method
@@ -18,20 +18,41 @@ export class TestFactory {
         authors: Author
     };
 
-    public static getResourceDocumentData(document_class: typeof Resource, include: Array<string> = [], id?: string): IDocumentData {
-        let main_resource: Resource = this[`get${document_class.name}`](id, include);
+    public static getResourceDocumentData(
+        document_class: typeof Resource,
+        include: Array<string> = [],
+        id?: string
+    ): IDocumentData {
+        let main_resource: Resource = this[`get${document_class.name}`](
+            id,
+            include
+        );
 
         let document_data: IDocumentData = main_resource.toObject();
-        TestFactory.fillDocumentDataIncludedRelatioships(document_data, include);
+        TestFactory.fillDocumentDataIncludedRelatioships(
+            document_data,
+            include
+        );
 
         return document_data;
     }
 
-    public static getCollectionDocumentData(document_class: typeof Resource, size: number = 2, include: Array<string> = []): IDocumentData {
-        let main_collection: DocumentCollection = this.getCollection(document_class, size, include);
+    public static getCollectionDocumentData(
+        document_class: typeof Resource,
+        size: number = 2,
+        include: Array<string> = []
+    ): IDocumentData {
+        let main_collection: DocumentCollection = this.getCollection(
+            document_class,
+            size,
+            include
+        );
 
         let document_data: IDocumentData = main_collection.toObject();
-        TestFactory.fillDocumentDataIncludedRelatioships(document_data, include);
+        TestFactory.fillDocumentDataIncludedRelatioships(
+            document_data,
+            include
+        );
 
         return document_data;
     }
@@ -66,7 +87,11 @@ export class TestFactory {
     //     return resource;
     // }
 
-    public static getBook(id?: string, include: Array<string> = [], ttl: number = 0): Book {
+    public static getBook(
+        id?: string,
+        include: Array<string> = [],
+        ttl: number = 0
+    ): Book {
         // NOTE: create book
         let book: Book = new Book();
         book.id = this.getId(id);
@@ -74,21 +99,28 @@ export class TestFactory {
         TestFactory.fillBookAttributes(book);
 
         // NOTE: add author
-        (<IDataResource>book.relationships.author.data) = this.getDataResourceWithType('authors');
-        if (include.includes('author')) {
-            this.includeFromService(book, 'author', Author);
+        (<IDataResource>book.relationships.author
+            .data) = this.getDataResourceWithType("authors");
+        if (include.includes("author")) {
+            this.includeFromService(book, "author", Author);
         }
 
         // NOTE: add photos
-        book.relationships.photos.data = book.relationships.photos.data.concat(<Array<Photo>>this.getDataResourcesWithType('photos', 2));
-        if (include.includes('photos')) {
-            this.includeFromService(book, 'photos', Photo);
+        book.relationships.photos.data = book.relationships.photos.data.concat(
+            <Array<Photo>>this.getDataResourcesWithType("photos", 2)
+        );
+        if (include.includes("photos")) {
+            this.includeFromService(book, "photos", Photo);
         }
 
         return book;
     }
 
-    public static getAuthor(id?: string, include: Array<string> = [], ttl: number = 0): Author {
+    public static getAuthor(
+        id?: string,
+        include: Array<string> = [],
+        ttl: number = 0
+    ): Author {
         // NOTE: create author
         let author: Author = new Author();
         author.id = this.getId(id);
@@ -96,9 +128,11 @@ export class TestFactory {
         TestFactory.fillAuthorAttributes(author);
 
         // NOTE: add books
-        author.relationships.books.data = author.relationships.books.data.concat(<Array<Book>>this.getDataResourcesWithType('books', 2));
-        if (include.includes('books')) {
-            this.includeFromService(author, 'books', Book);
+        author.relationships.books.data = author.relationships.books.data.concat(
+            <Array<Book>>this.getDataResourcesWithType("books", 2)
+        );
+        if (include.includes("books")) {
+            this.includeFromService(author, "books", Book);
             for (let book of author.relationships.books.data) {
                 (<Resource>book.relationships.author.data).id = author.id;
             }
@@ -106,16 +140,20 @@ export class TestFactory {
 
         // NOTE: add photos
         author.relationships.photos.data = author.relationships.photos.data.concat(
-            <Array<Photo>>this.getDataResourcesWithType('photos', 2)
+            <Array<Photo>>this.getDataResourcesWithType("photos", 2)
         );
-        if (include.includes('photos')) {
-            this.includeFromService(author, 'photos', Photo);
+        if (include.includes("photos")) {
+            this.includeFromService(author, "photos", Photo);
         }
 
         return author;
     }
 
-    public static getPhoto(id?: string, include: Array<string> = [], ttl: number = 0): Photo {
+    public static getPhoto(
+        id?: string,
+        include: Array<string> = [],
+        ttl: number = 0
+    ): Photo {
         let photo: Photo = new Photo();
         photo.id = this.getId(id);
         photo.ttl = ttl;
@@ -124,7 +162,11 @@ export class TestFactory {
         return photo;
     }
 
-    public static getCollection(resources_class: typeof Resource, size: number = 2, include: Array<string> = []): DocumentCollection {
+    public static getCollection(
+        resources_class: typeof Resource,
+        size: number = 2,
+        include: Array<string> = []
+    ): DocumentCollection {
         let collection: DocumentCollection = new DocumentCollection();
         for (let index: number = 0; index < size; index++) {
             let factory_name: string = `get${resources_class.name}`;
@@ -171,25 +213,47 @@ export class TestFactory {
     }
 
     private static getId(id?: string): string {
-        return id || 'new_' + Math.floor(Math.random() * 10000).toString();
+        return id || "new_" + Math.floor(Math.random() * 10000).toString();
     }
 
-    private static includeFromService(resource: Resource, relationship_alias: string, class_to_add: typeof Resource): void {
-        let relationship: DocumentCollection | DocumentResource = resource.relationships[relationship_alias];
+    private static includeFromService(
+        resource: Resource,
+        relationship_alias: string,
+        class_to_add: typeof Resource
+    ): void {
+        let relationship: DocumentCollection | DocumentResource =
+            resource.relationships[relationship_alias];
         if (!relationship) {
-            console.error(`${relationship_alias} relationship doesn't exist in ${resource.type}`);
+            console.error(
+                `${relationship_alias} relationship doesn't exist in ${
+                    resource.type
+                }`
+            );
 
             return;
-        } else if (relationship.data && 'id' in relationship.data) {
-            this.includeHasOneFromService(resource, relationship_alias, class_to_add);
+        } else if (relationship.data && "id" in relationship.data) {
+            this.includeHasOneFromService(
+                resource,
+                relationship_alias,
+                class_to_add
+            );
         } else if (relationship instanceof DocumentCollection) {
-            this.includeHasManyFromService(resource, relationship_alias, class_to_add);
+            this.includeHasManyFromService(
+                resource,
+                relationship_alias,
+                class_to_add
+            );
         }
     }
 
-    private static includeHasOneFromService(resource: Resource, relationship_alias: string, class_to_add: typeof Resource): void {
+    private static includeHasOneFromService(
+        resource: Resource,
+        relationship_alias: string,
+        class_to_add: typeof Resource
+    ): void {
         let resource_to_add: Resource = new class_to_add();
-        let relationship: DocumentResource = <DocumentResource>resource.relationships[relationship_alias];
+        let relationship: DocumentResource = <DocumentResource>resource
+            .relationships[relationship_alias];
         if (!relationship || !relationship.data) {
             return;
         }
@@ -199,9 +263,14 @@ export class TestFactory {
         resource.addRelationship(resource_to_add, relationship_alias);
     }
 
-    private static includeHasManyFromService(resource: Resource, relationship_alias: string, class_to_add: typeof Resource): void {
+    private static includeHasManyFromService(
+        resource: Resource,
+        relationship_alias: string,
+        class_to_add: typeof Resource
+    ): void {
         let resources_to_add: Array<Resource> = [];
-        for (let resource_relatioship of (<DocumentCollection>resource.relationships[relationship_alias]).data) {
+        for (let resource_relatioship of (<DocumentCollection>resource
+            .relationships[relationship_alias]).data) {
             let resource_to_add: Resource = new class_to_add();
             resource_to_add.id = resource_relatioship.id;
             let fill_method: string = `fill${class_to_add.name}Attributes`;
@@ -213,14 +282,20 @@ export class TestFactory {
         resource.relationships[relationship_alias].data = resources_to_add;
     }
 
-    private static getDataResourceWithType(type: string, id?: string): IDataResource {
+    private static getDataResourceWithType(
+        type: string,
+        id?: string
+    ): IDataResource {
         return {
             id: this.getId(id),
             type: type
         };
     }
 
-    private static getDataResourcesWithType(type: string, qty: number): Array<IDataResource> {
+    private static getDataResourcesWithType(
+        type: string,
+        qty: number
+    ): Array<IDataResource> {
         let data_resources: Array<IDataResource> = [];
         for (let index: number = 0; index < qty; index++) {
             data_resources.push(this.getDataResourceWithType(type));
@@ -230,26 +305,43 @@ export class TestFactory {
     }
 
     // @TODO: this method was adapted after adding toObject in server mocks... check if its 100% OK
-    private static fillResourceRelationshipsInDocumentData(document_data: IDocumentData, resource: Resource, included_alias: string): void {
+    private static fillResourceRelationshipsInDocumentData(
+        document_data: IDocumentData,
+        resource: Resource,
+        included_alias: string
+    ): void {
         if (!document_data.included) {
             document_data.included = [];
         }
 
-        let relationship_content: DocumentResource | DocumentCollection | IDocumentResource | IDataCollection =
+        let relationship_content:
+            | DocumentResource
+            | DocumentCollection
+            | IDocumentResource
+            | IDataCollection =
             resource.relationships[included_alias];
 
         // @NOTE: cannot check IDocumentResource interface with instanceof
-        if (relationship_content instanceof DocumentResource || 'type' in relationship_content.data) {
-            let relation_data: Resource | IDataResource | null | undefined = (<DocumentResource | IDocumentResource>relationship_content)
-                .data;
+        if (
+            relationship_content instanceof DocumentResource ||
+            "type" in relationship_content.data
+        ) {
+            let relation_data: Resource | IDataResource | null | undefined = (<
+                | DocumentResource
+                | IDocumentResource>relationship_content).data;
             if (!relation_data) {
-                console.warn('relationship content is empty');
+                console.warn("relationship content is empty");
 
                 return;
             }
-            let resource_class: any = TestFactory.resource_classes_by_type[relation_data.type];
+            let resource_class: any =
+                TestFactory.resource_classes_by_type[relation_data.type];
             if (!resource_class) {
-                console.warn(`cannot find the required class for type ${relation_data.type}`);
+                console.warn(
+                    `cannot find the required class for type ${
+                        relation_data.type
+                    }`
+                );
 
                 return;
             }
@@ -258,30 +350,55 @@ export class TestFactory {
                 this[`get${resource_class.name}`](relation_data.id)
             );
             // @NOTE: cannot check IDataResource interface with instanceof
-        } else if (relationship_content instanceof DocumentCollection || relationship_content.data instanceof Array) {
-            for (let has_many_relationship of (<DocumentCollection>resource.relationships[included_alias]).data) {
+        } else if (
+            relationship_content instanceof DocumentCollection ||
+            relationship_content.data instanceof Array
+        ) {
+            for (let has_many_relationship of (<DocumentCollection>resource
+                .relationships[included_alias]).data) {
                 document_data.included.push(
-                    this[`get${TestFactory.resource_classes_by_type[has_many_relationship.type].name}`](has_many_relationship.id)
+                    this[
+                        `get${
+                            TestFactory.resource_classes_by_type[
+                                has_many_relationship.type
+                            ].name
+                        }`
+                    ](has_many_relationship.id)
                 );
             }
         }
     }
 
-    private static fillDocumentDataIncludedRelatioships(document_data: IDocumentData, include: Array<string>): void {
+    private static fillDocumentDataIncludedRelatioships(
+        document_data: IDocumentData,
+        include: Array<string>
+    ): void {
         for (let included_alias of include) {
             if (!document_data.included) {
                 document_data.included = [];
             }
             if ((<Resource>document_data.data).id) {
-                if (!(<Resource>document_data.data).relationships[included_alias].data) {
+                if (
+                    !(<Resource>document_data.data).relationships[
+                        included_alias
+                    ].data
+                ) {
                     continue;
                 }
-                TestFactory.fillResourceRelationshipsInDocumentData(document_data, <Resource>document_data.data, included_alias);
+                TestFactory.fillResourceRelationshipsInDocumentData(
+                    document_data,
+                    <Resource>document_data.data,
+                    included_alias
+                );
 
                 return;
             }
             for (let resource of <Array<Resource>>document_data.data) {
-                TestFactory.fillResourceRelationshipsInDocumentData(document_data, resource, included_alias);
+                TestFactory.fillResourceRelationshipsInDocumentData(
+                    document_data,
+                    resource,
+                    included_alias
+                );
             }
         }
     }

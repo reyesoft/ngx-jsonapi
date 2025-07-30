@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { SystemsComponent } from './systems.component';
-import { RouterModule, Routes } from '@angular/router';
-import { SharedModule } from '../shared/shared.module';
-import { SystemsService } from './systems.service';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { SystemsComponent } from "./systems.component";
+import { RouterModule, Routes } from "@angular/router";
+import { SharedModule } from "../shared/shared.module";
+import { SystemsService } from "./systems.service";
 
 export const routes: Routes = [
     {
-        path: '',
+        path: "",
         component: SystemsComponent
     }
 ];
@@ -16,18 +16,11 @@ export const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule]
 })
-export class SystemsRoutingModule { }
-
+export class SystemsRoutingModule {}
 
 @NgModule({
-    declarations: [
-        SystemsComponent
-    ],
-    imports: [
-        CommonModule,
-        SharedModule,
-        SystemsRoutingModule
-    ],
+    declarations: [SystemsComponent],
+    imports: [CommonModule, SharedModule, SystemsRoutingModule],
     providers: [SystemsService]
 })
-export class SystemsModule { }
+export class SystemsModule {}

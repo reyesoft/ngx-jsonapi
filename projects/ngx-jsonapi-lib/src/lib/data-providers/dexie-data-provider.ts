@@ -1,5 +1,5 @@
-import { IDataProvider, IObject, IElement } from './data-provider';
-import Dexie from 'dexie';
+import { IDataProvider, IObject, IElement } from "./data-provider";
+import Dexie from "dexie";
 
 export class DexieDataProvider implements IDataProvider {
     private static db: Dexie;
@@ -8,31 +8,37 @@ export class DexieDataProvider implements IDataProvider {
         if (DexieDataProvider.db) {
             return;
         }
-        DexieDataProvider.db = new Dexie('dexie_data_provider');
+        DexieDataProvider.db = new Dexie("dexie_data_provider");
         DexieDataProvider.db.version(1).stores({
-            collections: '',
-            elements: ''
+            collections: "",
+            elements: ""
         });
     }
 
-    public async getElement(key: string, table_name: string = 'elements'): Promise<IObject | Array<IObject>> {
+    public async getElement(
+        key: string,
+        table_name: string = "elements"
+    ): Promise<IObject | Array<IObject>> {
         await DexieDataProvider.db.open();
         const data: any = await DexieDataProvider.db.table(table_name).get(key);
         if (data === undefined) {
-            throw new Error(key + ' not found.');
+            throw new Error(key + " not found.");
         }
 
         return data;
     }
 
-    public async getElements(keys: Array<string>, table_name: string = 'elements'): Promise<Array<IObject>> {
+    public async getElements(
+        keys: Array<string>,
+        table_name: string = "elements"
+    ): Promise<Array<IObject>> {
         let data: any = {};
         await DexieDataProvider.db
             .table(table_name)
-            .where(':id')
+            .where(":id")
             .anyOf(keys)
             .each(element => {
-                data[element.data.type + '.' + element.data.id] = element;
+                data[element.data.type + "." + element.data.id] = element;
             });
 
         // we need to maintain same order, database return ordered by key
@@ -43,14 +49,18 @@ export class DexieDataProvider implements IDataProvider {
 
     // @todo implement dexie.modify(changes)
     // @todo test
-    public async updateElements(key_start_with: string, changes: IObject, table_name: string = 'elements'): Promise<void> {
+    public async updateElements(
+        key_start_with: string,
+        changes: IObject,
+        table_name: string = "elements"
+    ): Promise<void> {
         return DexieDataProvider.db.open().then(async () => {
-            if (key_start_with === '') {
+            if (key_start_with === "") {
                 return DexieDataProvider.db.table(table_name).clear();
             } else {
                 return DexieDataProvider.db
                     .table(table_name)
-                    .where(':id')
+                    .where(":id")
                     .startsWith(key_start_with)
                     .delete()
                     .then(() => undefined);
@@ -58,7 +68,10 @@ export class DexieDataProvider implements IDataProvider {
         });
     }
 
-    public async saveElements(elements: Array<IElement>, table_name: string = 'elements'): Promise<void> {
+    public async saveElements(
+        elements: Array<IElement>,
+        table_name: string = "elements"
+    ): Promise<void> {
         let keys: Array<string> = [];
         let items: Array<IObject> = elements.map(element => {
             keys.push(element.key);

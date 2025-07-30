@@ -1,4 +1,4 @@
-import { IDocument } from './document';
+import { IDocument } from "./document";
 
 export interface IErrors extends IDocument {
     errors: [

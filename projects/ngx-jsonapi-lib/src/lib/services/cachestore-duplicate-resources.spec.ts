@@ -1,18 +1,26 @@
-import { Core } from '../core';
-import { Converter } from '../services/converter';
-import { Resource } from '../resource';
-import { DocumentCollection } from '../document-collection';
-import { IDataCollection } from '../interfaces/data-collection';
-import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { JsonapiConfig } from '../jsonapi-config';
-import { Http as JsonapiHttpImported } from '../sources/http.service';
+import { Core } from "../core";
+import { Converter } from "../services/converter";
+import { Resource } from "../resource";
+import { DocumentCollection } from "../document-collection";
+import { IDataCollection } from "../interfaces/data-collection";
+import {
+    HttpClient,
+    HttpHandler,
+    HttpRequest,
+    HttpEvent,
+    HttpResponse
+} from "@angular/common/http";
+import { BehaviorSubject, Observable } from "rxjs";
+import { JsonapiConfig } from "../jsonapi-config";
+import { Http as JsonapiHttpImported } from "../sources/http.service";
 // import { StoreService } from '../sources/store.service';
 
 // @deprecated ?
 class HttpHandlerMock implements HttpHandler {
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject: BehaviorSubject<HttpResponse<any>> = new BehaviorSubject(new HttpResponse());
+        let subject: BehaviorSubject<HttpResponse<any>> = new BehaviorSubject(
+            new HttpResponse()
+        );
 
         return subject.asObservable();
     }
@@ -27,53 +35,56 @@ export class StoreService {
     }
 }
 
-describe('Cachestore filler', () => {
-    it('fillCollectionWithArrrayAndResourcesOnStore should fill resources data on collection', () => {
+describe("Cachestore filler", () => {
+    it("fillCollectionWithArrrayAndResourcesOnStore should fill resources data on collection", () => {
         // jest.spyOn(StoreService.prototype, 'constructor');
         (Core.injectedServices as any) = {
             JsonapiStoreService: new StoreService(),
-            JsonapiHttp: new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
+            JsonapiHttp: new JsonapiHttpImported(
+                new HttpClient(new HttpHandlerMock()),
+                new JsonapiConfig()
+            ),
             rsJsonapiConfig: new JsonapiConfig()
         };
 
         let data_collection: IDataCollection = {
             data: [
                 {
-                    id: '1',
-                    type: 'authors',
+                    id: "1",
+                    type: "authors",
                     attributes: {
-                        name: 'Ugly name'
+                        name: "Ugly name"
                     },
                     relationships: {}
                 }
             ]
         };
         let resource: Resource = new Resource();
-        resource.id = '1';
-        resource.type = 'authors';
+        resource.id = "1";
+        resource.type = "authors";
         resource.attributes = {
-            name: 'Cool name'
+            name: "Cool name"
         };
 
         let collection: DocumentCollection = new DocumentCollection();
         collection.data = [resource];
 
-        jest.spyOn(Converter, 'getService').and.returnValue({
+        jest.spyOn(Converter, "getService").and.returnValue({
             cachememory: {
                 getOrCreateResource: (some_string, some_id): Resource => {
                     return resource;
                 }
             }
         });
-        jest.spyOn(StoreService.prototype, 'getDataResources').and.returnValue(
+        jest.spyOn(StoreService.prototype, "getDataResources").and.returnValue(
             Promise.resolve({
-                '1': { id: '1', type: 'authors' }
+                "1": { id: "1", type: "authors" }
             })
         );
 
         // await (cachestore as any).fillCollectionWithArrrayAndResourcesOnStore(data_collection, [], collection);
 
         expect(collection.data.length).toBe(1);
-        expect(collection.data[0].attributes.name).toBe('Cool name');
+        expect(collection.data[0].attributes.name).toBe("Cool name");
     });
 });

@@ -1,19 +1,21 @@
-import { CacheMemory } from './cachememory';
+import { CacheMemory } from "./cachememory";
 // import * as angular from 'angular';
-import { Core } from '../core';
-import { Resource } from '../resource';
-import { Service } from '../service';
-import { IResourcesByType, IObjectsById } from '../interfaces';
-import { IDocumentResource } from '../interfaces/data-object';
-import { IDataCollection } from '../interfaces/data-collection';
-import { IDataResource } from '../interfaces/data-resource';
-import { isDevMode } from '@angular/core';
+import { Core } from "../core";
+import { Resource } from "../resource";
+import { Service } from "../service";
+import { IResourcesByType, IObjectsById } from "../interfaces";
+import { IDocumentResource } from "../interfaces/data-object";
+import { IDataCollection } from "../interfaces/data-collection";
+import { IDataResource } from "../interfaces/data-resource";
+import { isDevMode } from "@angular/core";
 
 export class Converter<R extends Resource> {
     /*
     Convert json arrays (like included) to an indexed Resources array by [type][id]
     */
-    public static json_array2resources_array_by_type(json_array: Array<IDataResource>): IResourcesByType {
+    public static json_array2resources_array_by_type(
+        json_array: Array<IDataResource>
+    ): IResourcesByType {
         let all_resources: IObjectsById<Resource> = {};
         let resources_by_type: IResourcesByType = {};
 
@@ -30,16 +32,21 @@ export class Converter<R extends Resource> {
         return resources_by_type;
     }
 
-    public static json2resource(json_resource: IDataResource, instance_relationships: any): Resource {
-        let resource_service: Service | undefined = Converter.getService(json_resource.type);
+    public static json2resource(
+        json_resource: IDataResource,
+        instance_relationships: any
+    ): Resource {
+        let resource_service: Service | undefined = Converter.getService(
+            json_resource.type
+        );
         if (resource_service) {
             return Converter.procreate(json_resource);
         } else {
             if (isDevMode()) {
                 console.warn(
-                    '`' + json_resource.type + '`',
-                    'service not found on json2resource().',
-                    'Use @Autoregister() on service and inject it on component.'
+                    "`" + json_resource.type + "`",
+                    "service not found on json2resource().",
+                    "Use @Autoregister() on service and inject it on component."
                 );
             }
             let temp: Resource = new Resource();
@@ -51,7 +58,9 @@ export class Converter<R extends Resource> {
     }
 
     public static getService(type: string): Service | undefined {
-        let resource_service: Service | undefined = Core.me.getResourceService(type);
+        let resource_service: Service | undefined = Core.me.getResourceService(
+            type
+        );
 
         return resource_service;
     }
@@ -62,9 +71,13 @@ export class Converter<R extends Resource> {
         return resource_service;
     }
 
-    public static buildIncluded(document_from: IDataCollection | IDocumentResource): IResourcesByType {
-        if ('included' in document_from && document_from.included) {
-            return Converter.json_array2resources_array_by_type(document_from.included);
+    public static buildIncluded(
+        document_from: IDataCollection | IDocumentResource
+    ): IResourcesByType {
+        if ("included" in document_from && document_from.included) {
+            return Converter.json_array2resources_array_by_type(
+                document_from.included
+            );
         }
 
         return {};
@@ -72,11 +85,14 @@ export class Converter<R extends Resource> {
 
     /* return a resource type(resoruce_service) with data(data) */
     private static procreate(data: IDataResource): Resource {
-        if (!('type' in data && 'id' in data)) {
-            console.error('Jsonapi Resource is not correct', data);
+        if (!("type" in data && "id" in data)) {
+            console.error("Jsonapi Resource is not correct", data);
         }
 
-        let resource: Resource = CacheMemory.getInstance().getOrCreateResource(data.type, data.id);
+        let resource: Resource = CacheMemory.getInstance().getOrCreateResource(
+            data.type,
+            data.id
+        );
         resource.fill({ data: data });
 
         resource.is_new = false;
@@ -87,10 +103,13 @@ export class Converter<R extends Resource> {
     /*
     Convert json arrays (like included) to an Resources arrays without [keys]
     */
-    private static json_array2resources_array(json_array: Array<IDataResource>, destination_array: IObjectsById<Resource> = {}): void {
+    private static json_array2resources_array(
+        json_array: Array<IDataResource>,
+        destination_array: IObjectsById<Resource> = {}
+    ): void {
         for (let data of json_array) {
             let resource: Resource = Converter.json2resource(data, false);
-            destination_array[resource.type + '_' + resource.id] = resource;
+            destination_array[resource.type + "_" + resource.id] = resource;
         }
     }
 }

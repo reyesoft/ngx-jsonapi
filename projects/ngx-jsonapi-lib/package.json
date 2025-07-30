@@ -13,13 +13,8 @@
     "bugs": {
         "url": "https://github.com/reyesoft/ngx-jsonapi/issues"
     },
-    "keywords": [
-        "jsonapi",
-        "angular"
-    ],
-    "authors": [
-        "Pablo Gabriel Reyes"
-    ],
+    "keywords": ["jsonapi", "angular"],
+    "authors": ["Pablo Gabriel Reyes"],
     "license": "MIT",
     "homepage": "https://github.com/reyesoft/ngx-jsonapi#readme",
     "peerDependencies": {

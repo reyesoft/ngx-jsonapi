@@ -1,19 +1,25 @@
-import { map } from 'rxjs/operators';
-import { Core } from './core';
-import { IBuildedParamsCollection } from './interfaces/params-collection';
-import { Base } from './services/base';
-import { Resource } from './resource';
-import { PathBuilder } from './services/path-builder';
-import { Converter } from './services/converter';
-import { CacheMemory } from './services/cachememory';
-import { IParamsCollection, IParamsResource, IAttributes } from './interfaces';
-import { DocumentCollection } from './document-collection';
-import { isLive, relationshipsAreBuilded } from './common';
-import { Observable, BehaviorSubject, Subject } from 'rxjs';
-import { ICacheableDocumentResource, IDocumentResource } from './interfaces/data-object';
-import { PathCollectionBuilder } from './services/path-collection-builder';
-import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
-import { ClonedResource } from './cloned-resource';
+import { map } from "rxjs/operators";
+import { Core } from "./core";
+import { IBuildedParamsCollection } from "./interfaces/params-collection";
+import { Base } from "./services/base";
+import { Resource } from "./resource";
+import { PathBuilder } from "./services/path-builder";
+import { Converter } from "./services/converter";
+import { CacheMemory } from "./services/cachememory";
+import { IParamsCollection, IParamsResource, IAttributes } from "./interfaces";
+import { DocumentCollection } from "./document-collection";
+import { isLive, relationshipsAreBuilded } from "./common";
+import { Observable, BehaviorSubject, Subject } from "rxjs";
+import {
+    ICacheableDocumentResource,
+    IDocumentResource
+} from "./interfaces/data-object";
+import { PathCollectionBuilder } from "./services/path-collection-builder";
+import {
+    IDataCollection,
+    ICacheableDataCollection
+} from "./interfaces/data-collection";
+import { ClonedResource } from "./cloned-resource";
 
 export class Service<R extends Resource = Resource> {
     public type: string;
@@ -31,7 +37,11 @@ export class Service<R extends Resource = Resource> {
     */
     public register(): Service<R> | false {
         if (Core.me === null) {
-            throw new Error('Error: you are trying register `' + this.type + '` before inject JsonapiCore somewhere, almost one time.');
+            throw new Error(
+                "Error: you are trying register `" +
+                    this.type +
+                    "` before inject JsonapiCore somewhere, almost one time."
+            );
         }
 
         return Core.me.registerService<R>(this);
@@ -59,14 +69,17 @@ export class Service<R extends Resource = Resource> {
     }
 
     public getPrePath(): string {
-        return '';
+        return "";
     }
 
     public getPath(): string {
         return this.path || this.type;
     }
 
-    public getClone(id: string, params: IParamsResource = {}): Observable<ClonedResource<R>> {
+    public getClone(
+        id: string,
+        params: IParamsResource = {}
+    ): Observable<ClonedResource<R>> {
         return this.get(id, params).pipe(
             map((resource: R) => {
                 // return resource.clone();
@@ -91,7 +104,10 @@ export class Service<R extends Resource = Resource> {
         if (Object.keys(params.fields || []).length > 0) {
             // memory/store cache doesnt support fields
             this.getGetFromServer(path, resource, subject);
-        } else if (isLive(resource, params.ttl) && relationshipsAreBuilded(resource, params.include || [])) {
+        } else if (
+            isLive(resource, params.ttl) &&
+            relationshipsAreBuilded(resource, params.include || [])
+        ) {
             // data on memory and its live
             resource.setLoaded(true);
             setTimeout(() => subject.complete(), 0);
@@ -114,19 +130,26 @@ export class Service<R extends Resource = Resource> {
     }
 
     // if you change this logic, maybe you need to change getAllFromLocal()
-    private async getGetFromLocal(params: IParamsCollection = {}, path: PathBuilder, resource: R): Promise<void> {
+    private async getGetFromLocal(
+        params: IParamsCollection = {},
+        path: PathBuilder,
+        resource: R
+    ): Promise<void> {
         // STORE
         if (!Core.injectedServices.json_ripper.enabled) {
-            throw new Error('We cant handle this request');
+            throw new Error("We cant handle this request");
         }
 
         resource.setLoaded(false);
 
         // STORE (individual)
-        let success: ICacheableDocumentResource = await Core.injectedServices.json_ripper.getResourceByResource(resource, path.includes);
+        let success: ICacheableDocumentResource = await Core.injectedServices.json_ripper.getResourceByResource(
+            resource,
+            path.includes
+        );
 
         resource.fill(success);
-        resource.setSource('store');
+        resource.setSource("store");
 
         // when fields is set, get resource form server
         if (isLive(resource, params.ttl)) {
@@ -136,20 +159,27 @@ export class Service<R extends Resource = Resource> {
             return;
         }
 
-        throw new Error('Resource is dead!');
+        throw new Error("Resource is dead!");
     }
 
     // if you change this logic, maybe you need to change getAllFromServer()
-    protected getGetFromServer(path: any, resource: R, subject: Subject<R>): void {
+    protected getGetFromServer(
+        path: any,
+        resource: R,
+        subject: Subject<R>
+    ): void {
         Core.get(path.get()).subscribe(
             success => {
                 resource.fill(<IDocumentResource>success);
                 resource.cache_last_update = Date.now();
                 resource.setLoadedAndPropagate(true);
-                resource.setSourceAndPropagate('server');
+                resource.setSourceAndPropagate("server");
 
                 // this.getService().cachememory.setResource(resource, true);
-                Core.injectedServices.json_ripper.saveResource(resource, path.includes);
+                Core.injectedServices.json_ripper.saveResource(
+                    resource,
+                    path.includes
+                );
                 subject.next(resource);
                 setTimeout(() => subject.complete(), 0);
             },
@@ -165,14 +195,16 @@ export class Service<R extends Resource = Resource> {
         return <T>(Converter.getService(this.type) || this.register());
     }
 
-    public getOrCreateCollection(path: PathCollectionBuilder): DocumentCollection<R> {
+    public getOrCreateCollection(
+        path: PathCollectionBuilder
+    ): DocumentCollection<R> {
         const service: Service<R> = this.getService();
-        const collection: DocumentCollection<R> = <DocumentCollection<R>>(
-            CacheMemory.getInstance().getOrCreateCollection(path.getForCache())
-        );
+        const collection: DocumentCollection<R> = <DocumentCollection<
+            R
+        >>CacheMemory.getInstance().getOrCreateCollection(path.getForCache());
         collection.ttl = service.collections_ttl;
-        if (collection.source !== 'new') {
-            collection.source = 'memory';
+        if (collection.source !== "new") {
+            collection.source = "memory";
         }
 
         return collection;
@@ -189,8 +221,8 @@ export class Service<R extends Resource = Resource> {
             CacheMemory.getInstance().setResource(resource, false);
         }
 
-        if (resource.source !== 'new') {
-            resource.source = 'memory';
+        if (resource.source !== "new") {
+            resource.source = "memory";
         }
 
         return resource;
@@ -219,7 +251,9 @@ export class Service<R extends Resource = Resource> {
         // @todo this code is repeated on core.clearCache()
         CacheMemory.getInstance().deprecateCollections(path.getForCache());
 
-        return Core.injectedServices.json_ripper.deprecateCollection(path.getForCache()).then(() => true);
+        return Core.injectedServices.json_ripper
+            .deprecateCollection(path.getForCache())
+            .then(() => true);
     }
 
     public parseToServer(attributes: IAttributes): void {
@@ -255,8 +289,13 @@ export class Service<R extends Resource = Resource> {
     }
 
     // if you change this logic, maybe you need to change get()
-    public all(params: IParamsCollection = {}): Observable<DocumentCollection<R>> {
-        let builded_params: IBuildedParamsCollection = { ...Base.ParamsCollection, ...params };
+    public all(
+        params: IParamsCollection = {}
+    ): Observable<DocumentCollection<R>> {
+        let builded_params: IBuildedParamsCollection = {
+            ...Base.ParamsCollection,
+            ...params
+        };
 
         if (!builded_params.ttl && builded_params.ttl !== 0) {
             builded_params.ttl = this.collections_ttl;
@@ -265,21 +304,30 @@ export class Service<R extends Resource = Resource> {
         let path: PathCollectionBuilder = new PathCollectionBuilder();
         path.applyParams(this, builded_params);
 
-        let temporary_collection: DocumentCollection<R> = this.getOrCreateCollection(path);
+        let temporary_collection: DocumentCollection<
+            R
+        > = this.getOrCreateCollection(path);
         // eslint-disable-next-line id-blacklist
         temporary_collection.page.number = builded_params.page.number * 1;
 
-        let subject: BehaviorSubject<DocumentCollection<R>> = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
+        let subject: BehaviorSubject<
+            DocumentCollection<R>
+        > = new BehaviorSubject<DocumentCollection<R>>(temporary_collection);
 
         if (Object.keys(builded_params.fields).length > 0) {
             // memory/store cache dont suppont fields
-            this.getAllFromServer(path, builded_params, temporary_collection, subject);
+            this.getAllFromServer(
+                path,
+                builded_params,
+                temporary_collection,
+                subject
+            );
         } else if (isLive(temporary_collection, builded_params.ttl)) {
             // data on memory and its live
             setTimeout(() => subject.complete(), 0);
         } else if (temporary_collection.cache_last_update === 0) {
             // we dont have any data on memory
-            temporary_collection.source = 'new';
+            temporary_collection.source = "new";
             this.getAllFromLocal(builded_params, path, temporary_collection)
                 .then(() => {
                     subject.next(temporary_collection);
@@ -289,10 +337,20 @@ export class Service<R extends Resource = Resource> {
                 })
                 .catch(() => {
                     temporary_collection.setLoaded(false);
-                    this.getAllFromServer(path, builded_params, temporary_collection, subject);
+                    this.getAllFromServer(
+                        path,
+                        builded_params,
+                        temporary_collection,
+                        subject
+                    );
                 });
         } else {
-            this.getAllFromServer(path, builded_params, temporary_collection, subject);
+            this.getAllFromServer(
+                path,
+                builded_params,
+                temporary_collection,
+                subject
+            );
         }
 
         return subject.asObservable();
@@ -306,21 +364,27 @@ export class Service<R extends Resource = Resource> {
     ): Promise<void> {
         // STORE
         if (!Core.injectedServices.json_ripper.enabled) {
-            throw new Error('We cant handle this request');
+            throw new Error("We cant handle this request");
         }
 
         temporary_collection.setLoaded(false);
 
         let success: ICacheableDataCollection;
-        if (params.store_cache_method === 'compact') {
+        if (params.store_cache_method === "compact") {
             // STORE (compact)
-            success = await Core.injectedServices.JsonapiStoreService.getDataObject('collection', path.getForCache() + '.compact');
+            success = await Core.injectedServices.JsonapiStoreService.getDataObject(
+                "collection",
+                path.getForCache() + ".compact"
+            );
         } else {
             // STORE (individual)
-            success = await Core.injectedServices.json_ripper.getCollection(path.getForCache(), path.includes);
+            success = await Core.injectedServices.json_ripper.getCollection(
+                path.getForCache(),
+                path.includes
+            );
         }
         temporary_collection.fill(success);
-        temporary_collection.setSourceAndPropagate('store');
+        temporary_collection.setSourceAndPropagate("store");
 
         // when fields is set, get resource form server
         if (isLive(temporary_collection, params.ttl)) {
@@ -330,7 +394,7 @@ export class Service<R extends Resource = Resource> {
             return;
         }
 
-        throw new Error('Collection is dead!');
+        throw new Error("Collection is dead!");
     }
 
     // if you change this logic, maybe you need to change getGetFromServer()
@@ -355,16 +419,20 @@ export class Service<R extends Resource = Resource> {
                 temporary_collection.fill(<IDataCollection>success);
                 temporary_collection.cache_last_update = Date.now();
                 temporary_collection.setCacheLastUpdateAndPropagate();
-                temporary_collection.setSourceAndPropagate('server');
+                temporary_collection.setSourceAndPropagate("server");
                 temporary_collection.setLoadedAndPropagate(true);
 
                 // this.getService().cachememory.setCollection(path.getForCache(), temporary_collection);
                 if (Core.injectedServices.json_ripper.enabled) {
-                    Core.injectedServices.json_ripper.saveCollection(path.getForCache(), temporary_collection, path.includes);
-                    if (params.store_cache_method === 'compact') {
+                    Core.injectedServices.json_ripper.saveCollection(
+                        path.getForCache(),
+                        temporary_collection,
+                        path.includes
+                    );
+                    if (params.store_cache_method === "compact") {
                         // @todo migrate to dexie
                         Core.injectedServices.JsonapiStoreService.saveCollection(
-                            path.getForCache() + '.compact',
+                            path.getForCache() + ".compact",
                             <ICacheableDataCollection>success
                         );
                     }

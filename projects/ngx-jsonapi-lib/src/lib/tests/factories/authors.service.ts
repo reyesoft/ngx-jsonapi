@@ -1,12 +1,12 @@
-import { Resource } from '../../resource';
-import { DocumentCollection } from '../../document-collection';
-import { Service } from '../../service';
-import { Book } from './books.service';
-import { Photo } from './photos.service';
+import { Resource } from "../../resource";
+import { DocumentCollection } from "../../document-collection";
+import { Service } from "../../service";
+import { Book } from "./books.service";
+import { Photo } from "./photos.service";
 
 export class Author extends Resource {
     public attributes: any = {
-        name: '',
+        name: "",
         date_of_birth: new Date(),
         date_of_death: new Date(),
         created_at: new Date(),
@@ -19,7 +19,7 @@ export class Author extends Resource {
         books: new DocumentCollection<Book>(),
         photos: new DocumentCollection<Photo>()
     };
-    public type: string = 'authors';
+    public type: string = "authors";
     public ttl: number = 0;
     public static test_ttl: any;
 
@@ -38,6 +38,6 @@ export class AuthorsService extends Service<Author> {
         this.register();
     }
     public resource: typeof Author = Author;
-    public type: string = 'authors';
+    public type: string = "authors";
     public collections_ttl: number = 0;
 }

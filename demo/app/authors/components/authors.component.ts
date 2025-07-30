@@ -1,23 +1,27 @@
-import { Photo } from './../../../../src/tests/factories/photos.service';
-import { BooksService } from './../../books/books.service';
-import { Component } from '@angular/core';
-import { DocumentCollection } from 'ngx-jsonapi';
-import { AuthorsService, Author } from './../authors.service';
-import { ActivatedRoute } from '@angular/router';
+import { Photo } from "./../../../../src/tests/factories/photos.service";
+import { BooksService } from "./../../books/books.service";
+import { Component } from "@angular/core";
+import { DocumentCollection } from "ngx-jsonapi";
+import { AuthorsService, Author } from "./../authors.service";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
-    selector: 'demo-authors',
-    templateUrl: './authors.component.html'
+    selector: "demo-authors",
+    templateUrl: "./authors.component.html"
 })
 export class AuthorsComponent {
     public authors: DocumentCollection<Author>;
 
-    public constructor(private route: ActivatedRoute, private authorsService: AuthorsService, booksService: BooksService) {
+    public constructor(
+        private route: ActivatedRoute,
+        private authorsService: AuthorsService,
+        booksService: BooksService
+    ) {
         route.queryParams.subscribe(({ page }) => {
             authorsService
                 .all({
-                    include: ['books'],
-                    sort: ['name'],
+                    include: ["books"],
+                    sort: ["name"],
                     // eslint-disable-next-line id-blacklist
                     page: { number: page || 1 },
                     ttl: 3600
@@ -26,7 +30,7 @@ export class AuthorsComponent {
                     authors => {
                         this.authors = authors;
                     },
-                    error => console.error('Could not load authors :(', error)
+                    error => console.error("Could not load authors :(", error)
                 );
         });
     }

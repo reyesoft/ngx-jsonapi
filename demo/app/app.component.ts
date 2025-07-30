@@ -1,28 +1,26 @@
-import { Component, OnInit } from '@angular/core';
-import { JsonapiCore } from 'ngx-jsonapi';
+import { Component, OnInit } from "@angular/core";
+import { JsonapiCore } from "ngx-jsonapi";
 
 @Component({
-    selector: 'demo-app',
-    styleUrls: ['./app.component.scss'],
-    templateUrl: './app.component.html'
+    selector: "demo-app",
+    styleUrls: ["./app.component.scss"],
+    templateUrl: "./app.component.html"
 })
 export class AppComponent /* implements OnInit */ {
-    public loading: string = '';
+    public loading: string = "";
 
-    public constructor(
-        private jsonapiCore: JsonapiCore
-    ) {
+    public constructor(private jsonapiCore: JsonapiCore) {
         jsonapiCore.loadingsStart = (): void => {
-            this.loading = 'LOADING...';
+            this.loading = "LOADING...";
         };
         jsonapiCore.loadingsDone = (): void => {
-            this.loading = '';
+            this.loading = "";
         };
         jsonapiCore.loadingsOffline = (error): void => {
-            this.loading = 'No connection!!!';
+            this.loading = "No connection!!!";
         };
         jsonapiCore.loadingsError = (error): void => {
-            this.loading = 'No connection 2!!!';
+            this.loading = "No connection 2!!!";
         };
     }
 }

@@ -1,5 +1,5 @@
-import { SourceType } from './../document';
-import { IHasCacheData } from './has-cache-data';
+import { SourceType } from "./../document";
+import { IHasCacheData } from "./has-cache-data";
 
 // deprecated since 2.2.0. Use loaded.
 export interface ICacheable extends IHasCacheData {

@@ -5,12 +5,16 @@
  */
 
 /* tslint:disable:file-name-casing */
-export * from './lib/ngx-jsonapi.module';
-export * from './lib/interfaces/index';
+export * from "./lib/ngx-jsonapi.module";
+export * from "./lib/interfaces/index";
 /* tslint:enable:file-name-casing */
-export * from './lib/decorators/autoregister';
-export { Core as JsonapiCore, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from './lib/core';
-export * from './lib/resource';
-export * from './lib/document-resource';
-export * from './lib/document-collection';
-export * from './lib/service';
+export * from "./lib/decorators/autoregister";
+export {
+    Core as JsonapiCore,
+    JSONAPI_RIPPER_SERVICE,
+    JSONAPI_STORE_SERVICE
+} from "./lib/core";
+export * from "./lib/resource";
+export * from "./lib/document-resource";
+export * from "./lib/document-collection";
+export * from "./lib/service";

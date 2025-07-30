@@ -1,36 +1,43 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule, Routes } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
-import { environment } from '../environments/environment';
-import { NgxJsonapiModule, JSONAPI_RIPPER_SERVICE, JSONAPI_STORE_SERVICE } from 'ngx-jsonapi';
+import { NgModule } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { RouterModule, Routes } from "@angular/router";
+import { HttpClientModule } from "@angular/common/http";
+import { environment } from "../environments/environment";
+import {
+    NgxJsonapiModule,
+    JSONAPI_RIPPER_SERVICE,
+    JSONAPI_STORE_SERVICE
+} from "ngx-jsonapi";
 
-import { AppComponent } from './app.component';
-import { AuthorsService } from './authors/authors.service';
-import { BooksService } from './books/books.service';
-import { PhotosService } from './photos/photos.service';
-import { SharedModule } from './shared/shared.module';
+import { AppComponent } from "./app.component";
+import { AuthorsService } from "./authors/authors.service";
+import { BooksService } from "./books/books.service";
+import { PhotosService } from "./photos/photos.service";
+import { SharedModule } from "./shared/shared.module";
 
-import { StoreService } from 'ngx-jsonapi/sources/store.service';
-import { JsonRipper } from 'ngx-jsonapi/services/json-ripper';
+import { StoreService } from "ngx-jsonapi/sources/store.service";
+import { JsonRipper } from "ngx-jsonapi/services/json-ripper";
 
 const appRoutes: Routes = [
     {
-        path: '',
-        redirectTo: '/authors',
-        pathMatch: 'full'
+        path: "",
+        redirectTo: "/authors",
+        pathMatch: "full"
     },
     {
-        path: 'authors',
-        loadChildren: () => import('./authors/authors.module').then((m) => m.AuthorsModule)
+        path: "authors",
+        loadChildren: () =>
+            import("./authors/authors.module").then(m => m.AuthorsModule)
     },
     {
-        path: 'systems',
-        loadChildren: () => import('./systems/systems.module').then((m) => m.SystemsModule)
+        path: "systems",
+        loadChildren: () =>
+            import("./systems/systems.module").then(m => m.SystemsModule)
     },
     {
-        path: 'books',
-        loadChildren: () => import('./books/books.module').then((m) => m.BooksModule)
+        path: "books",
+        loadChildren: () =>
+            import("./books/books.module").then(m => m.BooksModule)
     }
 ];
 
@@ -54,7 +61,7 @@ const appRoutes: Routes = [
         SharedModule,
         RouterModule.forRoot(appRoutes, { useHash: true }),
         NgxJsonapiModule.forRoot({
-            url: environment.api_saldo,
+            url: environment.api_saldo
         })
     ],
     declarations: [AppComponent],

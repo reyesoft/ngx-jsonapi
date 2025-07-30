@@ -1,29 +1,34 @@
-import { CacheableHelper } from './services/cacheable-helper.';
-import { IParamsCollection } from './interfaces/params-collection';
-import { Resource } from './resource';
-import { Page } from './services/page';
-import { Document, SourceType } from './document';
-import { ICacheable } from './interfaces/cacheable';
-import { Converter } from './services/converter';
-import { IDataCollection, ICacheableDataCollection } from './interfaces/data-collection';
-import { IDataResource, IBasicDataResource } from './interfaces/data-resource';
-import { isDevMode } from '@angular/core';
-import { Service } from './service';
+import { CacheableHelper } from "./services/cacheable-helper.";
+import { IParamsCollection } from "./interfaces/params-collection";
+import { Resource } from "./resource";
+import { Page } from "./services/page";
+import { Document, SourceType } from "./document";
+import { ICacheable } from "./interfaces/cacheable";
+import { Converter } from "./services/converter";
+import {
+    IDataCollection,
+    ICacheableDataCollection
+} from "./interfaces/data-collection";
+import { IDataResource, IBasicDataResource } from "./interfaces/data-resource";
+import { isDevMode } from "@angular/core";
+import { Service } from "./service";
 
 // used for collections on relationships, for parent document use DocumentCollection
-export class RelatedDocumentCollection<R extends Resource = Resource> extends Document implements ICacheable {
+export class RelatedDocumentCollection<R extends Resource = Resource>
+    extends Document
+    implements ICacheable {
     public data: Array<Resource | IBasicDataResource> = [];
     // public data: Array<Resource | IBasicDataResource> = [];
     public page: Page = new Page();
     public ttl: number = 0;
-    public content: 'ids' | 'collection' = 'ids';
+    public content: "ids" | "collection" = "ids";
 
     public trackBy(iterated_resource: Resource): string {
         return iterated_resource.id;
     }
 
     public find(id: string): R | null {
-        if (this.content === 'ids') {
+        if (this.content === "ids") {
             return null;
         }
 
@@ -38,22 +43,27 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         return null;
     }
 
-    public fill(data_collection: IDataCollection | ICacheableDataCollection): void {
+    public fill(
+        data_collection: IDataCollection | ICacheableDataCollection
+    ): void {
         Converter.buildIncluded(data_collection);
 
         // sometimes get Cannot set property 'number' of undefined (page)
         if (this.page && data_collection.meta) {
             // eslint-disable-next-line id-blacklist
             this.page.number = data_collection.meta.page || 1;
-            this.page.resources_per_page = data_collection.meta.resources_per_page || null; // @deprecated (v2.0.2)
+            this.page.resources_per_page =
+                data_collection.meta.resources_per_page || null; // @deprecated (v2.0.2)
             this.page.size = data_collection.meta.resources_per_page || null;
-            this.page.total_resources = data_collection.meta.total_resources || null;
+            this.page.total_resources =
+                data_collection.meta.total_resources || null;
         }
 
         // convert and add new dataresoures to final collection
         let new_ids: any = {};
         this.data.length = 0;
-        this.builded = data_collection.data && data_collection.data.length === 0;
+        this.builded =
+            data_collection.data && data_collection.data.length === 0;
         for (let dataresource of data_collection.data) {
             try {
                 let res: Resource = this.getResourceOrFail(dataresource);
@@ -64,9 +74,12 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
                     this.builded = true;
                 }
             } catch (error) {
-                this.content = 'ids';
+                this.content = "ids";
                 this.builded = false;
-                this.data.push({ id: dataresource.id, type: dataresource.type });
+                this.data.push({
+                    id: dataresource.id,
+                    type: dataresource.type
+                });
             }
         }
 
@@ -80,7 +93,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
 
         this.meta = data_collection.meta || {};
 
-        if ('cache_last_update' in data_collection) {
+        if ("cache_last_update" in data_collection) {
             this.cache_last_update = data_collection.cache_last_update;
         }
     }
@@ -92,22 +105,24 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
             return res;
         }
 
-        let service: Service | undefined = Converter.getService(dataresource.type);
+        let service: Service | undefined = Converter.getService(
+            dataresource.type
+        );
 
         // remove when getService return null or catch errors
         // this prvent a fill on undefinied service :/
         if (!service) {
             if (isDevMode()) {
                 console.warn(
-                    'The relationship ' +
-                        'relation_alias?' +
-                        ' (type ' +
+                    "The relationship " +
+                        "relation_alias?" +
+                        " (type " +
                         dataresource.type +
-                        ') cant be generated because service for this type has not been injected.'
+                        ") cant be generated because service for this type has not been injected."
                 );
             }
 
-            throw new Error('Cant create service for ' + dataresource.type);
+            throw new Error("Cant create service for " + dataresource.type);
         }
         // END remove when getService return null or catch errors
 
@@ -128,7 +143,8 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
             return null;
         }
 
-        let total_resources: number = this.page.size * (this.page.number - 1) + this.data.length;
+        let total_resources: number =
+            this.page.size * (this.page.number - 1) + this.data.length;
 
         return total_resources < this.page.total_resources;
     }
@@ -142,7 +158,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
     public setLoadedAndPropagate(value: boolean): void {
         this.setLoaded(value);
 
-        if (this.content === 'ids') {
+        if (this.content === "ids") {
             return;
         }
         (<Array<R>>this.data).forEach(resource => {
@@ -156,7 +172,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
 
     public setBuildedAndPropagate(value: boolean): void {
         this.setBuilded(value);
-        if (this.content === 'ids') {
+        if (this.content === "ids") {
             return;
         }
         (<Array<R>>this.data).forEach(resource => {
@@ -204,7 +220,9 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         };
     }
 }
-export class DocumentCollection<R extends Resource = Resource> extends RelatedDocumentCollection<R> {
+export class DocumentCollection<
+    R extends Resource = Resource
+> extends RelatedDocumentCollection<R> {
     public data: Array<R> = [];
-    public content: 'collection' = 'collection';
+    public content: "collection" = "collection";
 }

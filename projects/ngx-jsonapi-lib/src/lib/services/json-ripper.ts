@@ -1,12 +1,12 @@
-import { IRipper } from './json-ripper.interface';
-import { ICacheableDataCollection } from './../interfaces/data-collection';
-import { ICacheableDocumentResource } from './../interfaces/data-object';
-import { Resource } from './../resource';
-import { DexieDataProvider } from '../data-providers/dexie-data-provider';
-import { IDataProvider, IElement } from './../data-providers/data-provider';
-import { DocumentCollection } from '../document-collection';
-import { Injectable } from '@angular/core';
-import { DocumentResource } from '../document-resource';
+import { IRipper } from "./json-ripper.interface";
+import { ICacheableDataCollection } from "./../interfaces/data-collection";
+import { ICacheableDocumentResource } from "./../interfaces/data-object";
+import { Resource } from "./../resource";
+import { DexieDataProvider } from "../data-providers/dexie-data-provider";
+import { IDataProvider, IElement } from "./../data-providers/data-provider";
+import { DocumentCollection } from "../document-collection";
+import { Injectable } from "@angular/core";
+import { DocumentResource } from "../document-resource";
 
 interface IStoredCollection {
     updated_at: number;
@@ -22,8 +22,13 @@ export class JsonRipper implements IRipper {
         this.dataProvider = new DexieDataProvider();
     }
 
-    public async getResource(key: string, include: Array<string> = []): Promise<ICacheableDocumentResource> {
-        let stored_resource: ICacheableDocumentResource | undefined = (await this.getDataResources([key])).shift();
+    public async getResource(
+        key: string,
+        include: Array<string> = []
+    ): Promise<ICacheableDocumentResource> {
+        let stored_resource:
+            | ICacheableDocumentResource
+            | undefined = (await this.getDataResources([key])).shift();
 
         if (stored_resource === undefined) {
             throw new Error(`Resource ${key} don't found.`);
@@ -36,36 +41,59 @@ export class JsonRipper implements IRipper {
         let included_keys: Array<string> = [];
         include.forEach(relationship_alias => {
             // @NOTE: typescript doesn't detect throwError added a few lines above when stored_resource === undefnied
-            if (!stored_resource || !stored_resource.data.relationships || !stored_resource.data.relationships[relationship_alias]) {
+            if (
+                !stored_resource ||
+                !stored_resource.data.relationships ||
+                !stored_resource.data.relationships[relationship_alias]
+            ) {
                 // this is a classic problem when relationship property is missing on included resources
-                throw new Error('We dont have relation_alias on stored data resource');
+                throw new Error(
+                    "We dont have relation_alias on stored data resource"
+                );
             }
 
-            const relationship: any = stored_resource.data.relationships[relationship_alias].data;
+            const relationship: any =
+                stored_resource.data.relationships[relationship_alias].data;
             if (relationship instanceof Array) {
                 relationship.forEach(related_resource => {
-                    included_keys.push(JsonRipper.getResourceKey(related_resource));
+                    included_keys.push(
+                        JsonRipper.getResourceKey(related_resource)
+                    );
                 });
-            } else if (relationship && 'id' in relationship) {
+            } else if (relationship && "id" in relationship) {
                 included_keys.push(JsonRipper.getResourceKey(relationship));
             }
         });
 
-        let included_resources: Array<ICacheableDocumentResource> = await this.getDataResources(included_keys);
+        let included_resources: Array<
+            ICacheableDocumentResource
+        > = await this.getDataResources(included_keys);
 
         return {
             ...stored_resource,
-            included: included_resources.map(document_resource => document_resource.data)
+            included: included_resources.map(
+                document_resource => document_resource.data
+            )
         };
     }
 
-    public async getResourceByResource(resource: Resource, include: Array<string> = []): Promise<ICacheableDocumentResource> {
+    public async getResourceByResource(
+        resource: Resource,
+        include: Array<string> = []
+    ): Promise<ICacheableDocumentResource> {
         return this.getResource(JsonRipper.getResourceKey(resource), include);
     }
 
-    public async getCollection(url: string, include: Array<string> = []): Promise<ICacheableDataCollection> {
-        let stored_collection: IStoredCollection = await this.getDataCollection(url);
-        let data_resources: Array<ICacheableDocumentResource> = await this.getDataResources(stored_collection.keys);
+    public async getCollection(
+        url: string,
+        include: Array<string> = []
+    ): Promise<ICacheableDataCollection> {
+        let stored_collection: IStoredCollection = await this.getDataCollection(
+            url
+        );
+        let data_resources: Array<
+            ICacheableDocumentResource
+        > = await this.getDataResources(stored_collection.keys);
 
         let ret: any = {
             data: data_resources.map(data_resource => data_resource.data),
@@ -79,50 +107,87 @@ export class JsonRipper implements IRipper {
         let included_keys: Array<string> = [];
         include.forEach(relationship_alias => {
             data_resources.forEach(resource => {
-                if (!resource.data.relationships || !resource.data.relationships[relationship_alias]) {
+                if (
+                    !resource.data.relationships ||
+                    !resource.data.relationships[relationship_alias]
+                ) {
                     return;
                 }
 
-                const relationship: any = resource.data.relationships[relationship_alias].data;
+                const relationship: any =
+                    resource.data.relationships[relationship_alias].data;
                 if (relationship instanceof Array) {
                     relationship.forEach(related_resource => {
-                        included_keys.push(JsonRipper.getResourceKey(related_resource));
+                        included_keys.push(
+                            JsonRipper.getResourceKey(related_resource)
+                        );
                     });
-                } else if ('id' in relationship) {
+                } else if ("id" in relationship) {
                     included_keys.push(JsonRipper.getResourceKey(relationship));
                 }
             });
         });
 
-        let included_resources: Array<ICacheableDocumentResource> = await this.getDataResources(included_keys);
+        let included_resources: Array<
+            ICacheableDocumentResource
+        > = await this.getDataResources(included_keys);
 
         return {
             ...ret,
-            included: included_resources.map(document_resource => document_resource.data)
+            included: included_resources.map(
+                document_resource => document_resource.data
+            )
         };
     }
 
     private async getDataCollection(url: string): Promise<IStoredCollection> {
-        return <Promise<IStoredCollection>>this.dataProvider.getElement(url, 'collections');
-    }
-
-    private async getDataResources(keys: Array<string>): Promise<Array<ICacheableDocumentResource>> {
-        return <Promise<Array<ICacheableDocumentResource>>>this.dataProvider.getElements(keys, 'elements');
-    }
-
-    public saveCollection(url: string, collection: DocumentCollection, include: Array<string> = []): void {
-        this.dataProvider.saveElements(JsonRipper.collectionToElement(url, collection), 'collections');
-        this.dataProvider.saveElements(JsonRipper.collectionResourcesToElements(collection, include), 'elements');
-    }
-
-    public async saveResource(resource: Resource, include: Array<any> = []): Promise<void> {
-        return this.dataProvider.saveElements(
-            JsonRipper.toResourceElements(JsonRipper.getResourceKey(resource), resource, include),
-            'elements'
+        return <Promise<IStoredCollection>>this.dataProvider.getElement(
+            url,
+            "collections"
         );
     }
 
-    private static collectionToElement(url: string, collection: DocumentCollection): Array<IElement> {
+    private async getDataResources(
+        keys: Array<string>
+    ): Promise<Array<ICacheableDocumentResource>> {
+        return <Promise<
+            Array<ICacheableDocumentResource>
+        >>this.dataProvider.getElements(keys, "elements");
+    }
+
+    public saveCollection(
+        url: string,
+        collection: DocumentCollection,
+        include: Array<string> = []
+    ): void {
+        this.dataProvider.saveElements(
+            JsonRipper.collectionToElement(url, collection),
+            "collections"
+        );
+        this.dataProvider.saveElements(
+            JsonRipper.collectionResourcesToElements(collection, include),
+            "elements"
+        );
+    }
+
+    public async saveResource(
+        resource: Resource,
+        include: Array<any> = []
+    ): Promise<void> {
+        return this.dataProvider.saveElements(
+            JsonRipper.toResourceElements(
+                JsonRipper.getResourceKey(resource),
+                resource,
+                include
+            ),
+            "elements"
+        );
+    }
+
+    private static collectionToElement(
+        url: string,
+        collection: DocumentCollection
+    ): Array<IElement> {
         let collection_element: any = {
             key: url,
             content: { updated_at: Date.now(), keys: <Array<string>>[] }
@@ -135,17 +200,26 @@ export class JsonRipper implements IRipper {
         return [collection_element];
     }
 
-    private static collectionResourcesToElements(collection: DocumentCollection, include: Array<string> = []): Array<IElement> {
+    private static collectionResourcesToElements(
+        collection: DocumentCollection,
+        include: Array<string> = []
+    ): Array<IElement> {
         let elements: Array<IElement> = [];
         collection.data.forEach(resource => {
             let key: string = JsonRipper.getResourceKey(resource);
-            elements.push(...JsonRipper.toResourceElements(key, resource, include));
+            elements.push(
+                ...JsonRipper.toResourceElements(key, resource, include)
+            );
         });
 
         return elements;
     }
 
-    public static toResourceElements(key: string, resource: Resource, include: Array<string> = []): Array<IElement> {
+    public static toResourceElements(
+        key: string,
+        resource: Resource,
+        include: Array<string> = []
+    ): Array<IElement> {
         let elements: Array<IElement> = [
             {
                 key: key,
@@ -155,16 +229,20 @@ export class JsonRipper implements IRipper {
         elements[0].content.data.cache_last_update = Date.now();
 
         include.forEach(relationship_alias => {
-            const relationship: DocumentCollection | DocumentResource = resource.relationships[relationship_alias];
+            const relationship: DocumentCollection | DocumentResource =
+                resource.relationships[relationship_alias];
             if (!relationship) {
                 return;
             }
-            if (relationship.content === 'collection') {
+            if (relationship.content === "collection") {
                 relationship.data.forEach(related_resource => {
                     elements.push(JsonRipper.getElement(related_resource));
                 });
-            } else if (['id', 'resource'].includes(relationship.content)) {
-                if (relationship.data === null || relationship.data === undefined) {
+            } else if (["id", "resource"].includes(relationship.content)) {
+                if (
+                    relationship.data === null ||
+                    relationship.data === undefined
+                ) {
                     return;
                 }
                 elements.push(JsonRipper.getElement(relationship.data));
@@ -175,7 +253,7 @@ export class JsonRipper implements IRipper {
     }
 
     public static getResourceKey(resource: Resource): string {
-        return resource.type + '.' + resource.id;
+        return resource.type + "." + resource.id;
     }
 
     private static getElement(resource: Resource): IElement {
@@ -186,6 +264,10 @@ export class JsonRipper implements IRipper {
     }
 
     public async deprecateCollection(key_start_with: string): Promise<void> {
-        return this.dataProvider.updateElements(key_start_with, {}, 'collections');
+        return this.dataProvider.updateElements(
+            key_start_with,
+            {},
+            "collections"
+        );
     }
 }

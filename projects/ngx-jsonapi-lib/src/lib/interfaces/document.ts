@@ -1,7 +1,7 @@
-import { IDataResource } from '../interfaces/data-resource';
-import { ILinks } from '../interfaces/links';
-import { Resource } from '../resource';
-import { IPage } from './page';
+import { IDataResource } from "../interfaces/data-resource";
+import { ILinks } from "../interfaces/links";
+import { Resource } from "../resource";
+import { IPage } from "./page";
 
 // http://org/format/#document-top-level
 export interface IDocument<R extends Resource = Resource> {
@@ -16,12 +16,13 @@ export interface IDocument<R extends Resource = Resource> {
 
     // No Json Api specification attributes
     builded?: boolean;
-    content?: 'ids' | 'collection' | 'id' | 'resource' | 'error' | '';
+    content?: "ids" | "collection" | "id" | "resource" | "error" | "";
 }
 
-export interface IDocumentData<R extends Resource = Resource> extends IDocument {
+export interface IDocumentData<R extends Resource = Resource>
+    extends IDocument {
     data: R | Array<R> | IDataResource | Array<IDataResource>; // @todo remover IDataResource[]    included?: any;
-    content?: 'collection' | 'resource' | 'id' | 'ids' | '';
+    content?: "collection" | "resource" | "id" | "ids" | "";
     included?: Array<any>;
 
     page?: IPage;
@@ -30,10 +31,10 @@ export interface IDocumentData<R extends Resource = Resource> extends IDocument 
 
 export interface IDocumentErrors extends IDocument {
     errors: any;
-    content: 'error';
+    content: "error";
 }
 
 export interface IDocumentMeta extends IDocument {
     meta: { [key: string]: any };
-    content: '';
+    content: "";
 }

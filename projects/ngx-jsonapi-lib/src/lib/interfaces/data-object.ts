@@ -1,5 +1,5 @@
-import { IDocumentData } from './document';
-import { IDataResource, ICacheableDataResource } from './data-resource';
+import { IDocumentData } from "./document";
+import { IDataResource, ICacheableDataResource } from "./data-resource";
 
 export interface IDocumentResource extends IDocumentData {
     data: IDataResource;
