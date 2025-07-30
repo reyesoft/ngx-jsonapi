@@ -1,12 +1,8 @@
 module.exports = {
-  testURL: 'http://localhost/',
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: [
       '<rootDir>/setup-jest.ts'
   ],
-  setupFiles: [
-      '<rootDir>/src/tests/globals-test.ts'
-    ],
   transform: {
       '^.+\\.(ts|js|html)$': 'ts-jest'
   },
