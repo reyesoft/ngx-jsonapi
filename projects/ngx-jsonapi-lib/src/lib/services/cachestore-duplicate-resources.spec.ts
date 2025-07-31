@@ -22,8 +22,8 @@ export class StoreService {
     public constructor() {
         /**/
     }
-    public getDataResources(): void {
-        return;
+    public getDataResources(): Promise<any> {
+        return Promise.resolve({});
     }
 }
 
@@ -58,14 +58,12 @@ describe('Cachestore filler', () => {
         let collection: DocumentCollection = new DocumentCollection();
         collection.data = [resource];
 
-        jest.spyOn(Converter, 'getService').and.returnValue({
-            cachememory: {
-                getOrCreateResource: (some_string, some_id): Resource => {
-                    return resource;
-                }
+        jest.spyOn(Converter, 'getService').mockReturnValue({
+            getOrCreateResource: (some_string: string, some_id: string): Resource => {
+                return resource;
             }
-        });
-        jest.spyOn(StoreService.prototype, 'getDataResources').and.returnValue(
+        } as any);
+        jest.spyOn(StoreService.prototype, 'getDataResources').mockReturnValue(
             Promise.resolve({
                 '1': { id: '1', type: 'authors' }
             })

@@ -50,7 +50,7 @@ describe('Path Builder', () => {
 
     it('applyParams method should call appendPath two to four times: with service s pre-path, params.beforepath (if exists),\
      and service s path', () => {
-        let appendPath_spy: jasmine.Spy = jest.spyOn(path_builder, 'appendPath');
+        let appendPath_spy = jest.spyOn(path_builder, 'appendPath');
         path_builder.applyParams(testService);
         expect(appendPath_spy).toHaveBeenCalledTimes(2);
         path_builder.applyParams(testService, {

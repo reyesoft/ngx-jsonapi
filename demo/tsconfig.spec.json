@@ -8,7 +8,7 @@
         "outDir": "../out-tsc/spec",
         "module": "commonjs",
         "target": "es6",
-        "types": ["jest", "node"],
+        "types": ["jest"],
         "baseUrl": ".",
         "rootDir": "../",
         "paths": {

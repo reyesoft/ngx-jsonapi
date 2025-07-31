@@ -41,25 +41,23 @@ describe('Resource delete', () => {
         core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         booksService = new BooksService();
         booksService.register();
-        await booksService.clearCache();
         authorsService = new AuthorsService();
         authorsService.register();
         photosService = new PhotosService();
         photosService.register();
-        await authorsService.clearCache();
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
     });
 
     it('should send a DELETE request', async () => {
-        let httpClientDeleteSpy: jasmine.Spy = jest.spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let httpClientDeleteSpy = jest.spyOn(HttpClient.prototype, 'request');
         test_response_subject.next(new HttpResponse({ body: { data: null } }));
         let book: Book = TestFactory.getBook('1');
         await book
             .delete()
             .toPromise()
             .then((data) => {
-                expect(httpClientDeleteSpy.calls.mostRecent().args[0]).toBe('DELETE');
+                expect(httpClientDeleteSpy.mock.calls[httpClientDeleteSpy.mock.calls.length - 1][0]).toBe('DELETE');
             });
     });
 });
@@ -75,19 +73,17 @@ describe('Resource save', () => {
         core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         booksService = new BooksService();
         booksService.register();
-        await booksService.clearCache();
         authorsService = new AuthorsService();
         authorsService.register();
         photosService = new PhotosService();
         photosService.register();
-        await authorsService.clearCache();
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
     });
 
     it('include_get should be included in the URL, but not in the request data', async () => {
         let resource: Book = TestFactory.getBook('book_1', ['author']);
-        let http_request_spy: jasmine.Spy = jest.spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let http_request_spy = jest.spyOn(HttpClient.prototype, 'request');
         test_response_subject.next(
             new HttpResponse({
                 body: TestFactory.getResourceDocumentData(Book)
@@ -95,14 +91,16 @@ describe('Resource save', () => {
         );
 
         await resource.save({ include_get: ['author'] });
-        expect(http_request_spy.calls.mostRecent().args[1]).toBe('http://yourdomain/api/v1/books/book_1?include=author');
-        expect(http_request_spy.calls.mostRecent().args[2].body.include).toBeFalsy();
+        expect(http_request_spy.mock.calls[http_request_spy.mock.calls.length - 1][1]).toBe(
+            'http://yourdomain/api/v1/books/book_1?include=author'
+        );
+        expect(http_request_spy.mock.calls[http_request_spy.mock.calls.length - 1][2]?.body?.include).toBeFalsy();
     });
 
     it('include_get should be included in the request data, but not in the URL', async () => {
         let resource: Book = TestFactory.getBook('book_1', ['author']);
-        resource.relationships.author.data.id = 'author_1';
-        let http_request_spy: jasmine.Spy = jest.spyOn(HttpClient.prototype, 'request').and.callThrough();
+        resource.relationships.author.data!.id = 'author_1';
+        let http_request_spy = jest.spyOn(HttpClient.prototype, 'request');
         test_response_subject.next(
             new HttpResponse({
                 body: TestFactory.getResourceDocumentData(Book)
@@ -110,15 +108,15 @@ describe('Resource save', () => {
         );
 
         await resource.save({ include_save: ['author'] });
-        expect(http_request_spy.calls.mostRecent().args[1]).toBe('http://yourdomain/api/v1/books/book_1');
-        expect(http_request_spy.calls.mostRecent().args[2].body.included).toBeTruthy();
-        expect(http_request_spy.calls.mostRecent().args[2].body.included.length).toBe(1);
-        expect(http_request_spy.calls.mostRecent().args[2].body.included[0].id).toBe('author_1');
+        expect(http_request_spy.mock.calls?.[http_request_spy.mock.calls.length - 1]?.[1]).toBe('http://yourdomain/api/v1/books/book_1');
+        expect(http_request_spy.mock.calls?.[http_request_spy.mock.calls.length - 1]?.[2]?.body?.included).toBeTruthy();
+        expect(http_request_spy.mock.calls?.[http_request_spy.mock.calls.length - 1]?.[2]?.body?.included?.length).toBe(1);
+        expect(http_request_spy.mock.calls?.[http_request_spy.mock.calls.length - 1]?.[2]?.body?.included?.[0]?.id).toBe('author_1');
     });
     it('should use POST if is_new is truthy', async () => {
         let resource: Book = TestFactory.getBook('book_1');
         resource.is_new = true;
-        let http_request_spy: jasmine.Spy = jest.spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let http_request_spy = jest.spyOn(HttpClient.prototype, 'request');
         test_response_subject.next(
             new HttpResponse({
                 body: TestFactory.getResourceDocumentData(Book)
@@ -126,13 +124,13 @@ describe('Resource save', () => {
         );
 
         await resource.save();
-        expect(http_request_spy.calls.mostRecent().args[0]).toBe('POST');
+        expect(http_request_spy.mock.calls?.[http_request_spy.mock.calls.length - 1]?.[0]).toBe('POST');
     });
 
     it('should use PATCH if is_new is falsy', async () => {
         let resource: Book = TestFactory.getBook('book_1');
         resource.is_new = false;
-        let http_request_spy: jasmine.Spy = jest.spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let http_request_spy = jest.spyOn(HttpClient.prototype, 'request');
         test_response_subject.next(
             new HttpResponse({
                 body: TestFactory.getResourceDocumentData(Book)
@@ -140,6 +138,6 @@ describe('Resource save', () => {
         );
 
         await resource.save();
-        expect(http_request_spy.calls.mostRecent().args[0]).toBe('PATCH');
+        expect(http_request_spy.mock.calls?.[http_request_spy.mock.calls.length - 1]?.[0]).toBe('PATCH');
     });
 });

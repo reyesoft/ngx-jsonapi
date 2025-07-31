@@ -32,7 +32,7 @@ describe('resource', () => {
 
     it('should save the resource without relationships that dont refer to a resource or mean to remove the relationship', async () => {
         let resource: Resource = new Resource();
-        jest.spyOn(resource, 'getService').and.returnValue(false);
+        jest.spyOn(resource, 'getService').mockReturnValue({ getPrePath: () => '', getPath: () => '' } as Service<Resource>);
         jest.spyOn(PathBuilder.prototype, 'applyParams');
         resource.id = '1234';
         resource.type = 'tests';
@@ -80,82 +80,8 @@ describe('resource', () => {
     });
 
     it('toObject method should parse the resouce in a new IDocumentResource', () => {
-        // Mock completo para Service<Resource>
-        class MockService extends Service<Resource> {
-            constructor() {
-                super();
-                this.type = '';
-                this.resource = Resource;
-                this.collections_ttl = 0;
-            }
-            register(): false | Service<Resource> {
-                return this;
-            }
-            newResource() {
-                return new Resource();
-            }
-            newCollection() {
-                return new DocumentCollection();
-            }
-            new() {
-                return new Resource();
-            }
-            getPrePath() {
-                return '';
-            }
-            getPath() {
-                return '';
-            }
-            getClone() {
-                return undefined as any;
-            }
-            get() {
-                return undefined as any;
-            }
-            private getGetFromLocal() {
-                return Promise.resolve();
-            }
-            getGetFromServer() {
-                return undefined;
-            }
-            getService() {
-                return this as any;
-            }
-            getOrCreateCollection() {
-                return new DocumentCollection();
-            }
-            getOrCreateResource() {
-                return new Resource();
-            }
-            createResource() {
-                return new Resource();
-            }
-            clearCacheMemory() {
-                return Promise.resolve(true);
-            }
-            clearCache() {
-                return Promise.resolve(true);
-            }
-            parseToServer(attr: any) {
-                return attr;
-            }
-            parseFromServer(attr: any) {
-                return attr;
-            }
-            delete() {
-                return undefined as any;
-            }
-            all() {
-                return undefined as any;
-            }
-            private getAllFromLocal() {
-                return Promise.resolve();
-            }
-            getAllFromServer() {
-                return undefined;
-            }
-        }
-        const mocked_service_data = new MockService();
+        // Elimino la clase MockService y uso un objeto plano como mock
+        const mocked_service_data = { getPrePath: () => '', getPath: () => '' } as Service<Resource>;
         jest.spyOn(Resource.prototype, 'getService').mockReturnValue(mocked_service_data);
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
@@ -258,7 +184,7 @@ describe('resource.toObject() method', () => {
     });
 
     it('(toObject) If a relationship is not in the include param, it should not be included in the resulting include field', () => {
-        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({} as Service<Resource>);
+        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({ getPrePath: () => '', getPath: () => '' } as Service<Resource>);
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
@@ -283,7 +209,7 @@ describe('resource.toObject() method', () => {
     });
 
     it('(toObject) hasMany empty and untouched relationship should be removed from the resulting relationships', () => {
-        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({} as Service<Resource>);
+        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({ getPrePath: () => '', getPath: () => '' } as Service<Resource>);
         let book: Book = TestFactory.getBook('5');
         book.relationships.photos.data = [];
         let params: IParamsResource = {
@@ -299,17 +225,11 @@ describe('resource.toObject() method', () => {
     });
 
     it('(toObject) hasMany empty and builded relationship should return an emtpy relationship', () => {
-        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({} as Service<Resource>);
+        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({ getPrePath: () => '', getPath: () => '' } as Service<Resource>);
         let book: Book = TestFactory.getBook('1');
         book.relationships.photos.data = [];
         book.addRelationship(TestFactory.getPhoto('5'), 'photos');
-        expect(
-            book.toObject().data.relationships &&
-                book.toObject().data.relationships.photos &&
-                book.toObject().data.relationships.photos.data &&
-                book.toObject().data.relationships.photos.data[0] &&
-                book.toObject().data.relationships.photos.data[0].id
-        ).toBe('5');
+        expect(book.toObject()?.data?.relationships?.photos?.data?.[0]?.id).toBe('5');
         book.removeRelationship('photos', '5');
         expect(book.relationships.photos.builded).toBe(true);
         expect(book.relationships.photos.content).toBe('collection');
@@ -321,7 +241,7 @@ describe('resource.toObject() method', () => {
     });
 
     it('(toObject) hasMany whith only ids and builded relationship should be return a relationship with ids', () => {
-        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({} as Service<Resource>);
+        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({ getPrePath: () => '', getPath: () => '' } as Service<Resource>);
         let book: Book = TestFactory.getBook('1');
         book.relationships.photos.fill({ data: [{ id: '4', type: 'photos' }] });
         expect(book.relationships.photos.builded).toBe(false);
@@ -331,14 +251,14 @@ describe('resource.toObject() method', () => {
         const photosIds = relationshipsIds && relationshipsIds.photos;
         const photosDataIds = photosIds && photosIds.data;
         expect(photosDataIds && photosDataIds.length).toBe(1);
-        expect(photosDataIds && photosDataIds[0]).toMatchObject({
+        expect(photosDataIds && photosDataIds[0]).toEqual({
             id: '4',
             type: 'photos'
         });
     });
 
     it('(toObject) hasMany relationships that are OK should be included in  the resulting relationships', () => {
-        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({} as Service<Resource>);
+        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({ getPrePath: () => '', getPath: () => '' } as Service<Resource>);
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';
@@ -372,7 +292,7 @@ describe('resource.toObject() method', () => {
     });
 
     it('(toObject) hasOne empty data and untouched relationship should be removed from the resulting relationships', () => {
-        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({} as Service<Resource>);
+        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({ getPrePath: () => '', getPath: () => '' } as Service<Resource>);
         let book: Book = TestFactory.getBook('5');
         book.relationships.author.data = undefined;
         let book_object: IDocumentResource = book.toObject();
@@ -381,7 +301,7 @@ describe('resource.toObject() method', () => {
     });
 
     it('(toObject) hasOne data null relationship should be return a data nulled relationship', () => {
-        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({} as Service<Resource>);
+        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({ getPrePath: () => '', getPath: () => '' } as Service<Resource>);
         let book: Book = TestFactory.getBook('5');
         book.addRelationship(TestFactory.getAuthor('1'), 'author');
         let bookObject = book.toObject();
@@ -401,7 +321,7 @@ describe('resource.toObject() method', () => {
     });
 
     it('(toObject) hasOne data filled relationship should be return a simple object relationship', () => {
-        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({} as Service<Resource>);
+        jest.spyOn(Resource.prototype, 'getService').mockReturnValue({ getPrePath: () => '', getPath: () => '' } as Service<Resource>);
         let book: Book = TestFactory.getBook('5');
         book.addRelationship(TestFactory.getAuthor('1'), 'author');
         let bookObject = book.toObject();
@@ -418,6 +338,8 @@ describe('resource.save() method', () => {
     it('if set, te save method should send the "meta" property when saving a resource', async () => {
         let resource: Resource = new Resource();
         const serviceMock: Partial<Service<Resource>> = {
+            getPrePath: () => '',
+            getPath: () => '',
             parseToServer: (attr: any) => attr
         };
         jest.spyOn(resource, 'getService').mockReturnValue(serviceMock as Service<Resource>);
@@ -456,6 +378,8 @@ describe('resource.save() method', () => {
     it('top level meta object should be included in the request if available', async () => {
         let resource: Resource = new Resource();
         const serviceMock: Partial<Service<Resource>> = {
+            getPrePath: () => '',
+            getPath: () => '',
             parseToServer: (attr: any) => attr
         };
         jest.spyOn(resource, 'getService').mockReturnValue(serviceMock as Service<Resource>);
@@ -493,6 +417,8 @@ describe('resource.save() method', () => {
     it('restore method should set top level meta to restore the resource (according to Reyesoft specification extension)', async () => {
         let resource: Resource = new Resource();
         const serviceMock: Partial<Service<Resource>> = {
+            getPrePath: () => '',
+            getPath: () => '',
             parseToServer: (attr: any) => attr
         };
         jest.spyOn(resource, 'getService').mockReturnValue(serviceMock as Service<Resource>);

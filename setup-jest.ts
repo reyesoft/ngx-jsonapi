@@ -1,3 +1,5 @@
+declare var global: any;
+
 import 'jest-preset-angular/setup-jest';
 global['CSS'] = null;
 

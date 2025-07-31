@@ -90,20 +90,19 @@ class TestService extends Service {
 describe('core methods', () => {
     it(`service's get method should return a stream with the requested resource including the requested attributes (fields)`, async () => {
         let test_service: TestService = new TestService();
-        let http_request_spy: jasmine.Spy = jest.spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let http_request_spy: jest.SpyInstance = jest.spyOn(HttpClient.prototype, 'request');
 
         await test_service
             .get('1', { fields: { test_resources: ['optional'] } })
             .toPromise()
             .then((resource) => {
-                expect(resource.type).toBe('test_resources');
-                expect(resource.id).toBe('1');
-                expect(resource.attributes.name).toBeFalsy();
-                expect(resource.attributes.optional).toBe('optional attribute value');
-
+                expect(resource?.type).toBe('test_resources');
+                expect(resource?.id).toBe('1');
+                expect(resource?.attributes?.name).toBeFalsy();
+                expect(resource?.attributes?.optional).toBe('optional attribute value');
                 let request: any = {
                     body: null,
-                    headers: expect.any(Object)
+                    headers: expect.anything()
                 };
                 expect(http_request_spy).toHaveBeenCalledWith(
                     'get',
@@ -123,7 +122,7 @@ describe('core methods', () => {
         );
         Core.injectedServices.JsonapiStoreService.clearCache();
         let test_service: TestService = new TestService();
-        let http_request_spy: jasmine.Spy = jest.spyOn(HttpClient.prototype, 'request').and.callThrough();
+        let http_request_spy: jest.SpyInstance = jest.spyOn(HttpClient.prototype, 'request');
 
         await test_service
             .get('1')
@@ -138,7 +137,7 @@ describe('core methods', () => {
 
                 let request: any = {
                     body: null,
-                    headers: expect.any(Object)
+                    headers: expect.anything()
                 };
                 expect(http_request_spy).toHaveBeenCalledWith('get', 'http://yourdomain/api/v1/test_resources/1', request);
                 await test_service
