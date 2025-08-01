@@ -1,6 +1,8 @@
 declare var global: any;
 
 import 'jest-preset-angular/setup-jest';
+import 'fake-indexeddb/auto';
+
 global['CSS'] = null;
 
 /**

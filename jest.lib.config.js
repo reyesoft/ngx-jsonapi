@@ -15,7 +15,7 @@ module.exports = {
   ],
   globals: {
       'ts-jest': {
-          tsConfig: 'projects/ngx-jsonapi-lib/tsconfig.spec.json'
+          tsconfig: 'projects/ngx-jsonapi-lib/tsconfig.spec.json'
       },
       stringifyContentPathRegex: true
   },

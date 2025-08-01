@@ -133,5 +133,8 @@
     "@schematics/angular:directive": {
       "prefix": "bc"
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

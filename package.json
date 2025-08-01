@@ -36,7 +36,8 @@
     "prettier-scss:show": "prettier --parser scss --single-quote --tab-width 4 --print-width 140 --single-quote true \"**/*.scss\"",
     "prettier:fix": "prettier \"demo/**/*.{ts,scss,json,md}\" \"projects/**/*.{ts,scss,json,md}\" --write",
     "prettier:check": "prettier \"demo/**/*.{ts,scss,json,md}\" \"projects/**/*.{ts,scss,json,md}\" --list-different",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "build:jsonapi": "npx ng-packagr -p projects/ngx-jsonapi-lib/ng-package.json"
   },
   "lint-staged": {
     "*.ts": [
@@ -94,7 +95,9 @@
     ]
   },
   "resolutions": {
-    "jest-environment-jsdom": "27.4.6"
+    "minimatch": "9.0.0",
+    "jest-environment-jsdom": "27.4.6",
+    "esbuild-wasm": "0.14.54"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "16.2.0",
@@ -139,7 +142,7 @@
     "eslint-plugin-prettier": "5.0.0",
     "eslint-plugin-rxjs": "5.0.0",
     "eslint-plugin-unicorn": "48.0.1",
-    "fake-indexeddb": "2.1.1",
+    "fake-indexeddb": "4",
     "faker": "4.1.0",
     "fs-extra": "2.1.2",
     "gh-pages": "1.1.0",

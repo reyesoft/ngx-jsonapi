@@ -7,7 +7,6 @@
       "declaration": false,
       "moduleResolution": "node",
       "experimentalDecorators": true,
-      "noStrictGenericChecks": true,
       "lib": [
         "es2017",
         "dom"
@@ -26,6 +25,8 @@
         ]
       },
       "strict": false,
+      "allowImportingTsExtensions": true,
+      "noEmit": true,
       "useDefineForClassFields": false
     },
     "exclude": [

@@ -1,35 +1,3 @@
-// Mock optimizado para DexieDataProvider en memoria
-class InMemoryDataProvider {
-    private collections: Record<string, any> = {};
-    private elements: Record<string, any> = {};
-
-    async getElement(key: string, table: string) {
-        const store = table === 'collections' ? this.collections : this.elements;
-        if (!(key in store)) throw new Error(key + ' not found.');
-        return store[key];
-    }
-    async getElements(keys: string[], table: string) {
-        const store = table === 'collections' ? this.collections : this.elements;
-        return keys.map((k) => store[k]).filter(Boolean);
-    }
-    async saveElements(elements: any[], table: string) {
-        const store = table === 'collections' ? this.collections : this.elements;
-        elements.forEach((e) => {
-            store[e.key] = e.content;
-        });
-    }
-    async updateElements(key_start_with: string, changes: any, table: string) {
-        const store = table === 'collections' ? this.collections : this.elements;
-        Object.keys(store).forEach((k) => {
-            if (k.startsWith(key_start_with)) delete store[k];
-        });
-    }
-}
-
-jest.mock('../data-providers/dexie-data-provider', () => ({
-    DexieDataProvider: InMemoryDataProvider
-}));
-
 import { Resource } from '../resource';
 import { JsonRipper } from './json-ripper';
 import { DocumentCollection } from '../document-collection';
@@ -59,19 +27,6 @@ describe('JsonRipper for resources', () => {
         getCollection: jest.fn()
         // ...agrega más si los tests lo requieren
     } as any;
-
-    beforeAll(() => {
-        // Sobrescribe el constructor de JsonRipper para que use el mock en memoria
-        JsonRipper.prototype.constructor = function () {
-            this.dataProvider = new InMemoryDataProvider();
-            this.enabled = true;
-        };
-    });
-
-    beforeEach(() => {
-        // Reemplazar el dataProvider por el mock en memoria
-        JsonRipper.prototype['dataProvider'] = new InMemoryDataProvider();
-    });
 
     it('A resource is converted to objects for a DataProvider', () => {
         jest.spyOn(Resource.prototype, 'getService').mockReturnValue(minimalServiceMock);
@@ -204,10 +159,6 @@ describe('JsonRipper for collections', () => {
         getCollection: jest.fn()
         // ...agrega más si los tests lo requieren
     } as any;
-
-    beforeEach(() => {
-        JsonRipper.prototype['dataProvider'] = new InMemoryDataProvider();
-    });
 
     it('A ripped collection saved via DataProvider is converted to a Json', async () => {
         jest.spyOn(Resource.prototype, 'getService').mockReturnValue(minimalServiceMock);

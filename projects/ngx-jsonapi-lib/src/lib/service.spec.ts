@@ -1,35 +1,3 @@
-// Mock optimizado para DexieDataProvider en memoria
-class InMemoryDataProvider {
-    private collections: Record<string, any> = {};
-    private elements: Record<string, any> = {};
-
-    async getElement(key: string, table: string) {
-        const store = table === 'collections' ? this.collections : this.elements;
-        if (!(key in store)) throw new Error(key + ' not found.');
-        return store[key];
-    }
-    async getElements(keys: string[], table: string) {
-        const store = table === 'collections' ? this.collections : this.elements;
-        return keys.map((k) => store[k]).filter(Boolean);
-    }
-    async saveElements(elements: any[], table: string) {
-        const store = table === 'collections' ? this.collections : this.elements;
-        elements.forEach((e) => {
-            store[e.key] = e.content;
-        });
-    }
-    async updateElements(key_start_with: string, changes: any, table: string) {
-        const store = table === 'collections' ? this.collections : this.elements;
-        Object.keys(store).forEach((k) => {
-            if (k.startsWith(key_start_with)) delete store[k];
-        });
-    }
-}
-
-jest.mock('./data-providers/dexie-data-provider', () => ({
-    DexieDataProvider: InMemoryDataProvider
-}));
-
 import { StoreService } from './sources/store.service';
 import { JsonRipper } from './services/json-ripper';
 import { ClassProvider, Injector } from '@angular/core';
@@ -1578,9 +1546,7 @@ describe('service.get()', () => {
         (bookData.data as IDataResource).relationships = {
             author: { data: { id: 'author_1', type: 'authors' } }
         };
-        test_response_subject.next(
-            new HttpResponse({ body: bookData })
-        );
+        test_response_subject.next(new HttpResponse({ body: bookData }));
         let book_clone: ClonedResource<Book> = await booksService.getClone('1').toPromise();
         let original_book: Book = await booksService.get('1').toPromise();
         expect(book_clone.source).toBe(original_book.source);
@@ -1590,7 +1556,10 @@ describe('service.get()', () => {
             expect(book_clone.relationships.author).toBeUndefined();
         } else {
             const cloneAuthorId = book_clone.relationships.author.data ? book_clone.relationships.author.data.id : undefined;
-            const originalAuthorId = original_book.relationships.author && original_book.relationships.author.data ? original_book.relationships.author.data.id : undefined;
+            const originalAuthorId =
+                original_book.relationships.author && original_book.relationships.author.data
+                    ? original_book.relationships.author.data.id
+                    : undefined;
             expect(cloneAuthorId).toBe(originalAuthorId);
             expect(book_clone.relationships.author.loaded).toBe(original_book.relationships.author.loaded);
         }
