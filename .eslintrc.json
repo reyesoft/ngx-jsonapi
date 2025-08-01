@@ -20,14 +20,14 @@
             },
             "extends": [
                 "plugin:@angular-eslint/recommended",
-                "plugin:@typescript-eslint/recommended",
-                "prettier"
+                "prettier",
+                "plugin:@typescript-eslint/recommended"
             ],
             "plugins": [
                 "eslint-plugin-no-null",
                 "eslint-plugin-unicorn",
-                "eslint-plugin-rxjs",
-                "prettier"
+                "prettier",
+                "eslint-plugin-rxjs"
             ],
             "rules": {
                 "@angular-eslint/component-selector": [
@@ -198,9 +198,9 @@
                 "rxjs/no-unsafe-switchmap": "error",
                 "rxjs/no-unsafe-takeuntil": "error",
                 "rxjs/throw-error": "error",
-                "yoda": "error",
                 "@typescript-eslint/no-explicit-any": "off",
-                "indent": "off"
+                "indent": "off",
+                "yoda": "error"
             }
         },
         {
