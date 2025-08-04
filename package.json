@@ -37,8 +37,7 @@
     "prettier:fix": "prettier \"demo/**/*.{ts,scss,json,md}\" \"projects/**/*.{ts,scss,json,md}\" --write",
     "prettier:check": "prettier \"demo/**/*.{ts,scss,json,md}\" \"projects/**/*.{ts,scss,json,md}\" --list-different",
     "precommit": "lint-staged",
-    "build:jsonapi": "npx ng-packagr -p projects/ngx-jsonapi-lib/ng-package.json",
-    "prepare": "yarn run build:jsonapi"
+    "build:jsonapi": "npx ng-packagr -p projects/ngx-jsonapi-lib/ng-package.json"
   },
   "lint-staged": {
     "*.ts": [
