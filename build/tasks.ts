@@ -37,7 +37,7 @@ async function _compilePackagesWithNgc(pkg: string): Promise<void> {
      *
      * See https://github.com/ngrx/platform/issues/94
      */
-    let [exportPath, moduleName]: Array<string> = /\/testing$/.test(pkg)
+    const [exportPath, moduleName]: Array<string> = /\/testing$/.test(pkg)
         ? [pkg.replace(/(.*\/)testing/i, 'testing'), 'testing']
         : [pkg, 'index'];
 
@@ -283,7 +283,7 @@ export async function removePackagesFolder(config: Config): Promise<void> {
  * Deploy build artifacts to repos
  */
 export async function publishToRepo(config: Config): Promise<void> {
-    for (let pkg of util.getTopLevelPackages(config)) {
+    for (const pkg of util.getTopLevelPackages(config)) {
         const SOURCE_DIR: string = `./dist/${pkg}`;
         const REPO_URL: string = `git@github.com:ngrx/${pkg}-builds.git`;
         const REPO_DIR: string = `./tmp/${pkg}`;

@@ -8,7 +8,7 @@ export class System extends Resource {
 
     public relationships: {
         books: DocumentCollection<Book>;
-        photos: DocumentCollection<Photo>
+        photos: DocumentCollection<Photo>;
     } = {
         books: new DocumentCollection<Book>(),
         photos: new DocumentCollection<Photo>()

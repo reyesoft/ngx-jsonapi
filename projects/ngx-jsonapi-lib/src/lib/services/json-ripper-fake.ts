@@ -12,7 +12,9 @@ export class JsonRipperFake implements IRipper {
     public readonly enabled: boolean = false;
 
     public async getResource(key: string, include: Array<string> = []): Promise<ICacheableDocumentResource> {
-        return Promise.resolve({ data: { id: '', type: '', cache_last_update: 0 } });
+        return Promise.resolve({
+            data: { id: '', type: '', cache_last_update: 0 }
+        });
     }
 
     public async getResourceByResource(resource: Resource, include: Array<string> = []): Promise<ICacheableDocumentResource> {
@@ -20,7 +22,10 @@ export class JsonRipperFake implements IRipper {
     }
 
     public async getCollection(url: string, include: Array<string> = []): Promise<ICacheableDataCollection> {
-        return Promise.resolve({ data: <Array<ICacheableDataResource>>[], cache_last_update: 0 });
+        return Promise.resolve({
+            data: <Array<ICacheableDataResource>>[],
+            cache_last_update: 0
+        });
     }
 
     public saveCollection(url: string, collection: DocumentCollection, include: Array<string> = []): void {

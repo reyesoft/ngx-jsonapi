@@ -170,7 +170,10 @@ export class Resource implements ICacheable {
 
         // WARNING: leaving previous line for a tiem because this can produce undesired behavior
         // this.attributes = data_object.data.attributes || this.attributes;
-        this.attributes = { ...(this.attributes || {}), ...data_object.data.attributes };
+        this.attributes = {
+            ...(this.attributes || {}),
+            ...data_object.data.attributes
+        };
 
         this.is_new = false;
 
@@ -243,7 +246,7 @@ export class Resource implements ICacheable {
 
         let relation: DocumentCollection | DocumentResource = this.relationships[type_alias];
         if (relation instanceof DocumentCollection) {
-            relation.data = relation.data.filter(resource => resource.id !== id);
+            relation.data = relation.data.filter((resource) => resource.id !== id);
             if (relation.data.length === 0) {
                 // used by toObject() when hasMany is empty
                 relation.builded = true;
@@ -305,7 +308,7 @@ export class Resource implements ICacheable {
         }
 
         Core.exec(path.get(), this.is_new ? 'POST' : 'PATCH', object, true).subscribe(
-            success => {
+            (success) => {
                 this.is_saving = false;
 
                 // force reload collections cache (example: we add a new element)
@@ -325,7 +328,7 @@ export class Resource implements ICacheable {
                 subject.next(success);
                 subject.complete();
             },
-            error => {
+            (error) => {
                 this.is_saving = false;
                 subject.error('data' in error ? error.data : error);
             }

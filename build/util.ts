@@ -130,7 +130,7 @@ async function runTask(name: string, taskFn: () => Promise<any>): Promise<void> 
 
 export function createBuilder(tasks: Array<TaskDef>) {
     return async function(config: Config) {
-        for (let [name, runner] of tasks) {
+        for (const [name, runner] of tasks) {
             await runTask(name, () => runner(config));
         }
     };

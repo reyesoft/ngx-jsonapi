@@ -138,7 +138,10 @@ export class CacheMemory<R extends Resource = Resource> {
     private fillExistentResource(source: Resource): void {
         let destination: Resource = this.getResourceOrFail(source.type, source.id);
 
-        destination.attributes = { ...destination.attributes, ...source.attributes };
+        destination.attributes = {
+            ...destination.attributes,
+            ...source.attributes
+        };
 
         destination.relationships = destination.relationships || source.relationships;
 

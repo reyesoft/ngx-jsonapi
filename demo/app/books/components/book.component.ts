@@ -20,17 +20,17 @@ export class BookComponent {
     ) {
         route.params.subscribe(({ id }) => {
             booksService.get(id, { include: ['author', 'photos'] }).subscribe(
-                book => {
+                (book) => {
                     this.book = book;
                     console.log('success book', this.book);
                 },
-                error => console.log('error books controll', error)
+                (error) => console.log('error books controll', error)
             );
         });
     }
 
     public getAuthorName(book: Resource): string {
-        let data: Resource = <Resource>book.relationships.author.data;
+        const data: Resource = <Resource>book.relationships.author.data;
 
         return data.attributes ? data.attributes.name : '';
     }

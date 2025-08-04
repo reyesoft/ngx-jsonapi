@@ -33,13 +33,10 @@ export class StoreService implements IStoreService {
     }
 
     public async getDataResources(keys: Array<string>): Promise<IObjectsById<ICacheableDataResource>> {
-        const collection: Dexie.Collection<any, any> = this.db
-            .table('elements')
-            .where(':id')
-            .anyOf(keys);
+        const collection: Dexie.Collection<any, any> = this.db.table('elements').where(':id').anyOf(keys);
 
         let resources_by_id: any = {};
-        await collection.each(item => {
+        await collection.each((item) => {
             resources_by_id[item.id] = item;
         });
 
@@ -47,14 +44,20 @@ export class StoreService implements IStoreService {
     }
 
     public saveResource(type: string, url_or_id: string, value: IDataResource): void {
-        let data_resource_storage: ICacheableDataResource = { ...{ cache_last_update: Date.now() }, ...value };
+        let data_resource_storage: ICacheableDataResource = {
+            ...{ cache_last_update: Date.now() },
+            ...value
+        };
         this.db.open().then(async () => {
             return this.db.table('elements').put(data_resource_storage, type + '.' + url_or_id);
         });
     }
 
     public saveCollection(url_or_id: string, value: ICacheableDataCollection): void {
-        let data_collection_storage: ICacheableDataCollection = { ...{ cache_last_update: Date.now() }, ...value };
+        let data_collection_storage: ICacheableDataCollection = {
+            ...{ cache_last_update: Date.now() },
+            ...value
+        };
         this.db.open().then(async () => {
             return this.db.table('collections').put(data_collection_storage, 'collection.' + url_or_id);
         });
@@ -62,16 +65,10 @@ export class StoreService implements IStoreService {
 
     public clearCache(): void {
         this.db.open().then(async () => {
-            return this.db
-                .table('elements')
-                .toCollection()
-                .delete();
+            return this.db.table('elements').toCollection().delete();
         });
         this.db.open().then(async () => {
-            return this.db
-                .table('collections')
-                .toCollection()
-                .delete();
+            return this.db.table('collections').toCollection().delete();
         });
     }
 
@@ -87,11 +84,7 @@ export class StoreService implements IStoreService {
 
     public deprecateCollection(key_start_with: string): void {
         this.db.open().then(async () => {
-            return this.db
-                .table('collections')
-                .where(':id')
-                .startsWith(key_start_with)
-                .modify({ cache_last_update: 0 });
+            return this.db.table('collections').where(':id').startsWith(key_start_with).modify({ cache_last_update: 0 });
         });
     }
 

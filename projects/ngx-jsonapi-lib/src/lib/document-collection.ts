@@ -66,7 +66,10 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
             } catch (error) {
                 this.content = 'ids';
                 this.builded = false;
-                this.data.push({ id: dataresource.id, type: dataresource.type });
+                this.data.push({
+                    id: dataresource.id,
+                    type: dataresource.type
+                });
             }
         }
 
@@ -145,7 +148,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         if (this.content === 'ids') {
             return;
         }
-        (<Array<R>>this.data).forEach(resource => {
+        (<Array<R>>this.data).forEach((resource) => {
             CacheableHelper.propagateLoaded(resource.relationships, value);
         });
     }
@@ -159,7 +162,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         if (this.content === 'ids') {
             return;
         }
-        (<Array<R>>this.data).forEach(resource => {
+        (<Array<R>>this.data).forEach((resource) => {
             resource.setLoaded(value);
         });
     }
@@ -170,7 +173,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
 
     public setSourceAndPropagate(value: SourceType): void {
         this.setSource(value);
-        this.data.forEach(resource => {
+        this.data.forEach((resource) => {
             if (resource instanceof Resource) {
                 resource.setSource(value);
             }
@@ -183,7 +186,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
 
     public setCacheLastUpdateAndPropagate(value: number = Date.now()): void {
         this.setCacheLastUpdate(value);
-        this.data.forEach(resource => {
+        this.data.forEach((resource) => {
             if (resource instanceof Resource) {
                 resource.setCacheLastUpdate(value);
             }
@@ -195,7 +198,7 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
             return { data: this.data };
         }
 
-        let data: Array<IDataResource> = (<Array<R>>this.data).map(resource => {
+        let data: Array<IDataResource> = (<Array<R>>this.data).map((resource) => {
             return resource.toObject(params).data;
         });
 

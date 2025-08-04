@@ -70,7 +70,7 @@ export class Core {
         return Core.injectedServices.JsonapiHttp.exec(path, method, data).pipe(
             // map(data => { return data.body }),
             tap(() => Core.me.refreshLoadings(-1)),
-            catchError(error => {
+            catchError((error) => {
                 error = error.error || error;
                 Core.me.refreshLoadings(-1);
 
@@ -154,7 +154,10 @@ export class Core {
     public duplicateResource<R extends Resource>(resource: R, ...relations_alias_to_duplicate_too: Array<string>): R {
         let newresource: R = <R>this.getResourceServiceOrFail(resource.type).new();
         newresource.id = 'new_' + Math.floor(Math.random() * 10000).toString();
-        newresource.attributes = { ...newresource.attributes, ...resource.attributes };
+        newresource.attributes = {
+            ...newresource.attributes,
+            ...resource.attributes
+        };
 
         // eslint-disable-next-line no-restricted-syntax
         for (const alias in resource.relationships) {
@@ -175,7 +178,7 @@ export class Core {
             } else {
                 // relation hasMany
                 if (relations_alias_to_duplicate_too.indexOf(alias) > -1) {
-                    relationship.data.forEach(relationresource => {
+                    relationship.data.forEach((relationresource) => {
                         newresource.addRelationship(this.duplicateResource(<R>relationresource), alias);
                     });
                 } else {

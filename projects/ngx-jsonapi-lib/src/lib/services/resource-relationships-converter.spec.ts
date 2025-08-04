@@ -41,7 +41,7 @@ const test_services: any = {
     resource: new MockResourcesService()
 };
 
-function getService(type: string): void {
+function getService(type: string): Service<Resource> | undefined {
     let service: any = test_services[type];
 
     return service;
@@ -49,8 +49,8 @@ function getService(type: string): void {
 
 describe('ResourceRelationshipsConverter', () => {
     let mock_relationship: DocumentResource<MockResource> = new DocumentResource<MockResource>();
-    mock_relationship.data.type = 'resource';
-    mock_relationship.data.id = '1';
+    mock_relationship.data!.type = 'resource';
+    mock_relationship.data!.id = '1';
 
     let mock_resource: MockResource = new MockResource();
     mock_resource.relationships.resource = mock_relationship;
@@ -74,7 +74,7 @@ describe('ResourceRelationshipsConverter', () => {
     it(`buildRelationships method should add hasMany and hasOne relationships to relationships_dest as appropiapte
         using relationships_from data`, () => {
         // set up spy
-        jest.spyOn(Converter, 'getService').and.callFake(getService);
+        jest.spyOn(Converter, 'getService').mockImplementation(getService);
 
         // set up fake dest_resource (rememeber that ids must match with relationships_from resources)
         let mock_resource_with_relationships: MockResource = new MockResource();
@@ -82,8 +82,8 @@ describe('ResourceRelationshipsConverter', () => {
 
         // create a fake has_one relationship
         let mock_resource_from: DocumentResource<MockResource> = new DocumentResource<MockResource>();
-        mock_resource_from.data.type = 'resource';
-        mock_resource_from.data.id = '123';
+        mock_resource_from.data!.type = 'resource';
+        mock_resource_from.data!.id = '123';
 
         // create a fake has_many relationship
         let mock_collection_from: DocumentCollection<MockResource> = new DocumentCollection<MockResource>();
@@ -101,8 +101,14 @@ describe('ResourceRelationshipsConverter', () => {
             name: 'has_one relationship name',
             description: 'has_one relationship description'
         };
-        mock_included_resource_1.attributes = { name: 'first', description: 'first in collection' };
-        mock_included_resource_2.attributes = { name: 'second', description: 'second in collection' };
+        mock_included_resource_1.attributes = {
+            name: 'first',
+            description: 'first in collection'
+        };
+        mock_included_resource_2.attributes = {
+            name: 'second',
+            description: 'second in collection'
+        };
         let included_resources: any = {
             resource: {
                 '123': mock_included_resource_has_one.data,
@@ -135,10 +141,10 @@ describe('ResourceRelationshipsConverter', () => {
 
         // test has_many relationship
         let related_collection_first_resource: any = (resource_relationships_converter as any).relationships_dest.collection.data.find(
-            resource => resource.id === '1'
+            (resource) => resource.id === '1'
         );
         let related_collection_second_resource: any = (resource_relationships_converter as any).relationships_dest.collection.data.find(
-            resource => resource.id === '2'
+            (resource) => resource.id === '2'
         );
         expect((resource_relationships_converter as any).relationships_dest.collection instanceof DocumentCollection).toBeTruthy();
         expect(related_collection_first_resource.id).toBeTruthy();

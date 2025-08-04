@@ -21,10 +21,10 @@ export class AuthorComponent {
     ) {
         route.params.subscribe(({ id }) => {
             authorsService.get(id, { include: ['books', 'photos'], ttl: 100 }).subscribe(
-                author => {
+                (author) => {
                     this.author = author;
                 },
-                error => console.error('Could not load author.', error)
+                (error) => console.error('Could not load author.', error)
             );
         });
     }
@@ -33,7 +33,7 @@ export class AuthorComponent {
     Add a new author
     */
     public newAuthor(): void {
-        let author: Author = this.authorsService.new();
+        const author: Author = this.authorsService.new();
         author.attributes.name = prompt('New author name:', 'John Doe');
         if (!author.attributes.name) {
             return;
@@ -44,7 +44,7 @@ export class AuthorComponent {
             .save
             /* { include: ['book'] } */
             ()
-            .subscribe(success => {
+            .subscribe((success) => {
                 console.log('author saved', author.toObject());
             });
     }
@@ -56,7 +56,7 @@ export class AuthorComponent {
         this.author.attributes.name = prompt('Author name:', this.author.attributes.name);
         console.log('author data for save with book include', this.author.toObject({ include: ['books'] }));
         console.log('author data for save without any include', this.author.toObject());
-        this.author.save(/* { include: ['book'] } */).subscribe(success => {
+        this.author.save(/* { include: ['book'] } */).subscribe((success) => {
             console.log('author saved', this.author.toObject());
         });
     }

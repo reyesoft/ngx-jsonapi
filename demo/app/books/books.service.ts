@@ -17,7 +17,7 @@ export class Book extends Resource {
     };
 
     public relationships: {
-        author: DocumentResource<Author>
+        author: DocumentResource<Author>;
         photos: DocumentCollection<Photo>;
     } = {
         author: new DocumentResource<Author>(),

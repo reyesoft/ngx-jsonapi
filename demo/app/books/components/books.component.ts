@@ -27,7 +27,7 @@ export class BooksComponent {
                     include: ['author', 'photos']
                 })
                 .subscribe(
-                    books => {
+                    (books) => {
                         this.books = books;
                         // console.info('success books controll', this.books);
                     },
@@ -43,21 +43,21 @@ export class BooksComponent {
             until: '2010-01-01'
         };
 
-        let books$: Observable<DocumentCollection<Book>> = this.booksService.all({
+        const books$: Observable<DocumentCollection<Book>> = this.booksService.all({
             remotefilter: remotefilter,
             // eslint-disable-next-line id-blacklist
             page: { number: 1 },
             include: ['author', 'photos']
         });
         books$.subscribe(
-            books => {
+            (books) => {
                 this.books = books;
 
                 console.log('success books controller', this.books);
             },
-            error => console.log('error books controller', error)
+            (error) => console.log('error books controller', error)
         );
-        books$.toPromise().then(success => console.log('books loaded PROMISE'));
+        books$.toPromise().then((success) => console.log('books loaded PROMISE'));
     }
 
     public delete(book: Resource): void {

@@ -73,12 +73,12 @@ describe('document resource general', () => {
 });
 
 describe('document resource fill() method', () => {
-    let document_resource: DocumentResource = new DocumentResource<Book>();
+    let document_resource: DocumentResource<Book>;
     let booksService: BooksService;
     beforeEach(async () => {
         booksService = new BooksService();
         booksService.register();
-        await booksService.clearCache();
+        document_resource = new DocumentResource<Book>();
     });
 
     it('fill() with only ids generate content=id and empty relationships', () => {
@@ -89,7 +89,7 @@ describe('document resource fill() method', () => {
             },
             meta: { meta: 'meta' }
         });
-        expect((<Resource>document_resource.data).relationships).toMatchObject({});
+        expect((<Resource>document_resource.data).relationships).toEqual({});
         expect(document_resource.builded).toBeFalsy();
         expect(document_resource.content).toBe('id');
         expect(document_resource.meta).toEqual({ meta: 'meta' });
@@ -123,8 +123,8 @@ describe('document resource fill() method', () => {
     });
 
     it('if passed IDocumentResource has no meta property, fill mehotd should should assign an empty Object', () => {
-        delete document_resource.meta;
-        let Resource_fill_spy: jasmine.Spy = jest.spyOn(<Resource>document_resource.data, 'fill');
+        document_resource.meta = {};
+        let Resource_fill_spy = jest.spyOn(<Resource>document_resource.data, 'fill');
         document_resource.fill({
             data: {
                 type: 'data',

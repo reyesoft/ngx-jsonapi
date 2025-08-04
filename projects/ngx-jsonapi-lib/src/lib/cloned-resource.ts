@@ -7,8 +7,8 @@ import { IClonedResource } from './interfaces/cloned-resource';
 
 export class ClonedResource<T extends Resource> extends Resource implements IClonedResource {
     private parent: Resource;
-    public attributes: T['attributes'];
-    public relationships: T['relationships'];
+    public attributes: T['attributes'] = undefined as any;
+    public relationships: T['relationships'] = {} as any;
 
     public constructor(resource: T) {
         super();

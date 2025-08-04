@@ -50,10 +50,13 @@ describe('Path Builder', () => {
 
     it('applyParams method should call appendPath two to four times: with service s pre-path, params.beforepath (if exists),\
      and service s path', () => {
-        let appendPath_spy: jasmine.Spy = jest.spyOn(path_builder, 'appendPath');
+        let appendPath_spy = jest.spyOn(path_builder, 'appendPath');
         path_builder.applyParams(testService);
         expect(appendPath_spy).toHaveBeenCalledTimes(2);
-        path_builder.applyParams(testService, { beforepath: 'users/1', include: ['include'] });
+        path_builder.applyParams(testService, {
+            beforepath: 'users/1',
+            include: ['include']
+        });
         expect(appendPath_spy).toHaveBeenCalledWith(testService.getPrePath());
         expect(appendPath_spy).toHaveBeenCalledWith('users/1');
         expect(appendPath_spy).toHaveBeenCalledWith(testService.getPath());
@@ -61,11 +64,16 @@ describe('Path Builder', () => {
     it('applyParams include', () => {
         path_builder.applyParams(testService, { beforepath: 'users/1' });
         expect(path_builder.get()).toMatch('v1/users/1/authors');
-        path_builder.applyParams(testService, { beforepath: 'users/1', include: ['include'] });
+        path_builder.applyParams(testService, {
+            beforepath: 'users/1',
+            include: ['include']
+        });
         expect(path_builder.get()).toMatch('v1/users/1/authors?include=include');
     });
     it('applyParams fields', () => {
-        path_builder.applyParams(testService, { fields: { authors: ['name', 'address'], books: ['title'] } });
+        path_builder.applyParams(testService, {
+            fields: { authors: ['name', 'address'], books: ['title'] }
+        });
         expect(path_builder.get().includes('fields[authors]=name,address&fields[books]=title')).toBeTruthy();
     });
     it('appendPath method should add passed value to paths array (only if value is not an empty string)', () => {

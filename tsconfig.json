@@ -7,7 +7,6 @@
       "declaration": false,
       "moduleResolution": "node",
       "experimentalDecorators": true,
-      "noStrictGenericChecks": true,
       "lib": [
         "es2017",
         "dom"
@@ -27,6 +26,10 @@
       },
       "strict": false,
       "useDefineForClassFields": false
+    },
+    "angularCompilerOptions": {
+        "enableIvy": true,
+        "compilationMode": "partial"
     },
     "exclude": [
         "node_modules",

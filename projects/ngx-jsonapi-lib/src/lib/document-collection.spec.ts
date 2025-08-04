@@ -21,7 +21,7 @@ describe('document-collection', () => {
         resource2.id = '2';
         collection.data.push(resource1);
         collection.data.push(resource2);
-        expect(collection.find('2').id).toBe('2');
+        expect(collection.find('2')!.id).toBe('2');
     });
 
     it('fill method should set collection s builded attribute to true if data_collection.data argument is en empty list', () => {

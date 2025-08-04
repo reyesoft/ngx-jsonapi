@@ -8,12 +8,19 @@ import { Http as JsonapiHttpImported } from '../sources/http.service';
 import { HttpClient, HttpHandler, HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { IResourcesByType } from '../interfaces/resources-by-type';
+import { Service } from '../service';
+import { Resource } from '../resource';
 
 class HttpHandlerMock implements HttpHandler {
+    private subject: BehaviorSubject<HttpResponse<any>>;
     public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
-        let subject: BehaviorSubject<HttpResponse<any>> = new BehaviorSubject(new HttpResponse());
-
-        return subject.asObservable();
+        this.subject = new BehaviorSubject(new HttpResponse());
+        return this.subject.asObservable();
+    }
+    public complete() {
+        if (this.subject) {
+            this.subject.complete();
+        }
     }
 }
 
@@ -33,6 +40,25 @@ let core: Core = new Core(
     new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()),
     injector
 );
+
+class SomeTypeResource extends Resource {
+    public type = 'sometype';
+    public id = '';
+    public attributes: any = {};
+    public relationships: any = {};
+    public links: any = {};
+    public meta: any = {};
+}
+class SomeTypeService extends Service<SomeTypeResource> {
+    public type = 'sometype';
+    public resource = SomeTypeResource;
+    public constructor() {
+        super();
+        this.register();
+    }
+}
+const someTypeService = new SomeTypeService();
+someTypeService.register();
 
 describe('Converter', () => {
     it('json_array2resources_array_by_type(array) should be converted to IResourcesByType', () => {

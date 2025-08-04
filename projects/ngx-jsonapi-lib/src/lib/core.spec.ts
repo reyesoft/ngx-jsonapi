@@ -58,7 +58,7 @@ let injector: Injector = Injector.create([
 describe('core methods', () => {
     let core: Core;
     it('should crete core service instance', () => {
-        spyOn<any>(JsonapiStore.prototype, 'constructor');
+        // Elimino el spy innecesario, solo instancio core
         core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         expect(core).toBeTruthy();
     });
@@ -70,23 +70,29 @@ describe('core methods', () => {
             type: 'data',
             id: '1'
         };
-        jest.spyOn(Core.injectedServices.JsonapiHttp, 'exec').and.returnValue(
-            new Observable(observer => {
-                observer.next('data1');
-                observer.next(observer.error({ errors: ['error'] }));
+        // Crea una instancia real y sobreescribe solo exec
+        const realHttp = new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig());
+        jest.spyOn(realHttp, 'exec').mockReturnValue(
+            new Observable((observer) => {
+                observer.next({ data: data_resource } as any);
+                observer.error({ errors: ['error'] });
             })
         );
+        Core.injectedServices = {
+            ...Core.injectedServices,
+            JsonapiHttp: realHttp
+        };
         Core.exec('path', 'method', { data: data_resource }).subscribe(
-            data => {
-                expect(data).toBe('data1');
+            (data) => {
+                expect(data).toEqual({ data: data_resource });
             },
-            error => {
+            (error) => {
                 expect(error.errors).toEqual(['error']);
             }
         );
     });
-
     it('duplicateResource method should duplicate a resource and add the requested relationships (if present in the original reource)', () => {
+        (Core as any).me = { registerService: jest.fn() };
         let original_resource_service: CustomResourceService = new CustomResourceService();
         let original_resource: CustomResource = new CustomResource();
         original_resource.id = '1';
@@ -104,11 +110,13 @@ describe('core methods', () => {
         original_resource.addRelationship(has_one_relationship_resource, 'has_one');
         original_resource.addRelationships([has_many_relationship_resource, has_many_relationship_resource_2], 'has_many');
 
+        core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
+        core.registerService(original_resource_service); // Registro explícito del servicio
         let resource_copy: CustomResource = core.duplicateResource(original_resource);
         expect(resource_copy.id.includes('new_')).toBeTruthy();
         expect(resource_copy.attributes.data).toBe('this is a resource');
-        expect((<DocumentResource>resource_copy.relationships.has_one).data.id).toBe('2');
-        expect((<DocumentResource>resource_copy.relationships.has_one).data.attributes.data).toBe('this is a has ONE relationship');
+        expect((<DocumentResource>resource_copy.relationships.has_one)?.data?.id).toBe('2');
+        expect((<DocumentResource>resource_copy.relationships.has_one)?.data?.attributes?.data).toBe('this is a has ONE relationship');
         expect(resource_copy.relationships.has_many.data[0].id).toBe('3');
         expect(resource_copy.relationships.has_many.data[0].attributes.data).toBe('this is a has MANY relationship');
         expect(resource_copy.relationships.has_many.data[1].id).toBe('4');
@@ -117,8 +125,10 @@ describe('core methods', () => {
         let resource_copy_with_duplicated_relationships: CustomResource = core.duplicateResource(original_resource, 'has_one', 'has_many');
         expect(resource_copy_with_duplicated_relationships.id.includes('new_')).toBeTruthy();
         expect(resource_copy_with_duplicated_relationships.attributes.data).toBe('this is a resource');
-        expect((<DocumentResource>resource_copy_with_duplicated_relationships.relationships.has_one).data.id.includes('new_')).toBeTruthy();
-        expect((<DocumentResource>resource_copy_with_duplicated_relationships.relationships.has_one).data.attributes.data).toBe(
+        expect(
+            (<DocumentResource>resource_copy_with_duplicated_relationships.relationships.has_one)?.data?.id?.includes('new_')
+        ).toBeTruthy();
+        expect((<DocumentResource>resource_copy_with_duplicated_relationships.relationships.has_one)?.data?.attributes?.data).toBe(
             'this is a has ONE relationship'
         );
         expect(resource_copy_with_duplicated_relationships.relationships.has_many.data[0].id.includes('new_')).toBeTruthy();

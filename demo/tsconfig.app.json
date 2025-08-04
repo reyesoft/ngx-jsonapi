@@ -1,35 +1,23 @@
 {
-  "compilerOptions": {
-    "downlevelIteration": true,
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "lib": [
-      "es2017",
-      "dom"
-    ],
-    "outDir": "../out-tsc/app",
-    "target": "ES2022",
-    "module": "es2020",
-    "types": [],
-    "baseUrl": ".",
-    "rootDir": "../",
-    "paths": {
-      "ngx-jsonapi": [
-        "../src"
-      ],
-      "ngx-jsonapi/*": [
-        "../src/*"
-      ]
+    "compilerOptions": {
+        "downlevelIteration": true,
+        "sourceMap": true,
+        "declaration": false,
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "lib": ["es2017", "dom"],
+        "outDir": "../out-tsc/app",
+        "target": "ES2022",
+        "module": "es2020",
+        "types": [],
+        "baseUrl": ".",
+        "rootDir": "../",
+        "paths": {
+            "ngx-jsonapi": ["../src"],
+            "ngx-jsonapi/*": ["../src/*"]
+        },
+        "useDefineForClassFields": false
     },
-    "useDefineForClassFields": false
-  },
-  "files": [
-    "main.ts",
-    "polyfills.ts"
-  ],
-  "include": [
-    "demo/**/*.d.ts"
-  ]
+    "files": ["main.ts", "polyfills.ts"],
+    "include": ["demo/**/*.d.ts"]
 }

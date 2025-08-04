@@ -34,7 +34,7 @@ export class JsonRipper implements IRipper {
         }
 
         let included_keys: Array<string> = [];
-        include.forEach(relationship_alias => {
+        include.forEach((relationship_alias) => {
             // @NOTE: typescript doesn't detect throwError added a few lines above when stored_resource === undefnied
             if (!stored_resource || !stored_resource.data.relationships || !stored_resource.data.relationships[relationship_alias]) {
                 // this is a classic problem when relationship property is missing on included resources
@@ -43,7 +43,7 @@ export class JsonRipper implements IRipper {
 
             const relationship: any = stored_resource.data.relationships[relationship_alias].data;
             if (relationship instanceof Array) {
-                relationship.forEach(related_resource => {
+                relationship.forEach((related_resource) => {
                     included_keys.push(JsonRipper.getResourceKey(related_resource));
                 });
             } else if (relationship && 'id' in relationship) {
@@ -55,7 +55,7 @@ export class JsonRipper implements IRipper {
 
         return {
             ...stored_resource,
-            included: included_resources.map(document_resource => document_resource.data)
+            included: included_resources.map((document_resource) => document_resource.data)
         };
     }
 
@@ -68,7 +68,7 @@ export class JsonRipper implements IRipper {
         let data_resources: Array<ICacheableDocumentResource> = await this.getDataResources(stored_collection.keys);
 
         let ret: any = {
-            data: data_resources.map(data_resource => data_resource.data),
+            data: data_resources.map((data_resource) => data_resource.data),
             cache_last_update: stored_collection.updated_at
         };
 
@@ -77,15 +77,15 @@ export class JsonRipper implements IRipper {
         }
 
         let included_keys: Array<string> = [];
-        include.forEach(relationship_alias => {
-            data_resources.forEach(resource => {
+        include.forEach((relationship_alias) => {
+            data_resources.forEach((resource) => {
                 if (!resource.data.relationships || !resource.data.relationships[relationship_alias]) {
                     return;
                 }
 
                 const relationship: any = resource.data.relationships[relationship_alias].data;
                 if (relationship instanceof Array) {
-                    relationship.forEach(related_resource => {
+                    relationship.forEach((related_resource) => {
                         included_keys.push(JsonRipper.getResourceKey(related_resource));
                     });
                 } else if ('id' in relationship) {
@@ -98,7 +98,7 @@ export class JsonRipper implements IRipper {
 
         return {
             ...ret,
-            included: included_resources.map(document_resource => document_resource.data)
+            included: included_resources.map((document_resource) => document_resource.data)
         };
     }
 
@@ -127,7 +127,7 @@ export class JsonRipper implements IRipper {
             key: url,
             content: { updated_at: Date.now(), keys: <Array<string>>[] }
         };
-        collection.data.forEach(resource => {
+        collection.data.forEach((resource) => {
             let key: string = JsonRipper.getResourceKey(resource);
             collection_element.content.keys.push(key);
         });
@@ -137,7 +137,7 @@ export class JsonRipper implements IRipper {
 
     private static collectionResourcesToElements(collection: DocumentCollection, include: Array<string> = []): Array<IElement> {
         let elements: Array<IElement> = [];
-        collection.data.forEach(resource => {
+        collection.data.forEach((resource) => {
             let key: string = JsonRipper.getResourceKey(resource);
             elements.push(...JsonRipper.toResourceElements(key, resource, include));
         });
@@ -154,13 +154,13 @@ export class JsonRipper implements IRipper {
         ];
         elements[0].content.data.cache_last_update = Date.now();
 
-        include.forEach(relationship_alias => {
+        include.forEach((relationship_alias) => {
             const relationship: DocumentCollection | DocumentResource = resource.relationships[relationship_alias];
             if (!relationship) {
                 return;
             }
             if (relationship.content === 'collection') {
-                relationship.data.forEach(related_resource => {
+                relationship.data.forEach((related_resource) => {
                     elements.push(JsonRipper.getElement(related_resource));
                 });
             } else if (['id', 'resource'].includes(relationship.content)) {
