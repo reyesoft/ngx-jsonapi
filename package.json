@@ -23,7 +23,7 @@
     "ci": "yarn postinstall && yarn run build && yarn run test -w 1 --coverage && cat ./coverage/lcov.info | coveralls",
     "watch:tests": "chokidar 'src/**/*.ts' --initial -c 'nyc --reporter=text --reporter=html yarn test'",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "release": "yarn run build && cd dist && yarn publish",
+    "release": "yarn run build:jsonapi && cd dist/ngx-jsonapi && yarn publish",
     "release-v2": "yarn ng build ngx-jsonapi-lib && cd dist/ngx-jsonapi && yarn publish",
     "prettier": "yarn prettier-ts && yarn prettier-md && yarn prettier-scss",
     "prettier-ts": "yarn prettier-ts:show --write",
