@@ -27,6 +27,10 @@
       "strict": false,
       "useDefineForClassFields": false
     },
+    "angularCompilerOptions": {
+        "enableIvy": true,
+        "compilationMode": "partial"
+    },
     "exclude": [
         "node_modules",
         "**/*/node_modules",

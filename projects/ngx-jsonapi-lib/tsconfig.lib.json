@@ -10,5 +10,9 @@
         "types": [],
         "lib": ["dom", "es2018"]
     },
+    "angularCompilerOptions": {
+        "compilationMode": "partial",
+        "enableIvy": true
+    },
     "exclude": ["**/*.spec.ts"]
 }
