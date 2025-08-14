@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 
 @Component({
     selector: 'demo-books',
+    standalone: false,
     templateUrl: './books.component.html'
 })
 export class BooksComponent {

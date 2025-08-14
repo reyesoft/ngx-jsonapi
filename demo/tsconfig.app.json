@@ -13,8 +13,8 @@
         "baseUrl": ".",
         "rootDir": "../",
         "paths": {
-            "ngx-jsonapi": ["../src"],
-            "ngx-jsonapi/*": ["../src/*"]
+            "ngx-jsonapi": ["../dist/ngx-jsonapi"],
+            "ngx-jsonapi/*": ["../dist/ngx-jsonapi/*"]
         },
         "useDefineForClassFields": false
     },

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DocumentCollection } from 'ngx-jsonapi';
 import { System, SystemsService } from './systems.service';
@@ -7,6 +7,7 @@ import { System, SystemsService } from './systems.service';
     // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'bc-systems',
     templateUrl: './systems.component.html',
+    standalone: false,
     styles: []
 })
 export class SystemsComponent {

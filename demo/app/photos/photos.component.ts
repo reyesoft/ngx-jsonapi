@@ -4,6 +4,7 @@ import { Photo } from './photos.service';
 
 @Component({
     selector: 'demo-photos',
+    standalone: false,
     templateUrl: './photos.component.html'
 })
 export class PhotosComponent {

@@ -7,6 +7,7 @@ import { PhotosService } from '../../photos/photos.service';
 
 @Component({
     selector: 'demo-book',
+    standalone: false,
     templateUrl: './book.component.html'
 })
 export class BookComponent {
