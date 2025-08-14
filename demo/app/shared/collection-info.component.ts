@@ -4,7 +4,7 @@ import { DocumentCollection } from 'ngx-jsonapi';
 @Component({
     selector: 'demo-collection-info',
     standalone: false,
-    templateUrl: './collection-info.component.html',
+    templateUrl: './collection-info.component.html'
 })
 export class CollectionInfoComponent {
     @Input() public collection: DocumentCollection;
