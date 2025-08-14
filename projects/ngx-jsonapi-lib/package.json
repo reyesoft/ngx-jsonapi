@@ -18,10 +18,15 @@
     "license": "MIT",
     "homepage": "https://github.com/reyesoft/ngx-jsonapi#readme",
     "peerDependencies": {
-        "@angular/common": "^16.2.0",
-        "@angular/core": "^16.2.0",
-        "lodash-es": "^4.17",
-        "dexie": "^2.0.4"
+    "@angular/animations": "^16.2.0 || ^17.0.0",
+    "@angular/common": "^16.2.0 || ^17.0.0",
+    "@angular/compiler": "^16.2.0 || ^17.0.0",
+    "@angular/core": "^16.2.0 || ^17.0.0",
+    "@angular/forms": "^16.2.0 || ^17.0.0",
+    "@angular/platform-browser": "^16.2.0 || ^17.0.0",
+    "@angular/platform-browser-dynamic": "^16.2.0 || ^17.0.0",
+    "@angular/platform-server": "^16.2.0 || ^17.0.0",
+    "@angular/router": "^16.2.0 || ^17.0.0"
     },
     "sideEffects": false
 }
