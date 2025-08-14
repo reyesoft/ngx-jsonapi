@@ -40,4 +40,5 @@ export class BooksService extends Service<Book> {
     public type = 'books';
     public resource = Book;
     public collections_ttl = 0;
+    public url: string;
 }

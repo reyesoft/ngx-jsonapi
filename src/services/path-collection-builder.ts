@@ -3,6 +3,7 @@ import { IParamsCollection } from '../interfaces';
 import { Service } from '../service';
 import { UrlParamsBuilder } from './url-params-builder';
 import { Core } from '../core';
+import { FilterSerializer } from './filter';
 
 export class PathCollectionBuilder extends PathBuilder {
     public applyParams(service: Service, params: IParamsCollection = {}) {
@@ -10,8 +11,7 @@ export class PathCollectionBuilder extends PathBuilder {
 
         let paramsurl = new UrlParamsBuilder();
         if (params.remotefilter) {
-                let filter = params.remotefilter as Filter;
-                let filterParsed = serializeFilter(filter);
+                let filterParsed = FilterSerializer.serialize(params.remotefilter);
                 this.addParam(paramsurl.toparams({ filter: filterParsed }));
         }
 

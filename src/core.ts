@@ -59,9 +59,8 @@ export class Core {
         call_loadings_error: boolean = true,
     ): Observable<IDocumentData> {
         Core.me.refreshLoadings(1);
-
         return Core.getInstance()
-            .injectedServices.JsonapiHttp.exec(url + path, method, data)
+            .injectedServices.JsonapiHttp.exec(path, method, data, url)
             .pipe(
                 // map(data => { return data.body }),
                 tap(() => Core.me.refreshLoadings(-1)),

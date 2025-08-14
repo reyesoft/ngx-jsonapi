@@ -24,9 +24,9 @@
     "homepage": "https://github.com/reyesoft/ngx-jsonapi#readme",
     "dependencies": {
         "lodash-es": "^4.17",
-        "dexie": "^2.0.4"
+        "dexie": "^3.2.2"
     },
     "peerDependencies": {
-        "axios": "^0.21.1"
+        "axios": "^1.6.0"
     }
 }

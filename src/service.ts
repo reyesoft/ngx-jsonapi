@@ -68,7 +68,8 @@ export class Service<R extends Resource = Resource> {
     }
 
     public getUrl(): string {
-        return this.url || Core.getInstance().injectedServices.rsJsonapiConfig.url;
+        console.log("inside getUrl", this.url);
+        return this.url;
     }
 
     public getClone(id: string, params: IParamsResource = {}): Observable<ClonedResource<R>> {
