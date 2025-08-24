@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { JsonapiCore } from 'ngx-jsonapi';
 
 @Component({
     selector: 'demo-app',
     styleUrls: ['./app.component.scss'],
+    standalone: false,
     templateUrl: './app.component.html'
 })
 export class AppComponent /* implements OnInit */ {

@@ -7,6 +7,7 @@ import { BooksService } from '../../books/books.service';
 
 @Component({
     selector: 'demo-author',
+    standalone: false,
     templateUrl: './author.component.html'
 })
 export class AuthorComponent {
