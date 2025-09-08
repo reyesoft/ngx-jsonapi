@@ -11,8 +11,11 @@ export class PathCollectionBuilder extends PathBuilder {
 
         let paramsurl = new UrlParamsBuilder();
         if (params.remotefilter) {
-                let filterParsed = FilterSerializer.serialize(params.remotefilter);
-                this.addParam(paramsurl.toparams({ filter: filterParsed }));
+            if (service.parseToServer) {
+                service.parseToServer(params.remotefilter);
+            }
+            let filterParsed = FilterSerializer.serialize(params.remotefilter);
+            this.addParam(paramsurl.toparams({ filter: filterParsed }));
         }
 
         if (params.page) {
