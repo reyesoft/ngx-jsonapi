@@ -1,5 +1,6 @@
 import { IParams } from './params';
 import { IPage } from './page';
+import { Filter } from '../services/filter'; 
 
 export interface IParamsCollection extends IParams {
     remotefilter?: Filter;

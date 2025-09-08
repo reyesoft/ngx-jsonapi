@@ -9,7 +9,7 @@ export class FilterSerializer {
     }
 
     if ("not" in filter) {
-      return `!${FilterSerializer.serialize(filter.not)}`;
+      return `not(${FilterSerializer.serialize(filter.not)})`;
     }
 
     const { field, operator, value } = filter;
@@ -30,6 +30,20 @@ export class FilterSerializer {
     }
 
     if (!Array.isArray(value)) {
+
+      switch (operator) {
+        case "=":
+          return `equals(${field},${FilterSerializer.quote(value)})`;
+        case ">":
+          return `greaterThan(${field},${FilterSerializer.quote(value)})`;
+        case ">=":
+          return `greaterOrEqual(${field},${FilterSerializer.quote(value)})`;
+        case "<":
+          return `lessThan(${field},${FilterSerializer.quote(value)})`;
+        case "<=":
+          return `lessOrEqual(${field},${FilterSerializer.quote(value)})`;
+      }
+
       return `${field}${operator}${FilterSerializer.quote(value)}`;
     }
     return '';
@@ -37,8 +51,7 @@ export class FilterSerializer {
 
   private static quote(val: Value): string {
     if (val === null || val === undefined) return "null";
-    if (typeof val === "string") return `'${val}'`;
-    return val.toString();
+    return `'${encodeURIComponent(val)}'`;
   }
 }
 
@@ -61,7 +74,7 @@ type Operator =
 type NotCondition = { not: Filter };
 type LogicalCondition = { and: Filter[] } | { or: Filter[] };
 
-type Filter = Condition | NotCondition | LogicalCondition;
+export type Filter = Condition | NotCondition | LogicalCondition;
 
 interface Condition {
   field: string;
