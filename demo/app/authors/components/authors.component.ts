@@ -1,16 +1,22 @@
 import { BooksService } from './../../books/books.service';
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { DocumentCollection, Photo } from 'ngx-jsonapi';
 import { AuthorsService, Author } from './../authors.service';
-import { ActivatedRoute } from '@angular/router';
+import { CollectionInfoComponent } from '../../shared/collection-info.component';
+import { ResourceInfoComponent } from '../../shared/resource-info.component';
+import { CollectionPaginatorComponent } from '../../shared/collection-paginator.component';
 
 @Component({
     selector: 'demo-authors',
-    standalone: false,
-    templateUrl: './authors.component.html'
+    standalone: true,
+    imports: [CommonModule, RouterModule, CollectionInfoComponent, ResourceInfoComponent, CollectionPaginatorComponent],
+    templateUrl: './authors.component.html',
+    providers: [AuthorsService, BooksService]
 })
 export class AuthorsComponent {
-    public authors: DocumentCollection<Author>;
+    public authors: DocumentCollection<Author> | null = null;
 
     public constructor(
         private route: ActivatedRoute,

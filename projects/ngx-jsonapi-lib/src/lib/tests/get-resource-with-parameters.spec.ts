@@ -96,10 +96,10 @@ describe('core methods', () => {
             .get('1', { fields: { test_resources: ['optional'] } })
             .toPromise()
             .then((resource) => {
-                expect(resource?.type).toBe('test_resources');
-                expect(resource?.id).toBe('1');
-                expect(resource?.attributes?.name).toBeFalsy();
-                expect(resource?.attributes?.optional).toBe('optional attribute value');
+                expect(resource!.type).toBe('test_resources');
+                expect(resource!.id).toBe('1');
+                expect(resource!.attributes?.name).toBeFalsy();
+                expect(resource!.attributes.optional).toBe('optional attribute value');
                 let request: any = {
                     body: null,
                     headers: expect.anything()
@@ -128,9 +128,9 @@ describe('core methods', () => {
             .get('1')
             .toPromise()
             .then(async (resource) => {
-                expect(resource.type).toBe('test_resources');
-                expect(resource.id).toBe('1');
-                expect(resource.attributes.name).toBe('test_name');
+                expect(resource!.type).toBe('test_resources');
+                expect(resource!.id).toBe('1');
+                expect(resource!.attributes.name).toBe('test_name');
                 // @todo why? memory will not remove attributes if are not sent by server
                 // for example two different requests with different list of fields (one request remove attributes of the another resource)
                 // expect(resource.attributes.optional).toBeFalsy();
@@ -144,10 +144,10 @@ describe('core methods', () => {
                     .get('1', { fields: { test_resources: ['optional'] } })
                     .toPromise()
                     .then((resource_with_optional_attribute) => {
-                        expect(resource_with_optional_attribute.type).toBe('test_resources');
-                        expect(resource_with_optional_attribute.id).toBe('1');
-                        expect(resource_with_optional_attribute.attributes.name).toBe('test_name');
-                        expect(resource_with_optional_attribute.attributes.optional).toBe('optional attribute value');
+                        expect(resource_with_optional_attribute!.type).toBe('test_resources');
+                        expect(resource_with_optional_attribute!.id).toBe('1');
+                        expect(resource_with_optional_attribute!.attributes.name).toBe('test_name');
+                        expect(resource_with_optional_attribute!.attributes.optional).toBe('optional attribute value');
 
                         expect(http_request_spy).toHaveBeenCalledWith(
                             'get',

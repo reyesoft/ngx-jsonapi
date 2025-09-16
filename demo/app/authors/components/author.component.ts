@@ -1,18 +1,23 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { Resource } from 'ngx-jsonapi';
+import { CollectionInfoComponent } from '../../shared/collection-info.component';
+import { ResourceInfoComponent } from '../../shared/resource-info.component';
+import { CollectionPaginatorComponent } from '../../shared/collection-paginator.component';
 import { PhotosService } from '../../photos/photos.service';
 import { AuthorsService, Author } from '../authors.service';
 import { BooksService } from '../../books/books.service';
 
 @Component({
     selector: 'demo-author',
-    standalone: false,
+    standalone: true,
+    imports: [CommonModule, RouterModule, ResourceInfoComponent, CollectionInfoComponent, CollectionPaginatorComponent],
     templateUrl: './author.component.html'
 })
 export class AuthorComponent {
-    public author: Author;
-    public relatedbooks: Array<Resource>;
+    public author: Author | null = null;
+    public relatedbooks: Array<Resource> | null = null;
 
     public constructor(
         protected authorsService: AuthorsService,
@@ -35,7 +40,8 @@ export class AuthorComponent {
     */
     public newAuthor(): void {
         const author: Author = this.authorsService.new();
-        author.attributes.name = prompt('New author name:', 'John Doe');
+        const name: string | null = prompt('New author name:', 'John Doe');
+        author.attributes.name = name || '';
         if (!author.attributes.name) {
             return;
         }
@@ -54,17 +60,24 @@ export class AuthorComponent {
     Update name for actual author
     */
     public updateAuthor(): void {
-        this.author.attributes.name = prompt('Author name:', this.author.attributes.name);
-        console.log('author data for save with book include', this.author.toObject({ include: ['books'] }));
-        console.log('author data for save without any include', this.author.toObject());
-        this.author.save(/* { include: ['book'] } */).subscribe((success) => {
-            console.log('author saved', this.author.toObject());
+        const currentAuthor: Author | null = this.author;
+        if (!currentAuthor) return;
+
+        const newName: string | null = prompt('Author name:', currentAuthor.attributes.name);
+        currentAuthor.attributes.name = newName || currentAuthor.attributes.name;
+        console.log('author data for save with book include', currentAuthor.toObject({ include: ['books'] }));
+        console.log('author data for save without any include', currentAuthor.toObject());
+        currentAuthor.save(/* { include: ['book'] } */).subscribe((success) => {
+            console.log('author saved', currentAuthor.toObject());
         });
     }
 
     public removeRelationship(): void {
-        this.author.removeRelationship('photos', '1');
-        this.author.save();
-        console.log('removeRelationship save with photos include', this.author.toObject());
+        const currentAuthor: Author | null = this.author;
+        if (!currentAuthor) return;
+
+        currentAuthor.removeRelationship('photos', '1');
+        currentAuthor.save();
+        console.log('removeRelationship save with photos include', currentAuthor.toObject());
     }
 }

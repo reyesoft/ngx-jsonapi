@@ -9,14 +9,14 @@ import { delay } from 'rxjs/operators';
 import { Author, AuthorsService } from './tests/factories/authors.service';
 import { PhotosService } from './tests/factories/photos.service';
 import { ClonedResource } from './cloned-resource';
-import { waitForAsync } from '@angular/core/testing';
+import { waitForAsync, fakeAsync, tick } from '@angular/core/testing';
 import { Book, BooksService } from './tests/factories/books.service';
 import { JsonapiConfig } from './jsonapi-config';
 import { DocumentResource } from './document-resource';
 import { DocumentCollection } from './document-collection';
 
 class HttpHandlerMock implements HttpHandler {
-    public handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+    handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
         return test_response_subject.asObservable().pipe(delay(0));
     }
 }
@@ -38,6 +38,8 @@ describe('ClonedResource save', () => {
     let photos_service: PhotosService;
     let books_service: BooksService;
 
+    let http_client_spy: jest.SpyInstance;
+
     beforeAll(() => {
         core = new Core(new JsonapiConfig(), new JsonapiHttpImported(new HttpClient(new HttpHandlerMock()), new JsonapiConfig()), injector);
         authors_service = new AuthorsService();
@@ -50,8 +52,28 @@ describe('ClonedResource save', () => {
         books_service.register();
     });
 
-    it('should save only dirty attributes', waitForAsync(() => {
-        let http_client_spy: jest.SpyInstance = jest.spyOn(HttpClient.prototype, 'request');
+    beforeEach(() => {
+        jest.clearAllMocks();
+        jest.restoreAllMocks();
+
+        if (test_response_subject && !test_response_subject.closed) {
+            test_response_subject.complete();
+        }
+        test_response_subject = new BehaviorSubject(new HttpResponse());
+
+        http_client_spy = jest.spyOn(HttpClient.prototype, 'request');
+        http_client_spy.mockClear();
+
+        if (core) {
+            core['me'] = {};
+        }
+
+        authors_service.register();
+        photos_service.register();
+        books_service.register();
+    });
+
+    it('should save only dirty attributes', fakeAsync(() => {
         let author: Author = authors_service.new();
         author.id = '123456';
         author.attributes.created_at = new Date();
@@ -59,20 +81,25 @@ describe('ClonedResource save', () => {
         let author_clone: ClonedResource<Author> = new ClonedResource(author);
         test_response_subject.next(new HttpResponse({ body: author_clone.toObject() }));
         author_clone.attributes.name = 'Luis';
+
+        let lastCall: any;
         author_clone.save().subscribe((author_data) => {
-            (expect(http_client_spy.mock.calls[http_client_spy.mock.calls.length - 1][2].body) as any).toMatchObject({
-                data: {
-                    attributes: { name: 'Luis' },
-                    id: '123456',
-                    relationships: {},
-                    type: 'authors'
-                }
-            });
+            lastCall = http_client_spy.mock.calls[http_client_spy.mock.calls.length - 1][2].body;
+        });
+
+        tick(100);
+
+        expect(lastCall).toMatchObject({
+            data: {
+                attributes: { name: 'Luis' },
+                id: '123456',
+                relationships: {},
+                type: 'authors'
+            }
         });
     }));
 
-    it('should save only dirty HAS ONE relationships', waitForAsync(() => {
-        let http_client_spy: jest.SpyInstance = jest.spyOn(HttpClient.prototype, 'request');
+    it('should save only dirty HAS ONE relationships', fakeAsync(() => {
         let book: Book = books_service.new();
         book.id = '123456';
         book.attributes.created_at = new Date();
@@ -90,54 +117,65 @@ describe('ClonedResource save', () => {
             book_clone.relationships.author = rel;
         }
         test_response_subject.next(new HttpResponse({ body: book_clone.toObject() }));
+
+        let lastCall1: any;
         book_clone.save().subscribe((author_data) => {
-            (expect(http_client_spy.mock.calls[http_client_spy.mock.calls.length - 1][2].body) as any).toMatchObject({
-                data: {
-                    attributes: {},
-                    id: '123456',
-                    relationships: {},
-                    type: 'books'
-                }
-            });
-            let new_author: Author = authors_service.new();
-            new_author.id = '2';
-            new_author.attributes.name = 'Luis';
-            // Inicializar relación HAS ONE si no existe
-            if (!book_clone.relationships['author']) {
-                book_clone.relationships['author'] = new DocumentResource<Author>();
-                book_clone.relationships['author'].data = null;
+            lastCall1 = http_client_spy.mock.calls[http_client_spy.mock.calls.length - 1][2].body;
+        });
+
+        tick(100);
+
+        expect(lastCall1).toMatchObject({
+            data: {
+                attributes: {},
+                id: '123456',
+                relationships: {},
+                type: 'books'
             }
-            book_clone.addRelationship(new_author, 'author');
-            book_clone.save({ include: ['author'] }).subscribe(() => {
-                (expect(http_client_spy.mock.calls[http_client_spy.mock.calls.length - 1][2].body) as any).toMatchObject({
-                    data: {
-                        attributes: {},
-                        id: '123456',
-                        relationships: {
-                            author: {
-                                data: {
-                                    id: '2',
-                                    type: 'authors'
-                                }
-                            }
-                        },
-                        type: 'books'
-                    },
-                    included: [
-                        {
+        });
+
+        let new_author: Author = authors_service.new();
+        new_author.id = '2';
+        new_author.attributes.name = 'Luis';
+
+        if (!book_clone.relationships['author']) {
+            book_clone.relationships['author'] = new DocumentResource<Author>();
+            book_clone.relationships['author'].data = null;
+        }
+        book_clone.addRelationship(new_author, 'author');
+
+        let lastCall2: any;
+        book_clone.save({ include: ['author'] }).subscribe(() => {
+            lastCall2 = http_client_spy.mock.calls[http_client_spy.mock.calls.length - 1][2].body;
+        });
+
+        tick(100);
+
+        expect(lastCall2).toMatchObject({
+            data: {
+                attributes: {},
+                id: '123456',
+                relationships: {
+                    author: {
+                        data: {
                             id: '2',
-                            attributes: { name: 'Luis' },
-                            type: 'authors',
-                            relationships: {}
+                            type: 'authors'
                         }
-                    ]
-                });
-            });
+                    }
+                },
+                type: 'books'
+            },
+            included: [
+                {
+                    id: '2',
+                    attributes: { name: 'Luis' },
+                    type: 'authors',
+                    relationships: {}
+                }
+            ]
         });
     }));
-
-    it('should save only dirty HAS MANY relationships', waitForAsync(() => {
-        let http_client_spy: jest.SpyInstance = jest.spyOn(HttpClient.prototype, 'request');
+    it('should save only dirty HAS MANY relationships', fakeAsync(() => {
         let author: Author = authors_service.new();
         author.id = '123456';
         author.attributes.created_at = new Date();
@@ -156,50 +194,62 @@ describe('ClonedResource save', () => {
         }
         test_response_subject.next(new HttpResponse({ body: author_clone.toObject() }));
         author_clone.attributes.name = 'Luis';
-        author_clone.save().subscribe((author_data) => {
-            (expect(http_client_spy.mock.calls[http_client_spy.mock.calls.length - 1][2].body) as any).toMatchObject({
-                data: {
-                    attributes: { name: 'Luis' },
-                    id: '123456',
-                    relationships: {},
-                    type: 'authors'
-                }
-            });
 
-            let new_book: Book = books_service.new();
-            new_book.id = '2';
-            new_book.attributes.title = 'new book';
-            // Inicializar relación HAS MANY si no existe
-            if (!author_clone.relationships['books']) {
-                author_clone.relationships['books'] = new DocumentCollection<Book>();
-                author_clone.relationships['books'].data = [];
+        let lastCall: any;
+        author_clone.save().subscribe((author_data) => {
+            lastCall = http_client_spy.mock.calls[http_client_spy.mock.calls.length - 1][2].body;
+        });
+
+        tick(100);
+
+        expect(lastCall).toMatchObject({
+            data: {
+                attributes: { name: 'Luis' },
+                id: '123456',
+                relationships: {},
+                type: 'authors'
             }
-            author_clone.addRelationships([new_book], 'books');
-            author_clone.save({ include: ['books'] }).subscribe(() => {
-                (expect(http_client_spy.mock.calls[http_client_spy.mock.calls.length - 1][2].body) as any).toMatchObject({
-                    data: {
-                        attributes: { name: 'Luis' },
-                        id: '123456',
-                        relationships: {
-                            books: {
-                                data: [
-                                    { id: '1', type: 'books' },
-                                    { id: '2', type: 'books' }
-                                ]
-                            }
-                        },
-                        type: 'authors'
-                    },
-                    included: [
-                        {
-                            id: '2',
-                            attributes: { title: 'new book' },
-                            type: 'books',
-                            relationships: {}
-                        }
-                    ]
-                });
-            });
+        });
+
+        let new_book: Book = books_service.new();
+        new_book.id = '2';
+        new_book.attributes.title = 'new book';
+
+        if (!author_clone.relationships['books']) {
+            author_clone.relationships['books'] = new DocumentCollection<Book>();
+            author_clone.relationships['books'].data = [];
+        }
+        author_clone.addRelationships([new_book], 'books');
+
+        let lastCallMany: any;
+        author_clone.save({ include: ['books'] }).subscribe(() => {
+            lastCallMany = http_client_spy.mock.calls[http_client_spy.mock.calls.length - 1][2].body;
+        });
+
+        tick(100);
+
+        expect(lastCallMany).toMatchObject({
+            data: {
+                attributes: { name: 'Luis' },
+                id: '123456',
+                relationships: {
+                    books: {
+                        data: [
+                            { id: '1', type: 'books' },
+                            { id: '2', type: 'books' }
+                        ]
+                    }
+                },
+                type: 'authors'
+            },
+            included: [
+                {
+                    id: '2',
+                    attributes: { title: 'new book' },
+                    type: 'books',
+                    relationships: {}
+                }
+            ]
         });
     }));
 });

@@ -1,16 +1,19 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { Service, DocumentResource } from 'ngx-jsonapi';
-import { Photo } from './photos.service';
+import { CommonModule } from '@angular/common';
+import { Service, DocumentCollection } from 'ngx-jsonapi';
+import { Photo, PhotosService } from './photos.service';
 
 @Component({
     selector: 'demo-photos',
-    standalone: false,
-    templateUrl: './photos.component.html'
+    standalone: true,
+    imports: [CommonModule],
+    templateUrl: './photos.component.html',
+    providers: [PhotosService]
 })
 export class PhotosComponent {
-    public photos: DocumentResource<Photo>;
+    public photos: DocumentCollection<Photo> | null = null;
 
-    public constructor(protected photosService: Service) {
+    public constructor(protected photosService: PhotosService) {
         // if you check your console, library make only one request
         this.makeRequest(1);
         this.makeRequest(2);
@@ -20,7 +23,8 @@ export class PhotosComponent {
     }
 
     public makeRequest(id: any): void {
-        this.photosService.all().subscribe((succes) => {
+        this.photosService.all().subscribe((photos) => {
+            this.photos = photos as any;
             console.log('photos success', id, this.photos);
         });
     }

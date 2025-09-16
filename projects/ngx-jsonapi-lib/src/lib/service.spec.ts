@@ -127,11 +127,7 @@ for (let store_cache_method of store_cache_methods) {
                 { builded: true, loaded: true, source: 'server' }
             ];
 
-            let emits: Array<{
-                builded: boolean;
-                loaded: boolean;
-                source: SourceType;
-            }> = await booksService
+            const emits = (await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
                     tap((emit) => {
@@ -149,7 +145,7 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     toArray()
                 )
-                .toPromise();
+                .toPromise()) as Array<{ builded: boolean; loaded: boolean; source: SourceType }>;
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(1);
         });
@@ -174,11 +170,7 @@ for (let store_cache_method of store_cache_methods) {
                 { builded: true, loaded: true, source: 'memory' }
             ];
 
-            let emits: Array<{
-                builded: boolean;
-                loaded: boolean;
-                source: SourceType;
-            }> = await booksService
+            const emits = (await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
                     map((emit) => {
@@ -190,7 +182,7 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     toArray()
                 )
-                .toPromise();
+                .toPromise()) as Array<{ builded: boolean; loaded: boolean; source: SourceType }>;
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(0);
         });
@@ -216,11 +208,7 @@ for (let store_cache_method of store_cache_methods) {
                 { builded: true, loaded: true, source: 'server' }
             ];
 
-            let emits: Array<{
-                builded: boolean;
-                loaded: boolean;
-                source: SourceType;
-            }> = await booksService
+            const emits = (await booksService
                 .all({ ttl: 0, store_cache_method: store_cache_method })
                 .pipe(
                     map((emit) => {
@@ -232,7 +220,7 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     toArray()
                 )
-                .toPromise();
+                .toPromise()) as Array<{ builded: boolean; loaded: boolean; source: SourceType }>;
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(1);
         });
@@ -258,11 +246,7 @@ for (let store_cache_method of store_cache_methods) {
                 { builded: true, loaded: true, source: 'server' }
             ];
 
-            let emits: Array<{
-                builded: boolean;
-                loaded: boolean;
-                source: SourceType;
-            }> = await booksService
+            const emits = (await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
                     tap((emit) => {
@@ -280,7 +264,7 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     toArray()
                 )
-                .toPromise();
+                .toPromise()) as Array<{ builded: boolean; loaded: boolean; source: SourceType }>;
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(1);
         });
@@ -320,11 +304,13 @@ for (let store_cache_method of store_cache_methods) {
                 }
             ];
 
-            let emits: Array<{
-                builded: boolean;
-                loaded: boolean;
-                source: SourceType;
-            }> = await booksService
+            let emits:
+                | Array<{
+                      builded: boolean;
+                      loaded: boolean;
+                      source: SourceType;
+                  }>
+                | undefined = await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
                     tap((emit) => {
@@ -352,7 +338,7 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     toArray()
                 )
-                .toPromise();
+                .toPromise()!;
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(0);
         });
@@ -397,11 +383,7 @@ for (let store_cache_method of store_cache_methods) {
                 }
             ];
 
-            let emits: Array<{
-                builded: boolean;
-                loaded: boolean;
-                source: SourceType;
-            }> = await booksService
+            const emits = (await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
                     map((emit) => {
@@ -423,7 +405,7 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     toArray()
                 )
-                .toPromise();
+                .toPromise()) as Array<{ builded: boolean; loaded: boolean; source: SourceType; source_resource?: SourceType }>;
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(0);
         });
@@ -451,11 +433,13 @@ for (let store_cache_method of store_cache_methods) {
                 { builded: true, loaded: true, source: 'server' }
             ];
 
-            let emits: Array<{
-                builded: boolean;
-                loaded: boolean;
-                source: SourceType;
-            }> = await booksService
+            let emits:
+                | Array<{
+                      builded: boolean;
+                      loaded: boolean;
+                      source: SourceType;
+                  }>
+                | undefined = await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
                     map((emit) => {
@@ -467,7 +451,7 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     toArray()
                 )
-                .toPromise();
+                .toPromise()!;
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(1);
         });
@@ -495,11 +479,13 @@ for (let store_cache_method of store_cache_methods) {
                 { builded: true, loaded: true, source: 'server' }
             ];
 
-            let emits: Array<{
-                builded: boolean;
-                loaded: boolean;
-                source: SourceType;
-            }> = await booksService
+            let emits:
+                | Array<{
+                      builded: boolean;
+                      loaded: boolean;
+                      source: SourceType;
+                  }>
+                | undefined = await booksService
                 .all({ store_cache_method: store_cache_method })
                 .pipe(
                     map((emit) => {
@@ -511,7 +497,7 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     toArray()
                 )
-                .toPromise();
+                .toPromise()!;
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(1);
         });
@@ -559,11 +545,7 @@ for (let store_cache_method of store_cache_methods) {
                 { builded: true, loaded: true, source: 'server' }
             ];
 
-            let emits: Array<{
-                builded: boolean;
-                loaded: boolean;
-                source: SourceType;
-            }> = await booksService
+            const emits = (await booksService
                 .all({
                     include: ['author', 'author.books'],
                     store_cache_method: store_cache_method
@@ -578,7 +560,7 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     toArray()
                 )
-                .toPromise();
+                .toPromise())! as Array<{ builded: boolean; loaded: boolean; source: SourceType }>;
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(1);
         });
@@ -625,11 +607,7 @@ for (let store_cache_method of store_cache_methods) {
                 { builded: true, loaded: true, source: 'server' }
             ];
 
-            let emits: Array<{
-                builded: boolean;
-                loaded: boolean;
-                source: SourceType;
-            }> = await booksService
+            const emits = (await booksService
                 .all({
                     include: ['author', 'author.books'],
                     store_cache_method: store_cache_method
@@ -658,7 +636,7 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     toArray()
                 )
-                .toPromise();
+                .toPromise())! as Array<{ builded: boolean; loaded: boolean; source: SourceType }>;
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(1);
         });
@@ -705,11 +683,7 @@ for (let store_cache_method of store_cache_methods) {
                 { builded: true, loaded: true, source: 'server' }
             ];
 
-            let emits: Array<{
-                builded: boolean;
-                loaded: boolean;
-                source: SourceType;
-            }> = await booksService
+            const emits = (await booksService
                 .all({
                     include: ['author', 'author.books'],
                     store_cache_method: store_cache_method
@@ -738,7 +712,7 @@ for (let store_cache_method of store_cache_methods) {
                     }),
                     toArray()
                 )
-                .toPromise();
+                .toPromise())! as Array<{ builded: boolean; loaded: boolean; source: SourceType }>;
             expect(emits).toMatchObject(expected);
             expect(http_request_spy).toHaveBeenCalledTimes(1);
         });
@@ -782,7 +756,7 @@ describe('service.all() and next service.get()', () => {
             { loaded: true, source: 'server' } // emits with data received from server
         ];
 
-        let authors: DocumentCollection<Author> = await authorsService.all({ include: ['books'] }).toPromise();
+        const authors = (await authorsService.all({ include: ['books'] }).toPromise())!;
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
         test_response_subject.next(
@@ -793,15 +767,16 @@ describe('service.all() and next service.get()', () => {
         let author_emits: Array<{
             loaded: boolean;
             source: SourceType;
-        }> = await authorsService
-            .get(authors.data[0].id, { include: ['photos', 'books'] })
-            .pipe(
-                map((emit) => {
-                    return { loaded: emit.loaded, source: emit.source };
-                }),
-                toArray()
-            )
-            .toPromise();
+        }> =
+            (await authorsService
+                .get(authors.data[0].id, { include: ['photos', 'books'] })
+                .pipe(
+                    map((emit) => {
+                        return { loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise()) || [];
 
         expect(author_emits).toMatchObject(expected);
         expect(http_request_spy).toHaveBeenCalledTimes(2);
@@ -823,7 +798,7 @@ describe('service.all() and next service.get()', () => {
             { loaded: true, source: 'server' } // emits with data received from server
         ];
 
-        let authors: DocumentCollection<Author> = await authorsService.all({ include: ['books'] }).toPromise();
+        const authors = (await authorsService.all({ include: ['books'] }).toPromise())!;
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
         let cachememory: CacheMemory = CacheMemory.getInstance();
@@ -840,15 +815,16 @@ describe('service.all() and next service.get()', () => {
         let author_emits: Array<{
             loaded: boolean;
             source: SourceType;
-        }> = await authorsService
-            .get(removed_author_id, { include: ['photos', 'books'] })
-            .pipe(
-                map((emit) => {
-                    return { loaded: emit.loaded, source: emit.source };
-                }),
-                toArray()
-            )
-            .toPromise();
+        }> =
+            (await authorsService
+                .get(removed_author_id, { include: ['photos', 'books'] })
+                .pipe(
+                    map((emit) => {
+                        return { loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise()) || [];
 
         expect(author_emits).toMatchObject(expected);
         expect(http_request_spy).toHaveBeenCalledTimes(2);
@@ -867,9 +843,9 @@ describe('service.all() and next service.get()', () => {
             // expected emits
             { loaded: true, source: 'memory' } // emits with data stored in memory ERROR! check emits...
         ];
-        let received_author: Author;
+        let received_author!: Author;
 
-        let authors: DocumentCollection<Author> = await authorsService.all({ include: ['books'] }).toPromise();
+        const authors = (await authorsService.all({ include: ['books'] }).toPromise())!;
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
         expect(authors.data[0].relationships.books.data[0].attributes).toBeTruthy();
@@ -877,16 +853,17 @@ describe('service.all() and next service.get()', () => {
         let author_emits: Array<{
             loaded: boolean;
             source: SourceType;
-        }> = await authorsService
-            .get(authors.data[0].id)
-            .pipe(
-                tap((author) => (received_author = author)),
-                map((emit) => {
-                    return { loaded: emit.loaded, source: emit.source };
-                }),
-                toArray()
-            )
-            .toPromise();
+        }> =
+            (await authorsService
+                .get(authors.data[0].id)
+                .pipe(
+                    tap((author) => (received_author = author)),
+                    map((emit) => {
+                        return { loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise()) || [];
 
         expect(author_emits).toMatchObject(expected);
         // expect(received_author.relationships.books.data[0].attributes).toBeFalsy(); // ERROR!!!
@@ -908,7 +885,7 @@ describe('service.all() and next service.get()', () => {
         ];
         let received_author: Author;
 
-        let authors: DocumentCollection<Author> = await authorsService.all({ include: ['books'] }).toPromise();
+        const authors = (await authorsService.all({ include: ['books'] }).toPromise())!;
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
         expect(authors.data[0].relationships.books.data[0].attributes).toBeTruthy();
@@ -920,16 +897,17 @@ describe('service.all() and next service.get()', () => {
         let author_emits: Array<{
             loaded: boolean;
             source: SourceType;
-        }> = await authorsService
-            .get(removed_author_id)
-            .pipe(
-                tap((author) => (received_author = author)),
-                map((emit) => {
-                    return { loaded: emit.loaded, source: emit.source };
-                }),
-                toArray()
-            )
-            .toPromise();
+        }> =
+            (await authorsService
+                .get(removed_author_id)
+                .pipe(
+                    tap((author) => (received_author = author)),
+                    map((emit) => {
+                        return { loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise()) || [];
 
         // @TODO: fix this error!!!
         expect(author_emits).toMatchObject(expected);
@@ -949,15 +927,12 @@ describe('service.all() and next service.get()', () => {
             { loaded: true, source: 'memory' } // emits with data received from server
         ];
 
-        let books: DocumentCollection = await booksService.all({ include: ['author'] }).toPromise();
+        const books = (await booksService.all({ include: ['author'] }).toPromise())!;
         expect(books.data[0].id).toBe('1');
         test_response_subject.complete();
         let http_request_spy = jest.spyOn(HttpClient.prototype, 'request');
 
-        let book_emits: Array<{
-            loaded: boolean;
-            source: SourceType;
-        }> = await booksService
+        const book_emits: Array<{ loaded: boolean; source: SourceType }> = (await booksService
             .get('1', { include: ['author'], ttl: 1000 })
             .pipe(
                 map((emit) => {
@@ -971,7 +946,7 @@ describe('service.all() and next service.get()', () => {
                 }),
                 toArray()
             )
-            .toPromise();
+            .toPromise())!;
 
         expect(book_emits).toMatchObject(expected);
 
@@ -994,7 +969,7 @@ describe('service.all() and next service.get()', () => {
             { loaded: true, source: 'server' } // emits with data received from server
         ];
 
-        let book: Book = await booksService.get('1', { include: ['author'] }).toPromise();
+        const book: Book = (await booksService.get('1', { include: ['author'] }).toPromise())!;
         expect(book.id).toBe('1');
         test_response_subject.complete();
         // eslint-disable-next-line
@@ -1003,10 +978,7 @@ describe('service.all() and next service.get()', () => {
         test_response_subject = new BehaviorSubject(new HttpResponse());
         test_response_subject.next(new HttpResponse({ body: books_api }));
 
-        let books_emits: Array<{
-            loaded: boolean;
-            source: SourceType;
-        }> = await booksService
+        const books_emits: Array<{ loaded: boolean; source: SourceType }> = (await booksService
             .all({ include: ['author'], ttl: 1000 })
             .pipe(
                 map((emit) => {
@@ -1025,7 +997,7 @@ describe('service.all() and next service.get()', () => {
                 }),
                 toArray()
             )
-            .toPromise();
+            .toPromise())!;
         test_response_subject.complete();
 
         expect(books_emits).toMatchObject(expected);
@@ -1068,15 +1040,9 @@ describe('service.get()', () => {
             { loaded: true, source: 'server' }
         ];
 
-        test_response_subject.next(
-            new HttpResponse({
-                body: TestFactory.getResourceDocumentData(Book)
-            })
-        );
-        let book_emits: Array<{
-            loaded: boolean;
-            source: SourceType;
-        }> = await booksService
+        test_response_subject.next(new HttpResponse({ body: TestFactory.getResourceDocumentData(Book) }));
+
+        const book_emits = (await booksService
             .get('1')
             .pipe(
                 map((emit) => {
@@ -1084,7 +1050,7 @@ describe('service.get()', () => {
                 }),
                 toArray()
             )
-            .toPromise();
+            .toPromise()) as Array<{ loaded: boolean; source: SourceType }>;
 
         expect(book_emits).toMatchObject(expected);
     });
@@ -1099,7 +1065,6 @@ describe('service.get()', () => {
         await booksService.get('1').toPromise();
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
-
         let http_request_spy = jest.spyOn(HttpClient.prototype, 'request');
         let expected: Array<{
             loaded: boolean;
@@ -1108,10 +1073,7 @@ describe('service.get()', () => {
             // expected emits
             { loaded: true, source: 'memory' }
         ];
-        let emits: Array<{
-            loaded: boolean;
-            source: SourceType;
-        }> = await booksService
+        const emits = (await booksService
             .get('1', { ttl: 1000 })
             .pipe(
                 map((emit) => {
@@ -1119,7 +1081,7 @@ describe('service.get()', () => {
                 }),
                 toArray()
             )
-            .toPromise();
+            .toPromise()) as Array<{ loaded: boolean; source: SourceType }>;
         expect(emits).toMatchObject(expected);
         expect(http_request_spy).toHaveBeenCalledTimes(0);
     });
@@ -1145,10 +1107,7 @@ describe('service.get()', () => {
             { loaded: false, source: 'memory' },
             { loaded: true, source: 'server' }
         ];
-        let emits: Array<{
-            loaded: boolean;
-            source: SourceType;
-        }> = await booksService
+        const emits = (await booksService
             .get('1', { ttl: 1000, include: ['author'] })
             .pipe(
                 map((emit) => {
@@ -1156,7 +1115,7 @@ describe('service.get()', () => {
                 }),
                 toArray()
             )
-            .toPromise();
+            .toPromise()) as Array<{ loaded: boolean; source: SourceType }>;
         // TODO: fix library
         expect(emits).toMatchObject(expected); // ERROR!!! [{ loaded: true, source: 'memory' }, { loaded: true, source: 'server' }]
         expect(http_request_spy).toHaveBeenCalledTimes(1);
@@ -1183,10 +1142,7 @@ describe('service.get()', () => {
             { loaded: false, source: 'memory' },
             { loaded: true, source: 'server' }
         ];
-        let emits: Array<{
-            loaded: boolean;
-            source: SourceType;
-        }> = await authorsService
+        const emits = (await authorsService
             .get('555', { ttl: 1000, include: ['books'] })
             .pipe(
                 map((emit) => {
@@ -1194,7 +1150,7 @@ describe('service.get()', () => {
                 }),
                 toArray()
             )
-            .toPromise();
+            .toPromise()) as Array<{ loaded: boolean; source: SourceType }>;
         expect(emits).toMatchObject(expected);
     });
 
@@ -1215,11 +1171,7 @@ describe('service.get()', () => {
             // expected emits
             { loaded: true, source: 'memory' }
         ];
-        let emits: Array<{
-            loaded: boolean;
-            source: SourceType;
-            // eslint-disable-next-line max-lines
-        }> = await booksService
+        const emits = (await booksService
             .get('1', { ttl: 1000, include: ['author'] })
             .pipe(
                 tap((emit) => {
@@ -1230,7 +1182,7 @@ describe('service.get()', () => {
                 }),
                 toArray()
             )
-            .toPromise();
+            .toPromise()) as Array<{ loaded: boolean; source: SourceType }>;
         expect(emits).toMatchObject(expected);
         expect(http_request_spy).toHaveBeenCalledTimes(0);
     });
@@ -1251,10 +1203,7 @@ describe('service.get()', () => {
             // expected emits
             { loaded: true, source: 'memory' }
         ];
-        let emits: Array<{
-            loaded: boolean;
-            source: SourceType;
-        }> = await booksService
+        const emits = (await booksService
             .get('1', { ttl: 1000, include: ['author'] })
             .pipe(
                 map((emit) => {
@@ -1272,7 +1221,7 @@ describe('service.get()', () => {
                 }),
                 toArray()
             )
-            .toPromise();
+            .toPromise()) as Array<{ loaded: boolean; source: SourceType }>;
         expect(emits).toMatchObject(expected);
         expect(http_request_spy).toHaveBeenCalledTimes(0);
     });
@@ -1301,10 +1250,7 @@ describe('service.get()', () => {
             { loaded: true, source: 'store' }
         ];
 
-        let emits: Array<{
-            loaded: boolean;
-            source: SourceType;
-        }> = await booksService
+        const emits = (await booksService
             .get('1', { ttl: 1000, include: ['author'] })
             .pipe(
                 map((emit) => {
@@ -1319,7 +1265,7 @@ describe('service.get()', () => {
                 }),
                 toArray()
             )
-            .toPromise();
+            .toPromise()) as Array<{ loaded: boolean; source: SourceType }>;
         expect(emits).toMatchObject(expected);
         expect(http_request_spy).not.toHaveBeenCalled();
     });
@@ -1344,15 +1290,16 @@ describe('service.get()', () => {
         let emits: Array<{
             loaded: boolean;
             source: SourceType;
-        }> = await authorsService
-            .get('556', { ttl: 1000, include: ['books'] })
-            .pipe(
-                map((emit) => {
-                    return { loaded: emit.loaded, source: emit.source };
-                }),
-                toArray()
-            )
-            .toPromise();
+        }> =
+            (await authorsService
+                .get('556', { ttl: 1000, include: ['books'] })
+                .pipe(
+                    map((emit) => {
+                        return { loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise()) || [];
         expect(emits).toMatchObject(expected);
     });
 
@@ -1379,10 +1326,7 @@ describe('service.get()', () => {
             { loaded: false, source: 'memory' },
             { loaded: true, source: 'server' }
         ];
-        let emits: Array<{
-            loaded: boolean;
-            source: SourceType;
-        }> = await booksService
+        const emits = (await booksService
             .get('1')
             .pipe(
                 map((emit) => {
@@ -1390,7 +1334,7 @@ describe('service.get()', () => {
                 }),
                 toArray()
             )
-            .toPromise();
+            .toPromise()) as Array<{ loaded: boolean; source: SourceType }>;
         expect(emits).toMatchObject(expected);
         expect(http_request_spy).toHaveBeenCalledTimes(1);
     });
@@ -1421,15 +1365,16 @@ describe('service.get()', () => {
         let emits: Array<{
             loaded: boolean;
             source: SourceType;
-        }> = await booksService
-            .get('1', { ttl: 1000 })
-            .pipe(
-                map((emit) => {
-                    return { loaded: emit.loaded, source: emit.source };
-                }),
-                toArray()
-            )
-            .toPromise();
+        }> =
+            (await booksService
+                .get('1', { ttl: 1000 })
+                .pipe(
+                    map((emit) => {
+                        return { loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise()) || [];
         expect(emits).toMatchObject(expected);
         expect(http_request_spy).toHaveBeenCalledTimes(0);
     });
@@ -1460,15 +1405,16 @@ describe('service.get()', () => {
         let emits: Array<{
             loaded: boolean;
             source: SourceType;
-        }> = await booksService
-            .get('1', { ttl: 1000, include: ['books'] })
-            .pipe(
-                map((emit) => {
-                    return { loaded: emit.loaded, source: emit.source };
-                }),
-                toArray()
-            )
-            .toPromise();
+        }> =
+            (await booksService
+                .get('1', { ttl: 1000, include: ['books'] })
+                .pipe(
+                    map((emit) => {
+                        return { loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise()) || [];
         // @TODO: fix library
         // expect(emits).toMatchObject(expected); // ERROR!!! [{ loaded: false, source: 'new' }, { loaded: true, source: 'server' }]
         expect(http_request_spy).toHaveBeenCalledTimes(1);
@@ -1480,7 +1426,7 @@ describe('service.get()', () => {
 
         test_response_subject.next(new HttpResponse({ body: body_resource }));
         // caching resource
-        let book: Book = await booksService.get('1').toPromise();
+        const book: Book = (await booksService.get('1').toPromise())!;
         test_response_subject.complete();
         test_response_subject = new BehaviorSubject(new HttpResponse());
         test_response_subject.next(new HttpResponse({ body: body_resource }));
@@ -1501,18 +1447,19 @@ describe('service.get()', () => {
             { loaded: false, source: 'store' },
             { loaded: true, source: 'server' }
         ];
-        let emits: Array<{
+        const emits: Array<{
             loaded: boolean;
             source: SourceType;
-        }> = await booksService
-            .get('1', { ttl: 1000, include: ['books'] })
-            .pipe(
-                map((emit) => {
-                    return { loaded: emit.loaded, source: emit.source };
-                }),
-                toArray()
-            )
-            .toPromise();
+        }> =
+            (await booksService
+                .get('1', { ttl: 1000, include: ['books'] })
+                .pipe(
+                    map((emit) => {
+                        return { loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise()) || [];
         // @TODO: fix library
         // expect(emits).toMatchObject(expected); // ERROR!!! [{ loaded: false, source: 'new' }, { loaded: true, source: 'server' }]
         expect(http_request_spy).toHaveBeenCalledTimes(1);
@@ -1547,8 +1494,8 @@ describe('service.get()', () => {
             author: { data: { id: 'author_1', type: 'authors' } }
         };
         test_response_subject.next(new HttpResponse({ body: bookData }));
-        let book_clone: ClonedResource<Book> = await booksService.getClone('1').toPromise();
-        let original_book: Book = await booksService.get('1').toPromise();
+        const book_clone: ClonedResource<Book> = (await booksService.getClone('1').toPromise())!;
+        const original_book: Book = (await booksService.get('1').toPromise())!;
         expect(book_clone.source).toBe(original_book.source);
         expect(book_clone.loaded).toBe(original_book.loaded);
         expect(book_clone.attributes).toMatchObject(original_book.attributes);

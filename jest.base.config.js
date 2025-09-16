@@ -1,43 +1,23 @@
 module.exports = {
-  preset: 'jest-preset-angular',
-  setupFilesAfterEnv: [
-      '<rootDir>/setup-jest.ts'
-  ],
-  transform: {
-      '^.+\\.(ts|js|html)$': 'ts-jest'
-  },
-  moduleFileExtensions: [
-      'ts',
-      'js',
-      'html',
-      'json'
-  ],
-  moduleNameMapper: {
-      '^lodash-es$': 'lodash',
-      '^ngx-jsonapi/(?!db)(.*)': '<rootDir>/src/$1'
-  },
-//   transformIgnorePatterns: [
-//       'node_modules/(?!ngx-jsonapi)'
-
-//   ],
-  modulePathIgnorePatterns: [
-      'dist',
-      'node_modules/ngx-jsonapi'
-  ],
-  globals: {
-    'ts-jest': {
-        tsconfig: '<rootDir>/tsconfig.spec.json',
-        stringifyContentPathRegex: '\\.(html|svg)$',
+    preset: 'jest-preset-angular',
+    setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
+    transform: { '^.+.(ts|mjs|js|html)$': 'jest-preset-angular' },
+    moduleFileExtensions: ['ts', 'js', 'mjs', 'html', 'json'],
+    transformIgnorePatterns: ['node_modules/(?!(lodash-es|@angular|zone.js|ngx-jsonapi|@ngrx|@ngxs)/)'],
+    modulePathIgnorePatterns: ['dist'],
+    moduleNameMapper: {
+        '^lodash-es$': 'lodash',
+        '^ngx-jsonapi/(?!db)(.*)': '<rootDir>/projects/ngx-jsonapi-lib/src/$1'
     },
-},
-transformIgnorePatterns: ['node_modules/(?!.*.mjs$)'],
-transform: { '^.+.(ts|mjs|js|html)$': 'jest-preset-angular' },
-moduleNameMapper: {
-    "^lodash-es$": "lodash"
-},
-snapshotSerializers: [
-    'jest-preset-angular/build/serializers/no-ng-attributes',
-    'jest-preset-angular/build/serializers/ng-snapshot',
-    'jest-preset-angular/build/serializers/html-comment',
-],
+    globals: {
+        'ts-jest': {
+            tsconfig: '<rootDir>/tsconfig.spec.json',
+            stringifyContentPathRegex: '\\.(html|svg)$'
+        }
+    },
+    snapshotSerializers: [
+        'jest-preset-angular/build/serializers/no-ng-attributes',
+        'jest-preset-angular/build/serializers/ng-snapshot',
+        'jest-preset-angular/build/serializers/html-comment'
+    ]
 };

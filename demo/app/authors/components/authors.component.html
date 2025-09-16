@@ -1,39 +1,54 @@
 <h3>Authors</h3>
 <demo-collection-info [collection]="authors"></demo-collection-info>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Date of birth</th>
-            <th>Date of dead</th>
-            <th>Books</th>
-            <th>Photos</th>
-        </tr>
-    </thead>
-    <tr *ngFor="let author of authors.data; trackBy: authors.trackBy">
-        <td>{{ author.id }}</td>
-        <td>
-            <a [routerLink]="['/authors', author.id]">{{ author.attributes.name }}</a>
-            <code title="Cache last update"><small>{{ author.cache_last_update | date:'H:MM:SS' }}</small></code>
-            <code><small>{{ author.source }}</small></code>
-        </td>
-        <td>{{ author.attributes.date_of_birth | date }}</td>
-        <td>{{ author.attributes.date_of_death | date }}</td>
-        <td *ngIf="author.relationships.books.data.length < 1" class="text-muted">-no books-</td>
-        <td *ngIf="author.relationships.books.data.length > 0">
-            <a [routerLink]="['/books', author.relationships.books.data[0].id]">{{ author.relationships.books.data[0].attributes.title }}</a>
-            <span *ngIf="author.relationships.books.data.length > 1">
-                and {{ author.relationships.books.data.length }} more...
-            </span>
-        </td>
-        <td>
-            {{ author.relationships.photos.data.length }}
-        </td>
-        <!-- <td><button (click)="delete(author)">Delete</button></td> -->
-    </tr>
-</table>
+@defer {
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Date of birth</th>
+                <th>Date of dead</th>
+                <th>Books</th>
+                <th>Photos</th>
+            </tr>
+        </thead>
+    <ng-container *ngFor="let author of authors?.data;">
+            <tr>
+                <td>{{ author.id }}</td>
+                <td>
+                    <a [routerLink]="['/authors', author.id]">{{ author.attributes.name }}</a>
+                    <code title="Cache last update"><small>{{ author.cache_last_update | date:'H:MM:SS' }}</small></code>
+                    <code><small>{{ author.source }}</small></code>
+                </td>
+                <td>{{ author.attributes.date_of_birth | date }}</td>
+                <td>{{ author.attributes.date_of_death | date }}</td>
+                <ng-container *ngIf="author.relationships.books.data.length < 1">
+                    <td class="text-muted">-no books-</td>
+                </ng-container>
+                <ng-container *ngIf="author.relationships.books.data.length > 0">
+                    <td>
+                        <a [routerLink]="['/books', author.relationships.books.data[0].id]">{{ author.relationships.books.data[0].attributes.title }}</a>
+                        <ng-container *ngIf="author.relationships.books.data.length > 1">
+                            <span>
+                                and {{ author.relationships.books.data.length }} more...
+                            </span>
+                        </ng-container>
+                    </td>
+                </ng-container>
+                <td>
+                    {{ author.relationships.photos.data.length }}
+                </td>
+                <!-- <td><button (click)="delete(author)">Delete</button></td> -->
+                <!-- <td><button (click)="delete(author)">Delete</button></td> -->
+            </tr>
+        </ng-container>
+    </table>
+}
 <demo-collection-paginator [collection]="authors"></demo-collection-paginator>
+<!-- <p>
+<button ng-click="update()">Update author</button>
+<button ng-click="removeRelationship()">Remove relationship</button>
+</p> -->
 <!-- <p>
 <button ng-click="update()">Update author</button>
 <button ng-click="removeRelationship()">Remove relationship</button>
