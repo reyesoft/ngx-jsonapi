@@ -1,17 +1,20 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Resource } from 'ngx-jsonapi';
 import { AuthorsService } from '../../authors/authors.service';
 import { BooksService, Book } from './../books.service';
 import { PhotosService } from '../../photos/photos.service';
+import { CommonModule } from '@angular/common';
+import { ResourceInfoComponent } from '../../shared/resource-info.component';
 
 @Component({
     selector: 'demo-book',
-    standalone: false,
+    standalone: true,
+    imports: [CommonModule, RouterModule, ResourceInfoComponent],
     templateUrl: './book.component.html'
 })
 export class BookComponent {
-    public book: Book;
+    public book: Book | null = null;
 
     public constructor(
         protected authorsService: AuthorsService,
@@ -30,7 +33,8 @@ export class BookComponent {
         });
     }
 
-    public getAuthorName(book: Resource): string {
+    public getAuthorName(book: Resource | null): string {
+        if (!book) return '';
         const data: Resource = <Resource>book.relationships.author.data;
 
         return data.attributes ? data.attributes.name : '';

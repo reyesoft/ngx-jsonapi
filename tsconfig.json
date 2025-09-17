@@ -18,7 +18,10 @@
       "rootDir": "./",
       "paths": {
         "ngx-jsonapi": [
-          "./src"
+          "projects/ngx-jsonapi-lib/src/public_api"
+        ],
+        "ngx-jsonapi/*": [
+          "projects/ngx-jsonapi-lib/src/lib/*"
         ],
         "ngx-jsonapi-lib": [
           "dist/ngx-jsonapi-lib"

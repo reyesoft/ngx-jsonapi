@@ -12,7 +12,8 @@
         "baseUrl": ".",
         "rootDir": "../",
         "paths": {
-            "ngx-jsonapi": ["../src"]
+            "ngx-jsonapi": ["../projects/ngx-jsonapi-lib/src/public_api.ts"],
+            "ngx-jsonapi/*": ["../projects/ngx-jsonapi-lib/src/*"]
         }
     },
     "include": ["**/*.spec.ts"]

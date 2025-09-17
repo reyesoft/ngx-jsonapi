@@ -1,17 +1,21 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { DocumentCollection } from 'ngx-jsonapi';
 import { System, SystemsService } from './systems.service';
+import { CollectionInfoComponent } from '../shared/collection-info.component';
+import { CollectionPaginatorComponent } from '../shared/collection-paginator.component';
 
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'bc-systems',
     templateUrl: './systems.component.html',
-    standalone: false,
+    standalone: true,
+    imports: [CommonModule, RouterModule, CollectionInfoComponent, CollectionPaginatorComponent],
     styles: []
 })
 export class SystemsComponent {
-    public systems: DocumentCollection<System>;
+    public systems: DocumentCollection<System> | null = null;
 
     public constructor(
         private route: ActivatedRoute,

@@ -1,18 +1,25 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, ActivatedRoute } from '@angular/router';
+import { CollectionInfoComponent } from '../../shared/collection-info.component';
+import { ResourceInfoComponent } from '../../shared/resource-info.component';
+import { CollectionPaginatorComponent } from '../../shared/collection-paginator.component';
 import { Resource, DocumentCollection } from 'ngx-jsonapi';
 import { BooksService, Book } from './../books.service';
 import { AuthorsService } from './../../authors/authors.service';
 import { PhotosService } from '../../photos/photos.service';
-import { ActivatedRoute } from '@angular/router';
+// ActivatedRoute already imported above
 import { Observable } from 'rxjs';
 
 @Component({
     selector: 'demo-books',
-    standalone: false,
-    templateUrl: './books.component.html'
+    standalone: true,
+    imports: [CommonModule, RouterModule, CollectionInfoComponent, ResourceInfoComponent, CollectionPaginatorComponent],
+    templateUrl: './books.component.html',
+    providers: [BooksService, AuthorsService, PhotosService]
 })
 export class BooksComponent {
-    public books: DocumentCollection<Book>;
+    public books: DocumentCollection<Book> | null = null;
 
     public constructor(
         private route: ActivatedRoute,

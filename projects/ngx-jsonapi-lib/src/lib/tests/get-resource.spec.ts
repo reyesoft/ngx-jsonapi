@@ -173,19 +173,19 @@ describe('core methods', () => {
             .then((resource) => {
                 expect(test_resource.type).toBe('test_resources');
                 expect(test_resource.id).toBe('1');
-                expect(resource.attributes.name).toBe('test_name');
-                expect(resource.relationships.test_resource instanceof DocumentResource).toBeTruthy();
-                expect(resource.relationships.test_resources instanceof DocumentCollection).toBeTruthy();
+                expect(resource!.attributes.name).toBe('test_name');
+                expect(resource!.relationships.test_resource instanceof DocumentResource).toBeTruthy();
+                expect(resource!.relationships.test_resources instanceof DocumentCollection).toBeTruthy();
                 // Verifica solo propiedades simples para evitar referencias circulares
-                expect((<DocumentResource>resource?.relationships?.test_resource)?.data?.id).toBe('2');
-                expect((<DocumentResource>resource?.relationships?.test_resource)?.data?.attributes?.name).toBe('test_name_2');
-                const rel3 = (<DocumentCollection>resource?.relationships?.test_resources)?.data?.find(
+                expect((<DocumentResource>resource!.relationships?.test_resource)?.data?.id).toBe('2');
+                expect((<DocumentResource>resource!.relationships?.test_resource)?.data?.attributes?.name).toBe('test_name_2');
+                const rel3 = (<DocumentCollection>resource!.relationships?.test_resources)?.data?.find(
                     (related_resource) => related_resource.id === '3'
                 );
                 expect(rel3).toBeTruthy();
                 expect(rel3?.attributes?.name).toBe('test_name_3');
-                let has_one_relationship: Resource | null | undefined = (<DocumentResource>resource?.relationships?.test_resource)?.data;
-                let has_many_relationship: Array<Resource> = (<DocumentCollection>resource?.relationships?.test_resources)?.data ?? [];
+                let has_one_relationship: Resource | null | undefined = (<DocumentResource>resource!.relationships?.test_resource)?.data;
+                let has_many_relationship: Array<Resource> = (<DocumentCollection>resource!.relationships?.test_resources)?.data ?? [];
                 expect((<TestResource>has_one_relationship?.relationships?.test_resource?.data)?.id).toBe('4');
                 expect((<TestResource>has_many_relationship[0]?.relationships?.test_resources?.data?.[0])?.id).toBe('4');
             });
@@ -243,30 +243,30 @@ describe('core methods', () => {
             .get('1', { include: ['test_resource', 'test_resources'] })
             .toPromise()
             .then((resource) => {
-                expect(resource.type).toBe('test_resources');
-                expect(resource.id).toBe('1');
-                expect(resource.attributes.name).toBe('test_name');
-                expect(resource.relationships.test_resource instanceof DocumentResource).toBeTruthy();
-                expect(resource.relationships.test_resources instanceof DocumentCollection).toBeTruthy();
-                expect((<DocumentResource>resource?.relationships?.test_resource)?.data?.id).toBe('2');
-                expect((<DocumentResource>resource?.relationships?.test_resource)?.data?.attributes?.name).toBe('test_name_2');
+                expect(resource!.type).toBe('test_resources');
+                expect(resource!.id).toBe('1');
+                expect(resource!.attributes.name).toBe('test_name');
+                expect(resource!.relationships.test_resource instanceof DocumentResource).toBeTruthy();
+                expect(resource!.relationships.test_resources instanceof DocumentCollection).toBeTruthy();
+                expect((<DocumentResource>resource!.relationships?.test_resource)?.data?.id).toBe('2');
+                expect((<DocumentResource>resource!.relationships?.test_resource)?.data?.attributes?.name).toBe('test_name_2');
                 expect(
-                    (<DocumentCollection>resource?.relationships?.test_resources)?.data?.find(
+                    (<DocumentCollection>resource!.relationships?.test_resources)?.data?.find(
                         (related_resource) => related_resource.id === '3'
                     )
                 ).toBeTruthy();
                 expect(
-                    (<DocumentCollection>resource?.relationships?.test_resources)?.data?.find(
+                    (<DocumentCollection>resource!.relationships?.test_resources)?.data?.find(
                         (related_resource) => related_resource.id === '3'
                     )?.attributes?.name
                 ).toBe('test_name_3');
                 expect(
-                    (<DocumentCollection>resource?.relationships?.test_resources)?.data?.find(
+                    (<DocumentCollection>resource!.relationships?.test_resources)?.data?.find(
                         (related_resource) => related_resource.id === '4'
                     )
                 ).toBeTruthy();
                 expect(
-                    (<DocumentCollection>resource?.relationships?.test_resources)?.data?.find(
+                    (<DocumentCollection>resource!.relationships?.test_resources)?.data?.find(
                         (related_resource) => related_resource.id === '4'
                     )?.attributes?.name
                 ).toBe('test_name_4');
@@ -287,10 +287,10 @@ describe('core methods', () => {
             .get('1')
             .toPromise()
             .then((resource) => {
-                expect(resource.type).toBe('test_resources');
-                expect(resource.id).toBe('1');
-                expect(resource.attributes.name).toBe('test_name');
-                expect(resource.relationships.test_resource.data).toEqual(null);
+                expect(resource!.type).toBe('test_resources');
+                expect(resource!.id).toBe('1');
+                expect(resource!.attributes.name).toBe('test_name');
+                expect(resource!.relationships.test_resource.data).toEqual(null);
             });
     });
 });

@@ -16,21 +16,13 @@ import { JsonapiConfig } from './jsonapi-config';
 import { JsonRipper } from './services/json-ripper';
 import { StoreService } from './sources/store.service';
 
+export function provideNgxJsonapi(config: JsonapiConfig) {
+    return [{ provide: JsonapiConfig, useValue: config }];
+}
+
 @NgModule({
     imports: [CommonModule, HttpClientModule],
-    providers: [
-        JsonapiCore,
-        {
-            provide: JSONAPI_RIPPER_SERVICE,
-            useClass: JsonRipperFake
-        },
-        {
-            provide: JSONAPI_STORE_SERVICE,
-            useClass: StoreFakeService
-        },
-        JsonapiConfig, // Need this here for testing
-        JsonapiHttp
-    ]
+    providers: [StoreService, JsonRipper, JsonapiHttp, JsonapiCore]
 })
 export class NgxJsonapiModule {
     public constructor(
@@ -47,7 +39,7 @@ export class NgxJsonapiModule {
     public static forRoot(config: JsonapiConfig): ModuleWithProviders<NgxJsonapiModule> {
         return {
             ngModule: NgxJsonapiModule,
-            providers: [{ provide: JsonapiConfig, useValue: config }]
+            providers: provideNgxJsonapi(config)
         };
     }
 }
