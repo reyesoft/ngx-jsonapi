@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Service, DocumentCollection } from 'ngx-jsonapi';
 import { Photo, PhotosService } from './photos.service';
 
 @Component({
     selector: 'demo-photos',
     standalone: true,
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './photos.component.html',
     providers: [PhotosService]
 })

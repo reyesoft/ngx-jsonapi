@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { DocumentCollection } from 'ngx-jsonapi';
 import { System, SystemsService } from './systems.service';
@@ -11,7 +11,7 @@ import { CollectionPaginatorComponent } from '../shared/collection-paginator.com
     selector: 'bc-systems',
     templateUrl: './systems.component.html',
     standalone: true,
-    imports: [CommonModule, RouterModule, CollectionInfoComponent, CollectionPaginatorComponent],
+    imports: [RouterModule, CollectionInfoComponent, CollectionPaginatorComponent],
     styles: []
 })
 export class SystemsComponent {

@@ -1,19 +1,21 @@
 <div>
-    <h3>photos</h3>
-    @defer {
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Title</th>
-                    <th>URI</th>
-                </tr>
-            </thead>
-            <tr *ngFor="let photo of photos.data">
-                <td>{{ photo.id }}</td>
-                <td>{{ photo.attributes.title }}</td>
-                <td>{{ photo.attributes.uri }}</td>
-            </tr>
-        </table>
+  <h3>photos</h3>
+  @defer {
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>URI</th>
+      </tr>
+    </thead>
+    @for (photo of photos.data; track photo) {
+      <tr>
+        <td>{{ photo.id }}</td>
+        <td>{{ photo.attributes.title }}</td>
+        <td>{{ photo.attributes.uri }}</td>
+      </tr>
     }
+  </table>
+}
 </div>

@@ -1,30 +1,30 @@
 <h3>Book #{{ book?.id }}</h3>
 <demo-resource-info [resource]="book"></demo-resource-info>
 <ul>
-    <li>Title: <strong>{{ book?.attributes.title }}</strong></li>
-    <li>Date Published: <strong>{{ book?.attributes.date_published | date }}</strong></li>
+  <li>Title: <strong>{{ book?.attributes.title }}</strong></li>
+  <li>Date Published: <strong>{{ book?.attributes.date_published | date }}</strong></li>
 </ul>
 
 <h4>Author (one)</h4>
 <p><small>This a relationship with <i>hasMany:false</i></small></p>
 <ul>
-    <li>Name: <strong>{{ getAuthorName(book) }}</strong></li>
+  <li>Name: <strong>{{ getAuthorName(book) }}</strong></li>
 </ul>
 
 <h4>Photos (many)</h4>
 <p><small>This a relationship with <i>hasMany:true</i></small></p>
 @defer {
-    @if (book?.relationships.photos.builded) {
-        <ul>
-            <ng-container *ngFor="let photo of book?.relationships.photos.data; trackBy: trackPhotoId">
-                <li>
-                    URI: <a href="{{ photo.attributes.uri }}">{{ photo.attributes.uri }}</a>
-                </li>
-            </ng-container>
-        </ul>
+@if (book?.relationships.photos.builded) {
+  <ul>
+    @for (photo of book?.relationships.photos.data; track trackPhotoId($index, photo)) {
+      <li>
+        URI: <a href="{{ photo.attributes.uri }}">{{ photo.attributes.uri }}</a>
+      </li>
     }
+  </ul>
+}
 }
 
 <p>
-    <a routerLink="/books">Volver</a>
+  <a routerLink="/books">Volver</a>
 </p>
