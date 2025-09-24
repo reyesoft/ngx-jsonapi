@@ -5,7 +5,7 @@
  */
 
 /* tslint:disable:file-name-casing */
-export * from './lib/ngx-jsonapi.module';
+export * from './lib/ngx-jsonapi.provider';
 export * from './lib/interfaces/index';
 /* tslint:enable:file-name-casing */
 export * from './lib/decorators/autoregister';
