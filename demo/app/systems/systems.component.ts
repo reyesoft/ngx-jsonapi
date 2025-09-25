@@ -7,7 +7,6 @@ import { CollectionInfoComponent } from '../shared/collection-info.component';
 import { CollectionPaginatorComponent } from '../shared/collection-paginator.component';
 
 @Component({
-    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'bc-systems',
     templateUrl: './systems.component.html',
     standalone: true,

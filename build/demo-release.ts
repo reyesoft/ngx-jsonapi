@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { cmd } from './util';
 
-/* eslint-disable @typescript-eslint/no-var-requires,no-var */
+/* eslint-disable @typescript-eslint/no-var-requires */
 var ghpages: any = require('gh-pages');
 var dir: string = path.resolve(path.join(__dirname, '../', 'demo-dist'));
 
@@ -24,4 +24,4 @@ ghpages.publish(dir, {
         console.log('gh-pages: ', message);
     }
 });
-/* eslint-enable @typescript-eslint/no-var-requires,no-var */
+/* eslint-enable @typescript-eslint/no-var-requires */

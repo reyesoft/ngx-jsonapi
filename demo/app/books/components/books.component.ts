@@ -30,7 +30,6 @@ export class BooksComponent {
         route.queryParams.subscribe(({ page }) => {
             booksService
                 .all({
-                    // eslint-disable-next-line id-blacklist
                     page: { number: page || 1 },
                     include: ['author', 'photos']
                 })
@@ -53,7 +52,7 @@ export class BooksComponent {
 
         const books$: Observable<DocumentCollection<Book>> = this.booksService.all({
             remotefilter: remotefilter,
-            // eslint-disable-next-line id-blacklist
+
             page: { number: 1 },
             include: ['author', 'photos']
         });

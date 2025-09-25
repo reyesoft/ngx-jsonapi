@@ -83,7 +83,7 @@ export function exec(
 }
 
 export function cmd(command: string, args: Array<string>): Promise<string> {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
+     
     return exec(command, args, (command: string) => command);
 }
 

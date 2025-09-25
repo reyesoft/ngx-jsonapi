@@ -297,7 +297,7 @@ export async function publishToRepo(config: Config): Promise<void> {
         ]);
 
 
-        /* eslint-disable @typescript-eslint/await-thenable */
+         
         await util.cmd('rm -rf', [`${REPO_DIR}`]);
         await util.cmd('mkdir ', [`-p ${REPO_DIR}`]);
         await process.chdir(`${REPO_DIR}`);
@@ -320,7 +320,7 @@ export async function publishToRepo(config: Config): Promise<void> {
         await util.cmd('rm', ['commit_message']);
         await util.git(['push origin master --force']);
         await process.chdir('../../');
-        /* eslint-disable @typescript-eslint/await-thenable */
+         
     }
 }
 
