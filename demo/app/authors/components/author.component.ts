@@ -4,7 +4,6 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { Resource } from 'ngx-jsonapi';
 import { CollectionInfoComponent } from '../../shared/collection-info.component';
 import { ResourceInfoComponent } from '../../shared/resource-info.component';
-import { CollectionPaginatorComponent } from '../../shared/collection-paginator.component';
 import { PhotosService } from '../../photos/photos.service';
 import { AuthorsService, Author } from '../authors.service';
 import { BooksService } from '../../books/books.service';
@@ -12,7 +11,7 @@ import { BooksService } from '../../books/books.service';
 @Component({
     selector: 'demo-author',
     standalone: true,
-    imports: [CommonModule, RouterModule, ResourceInfoComponent, CollectionInfoComponent, CollectionPaginatorComponent],
+    imports: [CommonModule, RouterModule, ResourceInfoComponent, CollectionInfoComponent],
     templateUrl: './author.component.html'
 })
 export class AuthorComponent {

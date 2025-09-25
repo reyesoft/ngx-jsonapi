@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { CollectionInfoComponent } from '../../shared/collection-info.component';
-import { ResourceInfoComponent } from '../../shared/resource-info.component';
 import { CollectionPaginatorComponent } from '../../shared/collection-paginator.component';
 import { Resource, DocumentCollection } from 'ngx-jsonapi';
 import { BooksService, Book } from './../books.service';
@@ -14,7 +13,7 @@ import { Observable } from 'rxjs';
 @Component({
     selector: 'demo-books',
     standalone: true,
-    imports: [CommonModule, RouterModule, CollectionInfoComponent, ResourceInfoComponent, CollectionPaginatorComponent],
+    imports: [CommonModule, RouterModule, CollectionInfoComponent, CollectionPaginatorComponent],
     templateUrl: './books.component.html',
     providers: [BooksService, AuthorsService, PhotosService]
 })

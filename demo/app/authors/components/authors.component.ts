@@ -5,13 +5,12 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { DocumentCollection, Photo } from 'ngx-jsonapi';
 import { AuthorsService, Author } from './../authors.service';
 import { CollectionInfoComponent } from '../../shared/collection-info.component';
-import { ResourceInfoComponent } from '../../shared/resource-info.component';
 import { CollectionPaginatorComponent } from '../../shared/collection-paginator.component';
 
 @Component({
     selector: 'demo-authors',
     standalone: true,
-    imports: [CommonModule, RouterModule, CollectionInfoComponent, ResourceInfoComponent, CollectionPaginatorComponent],
+    imports: [CommonModule, RouterModule, CollectionInfoComponent, CollectionPaginatorComponent],
     templateUrl: './authors.component.html',
     providers: [AuthorsService, BooksService]
 })
