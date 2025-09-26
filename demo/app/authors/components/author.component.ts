@@ -21,7 +21,7 @@ export class AuthorComponent {
     public constructor(
         protected authorsService: AuthorsService,
         protected photosService: PhotosService,
-        booksService: BooksService,
+        _booksService: BooksService,
         private route: ActivatedRoute
     ) {
         route.params.subscribe(({ id }) => {
@@ -50,7 +50,7 @@ export class AuthorComponent {
             .save
             /* { include: ['book'] } */
             ()
-            .subscribe((success) => {
+            .subscribe((_success) => {
                 console.log('author saved', author.toObject());
             });
     }
@@ -66,7 +66,7 @@ export class AuthorComponent {
         currentAuthor.attributes.name = newName || currentAuthor.attributes.name;
         console.log('author data for save with book include', currentAuthor.toObject({ include: ['books'] }));
         console.log('author data for save without any include', currentAuthor.toObject());
-        currentAuthor.save(/* { include: ['book'] } */).subscribe((success) => {
+        currentAuthor.save(/* { include: ['book'] } */).subscribe((_success) => {
             console.log('author saved', currentAuthor.toObject());
         });
     }

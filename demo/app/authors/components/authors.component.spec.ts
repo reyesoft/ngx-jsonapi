@@ -7,17 +7,17 @@ import { BooksService } from '../../books/books.service';
 import { AuthorsComponent } from './authors.component';
 import { DocumentCollection, JsonapiConfig, JSONAPI_STORE_SERVICE, JSONAPI_RIPPER_SERVICE, StoreService, JsonRipper } from 'ngx-jsonapi';
 import { provideNgxJsonapiStandalone } from 'ngx-jsonapi/ngx-jsonapi.provider';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 
 describe('AuthorsComponent', () => {
     let component: AuthorsComponent;
     let fixture: ComponentFixture<AuthorsComponent>;
 
-    const queryParams$: BehaviorSubject<any> = new BehaviorSubject<any>({});
+    const queryParams$: BehaviorSubject<Params> = new BehaviorSubject<Params>({});
 
-    const authorsServiceMock: any = {
+    const authorsServiceMock: AuthorsService = {
         all: () => of(new DocumentCollection())
-    };
+    } as AuthorsService;
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({

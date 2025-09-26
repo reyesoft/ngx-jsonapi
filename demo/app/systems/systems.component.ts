@@ -20,7 +20,7 @@ export class SystemsComponent {
         private route: ActivatedRoute,
         private authorsService: SystemsService
     ) {
-        route.queryParams.subscribe(({ page }) => {
+        route.queryParams.subscribe(({ _page }) => {
             authorsService.all().subscribe(
                 (systems) => {
                     this.systems = systems;

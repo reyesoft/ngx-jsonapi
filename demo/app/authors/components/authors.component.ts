@@ -2,7 +2,7 @@ import { BooksService } from './../../books/books.service';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
-import { DocumentCollection, Photo } from 'ngx-jsonapi';
+import { DocumentCollection } from 'ngx-jsonapi';
 import { AuthorsService, Author } from './../authors.service';
 import { CollectionInfoComponent } from '../../shared/collection-info.component';
 import { CollectionPaginatorComponent } from '../../shared/collection-paginator.component';
@@ -20,7 +20,7 @@ export class AuthorsComponent {
     public constructor(
         private route: ActivatedRoute,
         private authorsService: AuthorsService,
-        booksService: BooksService
+        _booksService: BooksService
     ) {
         route.queryParams.subscribe(({ page }) => {
             authorsService

@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component } from '@angular/core';
 
-import { Service, DocumentCollection } from 'ngx-jsonapi';
+import { DocumentCollection } from 'ngx-jsonapi';
 import { Photo, PhotosService } from './photos.service';
 
 @Component({
@@ -22,9 +22,9 @@ export class PhotosComponent {
         this.makeRequest(5);
     }
 
-    public makeRequest(id: any): void {
+    public makeRequest(id: number): void {
         this.photosService.all().subscribe((photos) => {
-            this.photos = photos as any;
+            this.photos = photos as DocumentCollection<Photo>;
             console.log('photos success', id, this.photos);
         });
     }

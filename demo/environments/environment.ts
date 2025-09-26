@@ -3,7 +3,13 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `angular-cli.json`.
 
-export const environment: { [key: string]: any } = {
+interface Environment {
+    production: boolean;
+    jsonapi_url: string;
+    api_saldo: string;
+}
+
+export const environment: Environment = {
     production: false,
     jsonapi_url: '//jsonapiplayground.reyesoft.com/v2/',
     api_saldo: 'https://api.saldo.com.ar/v3/'

@@ -1,7 +1,7 @@
 import './polyfills';
 
 import { bootstrapApplication } from '@angular/platform-browser';
-import { enableProdMode, importProvidersFrom } from '@angular/core';
+import { enableProdMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { environment } from './environments/environment';

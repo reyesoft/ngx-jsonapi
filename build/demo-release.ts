@@ -3,12 +3,12 @@ import * as fs from 'fs';
 import { cmd } from './util';
 
 /* eslint-disable @typescript-eslint/no-var-requires */
-var ghpages: any = require('gh-pages');
+var ghpages: typeof import('gh-pages') = require('gh-pages');
 var dir: string = path.resolve(path.join(__dirname, '../', 'demo-dist'));
 
 // CNAME FILE
 cmd('mkdir ', [`-p ${dir}`]);
-fs.writeFile(`${dir}/CNAME`, 'ngx-jsonapi.reyesoft.com', function(err: any) {
+fs.writeFile(`${dir}/CNAME`, 'ngx-jsonapi.reyesoft.com', function(err: NodeJS.ErrnoException | null) {
     if (err) {
         return console.log(err);
     }

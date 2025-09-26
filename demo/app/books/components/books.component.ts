@@ -42,7 +42,7 @@ export class BooksComponent {
         });
     }
 
-    public getAll(remotefilter: any): void {
+    public getAll(remotefilter: Record<string, unknown>): void {
         // we add some remote filter
         remotefilter.date_published = {
             since: '1983-01-01',
@@ -63,7 +63,7 @@ export class BooksComponent {
             },
             (error) => console.log('error books controller', error)
         );
-        books$.toPromise().then((success) => console.log('books loaded PROMISE'));
+        books$.toPromise().then((_success) => console.log('books loaded PROMISE'));
     }
 
     public delete(book: Resource): void {

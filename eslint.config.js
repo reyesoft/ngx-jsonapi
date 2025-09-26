@@ -30,8 +30,11 @@ module.exports = [
     },
     rules: {
       // Basic TypeScript rules
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { varsIgnorePattern: '_', argsIgnorePattern: '_' }
+      ],
       '@typescript-eslint/no-empty-function': 'error',
       '@typescript-eslint/no-var-requires': 'error',
 

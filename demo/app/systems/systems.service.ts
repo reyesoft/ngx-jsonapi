@@ -3,8 +3,13 @@ import { Service, Resource, DocumentCollection } from 'ngx-jsonapi';
 import { Book } from '../books/books.service';
 import { Photo } from '../photos/photos.service';
 
+export interface SystemAttributes {
+    name?: string;
+    description?: string;
+}
+
 export class System extends Resource {
-    public attributes: any;
+    public attributes: SystemAttributes;
 
     public relationships: {
         books: DocumentCollection<Book>;

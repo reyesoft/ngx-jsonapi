@@ -20,10 +20,10 @@ export class AppComponent /* implements OnInit */ {
         jsonapiCore.loadingsDone = (): void => {
             this.loading = '';
         };
-        jsonapiCore.loadingsOffline = (error): void => {
+        jsonapiCore.loadingsOffline = (_error): void => {
             this.loading = 'No connection!!!';
         };
-        jsonapiCore.loadingsError = (error): void => {
+        jsonapiCore.loadingsError = (_error): void => {
             this.loading = 'No connection 2!!!';
         };
     }

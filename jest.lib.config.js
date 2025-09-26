@@ -8,13 +8,10 @@ module.exports = {
         url: 'http://localhost/'
     },
     setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
-    transform: { 
-        '^.+\\.(ts|mjs|js|html)$': [
-            'jest-preset-angular',
-            {
-                tsconfig: 'projects/ngx-jsonapi-lib/tsconfig.spec.json',
-                stringifyContentPathRegex: '\\.(html|svg)$'
-            }
-        ]
+    globals: {
+        'ts-jest': {
+            tsconfig: 'projects/ngx-jsonapi-lib/tsconfig.spec.json'
+        },
+        stringifyContentPathRegex: true
     }
 };
