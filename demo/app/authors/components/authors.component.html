@@ -14,29 +14,29 @@
         </thead>
           @for (author of authors?.data; track author) {
             <tr>
-              <td>{{ author.id }}</td>
-              <td>
-                <a [routerLink]="['/authors', author.id]">{{ author.attributes.name }}</a>                  
-                  <code title="Cache last update"><small>{{ author.cache_last_update | date:'H:MM:SS' }}</small></code>
-                  <code><small>{{ author.source }}</small></code>
-              </td>
-              <td>{{ author.attributes.date_of_birth | date }}</td>
-              <td>{{ author.attributes.date_of_death | date }}</td>
-              @if (author.relationships.books.data.length < 1) {
-                <td class="text-muted">-no books-</td>
-              }
-              @if (author.relationships.books.data.length > 0) {
-                <td>                    <a [routerLink]="['/books', author.relationships.books.data[0].id]">{{ author.relationships.books.data[0].attributes.title }}</a>
-                  @if (author.relationships.books.data.length > 1) {
-                    <span>
-                      and {{ author.relationships.books.data.length }} more...
-                    </span>
-                  }
+                <td>{{ author.id }}</td>
+                <td>
+                    <a [routerLink]="['/authors', author.id]">{{ author.attributes.name }}</a>
+                    <code title="Cache last update"><small>{{ author.cache_last_update | date:'H:MM:SS' }}</small></code>
+                    <code><small>{{ author.source }}</small></code>
                 </td>
-              }
-              <td>
-                {{ author.relationships.photos.data.length }}
-              </td>                <!-- <td><button (click)="delete(author)">Delete</button></td> -->
+                <td>{{ author.attributes.date_of_birth | date }}</td>
+                <td>{{ author.attributes.date_of_death | date }}</td>
+                @if (author.relationships.books.data.length < 1) {
+                  <td class="text-muted">-no books-</td>
+                }
+                @if (author.relationships.books.data.length > 0) {
+                  <td>                    <a [routerLink]="['/books', author.relationships.books.data[0].id]">{{ author.relationships.books.data[0].attributes.title }}</a>
+                    @if (author.relationships.books.data.length > 1) {
+                      <span>
+                        and {{ author.relationships.books.data.length }} more...
+                      </span>
+                    }
+                  </td>
+                }
+                <td>
+                  {{ author.relationships.photos.data.length }}
+                </td>               <!-- <td><button (click)="delete(author)">Delete</button></td> -->
                 <!-- <td><button (click)="delete(author)">Delete</button></td> -->
             </tr>
           }
