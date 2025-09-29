@@ -2,7 +2,7 @@
 <demo-collection-info [collection]="authors"></demo-collection-info>
 @defer {
     <table class="table table-striped">
-          <thead>
+        <thead>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
@@ -11,12 +11,13 @@
                 <th>Books</th>
                 <th>Photos</th>
             </tr>
-          </thead>
+        </thead>
           @for (author of authors?.data; track author) {
             <tr>
               <td>{{ author.id }}</td>
               <td>
-                <a [routerLink]="['/authors', author.id]">{{ author.attributes.name }}</a>                  <code title="Cache last update"><small>{{ author.cache_last_update | date:'H:MM:SS' }}</small></code>
+                <a [routerLink]="['/authors', author.id]">{{ author.attributes.name }}</a>                  
+                  <code title="Cache last update"><small>{{ author.cache_last_update | date:'H:MM:SS' }}</small></code>
                   <code><small>{{ author.source }}</small></code>
               </td>
               <td>{{ author.attributes.date_of_birth | date }}</td>
