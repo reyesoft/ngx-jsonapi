@@ -2,20 +2,20 @@
 <demo-resource-info [resource]="author"></demo-resource-info>
 <!-- <pre>authors.get('{{ author?.id }}', {{ '{' }} include: ['books', 'photos'] {{ '}' }});</pre> -->
 <ul>
-        <li>Name: <strong>{{ author?.attributes.name }}</strong></li>
-        <li>Date of birth: <strong>{{ author?.attributes.date_of_birth | date }}</strong></li>
-        <li>Date of dead: <strong>{{ author?.attributes.date_of_death | date }}</strong></li>
+    <li>Name: <strong>{{ author?.attributes.name }}</strong></li>
+    <li>Date of birth: <strong>{{ author?.attributes.date_of_birth | date }}</strong></li>
+    <li>Date of dead: <strong>{{ author?.attributes.date_of_death | date }}</strong></li>
 </ul>
 <p>
-        <button (click)="newAuthor()">New author</button>
-        <button (click)="updateAuthor()">Update author</button>
-        <button (click)="removeRelationship()">Remove relationship</button>
+    <button (click)="newAuthor()">New author</button>
+    <button (click)="updateAuthor()">Update author</button>
+    <button (click)="removeRelationship()">Remove relationship</button>
 </p>
 
 <h4>Photos</h4>
 <demo-collection-info [collection]="author?.relationships.photos"></demo-collection-info>
 @if (author?.relationships.photos.data.length === 0) {
-        <span>This author don't have any photo :(</span>
+    <span>This author don't have any photo :(</span>
 }
 @if (author?.relationships.photos.builded) {
   <span>
@@ -54,5 +54,5 @@
 }
 
 <p>
-        <a routerLink="/authors">Volver</a>
+    <a routerLink="/authors">Volver</a>
 </p>
