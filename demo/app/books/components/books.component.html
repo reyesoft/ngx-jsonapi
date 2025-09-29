@@ -1,37 +1,37 @@
 <h3>Books</h3>
 <demo-collection-info [collection]="books"></demo-collection-info>
 @defer {
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Title</th>
-      <th>Date Published</th>
-      <th>Author</th>
-      <th>Photos</th>
-    </tr>
-  </thead>
-  <!-- Use authors example. @deprected since version 2.0.0 -->
-  @for (book of books?.data; track book) {
-    <tr>
-      <td>{{ book.id }}</td>
-      <td>
-        <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
-      </td>
-      <td>{{ book.attributes.date_published | date }}</td>
-      <td>
-        @if (book.relationships.author.builded) {
-          <a [routerLink]="['/authors', book.relationships.author.data.id]">{{ book.relationships.author.data.attributes.name }}</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Date Published</th>
+                <th>Author</th>
+                <th>Photos</th>
+            </tr>
+        </thead>
+        <!-- Use authors example. @deprected since version 2.0.0 -->
+        @for (book of books?.data; track book) {
+           <tr>
+                <td>{{ book.id }}</td>
+                <td>
+                    <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
+                </td>
+                <td>{{ book.attributes.date_published | date }}</td>
+                <td>
+                @if (book.relationships.author.builded) {
+                  <a [routerLink]="['/authors', book.relationships.author.data.id]">{{ book.relationships.author.data.attributes.name }}</a>
+                }
+                </td>
+                <td>
+                @for (photo of book.relationships.photos.data; track trackPhotoId($index, photo)) {
+                  <span>{{ photo.id }}, </span>
+                }
+                </td>
+                <td><a ng-click="delete(book)" title="not supported by demo server"><small>DELETE</small></a></td>
+            </tr>
         }
-      </td>
-      <td>
-        @for (photo of book.relationships.photos.data; track trackPhotoId($index, photo)) {
-          <span>{{ photo.id }}, </span>
-        }
-      </td>
-      <td><a ng-click="delete(book)" title="not supported by demo server"><small>DELETE</small></a></td>
-    </tr>
-  }
-</table>
+    </table>
 }
 <demo-collection-paginator [collection]="books"></demo-collection-paginator>

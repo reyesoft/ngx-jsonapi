@@ -1,22 +1,22 @@
 <h3>systems</h3>
 <demo-collection-info [collection]="systems"></demo-collection-info>
 @defer {
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-    </tr>
-  </thead>
-  @for (systems of systems?.data; track systems) {
-    <tr>
-      <td>{{ systems.id }}</td>
-      <td>
-        <a [routerLink]="['/systems', systems.id]">{{ systems.attributes.name }}</a>
-        <code><small>{{ systems.source }}</small></code>
-      </td>
-    </tr>
-  }
-</table>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        @for (systems of systems?.data; track systems) {
+            <tr>
+              <td>{{ systems.id }}</td>
+              <td>
+                <a [routerLink]="['/systems', systems.id]">{{ systems.attributes.name }}</a>
+                <code><small>{{ systems.source }}</small></code>
+              </td>
+            </tr>
+        }
+    </table>
 }
 <demo-collection-paginator [collection]="systems"></demo-collection-paginator>
