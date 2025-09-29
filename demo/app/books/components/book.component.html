@@ -14,7 +14,7 @@
 <h4>Photos (many)</h4>
 <p><small>This a relationship with <i>hasMany:true</i></small></p>
 @defer {
-   @if (book?.relationships.photos.builded) {
+    @if (book?.relationships.photos.builded) {
         <ul>
         @for (photo of book?.relationships.photos.data; track trackPhotoId($index, photo)) {
                 <li>
@@ -22,7 +22,7 @@
                 </li>
         }
         </ul>
-   }
+    }
 }
 
 <p>
