@@ -32,13 +32,13 @@ export class BooksService extends Service<Book> {
     public ttl: number = 1;
 
     // executed before get data from server
-    public parseFromServer(attributes: any): void {
+    public parseFromServer(attributes: { title: string; [key: string]: unknown }): void {
         attributes.title = '📖 ' + attributes.title;
     }
 
     // executed before send to server
-    public parseToServer(attributes: any): void {
-        if ('title' in attributes) {
+    public parseToServer(attributes: { title?: string; [key: string]: unknown }): void {
+        if ('title' in attributes && typeof attributes.title === 'string') {
             attributes.title = attributes.title.replace('📖 ', '');
         }
     }

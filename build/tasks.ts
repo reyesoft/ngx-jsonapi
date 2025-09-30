@@ -5,7 +5,7 @@ import * as util from './util';
  * Cleans the top level dist folder. All npm-ready packages are created
  * in the dist folder.
  */
-export function removeDistFolder(config: Config): Promise<string> {
+export function removeDistFolder(_config: Config): Promise<string> {
     return util.exec('rimraf', ['./dist']);
 }
 
@@ -133,7 +133,7 @@ export async function createUmdBundles(config: Config): Promise<void> {
  * Removes any leftover TypeScript files from previous compilation steps,
  * leaving any type definition files in place
  */
-export async function cleanTypeScriptFiles(config: Config): Promise<void> {
+export async function cleanTypeScriptFiles(_config: Config): Promise<void> {
     const tsFilesGlob: string = './dist/**/*.ts';
     const dtsFilesFlob: string = './dist/**/*.d.ts';
     const filesToRemove: Array<string> = await util.getListOfFiles(tsFilesGlob, dtsFilesFlob);
@@ -198,7 +198,7 @@ export async function removeRemainingSourceMapFiles(config: Config): Promise<voi
  * Copies the type definition files and NGC metadata files to
  * the root of the distribution
  */
-export async function copyTypeDefinitionFiles(config: Config): Promise<void> {
+export async function copyTypeDefinitionFiles(_config: Config): Promise<void> {
     /*
   const packages = util.getTopLevelPackages(config);
   const files = await util.getListOfFiles(
@@ -246,7 +246,7 @@ export async function minifyUmdBundles(config: Config): Promise<void> {
 export async function copyDocs(config: Config): Promise<void> {
     const packages: Array<string> = util.getTopLevelPackages(config);
 
-    await mapAsync(packages, async pkg => {
+    await mapAsync(packages, async _pkg => {
         // const source = `./src/${pkg}`;
         const source: string = `.`;
         // const target = `./dist/${pkg}`;
@@ -262,7 +262,7 @@ export async function copyDocs(config: Config): Promise<void> {
 export async function copyPackageJsonFiles(config: Config):Promise<void> {
     const packages: Array<string> = util.getAllPackages(config);
 
-    await mapAsync(packages, async pkg => {
+    await mapAsync(packages, async _pkg => {
         // const source = `./src/${pkg}`;
         const source: string = `./src`;
         // const target = `./dist/${pkg}`;
@@ -275,7 +275,7 @@ export async function copyPackageJsonFiles(config: Config):Promise<void> {
 /**
  * Removes the packages folderPromise<void>
  */
-export async function removePackagesFolder(config: Config): Promise<void> {
+export async function removePackagesFolder(_config: Config): Promise<void> {
     await util.removeRecursively('./dist');
 }
 
@@ -287,8 +287,6 @@ export async function publishToRepo(config: Config): Promise<void> {
         const SOURCE_DIR: string = `./dist/${pkg}`;
         const REPO_URL: string = `git@github.com:ngrx/${pkg}-builds.git`;
         const REPO_DIR: string = `./tmp/${pkg}`;
-        const SHA: string = await util.git([`rev-parse HEAD`]);
-        const SHORT_SHA: string = await util.git([`rev-parse --short HEAD`]);
         const COMMITTER_USER_NAME: string = await util.git([
             `--no-pager show -s --format='%cN' HEAD`
         ]);
@@ -297,7 +295,7 @@ export async function publishToRepo(config: Config): Promise<void> {
         ]);
 
 
-        /* eslint-disable @typescript-eslint/await-thenable */
+         
         await util.cmd('rm -rf', [`${REPO_DIR}`]);
         await util.cmd('mkdir ', [`-p ${REPO_DIR}`]);
         await process.chdir(`${REPO_DIR}`);
@@ -320,14 +318,14 @@ export async function publishToRepo(config: Config): Promise<void> {
         await util.cmd('rm', ['commit_message']);
         await util.git(['push origin master --force']);
         await process.chdir('../../');
-        /* eslint-disable @typescript-eslint/await-thenable */
+         
     }
 }
 
 export function mapAsync<T>(
     list: Array<T>,
-    mapFn: (v: T, i: number) => Promise<any>
-): Promise<any> {
+    mapFn: (v: T, i: number) => Promise<unknown>
+): Promise<unknown> {
     return Promise.all(list.map(mapFn));
 }
 

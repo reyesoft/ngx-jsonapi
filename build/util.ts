@@ -5,8 +5,10 @@ import * as fsExtra from 'fs-extra';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
 import { Config, PackageDescription } from './config';
+import * as ora from 'ora';
 
-export type RunnerFn = (config: Config) => Promise<any>;
+
+export type RunnerFn = (config: Config) => Promise<unknown>;
 export type TaskDef = [string, RunnerFn];
 export type BaseFn = (command: string) => string;
 
@@ -83,7 +85,7 @@ export function exec(
 }
 
 export function cmd(command: string, args: Array<string>): Promise<string> {
-    // eslint-disable-next-line @typescript-eslint/no-shadow
+     
     return exec(command, args, (command: string) => command);
 }
 
@@ -104,16 +106,14 @@ export function getPackageFilePath(pkg: string, filename: string): string {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const sorcery: any = require('sorcery');
+const sorcery: typeof import('sorcery') = require('sorcery');
 export async function mapSources(file: string): Promise<void> {
-    const chain: any = await sorcery.load(file);
+    const chain = await sorcery.load(file);
     chain.write();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const ora: any = require('ora');
-async function runTask(name: string, taskFn: () => Promise<any>): Promise<void> {
-    const spinner: any = ora(name);
+async function runTask(name: string, taskFn: () => Promise<unknown>): Promise<void> {
+    const spinner = ora(name);
 
     try {
         spinner.start();

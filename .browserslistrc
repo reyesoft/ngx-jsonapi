@@ -2,11 +2,18 @@
 # For additional information regarding the format and rule options, please see:
 # https://github.com/browserslist/browserslist#queries
 
+# Angular 19 - Modern browsers only (ES2015+)
 # You can see what browsers were selected by your queries by running:
 #   npx browserslist
 
-> 0.5%
 last 2 versions
-Firefox ESR
 not dead
-not IE 9-11 # For IE 9-11 support, remove 'not'.
+not IE 11
+not Android < 5
+not Safari < 12
+not ChromeAndroid < 80
+not Chrome < 80
+not Firefox < 78
+not Edge < 80
+not KaiOS < 3
+not op_mini all

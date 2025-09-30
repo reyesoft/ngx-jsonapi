@@ -1,12 +1,12 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Service, DocumentCollection } from 'ngx-jsonapi';
+import { Component } from '@angular/core';
+
+import { DocumentCollection } from 'ngx-jsonapi';
 import { Photo, PhotosService } from './photos.service';
 
 @Component({
     selector: 'demo-photos',
     standalone: true,
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './photos.component.html',
     providers: [PhotosService]
 })
@@ -22,9 +22,9 @@ export class PhotosComponent {
         this.makeRequest(5);
     }
 
-    public makeRequest(id: any): void {
+    public makeRequest(id: number): void {
         this.photosService.all().subscribe((photos) => {
-            this.photos = photos as any;
+            this.photos = photos as DocumentCollection<Photo>;
             console.log('photos success', id, this.photos);
         });
     }

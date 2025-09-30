@@ -12,7 +12,7 @@
                 <th>Photos</th>
             </tr>
         </thead>
-    <ng-container *ngFor="let author of authors?.data;">
+          @for (author of authors?.data; track author) {
             <tr>
                 <td>{{ author.id }}</td>
                 <td>
@@ -22,26 +22,24 @@
                 </td>
                 <td>{{ author.attributes.date_of_birth | date }}</td>
                 <td>{{ author.attributes.date_of_death | date }}</td>
-                <ng-container *ngIf="author.relationships.books.data.length < 1">
-                    <td class="text-muted">-no books-</td>
-                </ng-container>
-                <ng-container *ngIf="author.relationships.books.data.length > 0">
-                    <td>
-                        <a [routerLink]="['/books', author.relationships.books.data[0].id]">{{ author.relationships.books.data[0].attributes.title }}</a>
-                        <ng-container *ngIf="author.relationships.books.data.length > 1">
-                            <span>
-                                and {{ author.relationships.books.data.length }} more...
-                            </span>
-                        </ng-container>
-                    </td>
-                </ng-container>
+                @if (author.relationships.books.data.length < 1) {
+                  <td class="text-muted">-no books-</td>
+                }
+                @if (author.relationships.books.data.length > 0) {
+                  <td>                    <a [routerLink]="['/books', author.relationships.books.data[0].id]">{{ author.relationships.books.data[0].attributes.title }}</a>
+                    @if (author.relationships.books.data.length > 1) {
+                      <span>
+                        and {{ author.relationships.books.data.length }} more...
+                      </span>
+                    }
+                  </td>
+                }
                 <td>
                     {{ author.relationships.photos.data.length }}
                 </td>
                 <!-- <td><button (click)="delete(author)">Delete</button></td> -->
-                <!-- <td><button (click)="delete(author)">Delete</button></td> -->
             </tr>
-        </ng-container>
+          }
     </table>
 }
 <demo-collection-paginator [collection]="authors"></demo-collection-paginator>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { JsonapiCore } from 'ngx-jsonapi';
 
@@ -7,7 +7,7 @@ import { JsonapiCore } from 'ngx-jsonapi';
     selector: 'demo-app',
     styleUrls: ['./app.component.scss'],
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [RouterModule],
     templateUrl: './app.component.html'
 })
 export class AppComponent /* implements OnInit */ {
@@ -20,10 +20,10 @@ export class AppComponent /* implements OnInit */ {
         jsonapiCore.loadingsDone = (): void => {
             this.loading = '';
         };
-        jsonapiCore.loadingsOffline = (error): void => {
+        jsonapiCore.loadingsOffline = (_error): void => {
             this.loading = 'No connection!!!';
         };
-        jsonapiCore.loadingsError = (error): void => {
+        jsonapiCore.loadingsError = (_error): void => {
             this.loading = 'No connection 2!!!';
         };
     }

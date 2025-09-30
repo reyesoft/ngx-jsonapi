@@ -9,22 +9,22 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser-esbuild",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "demo-dist",
             "index": "demo/index.html",
-            "main": "demo/main.ts",
+            "browser": "demo/main.ts",
             "tsConfig": "demo/tsconfig.app.json",
-            "polyfills": "demo/polyfills.ts",
+            "polyfills": [
+              "demo/polyfills.ts"
+            ],
             "assets": [
               "demo/assets",
               "demo/favicon.ico"
             ],
             "styles": [],
             "scripts": [],
-            "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
             "namedChunks": true
@@ -42,8 +42,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "demo/environments/environment.ts",
@@ -57,18 +55,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ngx-jsonapi:build"
+            "buildTarget": "ngx-jsonapi:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ngx-jsonapi:build:production"
+              "buildTarget": "ngx-jsonapi:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ngx-jsonapi:build"
+            "buildTarget": "ngx-jsonapi:build"
           }
         }
       }

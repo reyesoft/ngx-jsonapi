@@ -2,13 +2,13 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { cmd } from './util';
 
-/* eslint-disable @typescript-eslint/no-var-requires,no-var */
-var ghpages: any = require('gh-pages');
+/* eslint-disable @typescript-eslint/no-var-requires */
+var ghpages: typeof import('gh-pages') = require('gh-pages');
 var dir: string = path.resolve(path.join(__dirname, '../', 'demo-dist'));
 
 // CNAME FILE
 cmd('mkdir ', [`-p ${dir}`]);
-fs.writeFile(`${dir}/CNAME`, 'ngx-jsonapi.reyesoft.com', function(err: any) {
+fs.writeFile(`${dir}/CNAME`, 'ngx-jsonapi.reyesoft.com', function(err: NodeJS.ErrnoException | null) {
     if (err) {
         return console.log(err);
     }
@@ -24,4 +24,4 @@ ghpages.publish(dir, {
         console.log('gh-pages: ', message);
     }
 });
-/* eslint-enable @typescript-eslint/no-var-requires,no-var */
+/* eslint-enable @typescript-eslint/no-var-requires */

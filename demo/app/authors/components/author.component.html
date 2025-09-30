@@ -18,35 +18,39 @@
     <span>This author don't have any photo :(</span>
 }
 @if (author?.relationships.photos.builded) {
-    <span>
-        <img *ngFor="let photo of author()?.relationships.photos.data"
-            [src]="photo.attributes.uri" height="150" style="padding-right: 1em"
-            title="Book id #{{ photo.id }}"
+  <span>
+    @for (photo of author()?.relationships.photos.data; track photo) {
+      <img
+        [src]="photo.attributes.uri" height="150" style="padding-right: 1em"
+        title="Book id #{{ photo.id }}"
         />
-    </span>
+    }
+  </span>
 }
 
 <h4>Books</h4>
 <demo-collection-info [collection]="author?.relationships.books"></demo-collection-info>
 @defer {
-    <table class="table table-striped" *ngIf="author?.relationships.books.builded">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Date Published</th>
-            </tr>
-        </thead>
-    <ng-container *ngFor="let book of author?.relationships.books.data; trackBy: trackBookId">
-            <tr>
-                <td>{{ book.id }}</td>
-                <td>
-                    <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
-                </td>
-                <td>{{ book.attributes.date_published | date }}</td>
-            </tr>
-        </ng-container>
-    </table>
+@if (author?.relationships.books.builded) {
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Date Published</th>
+      </tr>
+    </thead>
+    @for (book of author?.relationships.books.data; track trackBookId($index, book)) {
+      <tr>
+        <td>{{ book.id }}</td>
+        <td>
+          <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
+        </td>
+        <td>{{ book.attributes.date_published | date }}</td>
+      </tr>
+    }
+  </table>
+}
 }
 
 <p>

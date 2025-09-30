@@ -12,26 +12,26 @@
             </tr>
         </thead>
         <!-- Use authors example. @deprected since version 2.0.0 -->
-    <ng-container *ngFor="let book of books?.data;">
-            <tr>
+        @for (book of books?.data; track book) {
+           <tr>
                 <td>{{ book.id }}</td>
                 <td>
                     <a [routerLink]="['/books', book.id]">{{ book.attributes.title }}</a>
                 </td>
                 <td>{{ book.attributes.date_published | date }}</td>
                 <td>
-                    <ng-container *ngIf="book.relationships.author.builded">
-                        <a [routerLink]="['/authors', book.relationships.author.data.id]">{{ book.relationships.author.data.attributes.name }}</a>
-                    </ng-container>
+                @if (book.relationships.author.builded) {
+                  <a [routerLink]="['/authors', book.relationships.author.data.id]">{{ book.relationships.author.data.attributes.name }}</a>
+                }
                 </td>
                 <td>
-                    <ng-container *ngFor="let photo of book.relationships.photos.data; trackBy: trackPhotoId">
-                        <span>{{ photo.id }}, </span>
-                    </ng-container>
+                @for (photo of book.relationships.photos.data; track trackPhotoId($index, photo)) {
+                  <span>{{ photo.id }}, </span>
+                }
                 </td>
                 <td><a ng-click="delete(book)" title="not supported by demo server"><small>DELETE</small></a></td>
             </tr>
-        </ng-container>
+        }
     </table>
 }
 <demo-collection-paginator [collection]="books"></demo-collection-paginator>

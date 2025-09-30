@@ -8,13 +8,15 @@
                 <th>Name</th>
             </tr>
         </thead>
-        <tr *ngFor="let systems of systems?.data;">
-            <td>{{ systems.id }}</td>
-            <td>
+        @for (systems of systems?.data; track systems) {
+            <tr>
+              <td>{{ systems.id }}</td>
+              <td>
                 <a [routerLink]="['/systems', systems.id]">{{ systems.attributes.name }}</a>
                 <code><small>{{ systems.source }}</small></code>
-            </td>
-        </tr>
+              </td>
+            </tr>
+        }
     </table>
 }
 <demo-collection-paginator [collection]="systems"></demo-collection-paginator>

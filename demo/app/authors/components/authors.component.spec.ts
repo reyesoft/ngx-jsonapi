@@ -5,31 +5,25 @@ import { BehaviorSubject, of } from 'rxjs';
 import { AuthorsService } from '../authors.service';
 import { BooksService } from '../../books/books.service';
 import { AuthorsComponent } from './authors.component';
-import {
-    DocumentCollection,
-    NgxJsonapiModule,
-    JsonapiConfig,
-    JSONAPI_STORE_SERVICE,
-    JSONAPI_RIPPER_SERVICE,
-    StoreService,
-    JsonRipper
-} from 'ngx-jsonapi';
-import { ActivatedRoute } from '@angular/router';
+import { DocumentCollection, JsonapiConfig, JSONAPI_STORE_SERVICE, JSONAPI_RIPPER_SERVICE, StoreService, JsonRipper } from 'ngx-jsonapi';
+import { provideNgxJsonapiStandalone } from 'ngx-jsonapi/ngx-jsonapi.provider';
+import { ActivatedRoute, Params } from '@angular/router';
 
 describe('AuthorsComponent', () => {
     let component: AuthorsComponent;
     let fixture: ComponentFixture<AuthorsComponent>;
 
-    const queryParams$: BehaviorSubject<any> = new BehaviorSubject<any>({});
+    const queryParams$: BehaviorSubject<Params> = new BehaviorSubject<Params>({});
 
-    const authorsServiceMock: any = {
+    const authorsServiceMock: AuthorsService = {
         all: () => of(new DocumentCollection())
-    };
+    } as AuthorsService;
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule, NgxJsonapiModule.forRoot(new JsonapiConfig()), AuthorsComponent],
+            imports: [RouterTestingModule, AuthorsComponent],
             providers: [
+                provideNgxJsonapiStandalone(new JsonapiConfig()),
                 { provide: ActivatedRoute, useValue: { queryParams: queryParams$.asObservable() } },
                 { provide: AuthorsService, useValue: authorsServiceMock as AuthorsService },
                 BooksService,

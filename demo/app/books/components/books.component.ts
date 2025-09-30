@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { CollectionInfoComponent } from '../../shared/collection-info.component';
-import { ResourceInfoComponent } from '../../shared/resource-info.component';
 import { CollectionPaginatorComponent } from '../../shared/collection-paginator.component';
 import { Resource, DocumentCollection } from 'ngx-jsonapi';
 import { BooksService, Book } from './../books.service';
@@ -14,7 +13,7 @@ import { Observable } from 'rxjs';
 @Component({
     selector: 'demo-books',
     standalone: true,
-    imports: [CommonModule, RouterModule, CollectionInfoComponent, ResourceInfoComponent, CollectionPaginatorComponent],
+    imports: [CommonModule, RouterModule, CollectionInfoComponent, CollectionPaginatorComponent],
     templateUrl: './books.component.html',
     providers: [BooksService, AuthorsService, PhotosService]
 })
@@ -30,7 +29,6 @@ export class BooksComponent {
         route.queryParams.subscribe(({ page }) => {
             booksService
                 .all({
-                    // eslint-disable-next-line id-blacklist
                     page: { number: page || 1 },
                     include: ['author', 'photos']
                 })
@@ -44,7 +42,7 @@ export class BooksComponent {
         });
     }
 
-    public getAll(remotefilter: any): void {
+    public getAll(remotefilter: Record<string, unknown>): void {
         // we add some remote filter
         remotefilter.date_published = {
             since: '1983-01-01',
@@ -53,7 +51,7 @@ export class BooksComponent {
 
         const books$: Observable<DocumentCollection<Book>> = this.booksService.all({
             remotefilter: remotefilter,
-            // eslint-disable-next-line id-blacklist
+
             page: { number: 1 },
             include: ['author', 'photos']
         });
@@ -65,7 +63,7 @@ export class BooksComponent {
             },
             (error) => console.log('error books controller', error)
         );
-        books$.toPromise().then((success) => console.log('books loaded PROMISE'));
+        books$.toPromise().then((_success) => console.log('books loaded PROMISE'));
     }
 
     public delete(book: Resource): void {

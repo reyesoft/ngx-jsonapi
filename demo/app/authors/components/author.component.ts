@@ -4,7 +4,6 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { Resource } from 'ngx-jsonapi';
 import { CollectionInfoComponent } from '../../shared/collection-info.component';
 import { ResourceInfoComponent } from '../../shared/resource-info.component';
-import { CollectionPaginatorComponent } from '../../shared/collection-paginator.component';
 import { PhotosService } from '../../photos/photos.service';
 import { AuthorsService, Author } from '../authors.service';
 import { BooksService } from '../../books/books.service';
@@ -12,7 +11,7 @@ import { BooksService } from '../../books/books.service';
 @Component({
     selector: 'demo-author',
     standalone: true,
-    imports: [CommonModule, RouterModule, ResourceInfoComponent, CollectionInfoComponent, CollectionPaginatorComponent],
+    imports: [CommonModule, RouterModule, ResourceInfoComponent, CollectionInfoComponent],
     templateUrl: './author.component.html'
 })
 export class AuthorComponent {
@@ -22,7 +21,7 @@ export class AuthorComponent {
     public constructor(
         protected authorsService: AuthorsService,
         protected photosService: PhotosService,
-        booksService: BooksService,
+        _booksService: BooksService,
         private route: ActivatedRoute
     ) {
         route.params.subscribe(({ id }) => {
@@ -51,7 +50,7 @@ export class AuthorComponent {
             .save
             /* { include: ['book'] } */
             ()
-            .subscribe((success) => {
+            .subscribe((_success) => {
                 console.log('author saved', author.toObject());
             });
     }
@@ -67,7 +66,7 @@ export class AuthorComponent {
         currentAuthor.attributes.name = newName || currentAuthor.attributes.name;
         console.log('author data for save with book include', currentAuthor.toObject({ include: ['books'] }));
         console.log('author data for save without any include', currentAuthor.toObject());
-        currentAuthor.save(/* { include: ['book'] } */).subscribe((success) => {
+        currentAuthor.save(/* { include: ['book'] } */).subscribe((_success) => {
             console.log('author saved', currentAuthor.toObject());
         });
     }

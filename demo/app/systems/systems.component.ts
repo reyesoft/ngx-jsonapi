@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { DocumentCollection } from 'ngx-jsonapi';
 import { System, SystemsService } from './systems.service';
@@ -7,11 +7,10 @@ import { CollectionInfoComponent } from '../shared/collection-info.component';
 import { CollectionPaginatorComponent } from '../shared/collection-paginator.component';
 
 @Component({
-    // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'bc-systems',
     templateUrl: './systems.component.html',
     standalone: true,
-    imports: [CommonModule, RouterModule, CollectionInfoComponent, CollectionPaginatorComponent],
+    imports: [RouterModule, CollectionInfoComponent, CollectionPaginatorComponent],
     styles: []
 })
 export class SystemsComponent {
@@ -21,7 +20,7 @@ export class SystemsComponent {
         private route: ActivatedRoute,
         private authorsService: SystemsService
     ) {
-        route.queryParams.subscribe(({ page }) => {
+        route.queryParams.subscribe(({ _page }) => {
             authorsService.all().subscribe(
                 (systems) => {
                     this.systems = systems;
