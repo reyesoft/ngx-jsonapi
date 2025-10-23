@@ -2,6 +2,7 @@ import { IBuildedParamsCollection, IParamsCollection, IParamsResource } from '..
 import { Page } from './page';
 import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
+import { Filter } from './filter';
 
 export class Base {
     public static ParamsResource: IParamsResource = {
@@ -16,7 +17,7 @@ export class Base {
         beforepath: '',
         ttl: undefined,
         include: [],
-        remotefilter: {},
+        remotefilter: {} as Filter,
         fields: {},
         smartfilter: {},
         sort: [],

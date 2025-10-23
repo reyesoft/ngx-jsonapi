@@ -15,6 +15,7 @@ import { Observable, Subject, of } from 'rxjs';
 import { ResourceRelationshipsConverter } from './services/resource-relationships-converter';
 import { IRelationships } from './interfaces/relationship';
 import { SourceType } from './document';
+import pluralize from 'pluralize';
 
 export class Resource implements ICacheable {
     public id: string = '';
@@ -207,6 +208,16 @@ export class Resource implements ICacheable {
 
     public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
         let relation = this.relationships[type_alias || resource.type];
+
+        if (!relation) {
+            let sing = pluralize.singular(type_alias || resource.type);
+            relation = this.relationships[sing];
+        }
+
+        if (!relation) {
+            throw new Error('Relationship ' + (type_alias || resource.type) + ' not defined in resource ' + this.type);
+        }
+
         if (relation instanceof DocumentCollection) {
             relation.replaceOrAdd(resource);
         } else {
