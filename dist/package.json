@@ -1,0 +1,33 @@
+{
+    "name": "ngx-jsonapi-ex",
+    "version": "3.0.9",
+    "description": "JSON API library for Angular",
+    "module": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.es5.js",
+    "es2015": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.js",
+    "main": "ngx-jsonapi/bundles/ngx-jsonapi.umd.js",
+    "typings": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/noeli1993/ngx-jsonapi"
+    },
+    "bugs": {
+        "url": "https://github.com/noeli1993/ngx-jsonapi/issues"
+    },
+    "keywords": [
+        "jsonapi",
+        "angular"
+    ],
+    "authors": [
+        "Florian Noehammer"
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/noeli1993/ngx-jsonapi#readme",
+    "dependencies": {
+        "dexie": "^3.2.2",
+        "lodash-es": "^4.17",
+        "pluralize": "^8.0.0"
+    },
+    "peerDependencies": {
+        "axios": "^1.6.0"
+    }
+}
