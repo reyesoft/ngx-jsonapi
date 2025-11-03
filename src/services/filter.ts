@@ -1,5 +1,9 @@
 export class FilterSerializer {
   static serialize(filter: Filter): string {
+    if (!filter || Object.keys(filter).length === 0) {
+      return '';
+    }
+
     if ("and" in filter) {
       return `and(${filter.and.map(FilterSerializer.serialize).join(",")})`;
     }

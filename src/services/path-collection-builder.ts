@@ -15,7 +15,9 @@ export class PathCollectionBuilder extends PathBuilder {
                 service.parseToServer(params.remotefilter);
             }
             let filterParsed = FilterSerializer.serialize(params.remotefilter);
-            this.addParam(paramsurl.toparams({ filter: filterParsed }));
+            if (filterParsed && filterParsed.length > 0) { 
+                this.addParam(paramsurl.toparams({ filter: filterParsed }));
+            }
         }
 
         if (params.page) {

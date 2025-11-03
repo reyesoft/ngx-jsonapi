@@ -55,10 +55,16 @@ export class Core {
         url: string = Core.getInstance().injectedServices.rsJsonapiConfig.url,
         path: string,
         method: string,
+        // service: Service,
         data?: IDocumentResource,
         call_loadings_error: boolean = true,
     ): Observable<IDocumentData> {
         Core.me.refreshLoadings(1);
+
+        // if (service.getUrl() && service.getUrl() !== url) {
+        //     url = service.getUrl();
+        // }
+
         return Core.getInstance()
             .injectedServices.JsonapiHttp.exec(path, method, data, url)
             .pipe(

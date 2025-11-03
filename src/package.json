@@ -1,5 +1,5 @@
 {
-    "name": "ngx-jsonapi",
+    "name": "ngx-jsonapi-ex",
     "version": "3.0.6",
     "description": "JSON API library for Angular",
     "module": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.es5.js",
@@ -8,23 +8,24 @@
     "typings": "index.d.ts",
     "repository": {
         "type": "git",
-        "url": "https://github.com/reyesoft/ngx-jsonapi"
+        "url": "https://github.com/noeli1993/ngx-jsonapi"
     },
     "bugs": {
-        "url": "https://github.com/reyesoft/ngx-jsonapi/issues"
+        "url": "https://github.com/noeli1993/ngx-jsonapi/issues"
     },
     "keywords": [
         "jsonapi",
         "angular"
     ],
     "authors": [
-        "Pablo Gabriel Reyes"
+        "Florian Noehammer"
     ],
     "license": "MIT",
-    "homepage": "https://github.com/reyesoft/ngx-jsonapi#readme",
+    "homepage": "https://github.com/noeli1993/ngx-jsonapi#readme",
     "dependencies": {
         "lodash-es": "^4.17",
-        "dexie": "^3.2.2"
+        "dexie": "^3.2.2",
+        "pluralize": "^8.0.0"
     },
     "peerDependencies": {
         "axios": "^1.6.0"

@@ -147,7 +147,7 @@ export class Service<R extends Resource = Resource> {
 
     // if you change this logic, maybe you need to change getAllFromServer()
     protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
-        Core.get(path.get()).subscribe(
+        Core.get(path.get(), this.getUrl()).subscribe(
             success => {
                 resource.fill(<IDocumentResource>success);
                 resource.cache_last_update = Date.now();
@@ -246,7 +246,7 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new Subject<void>();
 
-        Core.delete(path.get()).subscribe(
+        Core.delete(path.get(), this.getUrl()).subscribe(
             success => {
                 CacheMemory.getInstance().removeResource(this.type, id);
                 subject.next();
@@ -344,7 +344,7 @@ export class Service<R extends Resource = Resource> {
         subject: BehaviorSubject<DocumentCollection<R>>
     ) {
         temporary_collection.setLoaded(false);
-        Core.get(path.get()).subscribe(
+        Core.get(path.get(), this.getUrl()).subscribe(
             success => {
                 // this create a new ID for every resource (for caching proposes)
                 // for example, two URL return same objects but with different attributes
