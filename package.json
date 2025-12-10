@@ -176,6 +176,7 @@
     "ts-node": "3.1.0",
     "typescript": "5.4.5",
     "uglify-js": "3.1.9",
+    "to-fast-properties": "^2.0.0",
     "zone.js": "0.15.1"
   },
   "dependencies": {
@@ -185,5 +186,5 @@
     "tsickle": "0.39.1",
     "tslib": "^2.6.0"
   },
-  "version": "2.5.0"
+  "version": "2.5.1"
 }
