@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.6.0] - 2025-12-10
+
+### Fixed
+
+- Fixed service undefined ([#379](https://github.com/reyesoft/ngx-jsonapi/pull/379))
+
 ## [2.5.0] - 2025-09-16
 
 -   Migrate to angular 18
