@@ -132,9 +132,10 @@ export class Resource implements ICacheable {
 
         // just for performance dont copy if not necessary
         let attributes: any;
-        if (this.getService() && this.getService().parseToServer) {
+        let service: Service | undefined = this.getServiceOrUndefined();
+        if (service && service.parseToServer) {
             attributes = { ...{}, ...this.attributes };
-            this.getService().parseToServer(attributes);
+            service.parseToServer(attributes);
         } else {
             attributes = this.attributes;
         }
@@ -167,6 +168,7 @@ export class Resource implements ICacheable {
 
     public fill(data_object: IDocumentResource | ICacheableDocumentResource): boolean {
         this.id = data_object.data.id || '';
+        this.type = data_object.data.type || '';
 
         // WARNING: leaving previous line for a tiem because this can produce undesired behavior
         // this.attributes = data_object.data.attributes || this.attributes;
@@ -281,6 +283,13 @@ export class Resource implements ICacheable {
     */
     public getService(): Service {
         return Converter.getServiceOrFail(this.type);
+    }
+
+    /*
+    @return This resource like a service or undefined if not registered
+    */
+    public getServiceOrUndefined(): Service | undefined {
+        return Converter.getService(this.type);
     }
 
     public delete(): Observable<void> {
