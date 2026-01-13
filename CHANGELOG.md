@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.6.2] - 2026-01-13
+
+-   Fix error code version
+
 ## [2.6.1] - 2026-01-13
 
 -   Sync code with 2.5.1
