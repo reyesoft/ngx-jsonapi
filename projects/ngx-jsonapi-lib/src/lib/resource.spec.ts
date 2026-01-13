@@ -10,6 +10,18 @@ import { of } from 'rxjs';
 import { Book } from './tests/factories/books.service';
 import { Service } from './service';
 
+// Inicializar Core.me antes de los tests
+beforeAll(() => {
+    if (!Core.me) {
+        Core.me = {
+            getResourceService: jest.fn().mockReturnValue(undefined),
+            getResourceServiceOrFail: jest.fn(),
+            registerService: jest.fn(),
+            resourceServices: {}
+        } as any;
+    }
+});
+
 describe('resource', () => {
     // it('should be reset()', () => {
     //     resource.id = 'some-id';
@@ -133,6 +145,13 @@ describe('resource.toObject() method', () => {
             }
         };
         jest.spyOn(Resource.prototype, 'getService').mockReturnValue(mocked_service_data as Service<Resource>);
+        // Configurar Core.me.getResourceService para retornar el servicio mock cuando se busque el tipo 'main'
+        jest.spyOn(Core.me, 'getResourceService').mockImplementation((type: string) => {
+            if (type === 'main') {
+                return mocked_service_data as Service<Resource>;
+            }
+            return undefined;
+        });
         let new_resource: Resource = new Resource();
         new_resource.type = 'main';
         new_resource.id = '1';

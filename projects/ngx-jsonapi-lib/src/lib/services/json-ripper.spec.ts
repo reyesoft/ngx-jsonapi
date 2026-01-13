@@ -5,6 +5,19 @@ import { TestFactory } from '../tests/factories/test-factory';
 import { IElement } from '../data-providers/data-provider';
 import { ICacheableDocumentResource } from '../interfaces/data-object';
 import { ICacheableDataCollection } from '../interfaces/data-collection';
+import { Core } from '../core';
+
+// Inicializar Core.me antes de los tests
+beforeAll(() => {
+    if (!Core.me) {
+        Core.me = {
+            getResourceService: jest.fn().mockReturnValue(undefined),
+            getResourceServiceOrFail: jest.fn(),
+            registerService: jest.fn(),
+            resourceServices: {}
+        } as any;
+    }
+});
 
 describe('JsonRipper for resources', () => {
     let book: any = TestFactory.getBook('5');

@@ -78,6 +78,7 @@ export class ResourceRelationshipsConverter {
         // TODO: FE-92 --- this.is a hotfix... check and improve conditions when building has-one relationships
         if (!this.relationships_dest[relation_alias].data) {
             this.relationships_dest[relation_alias].data = new Resource();
+            (<Resource>this.relationships_dest[relation_alias].data).type = relation_data_from.data.type;
         }
 
         if (relation_data_from.data.id !== (<Resource>this.relationships_dest[relation_alias].data).id) {
