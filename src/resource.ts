@@ -16,6 +16,7 @@ import { ResourceRelationshipsConverter } from './services/resource-relationship
 import { IRelationships } from './interfaces/relationship';
 import { SourceType } from './document';
 import pluralize from 'pluralize';
+import * as _ from "lodash-es";
 
 export class Resource implements ICacheable {
     public id: string = '';
@@ -32,6 +33,16 @@ export class Resource implements ICacheable {
     public source: SourceType = 'new';
     public cache_last_update = 0;
     public ttl = 0;
+
+    private originalAttributes: any = {};
+
+    public get IsDirty(): boolean {
+        return !_.isEqual(this.attributes, this.originalAttributes);
+    }
+
+    public resetDirtyAttributes() {
+        this.originalAttributes = _.cloneDeep(this.attributes);
+    }
 
     public reset(): void {
         this.id = '';
@@ -168,6 +179,7 @@ export class Resource implements ICacheable {
         // WARNING: leaving previous line for a tiem because this can produce undesired behavior
         // this.attributes = data_object.data.attributes || this.attributes;
         this.attributes = { ...(this.attributes || {}), ...data_object.data.attributes };
+        this.originalAttributes = _.cloneDeep(this.attributes);
 
         this.is_new = false;
 
@@ -269,8 +281,8 @@ export class Resource implements ICacheable {
     public hasOneRelated(resource: string): boolean {
         return Boolean(
             this.relationships[resource] &&
-                (<Resource>this.relationships[resource].data).type &&
-                (<Resource>this.relationships[resource].data).type !== ''
+            (<Resource>this.relationships[resource].data).type &&
+            (<Resource>this.relationships[resource].data).type !== ''
         );
     }
 
@@ -310,8 +322,6 @@ export class Resource implements ICacheable {
         if (this.id) {
             path.appendPath(this.id);
         }
-
-        console.log("SERVICE", this.getService());
         Core.exec(this.getService()?.getUrl()?.length > 0 ? this.getService()?.getUrl() : undefined, path.get(), this.is_new ? 'POST' : 'PATCH', object, true).subscribe(
             success => {
                 this.is_saving = false;
@@ -329,6 +339,8 @@ export class Resource implements ICacheable {
                 } else if (!!success && Array.isArray(success.data)) {
                     console.warn('Server return a collection when we save()', success.data);
                 }
+
+                this.originalAttributes = _.cloneDeep(this.attributes);
 
                 subject.next(success);
                 subject.complete();

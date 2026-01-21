@@ -55,6 +55,7 @@ export class Service<R extends Resource = Resource> {
         // issue #36: just if service is not registered yet.
         this.getService();
         resource.reset();
+        resource.resetDirtyAttributes();
 
         return <R>resource;
     }
@@ -68,7 +69,6 @@ export class Service<R extends Resource = Resource> {
     }
 
     public getUrl(): string {
-        console.log("inside getUrl", this.url);
         return this.url;
     }
 
