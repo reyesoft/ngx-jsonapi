@@ -1,5 +1,6 @@
 require('ts-node/register');
-require('core-js/es7/reflect');
+// core-js v3 path changed from es7/reflect to es/reflect
+require('core-js/es/reflect');
 // Zone.js 0.16+ no longer uses /dist/ folder
 require('zone.js/node');
 require('zone.js/plugins/long-stack-trace-zone');
