@@ -23,12 +23,7 @@ describe('Http service', () => {
     };
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                Http,
-                { provide: JsonapiConfig, useValue: JsonapiConfigMock },
-                provideHttpClient(),
-                provideHttpClientTesting()
-            ]
+            providers: [Http, { provide: JsonapiConfig, useValue: JsonapiConfigMock }, provideHttpClient(), provideHttpClientTesting()]
         });
         service = TestBed.inject(Http);
     });
