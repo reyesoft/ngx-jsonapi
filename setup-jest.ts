@@ -1,16 +1,11 @@
 declare var global: any;
 declare const require: any;
-try {
-    require('zone.js');
-} catch (e) {}
-try {
-    require('zone.js/testing');
-} catch (e) {}
-import 'jest-preset-angular/setup-jest';
+
+const { setupZoneTestEnv } = require('jest-preset-angular/setup-env/zone');
+
+setupZoneTestEnv();
+
 import 'fake-indexeddb/auto';
-import { TestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
 global['CSS'] = null;
 Object.defineProperty(document.body.style, 'transform', {
     value: (): Object => {

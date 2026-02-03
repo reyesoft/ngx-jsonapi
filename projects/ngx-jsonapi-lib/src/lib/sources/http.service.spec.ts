@@ -1,6 +1,7 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { JsonapiConfig } from '../jsonapi-config';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { tap, mapTo, share } from 'rxjs/operators';
 import { Observable, of, timer, Subject } from 'rxjs';
 
@@ -20,14 +21,18 @@ describe('Http service', () => {
         },
         meta: { meta: 'meta' }
     };
-    beforeEach(waitForAsync(() => {
+    beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
-            providers: [Http, { provide: JsonapiConfig, useValue: JsonapiConfigMock }]
-        }).compileComponents();
-    }));
-    it('should create Http service', () => {
+            providers: [
+                Http,
+                { provide: JsonapiConfig, useValue: JsonapiConfigMock },
+                provideHttpClient(),
+                provideHttpClientTesting()
+            ]
+        });
         service = TestBed.inject(Http);
+    });
+    it('should create Http service', () => {
         expect(service).toBeTruthy();
     });
     it('exec should return an observable with the http request', async () => {

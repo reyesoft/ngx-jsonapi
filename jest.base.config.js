@@ -22,5 +22,10 @@ module.exports = {
         'jest-preset-angular/build/serializers/no-ng-attributes',
         'jest-preset-angular/build/serializers/ng-snapshot',
         'jest-preset-angular/build/serializers/html-comment'
-    ]
+    ],
+    // Optimizaciones de performance
+    maxWorkers: '50%',
+    cache: true,
+    cacheDirectory: '<rootDir>/.jest-cache',
+    testTimeout: 10000
 };
