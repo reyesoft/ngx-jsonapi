@@ -6,7 +6,7 @@ try {
 try {
     require('zone.js/testing');
 } catch (e) {}
-import 'jest-preset-angular';
+import 'jest-preset-angular/setup-jest';
 import 'fake-indexeddb/auto';
 import { TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';

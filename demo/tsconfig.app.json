@@ -3,7 +3,7 @@
         "downlevelIteration": true,
         "sourceMap": true,
         "declaration": false,
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "experimentalDecorators": true,
         "lib": ["es2017", "dom"],
         "outDir": "../out-tsc/app",
