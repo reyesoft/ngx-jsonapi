@@ -1,5 +1,5 @@
 name: version 3
-on: [push, pull_request]
+on: [push]
 jobs:
   build:
     name: Build and Test
