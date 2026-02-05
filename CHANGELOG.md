@@ -8,19 +8,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [2.7.0] - 2026-02-03
 
-- Migrate to Angular 20
+-   Migrate to Angular 20
 
 ## [2.6.2] - 2026-01-13
 
-- Fix error code version
+-   Fix error code version
 
 ## [2.6.1] - 2026-01-13
 
-- Sync code with 2.5.1
+-   Sync code with 2.5.1
 
 ## [2.6.0] - 2025-09-24
 
-- Migrate to angular 19
+-   Migrate to angular 19
 
 ## [2.5.1] - 2025-12-10
 
@@ -30,111 +30,113 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [2.5.0] - 2025-09-16
 
-- Migrate to angular 18
+-   Migrate to angular 18
 
 ## [2.4.0] - 2025-08-15
 
-- Migrate to angular 17
+-   Migrate to angular 17
+
 
 ## [2.3.1] - 2025-08-01
 
-- Changed CircleCI to GitHub Action and command fix
+-   Changed CircleCI to GitHub Action and command fix
+
 
 ## [2.3.0-dev-test] - 2023-08-11
 
-- Migrate to angular 16
+-   Migrate to angular 16
 
 ### Fixed
 
-- Fixed error lint with eslint ([#332](https://github.com/reyesoft/ngx-jsonapi/pull/332))
+-   Fixed error lint with eslint ([#332](https://github.com/reyesoft/ngx-jsonapi/pull/332))
 
 ### Changed
 
-- Migrated tslint to eslint. ([#331](https://github.com/reyesoft/ngx-jsonapi/pull/331))
+-   Migrated tslint to eslint. ([#331](https://github.com/reyesoft/ngx-jsonapi/pull/331))
 
 ## [2.3.0] - 2021-05-19
 
 ### Changed
 
-- Angular version upgraded to 10, and vulnerabilities updated. ([#306](https://github.com/reyesoft/ngx-jsonapi/pull/306))
+-   Angular version upgraded to 10, and vulnerabilities updated. ([#306](https://github.com/reyesoft/ngx-jsonapi/pull/306))
 
 ## [2.2.2] - 2021-05-19
 
 ### Fixed
 
-- When ttl 0 was set, a request to the server was not made again, it brought it from memory, it was corrected in the isLive function of common.
-- When the value of a remote filter contained '&', the generated url did not keep the '&'.
+-   When ttl 0 was set, a request to the server was not made again, it brought it from memory, it was corrected in the isLive function of common.
+-   When the value of a remote filter contained '&', the generated url did not keep the '&'.
 
 ## [2.2.1] - 2020-10-17
 
 ### Fixed
 
-- Warning: Entry point 'ngx-jsonapi' contains deep imports into 'node_modules/rxjs/internal/util/noop'. This is probably not a problem, but may cause the compilation of entry points to be out of order.
-- lodash dependency missing.
+-   Warning: Entry point 'ngx-jsonapi' contains deep imports into 'node_modules/rxjs/internal/util/noop'. This is probably not a problem, but may cause the compilation of entry points to be out of order.
+-   lodash dependency missing.
 
 ## [2.2.0] - 2020-10-17
 
 ### Changed
 
-- Local cache store is disabled by default.
-- Only used lodash functions are included on base script. 69.44 KB to 7.5 KB, 89% saved!
-- Store support is optional.
+-   Local cache store is disabled by default.
+-   Only used lodash functions are included on base script. 69.44 KB to 7.5 KB, 89% saved!
+-   Store support is optional.
 
 ![image](https://user-images.githubusercontent.com/938894/96340064-d58a7500-106e-11eb-9181-464186f9e2f1.png)
 
 ### Removed
 
-- config.cachestore_support
+-   config.cachestore_support
 
 ## [2.1.19] - 2020-08-25
 
 ### Fixed
 
-- Changed JS modules and methods for ES
+-   Changed JS modules and methods for ES
 
 ## [2.1.18] - 2020-08-13
 
 ### Fixed
 
-- Fixed ModuleWithProviders to work with Angular 10
+-   Fixed ModuleWithProviders to work with Angular 10
 
 ## [2.1.17] - 2020-07-21
 
 ### Removed
 
-- Removed test modules. Now they are not exported.
+-   Removed test modules. Now they are not exported.
 
 ## [2.1.16] - 2020-07-18
 
 ### Fixed
 
-- With cachestore_support=false, dont try to save resources on LocalStorage. Problem detected with Angular Server Side Rendering.
+-   With cachestore_support=false, dont try to save resources on LocalStorage. Problem detected with Angular Server Side Rendering.
 
 ## [2.1.15] - 2020-01-17
 
 ### Added
 
-- Added include_get and include_save to IResourceParams
-- Resource's save methods uses is_new instead of ID property to select between POST and PATCH
+-   Added include_get and include_save to IResourceParams
+-   Resource's save methods uses is_new instead of ID property to select between POST and PATCH
 
 ## [2.1.14] - 2019-10-24
 
 ### Added
 
-- Export testing resources
+-   Export testing resources
 
 ## [2.1.13] - 2019-10-24
 
 ### Fixed
 
-- ES6 support.
+-   ES6 support.
 
 ### Deprecated
 
-- Deprecated `@Autoregister()` decorator.
+-   Deprecated `@Autoregister()` decorator.
 
 ## [0.0.1]
 
 ### Added
 
-- Migration from [AngularJS ts-angular-jsonapi](https://github.com/reyesoft/ts-angular-jsonapi) to Angular 4.
+-   Migration from [AngularJS ts-angular-jsonapi](https://github.com/reyesoft/ts-angular-jsonapi) to Angular 4.
