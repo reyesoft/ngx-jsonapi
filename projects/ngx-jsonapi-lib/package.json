@@ -1,6 +1,6 @@
 {
     "name": "ngx-jsonapi",
-    "version": "2.6.2",
+    "version": "2.7.0",
     "description": "JSON API library for Angular",
     "module": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.es5.js",
     "es2015": "ngx-jsonapi/@ngx-jsonapi/ngx-jsonapi.js",
@@ -18,17 +18,17 @@
     "license": "MIT",
     "homepage": "https://github.com/reyesoft/ngx-jsonapi#readme",
     "peerDependencies": {
-        "@angular/animations": "^18.0.0 || ^19.0.0",
-        "@angular/common": "^18.0.0 || ^19.0.0",
-        "@angular/compiler": "^18.0.0 || ^19.0.0",
-        "@angular/core": "^18.0.0 || ^19.0.0",
-        "@angular/forms": "^18.0.0 || ^19.0.0",
-        "@angular/platform-browser": "^18.0.0 || ^19.0.0",
-        "@angular/platform-browser-dynamic": "^18.0.0 || ^19.0.0",
-        "@angular/platform-server": "^18.0.0 || ^19.0.0",
-        "@angular/router": "^18.0.0 || ^19.0.0",
+        "@angular/animations": "^18.0.0 || ^19.0.0 || ^20.0.0",
+        "@angular/common": "^18.0.0 || ^19.0.0 || ^20.0.0",
+        "@angular/compiler": "^18.0.0 || ^19.0.0 || ^20.0.0",
+        "@angular/core": "^18.0.0 || ^19.0.0 || ^20.0.0",
+        "@angular/forms": "^18.0.0 || ^19.0.0 || ^20.0.0",
+        "@angular/platform-browser": "^18.0.0 || ^19.0.0 || ^20.0.0",
+        "@angular/platform-browser-dynamic": "^18.0.0 || ^19.0.0 || ^20.0.0",
+        "@angular/platform-server": "^18.0.0 || ^19.0.0 || ^20.0.0",
+        "@angular/router": "^18.0.0 || ^19.0.0 || ^20.0.0",
         "lodash-es": "^4.17",
-        "dexie": "^2.0.4"
+        "dexie": "^2.0.4 || ^4.0.0"
     },
     "sideEffects": false
 }

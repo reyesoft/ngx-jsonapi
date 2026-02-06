@@ -3,6 +3,3 @@
 
 // Zone.js is required by Angular itself
 import 'zone.js';
-
-// Optional: only if you need touch gesture support
-// import 'hammerjs';

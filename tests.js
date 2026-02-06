@@ -1,11 +1,13 @@
 require('ts-node/register');
-require('core-js/es7/reflect');
-require('zone.js/dist/zone-node.js');
-require('zone.js/dist/long-stack-trace-zone.js');
-require('zone.js/dist/proxy.js');
-require('zone.js/dist/sync-test.js');
-require('zone.js/dist/async-test.js');
-require('zone.js/dist/fake-async-test.js');
+// core-js v3 path changed from es7/reflect to es/reflect
+require('core-js/es/reflect');
+// Zone.js 0.16+ no longer uses /dist/ folder
+require('zone.js/node');
+require('zone.js/plugins/long-stack-trace-zone');
+require('zone.js/plugins/proxy');
+require('zone.js/plugins/sync-test');
+require('zone.js/plugins/async-test');
+require('zone.js/plugins/fake-async-test');
 const Jasmine = require('jasmine');
 const moduleAlias = require('module-alias');
 
@@ -13,7 +15,7 @@ const runner = new Jasmine();
 
 global.jasmine = runner.jasmine;
 
-require('zone.js/dist/jasmine-patch.js');
+require('zone.js/plugins/jasmine-patch');
 
 const { getTestBed } = require('@angular/core/testing');
 const { ServerTestingModule, platformServerTesting } = require('@angular/platform-server/testing');

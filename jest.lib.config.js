@@ -6,12 +6,5 @@ module.exports = {
     coveragePathIgnorePatterns: ['/node_modules/', '/demo/*.*/'],
     testEnvironmentOptions: {
         url: 'http://localhost/'
-    },
-    setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
-    globals: {
-        'ts-jest': {
-            tsconfig: 'projects/ngx-jsonapi-lib/tsconfig.spec.json'
-        },
-        stringifyContentPathRegex: true
     }
 };

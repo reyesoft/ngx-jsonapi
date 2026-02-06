@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-02-03
+
+-   Migrate to Angular 20
+
 ## [2.6.2] - 2026-01-13
 
 -   Fix error code version

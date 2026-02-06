@@ -1,11 +1,11 @@
 {
     "compilerOptions": {
-      "downlevelIteration": true,
       "importHelpers": true,
       "strictNullChecks": true,
+      "esModuleInterop": true,
       "sourceMap": true,
       "declaration": false,
-      "moduleResolution": "node",
+      "moduleResolution": "bundler",
       "experimentalDecorators": true,
       "lib": [
         "es2017",

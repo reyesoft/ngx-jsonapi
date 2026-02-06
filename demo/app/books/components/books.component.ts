@@ -8,7 +8,7 @@ import { BooksService, Book } from './../books.service';
 import { AuthorsService } from './../../authors/authors.service';
 import { PhotosService } from '../../photos/photos.service';
 // ActivatedRoute already imported above
-import { Observable } from 'rxjs';
+import { Observable, lastValueFrom } from 'rxjs';
 
 @Component({
     selector: 'demo-books',
@@ -63,7 +63,7 @@ export class BooksComponent {
             },
             (error) => console.log('error books controller', error)
         );
-        books$.toPromise().then((_success) => console.log('books loaded PROMISE'));
+        lastValueFrom(books$).then((_success) => console.log('books loaded PROMISE'));
     }
 
     public delete(book: Resource): void {
