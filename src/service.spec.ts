@@ -10,6 +10,7 @@ import { StoreService } from './sources/store.service';
 import { IDataResource } from './interfaces/data-resource';
 import { IDocumentResource } from './interfaces/data-object';
 import { JsonapiBootstrap } from './bootstraps/jsonapi-bootstrap';
+import { Core } from './core';
 
 // @todo disable PhotoService
 // @TODO: fix error in toObject when relationship's service is not injected
@@ -91,7 +92,7 @@ for (let store_cache_method of store_cache_methods) {
             ];
 
             let emits = await booksService
-                .all({ store_cache_method: store_cache_method })
+                .all({ store_cache_method: store_cache_method, include: ['photos', 'author'] })
                 .pipe(
                     tap(emit => {
                         if (emit.data.length > 0) {
@@ -135,6 +136,38 @@ for (let store_cache_method of store_cache_methods) {
             expect(mockedAxios.request).toHaveBeenCalledTimes(0);
         });
 
+        it(`with cached on memory (live) collection fetched without include should refetch when include is requested later`, async () => {
+            mockedAxios.request.mockReset();
+            mockedAxios.request
+                .mockResolvedValueOnce({ data: TestFactory.getCollectionDocumentData(Book) })
+                .mockResolvedValueOnce({ data: TestFactory.getCollectionDocumentData(Book, 1, ['author']) });
+            booksService.collections_ttl = 5; // live
+
+            await booksService.all({ store_cache_method: store_cache_method }).toPromise();
+
+            let expected = [
+                { builded: false, loaded: false, source: 'new' },
+                { builded: true, loaded: true, source: 'server' }
+            ];
+
+            let emits = await booksService
+                .all({ store_cache_method: store_cache_method, include: ['author'] })
+                .pipe(
+                    map(emit => {
+                        if (emit.loaded && emit.data.length > 0) {
+                            expect(emit.data[0].relationships.author.data.attributes.name).toBeTruthy();
+                        }
+
+                        return { builded: emit.builded, loaded: emit.loaded, source: emit.source };
+                    }),
+                    toArray()
+                )
+                .toPromise();
+
+            expect(emits).toMatchObject(expected);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(2);
+        });
+
         it(`with cached on memory (live) collection emits source ^memory-server| when force ttl = 0 on call`, async () => {
             // caching collection
             mockedAxios.request.mockRestore();
@@ -172,12 +205,12 @@ for (let store_cache_method of store_cache_methods) {
             mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
             let expected = [
                 // expected emits
-                { builded: true, loaded: false, source: 'memory' },
+                { builded: false, loaded: false, source: 'new' },
                 { builded: true, loaded: true, source: 'server' }
             ];
 
             let emits = await booksService
-                .all({ store_cache_method: store_cache_method })
+                .all({ store_cache_method: store_cache_method, include: ['photos', 'author'] })
                 .pipe(
                     tap(emit => {
                         if (emit.data.length > 0) {
@@ -195,7 +228,7 @@ for (let store_cache_method of store_cache_methods) {
             expect(mockedAxios.request).toHaveBeenCalledTimes(1);
         });
 
-        it(`with cached on store (live) collection emits source ^new-store|`, async () => {
+        it(`with cached on store (live) collection and a different include uses the available cache layer`, async () => {
             // caching collection
             mockedAxios.request.mockRestore();
             mockedAxios.request.mockResolvedValue({ data: TestFactory.getCollectionDocumentData(Book) });
@@ -210,11 +243,16 @@ for (let store_cache_method of store_cache_methods) {
             let expected = [
                 // expected emits
                 { builded: false, loaded: false, source: 'new', source_resource: undefined },
-                { builded: true, loaded: true, source: 'store', source_resource: 'store' }
+                {
+                    builded: true,
+                    loaded: true,
+                    source: store_cache_method === 'compact' ? 'store' : 'server',
+                    source_resource: store_cache_method === 'compact' ? 'store' : 'server'
+                }
             ];
 
             let emits = await booksService
-                .all({ store_cache_method: store_cache_method })
+                .all({ store_cache_method: store_cache_method, include: ['photos', 'author'] })
                 .pipe(
                     tap(emit => {
                         if (emit.data.length > 0) {
@@ -238,7 +276,7 @@ for (let store_cache_method of store_cache_methods) {
                 )
                 .toPromise();
             expect(emits).toMatchObject(expected);
-            expect(mockedAxios.request).toHaveBeenCalledTimes(0);
+            expect(mockedAxios.request).toHaveBeenCalledTimes(store_cache_method === 'compact' ? 0 : 1);
         });
 
         it(`with cached on store (live) collection wihtout includes emits source ^new-store|`, async () => {
@@ -260,7 +298,7 @@ for (let store_cache_method of store_cache_methods) {
             ];
 
             let emits = await booksService
-                .all({ store_cache_method: store_cache_method })
+                .all({ store_cache_method: store_cache_method, include: ['author'] })
                 .pipe(
                     map(emit => {
                         if (emit.data.length > 0) {
@@ -475,6 +513,10 @@ describe('service.all() and next service.get()', () => {
         booksService.register();
         let photosService = new PhotosService();
         photosService.register();
+        let cachememory = CacheMemory.getInstance();
+        (cachememory as any).resources = {};
+        (cachememory as any).collections = {};
+        await Core.getInstance().clearCache();
         await authorsService.clearCache();
         await booksService.clearCache();
     });
@@ -535,7 +577,7 @@ describe('service.all() and next service.get()', () => {
         expect(mockedAxios.request).toHaveBeenCalledTimes(2);
     });
 
-    it(`with cached collection on memory and next request get() without include`, async () => {
+    it(`with cached collection on memory and next request get() with the same include emits source ^memory-server|`, async () => {
         Author.test_ttl = 100000;
         let all_authors_body = TestFactory.getCollectionDocumentData(Author, 1, ['books']);
         mockedAxios.request.mockRestore();
@@ -543,7 +585,8 @@ describe('service.all() and next service.get()', () => {
 
         let expected = [
             // expected emits
-            { loaded: true, source: 'memory' } // emits with data stored in memory ERROR! check emits...
+            { loaded: false, source: 'memory' },
+            { loaded: true, source: 'server' }
         ];
         let received_author: Author;
 
@@ -551,7 +594,7 @@ describe('service.all() and next service.get()', () => {
         expect(authors.data[0].relationships.books.data[0].attributes).toBeTruthy();
 
         let author_emits = await authorsService
-            .get(authors.data[0].id)
+            .get(authors.data[0].id, { include: ['books'] })
             .pipe(
                 tap(author => (received_author = author)),
                 map(emit => {
@@ -562,8 +605,8 @@ describe('service.all() and next service.get()', () => {
             .toPromise();
 
         expect(author_emits).toMatchObject(expected);
-        // expect(received_author.relationships.books.data[0].attributes).toBeFalsy(); // ERROR!!!
-        expect(mockedAxios.request).toHaveBeenCalledTimes(1); // on all() request
+        expect(received_author.relationships.books.data[0].id).toBeTruthy();
+        expect(mockedAxios.request).toHaveBeenCalledTimes(2);
     });
 
     it(`with cached collection on store and next request get() without include`, async () => {
@@ -697,7 +740,10 @@ describe('service.get()', () => {
         photosService = new PhotosService();
         photosService.register();
         await authorsService.clearCache();
-        // @TODO: should clear CacheMemory before each it
+        let cachememory = CacheMemory.getInstance();
+        (cachememory as any).resources = {};
+        (cachememory as any).collections = {};
+        await Core.getInstance().clearCache();
     });
 
     it(`no cached resource emits source ^new-server|`, async () => {
@@ -743,20 +789,19 @@ describe('service.get()', () => {
         expect(mockedAxios.request).toHaveBeenCalledTimes(0);
     });
 
-    it(`on memory (live) resource + include new has-one-relationship emits source ^memory-server|`, async () => {
+    it(`on memory (live) resource with an id-only has-one relationship emits source ^memory|`, async () => {
         let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Book);
         body_resource.data.relationships = { author: { data: { id: '1', type: 'authors' } } };
         mockedAxios.request.mockRestore();
         mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
-        await booksService.get('1').toPromise();
+        await booksService.get('1', {include: ['author']}).toPromise();
 
         mockedAxios.request.mockRestore();
         mockedAxios.request.mockResolvedValue({ data: body_resource });
         let expected = [
             // expected emits
-            { loaded: false, source: 'memory' },
-            { loaded: true, source: 'server' }
+            { loaded: true, source: 'memory' }
         ];
         let emits = await booksService
             .get('1', { ttl: 1000, include: ['author'] })
@@ -767,9 +812,39 @@ describe('service.get()', () => {
                 toArray()
             )
             .toPromise();
-        // TODO: fix library
-        expect(emits).toMatchObject(expected); // ERROR!!! [{ loaded: true, source: 'memory' }, { loaded: true, source: 'server' }]
-        expect(mockedAxios.request).toHaveBeenCalledTimes(1);
+        expect(emits).toMatchObject(expected);
+        expect(mockedAxios.request).toHaveBeenCalledTimes(0);
+    });
+
+    it(`on memory (live) resource fetched without include should refetch when include is requested later`, async () => {
+        let body_resource = <IDocumentResource>TestFactory.getResourceDocumentData(Book);
+        let body_resource_with_include = <IDocumentResource>TestFactory.getResourceDocumentData(Book, ['author']);
+        mockedAxios.request.mockReset();
+        mockedAxios.request
+            .mockResolvedValueOnce({ data: body_resource })
+            .mockResolvedValueOnce({ data: body_resource_with_include });
+
+        await booksService.get('1', { ttl: 1000 }).toPromise();
+
+        let expected = [
+            { loaded: false, source: 'memory' },
+            { loaded: true, source: 'server' }
+        ];
+        let emits = await booksService
+            .get('1', { ttl: 1000, include: ['author'] })
+            .pipe(
+                map(emit => {
+                    if (emit.source === 'server') {
+                        expect(emit.relationships.author.data.id).toBeTruthy();
+                    }
+
+                    return { loaded: emit.loaded, source: emit.source };
+                }),
+                toArray()
+            )
+            .toPromise();
+
+        expect(emits).toMatchObject(expected);
     });
 
     it(`on memory (live) resource + include existent has-many-relationship emits source ^memory-server|`, async () => {
@@ -779,7 +854,7 @@ describe('service.get()', () => {
         mockedAxios.request.mockRestore();
         mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
-        await authorsService.get('555').toPromise();
+        await authorsService.get('555', {include: ['books']}).toPromise();
 
         let expected = [
             // expected emits
@@ -804,7 +879,7 @@ describe('service.get()', () => {
         mockedAxios.request.mockRestore();
         mockedAxios.request.mockResolvedValue({ data: body_resource });
         // caching resource
-        await booksService.get('1').toPromise();
+        await booksService.get('1', { include: ['author'] }).toPromise();
 
         mockedAxios.request.mockRestore();
         mockedAxios.request.mockResolvedValue({ data: body_resource });

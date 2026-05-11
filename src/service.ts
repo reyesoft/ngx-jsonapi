@@ -8,7 +8,8 @@ import { Converter } from './services/converter';
 import { CacheMemory } from './services/cachememory';
 import { IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 import { DocumentCollection } from './document-collection';
-import { isLive, relationshipsAreBuilded } from './common';
+import { DocumentResource } from './document-resource';
+import { collectionRelationshipsAreBuilded, isLive, relationshipsAreBuilded } from './common';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDocumentResource } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
@@ -89,7 +90,7 @@ export class Service<R extends Resource = Resource> {
         path.applyParams(this, params);
         path.appendPath(id);
 
-        let resource: R = this.getOrCreateResource(id);
+        let resource: R = this.getOrCreateResource(id, params);
         resource.setLoaded(false);
 
         let subject = new BehaviorSubject<R>(resource);
@@ -182,15 +183,28 @@ export class Service<R extends Resource = Resource> {
         return collection;
     }
 
-    public getOrCreateResource(id: string): R {
+    public getOrCreateResource(id: string, params: IParamsResource = {}): R {
         let service = Converter.getServiceOrFail(this.type);
         let resource: R;
+        const requested_includes = params.include || [];
 
         resource = <R>CacheMemory.getInstance().getResource(this.type, id);
         if (resource === null) {
             resource = <R>service.new();
             resource.id = id;
             CacheMemory.getInstance().setResource(resource, false);
+        }
+        else {
+            if (resource.relationships) {
+                for (const relation in resource.relationships) {
+                    const relation_requested = requested_includes.some(include => include === relation || include.startsWith(relation + '.'));
+                    if (!relation_requested) {
+                        resource.relationships[relation] = resource.relationships[relation] instanceof DocumentCollection
+                            ? new DocumentCollection()
+                            : new DocumentResource();
+                    }
+                }
+            }
         }
 
         if (resource.source !== 'new') {
@@ -278,7 +292,7 @@ export class Service<R extends Resource = Resource> {
         if (Object.keys(builded_params.fields).length > 0) {
             // memory/store cache dont suppont fields
             this.getAllFromServer(path, builded_params, temporary_collection, subject);
-        } else if (isLive(temporary_collection, builded_params.ttl)) {
+        } else if (isLive(temporary_collection, builded_params.ttl) && collectionRelationshipsAreBuilded(temporary_collection, builded_params.include || [])) {
             // data on memory and its live
             setTimeout(() => subject.complete(), 0);
         } else if (temporary_collection.cache_last_update === 0) {
@@ -369,7 +383,7 @@ export class Service<R extends Resource = Resource> {
                         // @todo migrate to dexie
                         Core.me.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <
                             ICacheableDataCollection
-                        >success);
+                            >success);
                     }
                 }
                 subject.next(temporary_collection);

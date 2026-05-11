@@ -45,6 +45,12 @@ export class PathCollectionBuilder extends PathBuilder {
         );
     }
 
+    public getForCache(): string {
+        const cache_key = super.getForCache();
+
+        return this.includes.length > 0 ? cache_key + '/include=' + this.includes.join(',') : cache_key;
+    }
+
     protected addParam(param: string): void {
         this.get_params.push(param);
     }
