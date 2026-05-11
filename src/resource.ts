@@ -15,6 +15,8 @@ import { Observable, Subject, of } from 'rxjs';
 import { ResourceRelationshipsConverter } from './services/resource-relationships-converter';
 import { IRelationships } from './interfaces/relationship';
 import { SourceType } from './document';
+import pluralize from 'pluralize';
+import * as _ from "lodash-es";
 
 export class Resource implements ICacheable {
     public id: string = '';
@@ -31,6 +33,16 @@ export class Resource implements ICacheable {
     public source: SourceType = 'new';
     public cache_last_update = 0;
     public ttl = 0;
+
+    private originalAttributes: any = {};
+
+    public get IsDirty(): boolean {
+        return !_.isEqual(this.attributes, this.originalAttributes);
+    }
+
+    public resetDirtyAttributes() {
+        this.originalAttributes = _.cloneDeep(this.attributes);
+    }
 
     public reset(): void {
         this.id = '';
@@ -167,6 +179,7 @@ export class Resource implements ICacheable {
         // WARNING: leaving previous line for a tiem because this can produce undesired behavior
         // this.attributes = data_object.data.attributes || this.attributes;
         this.attributes = { ...(this.attributes || {}), ...data_object.data.attributes };
+        this.originalAttributes = _.cloneDeep(this.attributes);
 
         this.is_new = false;
 
@@ -207,6 +220,16 @@ export class Resource implements ICacheable {
 
     public addRelationship<T extends Resource>(resource: T, type_alias?: string) {
         let relation = this.relationships[type_alias || resource.type];
+
+        if (!relation) {
+            let sing = pluralize.singular(type_alias || resource.type);
+            relation = this.relationships[sing];
+        }
+
+        if (!relation) {
+            throw new Error('Relationship ' + (type_alias || resource.type) + ' not defined in resource ' + this.type);
+        }
+
         if (relation instanceof DocumentCollection) {
             relation.replaceOrAdd(resource);
         } else {
@@ -258,8 +281,8 @@ export class Resource implements ICacheable {
     public hasOneRelated(resource: string): boolean {
         return Boolean(
             this.relationships[resource] &&
-                (<Resource>this.relationships[resource].data).type &&
-                (<Resource>this.relationships[resource].data).type !== ''
+            (<Resource>this.relationships[resource].data).type &&
+            (<Resource>this.relationships[resource].data).type !== ''
         );
     }
 
@@ -299,8 +322,7 @@ export class Resource implements ICacheable {
         if (this.id) {
             path.appendPath(this.id);
         }
-
-        Core.exec(path.get(), this.is_new ? 'POST' : 'PATCH', object, true).subscribe(
+        Core.exec(this.getService()?.getUrl()?.length > 0 ? this.getService()?.getUrl() : undefined, path.get(), this.is_new ? 'POST' : 'PATCH', object, true).subscribe(
             success => {
                 this.is_saving = false;
 
@@ -311,12 +333,14 @@ export class Resource implements ICacheable {
                 }
 
                 // is a resource?
-                if ('id' in success.data) {
+                if (!!success && 'id' in success.data) {
                     this.id = success.data.id;
                     this.fill(<IDocumentResource>success);
-                } else if (Array.isArray(success.data)) {
+                } else if (!!success && Array.isArray(success.data)) {
                     console.warn('Server return a collection when we save()', success.data);
                 }
+
+                this.originalAttributes = _.cloneDeep(this.attributes);
 
                 subject.next(success);
                 subject.complete();
@@ -358,5 +382,9 @@ export class Resource implements ICacheable {
 
     public setCacheLastUpdate(value = Date.now()) {
         this.cache_last_update = value;
+    }
+
+    public rollbackAttributes(): void {
+        this.attributes = _.cloneDeep(this.originalAttributes);
     }
 }

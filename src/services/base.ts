@@ -2,6 +2,7 @@ import { IBuildedParamsCollection, IParamsCollection, IParamsResource } from '..
 import { Page } from './page';
 import { Resource } from '../resource';
 import { DocumentCollection } from '../document-collection';
+import { Filter } from './filter';
 
 export class Base {
     public static ParamsResource: IParamsResource = {
@@ -16,14 +17,15 @@ export class Base {
         beforepath: '',
         ttl: undefined,
         include: [],
-        remotefilter: {},
+        remotefilter: {} as Filter,
         fields: {},
         smartfilter: {},
         sort: [],
         page: new Page(),
         store_cache_method: 'individual',
         storage_ttl: 0,
-        cachehash: ''
+        cachehash: '',
+        custom_http_params: []
     };
 
     public static newCollection<R extends Resource = Resource>(): DocumentCollection<R> {

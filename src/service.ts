@@ -8,7 +8,8 @@ import { Converter } from './services/converter';
 import { CacheMemory } from './services/cachememory';
 import { IParamsCollection, IParamsResource, IAttributes } from './interfaces';
 import { DocumentCollection } from './document-collection';
-import { isLive, relationshipsAreBuilded } from './common';
+import { DocumentResource } from './document-resource';
+import { collectionRelationshipsAreBuilded, isLive, relationshipsAreBuilded } from './common';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { IDocumentResource } from './interfaces/data-object';
 import { PathCollectionBuilder } from './services/path-collection-builder';
@@ -20,6 +21,7 @@ export class Service<R extends Resource = Resource> {
     public resource = Resource;
     public collections_ttl: number;
     protected path: string; // without slashes
+    protected url: string;
 
     public constructor() {
         setTimeout(() => this.register());
@@ -54,6 +56,7 @@ export class Service<R extends Resource = Resource> {
         // issue #36: just if service is not registered yet.
         this.getService();
         resource.reset();
+        resource.resetDirtyAttributes();
 
         return <R>resource;
     }
@@ -64,6 +67,10 @@ export class Service<R extends Resource = Resource> {
 
     public getPath(): string {
         return this.path || this.type;
+    }
+
+    public getUrl(): string {
+        return this.url;
     }
 
     public getClone(id: string, params: IParamsResource = {}): Observable<ClonedResource<R>> {
@@ -83,7 +90,7 @@ export class Service<R extends Resource = Resource> {
         path.applyParams(this, params);
         path.appendPath(id);
 
-        let resource: R = this.getOrCreateResource(id);
+        let resource: R = this.getOrCreateResource(id, params);
         resource.setLoaded(false);
 
         let subject = new BehaviorSubject<R>(resource);
@@ -141,7 +148,7 @@ export class Service<R extends Resource = Resource> {
 
     // if you change this logic, maybe you need to change getAllFromServer()
     protected getGetFromServer(path, resource: R, subject: Subject<R>): void {
-        Core.get(path.get()).subscribe(
+        Core.get(path.get(), this.getUrl()).subscribe(
             success => {
                 resource.fill(<IDocumentResource>success);
                 resource.cache_last_update = Date.now();
@@ -176,15 +183,28 @@ export class Service<R extends Resource = Resource> {
         return collection;
     }
 
-    public getOrCreateResource(id: string): R {
+    public getOrCreateResource(id: string, params: IParamsResource = {}): R {
         let service = Converter.getServiceOrFail(this.type);
         let resource: R;
+        const requested_includes = params.include || [];
 
         resource = <R>CacheMemory.getInstance().getResource(this.type, id);
         if (resource === null) {
             resource = <R>service.new();
             resource.id = id;
             CacheMemory.getInstance().setResource(resource, false);
+        }
+        else {
+            if (resource.relationships) {
+                for (const relation in resource.relationships) {
+                    const relation_requested = requested_includes.some(include => include === relation || include.startsWith(relation + '.'));
+                    if (!relation_requested) {
+                        resource.relationships[relation] = resource.relationships[relation] instanceof DocumentCollection
+                            ? new DocumentCollection()
+                            : new DocumentResource();
+                    }
+                }
+            }
         }
 
         if (resource.source !== 'new') {
@@ -240,7 +260,7 @@ export class Service<R extends Resource = Resource> {
 
         let subject = new Subject<void>();
 
-        Core.delete(path.get()).subscribe(
+        Core.delete(path.get(), this.getUrl()).subscribe(
             success => {
                 CacheMemory.getInstance().removeResource(this.type, id);
                 subject.next();
@@ -272,7 +292,7 @@ export class Service<R extends Resource = Resource> {
         if (Object.keys(builded_params.fields).length > 0) {
             // memory/store cache dont suppont fields
             this.getAllFromServer(path, builded_params, temporary_collection, subject);
-        } else if (isLive(temporary_collection, builded_params.ttl)) {
+        } else if (isLive(temporary_collection, builded_params.ttl) && collectionRelationshipsAreBuilded(temporary_collection, builded_params.include || [])) {
             // data on memory and its live
             setTimeout(() => subject.complete(), 0);
         } else if (temporary_collection.cache_last_update === 0) {
@@ -338,7 +358,7 @@ export class Service<R extends Resource = Resource> {
         subject: BehaviorSubject<DocumentCollection<R>>
     ) {
         temporary_collection.setLoaded(false);
-        Core.get(path.get()).subscribe(
+        Core.get(path.get(), this.getUrl()).subscribe(
             success => {
                 // this create a new ID for every resource (for caching proposes)
                 // for example, two URL return same objects but with different attributes
@@ -363,7 +383,7 @@ export class Service<R extends Resource = Resource> {
                         // @todo migrate to dexie
                         Core.me.injectedServices.JsonapiStoreService.saveCollection(path.getForCache() + '.compact', <
                             ICacheableDataCollection
-                        >success);
+                            >success);
                     }
                 }
                 subject.next(temporary_collection);

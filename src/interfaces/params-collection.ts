@@ -1,8 +1,9 @@
 import { IParams } from './params';
 import { IPage } from './page';
+import { Filter } from '../services/filter'; 
 
 export interface IParamsCollection extends IParams {
-    remotefilter?: object;
+    remotefilter?: Filter;
     /** @deprecated since 2.2, we have rxjs pipes */
     smartfilter?: object;
     sort?: Array<string>;
@@ -13,10 +14,11 @@ export interface IParamsCollection extends IParams {
     storage_ttl?: number;
     /** @deprecated since 2.2 */
     cachehash?: string; // solution for when we have different resources with a same id
+    custom_http_params?: Array<string>;
 }
 
 export interface IBuildedParamsCollection extends IParams {
-    remotefilter: object;
+    remotefilter: Filter;
     /** @deprecated since 2.2, we have rxjs pipes */
     smartfilter: object;
     sort: Array<string>;
@@ -27,4 +29,5 @@ export interface IBuildedParamsCollection extends IParams {
     storage_ttl: number;
     /** @deprecated since 2.2 */
     cachehash: string; // solution for when we have different resources with a same id
+    custom_http_params: Array<string>;
 }

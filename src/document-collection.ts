@@ -110,7 +110,15 @@ export class RelatedDocumentCollection<R extends Resource = Resource> extends Do
         }
         // END remove when getService return null or catch errors
 
-        return service.getOrCreateResource(dataresource.id);
+        let params: IParamsCollection = {}
+        if (dataresource.relationships) {
+            params.include = [];
+            for (const relationship in dataresource.relationships) {
+                params.include?.push(relationship);
+            }
+        }
+
+        return service.getOrCreateResource(dataresource.id, params);
     }
 
     public replaceOrAdd(resource: R): void {

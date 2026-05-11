@@ -1,11 +1,11 @@
 {
-  "name": "ngx-jsonapi-demo",
+  "name": "ngx-jsonapi-ex",
   "description": "Demo app for JSON API library for Angular",
   "scripts": {
     "build": "ts-node ./build/index.ts",
     "postbuild": "rimraf **/dist/**/*.ngsummary.json",
     "deploy:builds": "ts-node ./build/deploy-build.ts",
-    "lint": "ng lint ngx-jsonapi",
+    "lint": "ng lint ngx-jsonapi-ex",
     "test": "yarn test:lib",
     "test:all": "yarn test:lib && yarn build && yarn test:demo",
     "test:lib": "jest --config ./jest.lib.config.js",
@@ -13,7 +13,7 @@
     "clean": "git clean -xdf && yarn && yarn run bootstrap",
     "cli": "ng",
     "coverage:html": "nyc report --reporter=html",
-    "copy:dist": "ncp dist/ ./node_modules/ngx-jsonapi/",
+    "copy:dist": "ncp dist/ ./node_modules/ngx-jsonapi-ex/",
     "start": "yarn run demo:start",
     "demo:start": "yarn run cli serve",
     "demo:start:aot": "yarn run cli serve -prod",
@@ -154,6 +154,7 @@
     "axios": "^0.21.1",
     "dexie": "^2.0.4",
     "lodash-es": "^4.17.15",
+    "pluralize": "^8.0.0",
     "rxjs": "6.6.7",
     "tsickle": "^0.39.1",
     "tslib": "2.0.0"

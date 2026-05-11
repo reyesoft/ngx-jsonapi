@@ -40,4 +40,5 @@ export class AuthorsService extends Service<Author> {
     public resource = Author;
     public type = 'authors';
     public collections_ttl = 0;
+    public url: string;
 }

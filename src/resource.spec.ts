@@ -30,7 +30,9 @@ describe('resource', () => {
 
     it('should save the resource without relationships that dont refer to a resource or mean to remove the relationship', async () => {
         let resource = new Resource();
-        spyOn(resource, 'getService').and.returnValue(false);
+        spyOn(resource, 'getService').and.returnValue({
+            getUrl: () => 'tests'
+        });
         spyOn(PathBuilder.prototype, 'applyParams');
         resource.id = '1234';
         resource.type = 'tests';
@@ -58,7 +60,7 @@ describe('resource', () => {
                 relationships: {}
             }
         };
-        expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', expected_resource_in_save, true);
+        expect(exec_spy).toHaveBeenCalledWith('tests', '1234', 'PATCH', expected_resource_in_save, true);
         resource.relationships.has_many_relationship = new DocumentCollection();
         resource.relationships.has_many_relationship.builded = true;
         resource.relationships.has_one_relationship = <any>{ data: null };
@@ -74,7 +76,7 @@ describe('resource', () => {
                 }
             }
         };
-        expect(exec_spy).toHaveBeenCalledWith('1234', 'PATCH', second_expected_resource_in_save, true);
+        expect(exec_spy).toHaveBeenCalledWith('tests', '1234', 'PATCH', second_expected_resource_in_save, true);
     });
 
     it('toObject method should parse the resouce in a new IDocumentResource', () => {
@@ -309,7 +311,9 @@ describe('resource.toObject() method', () => {
 describe('resource.save() method', () => {
     it('if set, te save method should send the "meta" property when saving a resource', async () => {
         let resource = new Resource();
-        spyOn(resource, 'getService').and.returnValue(false);
+        spyOn(resource, 'getService').and.returnValue({
+            getUrl: () => 'tests'
+        });
         spyOn(PathBuilder.prototype, 'applyParams');
         resource.id = '1234';
         resource.type = 'tests';
@@ -339,12 +343,14 @@ describe('resource.save() method', () => {
                 meta: { some_data: 'some_data' }
             }
         };
-        expect(exec_spy).toHaveBeenCalledWith('1234', 'POST', expected_resource_in_save, true);
+        expect(exec_spy).toHaveBeenCalledWith('tests', '1234', 'POST', expected_resource_in_save, true);
     });
 
     it('top level meta object should be included in the request if available', async () => {
         let resource = new Resource();
-        spyOn(resource, 'getService').and.returnValue(false);
+        spyOn(resource, 'getService').and.returnValue({
+            getUrl: () => 'tests'
+        });
         spyOn(PathBuilder.prototype, 'applyParams');
         resource.id = '1234';
         resource.type = 'tests';
@@ -373,12 +379,14 @@ describe('resource.save() method', () => {
             },
             meta: { restore: true }
         };
-        expect(exec_spy).toHaveBeenCalledWith('1234', 'POST', expected_resource_in_save, true);
+        expect(exec_spy).toHaveBeenCalledWith('tests', '1234', 'POST', expected_resource_in_save, true);
     });
 
     it('restore method should set top level meta to restore the resource (according to Reyesoft specification extension)', async () => {
         let resource = new Resource();
-        spyOn(resource, 'getService').and.returnValue(false);
+        spyOn(resource, 'getService').and.returnValue({
+            getUrl: () => 'tests'
+        });
         spyOn(PathBuilder.prototype, 'applyParams');
         resource.id = '1234';
         resource.type = 'tests';
@@ -407,7 +415,7 @@ describe('resource.save() method', () => {
             },
             meta: { restore: true }
         };
-        expect(exec_spy).toHaveBeenCalledWith('1234', 'POST', expected_resource_in_save, true);
+        expect(exec_spy).toHaveBeenCalledWith('tests','1234', 'POST', expected_resource_in_save, true);
     });
 
     // @todo fill from store to more new version of resource

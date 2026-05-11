@@ -232,7 +232,7 @@ describe('core methods', () => {
                 expect(resource.type).toBe('test_resources');
                 expect(resource.id).toBe('1');
                 expect(resource.attributes.name).toBe('test_name');
-                expect(resource.relationships.test_resource.data).toEqual(null);
+                expect(resource.relationships.test_resource).toEqual(undefined);
             });
     });
 });

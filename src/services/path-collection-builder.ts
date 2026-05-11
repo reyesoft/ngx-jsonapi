@@ -3,18 +3,23 @@ import { IParamsCollection } from '../interfaces';
 import { Service } from '../service';
 import { UrlParamsBuilder } from './url-params-builder';
 import { Core } from '../core';
+import { FilterSerializer } from './filter';
 
 export class PathCollectionBuilder extends PathBuilder {
     public applyParams(service: Service, params: IParamsCollection = {}) {
         super.applyParams(service, params);
 
         let paramsurl = new UrlParamsBuilder();
-        if (params.remotefilter && Object.keys(params.remotefilter).length > 0) {
+        if (params.remotefilter) {
             if (service.parseToServer) {
                 service.parseToServer(params.remotefilter);
             }
-            this.addParam(paramsurl.toparams({ filter: params.remotefilter }));
+            let filterParsed = FilterSerializer.serialize(params.remotefilter);
+            if (filterParsed && filterParsed.length > 0) { 
+                this.addParam(paramsurl.toparams({ filter: filterParsed }));
+            }
         }
+
         if (params.page) {
             if (params.page.number > 1) {
                 this.addParam(this.getPageConfig().number + '=' + params.page.number);
@@ -26,6 +31,9 @@ export class PathCollectionBuilder extends PathBuilder {
         if (params.sort && params.sort.length) {
             this.addParam('sort=' + params.sort.join(','));
         }
+        if (params.custom_http_params && params.custom_http_params.length > 0) {
+            this.addParam(params.custom_http_params.join('&'));
+        }
     }
 
     private getPageConfig(): { number: string; size: string } {
@@ -35,6 +43,12 @@ export class PathCollectionBuilder extends PathBuilder {
                 size: 'size'
             }
         );
+    }
+
+    public getForCache(): string {
+        const cache_key = super.getForCache();
+
+        return this.includes.length > 0 ? cache_key + '/include=' + this.includes.join(',') : cache_key;
     }
 
     protected addParam(param: string): void {

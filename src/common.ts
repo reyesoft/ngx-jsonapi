@@ -10,19 +10,48 @@ export function isLive(cacheable: ICacheable, ttl?: number): boolean {
     return Date.now() < cacheable.cache_last_update + ttl_in_seconds * 1000;
 }
 
+function relationshipPathIsBuilded(resource: Resource | null | undefined, includePath: Array<string>): boolean {
+    if (!resource || includePath.length === 0) {
+        return true;
+    }
+
+    const [relationship_alias, ...nested_path] = includePath;
+    const relationship = resource.relationships && resource.relationships[relationship_alias];
+
+    if (!relationship || !relationship.builded) {
+        return false;
+    }
+
+    if (nested_path.length === 0) {
+        return true;
+    }
+
+    if (relationship instanceof DocumentResource) {
+        return relationship.data ? relationshipPathIsBuilded(relationship.data, nested_path) : true;
+    }
+
+    if (relationship instanceof DocumentCollection) {
+        return relationship.data.every(related_resource => relationshipPathIsBuilded(<Resource>related_resource, nested_path));
+    }
+
+    return false;
+}
+
 // @todo test required for hasMany and hasOne
 export function relationshipsAreBuilded(resource: Resource, includes: Array<string>): boolean {
     if (includes.length === 0) {
         return true;
     }
 
-    for (let relationship_alias in resource.relationships) {
-        if (includes.includes(relationship_alias) && !resource.relationships[relationship_alias].builded) {
-            return false;
-        }
+    return includes.every(include => relationshipPathIsBuilded(resource, include.split('.')));
+}
+
+export function collectionRelationshipsAreBuilded(collection: DocumentCollection, includes: Array<string>): boolean {
+    if (includes.length === 0) {
+        return true;
     }
 
-    return true;
+    return collection.data.every(resource => relationshipsAreBuilded(resource, includes));
 }
 
 /**

@@ -44,7 +44,6 @@ export class PathBuilder {
         if (this.includes.length > 0) {
             params.push('include=' + this.includes.join(','));
         }
-
         return (
             this.paths.join('/') +
             (params.length > 0 ? Core.getInstance().injectedServices.rsJsonapiConfig.params_separator + params.join('&') : '')

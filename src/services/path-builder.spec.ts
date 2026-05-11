@@ -10,6 +10,10 @@ testService.getPrePath = (): string => {
 testService.getPath = (): string => {
     return 'authors';
 };
+testService.getUrl = (): string => {
+    console.log("inside getUrl", Core.me.injectedServices.rsJsonapiConfig.url);
+    return Core.me.injectedServices.rsJsonapiConfig.url;
+};
 
 describe('Path Builder', () => {
     let path_builder: PathBuilder;
