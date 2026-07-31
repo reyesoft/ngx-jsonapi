@@ -1,44 +1,30 @@
 {
     "compilerOptions": {
-      "importHelpers": true,
-      "strictNullChecks": true,
-      "esModuleInterop": true,
-      "sourceMap": true,
-      "declaration": false,
-      "moduleResolution": "bundler",
-      "experimentalDecorators": true,
-      "lib": [
-        "es2017",
-        "dom"
-      ],
-      "outDir": "../out-tsc/app",
-      "target": "es2015",
-      "module": "esnext",
-      "baseUrl": "",
-      "rootDir": "./",
-      "paths": {
-        "ngx-jsonapi": [
-          "projects/ngx-jsonapi-lib/src/public_api"
-        ],
-        "ngx-jsonapi/*": [
-          "projects/ngx-jsonapi-lib/src/lib/*"
-        ],
-        "ngx-jsonapi-lib": [
-          "dist/ngx-jsonapi-lib"
-        ]
-      },
-      "strict": false,
-      "useDefineForClassFields": false
+        "importHelpers": true,
+        "strictNullChecks": true,
+        "esModuleInterop": true,
+        "sourceMap": true,
+        "declaration": false,
+        "moduleResolution": "bundler",
+        "experimentalDecorators": true,
+        "outDir": "../out-tsc/app",
+        "target": "es2022",
+        "module": "esnext",
+        "baseUrl": "",
+        "rootDir": "./",
+        "paths": {
+            "ngx-jsonapi": ["projects/ngx-jsonapi-lib/src/public_api"],
+            "ngx-jsonapi/*": ["projects/ngx-jsonapi-lib/src/lib/*"],
+            "ngx-jsonapi-lib": ["dist/ngx-jsonapi-lib"]
+        },
+        "strict": false,
+        "useDefineForClassFields": false
     },
     "angularCompilerOptions": {
         "enableIvy": true,
         "compilationMode": "partial"
     },
-    "exclude": [
-        "node_modules",
-        "**/*/node_modules",
-        "src/schematics/src/*/files/**/*"
-    ],
+    "exclude": ["node_modules", "**/*/node_modules", "src/schematics/src/*/files/**/*"],
     "compileOnSave": false,
     "buildOnSave": false,
     "atom": {

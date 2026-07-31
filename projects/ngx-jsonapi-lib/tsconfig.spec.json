@@ -4,7 +4,7 @@
     "compilerOptions": {
         "outDir": "../../out-tsc/spec",
         "esModuleInterop": true,
-        "types": ["jest"]
+        "types": ["jest", "node"]
     },
     "include": ["**/*.spec.ts", "**/*.d.ts"]
 }

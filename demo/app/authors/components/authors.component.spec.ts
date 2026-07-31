@@ -2,11 +2,10 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
 
-import { AuthorsService } from '../authors.service';
+import { Author, AuthorsService } from '../authors.service';
 import { BooksService } from '../../books/books.service';
 import { AuthorsComponent } from './authors.component';
-import { DocumentCollection, JsonapiConfig, JSONAPI_STORE_SERVICE, JSONAPI_RIPPER_SERVICE, StoreService, JsonRipper } from 'ngx-jsonapi';
-import { provideNgxJsonapiStandalone } from 'ngx-jsonapi/ngx-jsonapi.provider';
+import { DocumentCollection } from 'ngx-jsonapi';
 import { ActivatedRoute, Params } from '@angular/router';
 
 describe('AuthorsComponent', () => {
@@ -15,22 +14,25 @@ describe('AuthorsComponent', () => {
 
     const queryParams$: BehaviorSubject<Params> = new BehaviorSubject<Params>({});
 
-    const authorsServiceMock: AuthorsService = {
-        all: () => of(new DocumentCollection())
-    } as AuthorsService;
+    const authorsServiceMock: Pick<AuthorsService, 'all'> = {
+        all: () => of(new DocumentCollection<Author>())
+    };
+    const booksServiceMock: Pick<BooksService, never> = {};
 
     beforeEach(waitForAsync(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule, AuthorsComponent],
-            providers: [
-                provideNgxJsonapiStandalone(new JsonapiConfig()),
-                { provide: ActivatedRoute, useValue: { queryParams: queryParams$.asObservable() } },
-                { provide: AuthorsService, useValue: authorsServiceMock as AuthorsService },
-                BooksService,
-                { provide: JSONAPI_RIPPER_SERVICE, useClass: JsonRipper },
-                { provide: JSONAPI_STORE_SERVICE, useClass: StoreService }
-            ]
-        }).compileComponents();
+            providers: [{ provide: ActivatedRoute, useValue: { queryParams: queryParams$.asObservable() } }]
+        })
+            .overrideComponent(AuthorsComponent, {
+                set: {
+                    providers: [
+                        { provide: AuthorsService, useValue: authorsServiceMock },
+                        { provide: BooksService, useValue: booksServiceMock }
+                    ]
+                }
+            })
+            .compileComponents();
     }));
 
     beforeEach(() => {
