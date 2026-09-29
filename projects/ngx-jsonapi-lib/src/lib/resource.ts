@@ -318,11 +318,15 @@ export class Resource implements ICacheable {
                 }
 
                 // is a resource?
-                if ('id' in success.data) {
+                if (success && success.data && 'id' in success.data) {
                     this.id = success.data.id;
                     this.fill(<IDocumentResource>success);
-                } else if (Array.isArray(success.data)) {
+                } else if (success && Array.isArray(success.data)) {
                     console.warn('Server return a collection when we save()', success.data);
+                } else if (!success || !success.data) {
+                    // 204 No Content or 200 with only top-level meta (allowed by JSON:API):
+                    // the server accepted the resource as sent
+                    this.is_new = false;
                 }
 
                 subject.next(success);

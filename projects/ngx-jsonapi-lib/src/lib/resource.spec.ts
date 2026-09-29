@@ -6,7 +6,7 @@ import { DocumentResource } from './document-resource';
 import { Core } from './core';
 import { PathBuilder } from './services/path-builder';
 import { Resource } from './resource';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { Book } from './tests/factories/books.service';
 import { Service } from './service';
 
@@ -451,6 +451,87 @@ describe('resource.save() method', () => {
             meta: { restore: true }
         };
         expect(exec_spy).toHaveBeenCalledWith('1234', 'POST', expected_resource_in_save, true);
+    });
+
+    describe('when the server answers without a resource document', () => {
+        let resource: Resource;
+        let server_response: Subject<any>;
+
+        beforeEach(() => {
+            resource = new Resource();
+            const serviceMock: Partial<Service<Resource>> = {
+                getPrePath: () => '',
+                getPath: () => '',
+                parseToServer: (attr: any) => attr
+            };
+            jest.spyOn(resource, 'getService').mockReturnValue(serviceMock as Service<Resource>);
+            resource.id = '1234';
+            resource.type = 'tests';
+            resource.attributes = { name: 'test_name' };
+            resource.relationships = {};
+            resource.is_new = false;
+            resource.loaded = true;
+            server_response = new Subject<any>();
+            jest.spyOn(Core, 'exec').mockReturnValue(server_response);
+        });
+
+        const saveAndCollect = (): { emitted: Array<any>; completed: boolean; error: any } => {
+            let result: { emitted: Array<any>; completed: boolean; error: any } = { emitted: [], completed: false, error: undefined };
+            resource.save().subscribe(
+                (value) => result.emitted.push(value),
+                (error) => (result.error = error),
+                () => (result.completed = true)
+            );
+
+            return result;
+        };
+
+        it('PATCH answered with 204 No Content (null body) should emit and complete', () => {
+            let result = saveAndCollect();
+            server_response.next(null);
+
+            expect(result.error).toBeUndefined();
+            expect(result.emitted).toEqual([null]);
+            expect(result.completed).toBe(true);
+            expect(resource.is_saving).toBe(false);
+            expect(resource.id).toBe('1234');
+            expect(resource.attributes).toEqual({ name: 'test_name' });
+        });
+
+        it('PATCH answered with 200 and only top-level meta should emit and complete', () => {
+            let result = saveAndCollect();
+            server_response.next({ meta: { updated: true } });
+
+            expect(result.error).toBeUndefined();
+            expect(result.emitted).toEqual([{ meta: { updated: true } }]);
+            expect(result.completed).toBe(true);
+            expect(resource.is_saving).toBe(false);
+            expect(resource.attributes).toEqual({ name: 'test_name' });
+        });
+
+        it('POST with a client-generated id answered with 204 No Content should mark the resource as not new', () => {
+            resource.is_new = true;
+            let result = saveAndCollect();
+            server_response.next(null);
+
+            expect(result.error).toBeUndefined();
+            expect(result.completed).toBe(true);
+            expect(resource.is_new).toBe(false);
+            expect(resource.id).toBe('1234');
+        });
+
+        it('a response with a resource document should still fill the resource', () => {
+            let fill_spy = jest.spyOn(resource, 'fill').mockReturnValue(true);
+            let result = saveAndCollect();
+            let document: any = { data: { type: 'tests', id: '5678', attributes: { name: 'from_server' } } };
+            server_response.next(document);
+
+            expect(result.error).toBeUndefined();
+            expect(result.emitted).toEqual([document]);
+            expect(result.completed).toBe(true);
+            expect(resource.id).toBe('5678');
+            expect(fill_spy).toHaveBeenCalledWith(document);
+        });
     });
 
     // @todo fill from store to more new version of resource
